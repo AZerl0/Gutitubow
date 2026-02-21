@@ -12,5 +12,8 @@ public interface Ability {
 
     default void onArrowHit(ProjectileHitEvent event) {}
 
-    default void onRightClick(PlayerInteractEvent event) {}
+    default void onPlayerRightClickBow(PlayerInteractEvent event) {}
+
+    default void onPlayerLeftClickBow(PlayerInteractEvent event) {}
 }
+

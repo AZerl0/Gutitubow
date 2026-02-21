@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.ability;
 
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,10 +11,14 @@ public class AbilityManager {
 
     static final Map<UUID, String> playerAbilities = new HashMap<>();
 
+    @Nullable
     static public String getAbilityId(Player player) {
-        String ability = playerAbilities.get(player.getUniqueId());
-        if (ability == null) ability = "None";
-        return ability;
+        return playerAbilities.get(player.getUniqueId());
+    }
+
+    @Nullable
+    static public Ability getAbility(Player player) {
+        return AbilityRegistry.get(getAbilityId(player));
     }
 
     static public void setAbility(Player player, String id) {
