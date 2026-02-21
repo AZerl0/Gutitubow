@@ -3,3 +3,9 @@ version: '1.0.0-SNAPSHOT'
 main: com.azerl0.gutitubow.Gutitubow
 api-version: '1.21'
 authors: [ AZer0 ]
+depend: [NBTAPI]
+commands:
+  ability:
+    description: Ability command
+    usage: /ability
+    permission:

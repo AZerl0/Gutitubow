@@ -1,0 +1,144 @@
+package com.azerl0.gutitubow.command;
+
+import com.azerl0.gutitubow.ability.*;
+import org.bukkit.Bukkit;
+import org.bukkit.command.*;
+import org.bukkit.entity.Player;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
+public class AbilityCommand implements CommandExecutor, TabExecutor {
+
+    private final AbilityRegistry registry;
+    private final AbilityManager manager;
+
+    public AbilityCommand(AbilityRegistry registry, AbilityManager manager) {
+        this.registry = registry;
+        this.manager = manager;
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+
+        if (!(sender instanceof Player player)) return true;
+
+        switch (args[0]) {
+            case ("get"):
+                Player getPlayer;
+                if (args.length == 1) {
+                    getPlayer = player;
+                } else {
+                    getPlayer = Bukkit.getPlayer(args[1]);
+                }
+
+                if (getPlayer == null) {
+                    player.sendMessage("プレイヤーが見つかりませんでした");
+                } else {
+
+                    player.sendMessage(getPlayer.getName() + "の能力は" + manager.getAbilityId(getPlayer) + "です");
+                }
+                return true;
+
+
+            case ("list"):
+                player.sendMessage("Abilities:");
+
+                for (String id : registry.getAllIds()) {
+                    player.sendMessage("- " + id);
+                }
+
+                return true;
+
+            case ("set"):
+
+                String id = args[1];
+                Player setPlayer;
+                if (args.length == 2) {
+                    setPlayer = player;
+                } else {
+                    setPlayer = Bukkit.getPlayer(args[2]);
+                }
+
+                if (id == null) {
+                    player.sendMessage("Abilityを指定する必要があります");
+                    return true;
+                }
+
+                if (registry.get(id) == null) {
+                    player.sendMessage("そのAbilityは存在しません");
+                    return true;
+                }
+
+                if (setPlayer == null) {
+                    player.sendMessage("プレイヤーが見つかりませんでした");
+                } else {
+
+                    manager.setAbility(player, id);
+                    player.sendMessage(setPlayer.getName() + "のAbilityを " + id + " に設定しました！");
+                }
+                return true;
+
+            case ("reset"):
+                Player resetPlayer;
+                if (args.length == 1) {
+                     resetPlayer = player;
+                } else {
+                     resetPlayer = Bukkit.getPlayer(args[1]);
+                }
+
+                if (resetPlayer == null) {
+                    player.sendMessage("プレイヤーが見つかりませんでした");
+                } else {
+                    manager.resetAbility(resetPlayer);
+                    player.sendMessage(resetPlayer.getName() + "の能力を削除しました");
+                }
+                return true;
+
+
+        }
+
+        return false;
+    }
+
+    @Override
+    public List<String> onTabComplete(
+            CommandSender sender,
+            Command command,
+            String alias,
+            String[] args
+    ) {
+        if (args.length == 1) {
+            return List.of("list", "get", "set", "reset");
+        }
+
+
+        switch (args[0]) {
+            case ("get"):
+            case ("reset"):
+                if (args.length == 2) {
+                    return Bukkit.getOnlinePlayers()
+                            .stream()
+                            .map(Player::getName)
+                            .toList();
+                } else {
+                    return Collections.emptyList();
+                }
+
+            case ("set"):
+                if (args.length == 2) {
+                    return registry.getAllIds().stream().toList();
+                } else if (args.length == 3) {
+                    return Bukkit.getOnlinePlayers()
+                            .stream()
+                            .map(Player::getName)
+                            .toList();
+
+                } else {
+                    return Collections.emptyList();
+                }
+        }
+        return Collections.emptyList();
+    }
+}
