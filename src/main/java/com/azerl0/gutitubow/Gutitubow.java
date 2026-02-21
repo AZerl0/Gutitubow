@@ -3,7 +3,7 @@ package com.azerl0.gutitubow;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.azerl0.gutitubow.listener.ProjectileHitListener;
 import com.azerl0.gutitubow.ability.*;
-import com.azerl0.gutitubow.ability.abilities.RicochetAbility;
+import com.azerl0.gutitubow.ability.abilities.*;
 import com.azerl0.gutitubow.command.AbilityCommand;
 import com.azerl0.gutitubow.listener.BowListener;
 
@@ -19,6 +19,7 @@ public final class Gutitubow extends JavaPlugin {
 
         // Ability登録
         AbilityRegistry.register(new RicochetAbility());
+        AbilityRegistry.register(new BombAbility());
 
         // Listener登録
         getServer().getPluginManager().registerEvents(
