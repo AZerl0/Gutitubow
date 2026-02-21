@@ -31,6 +31,15 @@ public class ProjectileHitListener implements Listener {
     @EventHandler
     public void onArrowHit(ProjectileHitEvent event) {
 
+        RicochetEvent(event);
+
+    }
+
+    private void GlassBreakEvent(ProjectileHitEvent event) {
+
+    }
+
+    private void RicochetEvent(ProjectileHitEvent event) {
         Projectile proj = event.getEntity();
 
         Player shooter = ((Player) Objects.requireNonNull(proj.getShooter())).getPlayer();
@@ -46,7 +55,24 @@ public class ProjectileHitListener implements Listener {
         Block hitBlock = event.getHitBlock();
 
         boolean crit = NBT.get(proj, nbt -> (boolean) nbt.getBoolean("crit"));
-        Vector newVelocity = getVector(event, hitBlock);
+
+        Vector newVelocity = event.getEntity().getVelocity().clone();
+        BlockFace face = event.getHitBlockFace();
+        switch (Objects.requireNonNull(face)) {
+            case EAST:
+            case WEST:
+                newVelocity.setX(-newVelocity.getX());
+                break;
+            case UP:
+            case DOWN:
+                newVelocity.setY(-newVelocity.getY());
+                break;
+            case NORTH:
+            case SOUTH:
+                newVelocity.setZ(-newVelocity.getZ());
+                break;
+        }
+
 
         proj.getWorld().spawnParticle(
                 Particle.BLOCK,
@@ -76,28 +102,6 @@ public class ProjectileHitListener implements Listener {
             proj.setRotation(yaw, pitch);
 
         });
-
-    }
-
-    private static @NotNull Vector getVector(ProjectileHitEvent event, Block hitBlock) {
-        BlockFace face = event.getHitBlockFace();
-
-        @NotNull Vector newVelocity = event.getEntity().getVelocity().clone();
-        switch (Objects.requireNonNull(face)) {
-            case EAST:
-            case WEST:
-                newVelocity.setX(-newVelocity.getX());
-                break;
-            case UP:
-            case DOWN:
-                newVelocity.setY(-newVelocity.getY());
-                break;
-            case NORTH:
-            case SOUTH:
-                newVelocity.setZ(-newVelocity.getZ());
-                break;
-        }
-        return newVelocity;
     }
 
 }
