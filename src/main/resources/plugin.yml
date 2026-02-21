@@ -8,4 +8,4 @@ commands:
   ability:
     description: Ability command
     usage: /ability
-    permission:
+    permission: gutitubow.ability
