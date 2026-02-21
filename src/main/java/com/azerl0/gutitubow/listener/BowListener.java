@@ -8,23 +8,15 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 
 public class BowListener implements Listener {
 
-    private final AbilityRegistry registry;
-    private final AbilityManager manager;
-
-    public BowListener(AbilityRegistry registry, AbilityManager manager) {
-        this.registry = registry;
-        this.manager = manager;
-    }
-
     @EventHandler
     public void onShoot(EntityShootBowEvent event) {
 
         if (!(event.getEntity() instanceof Player player)) return;
 
-        String id = manager.getAbilityId(player);
+        String id = AbilityManager.getAbilityId(player);
         if (id == null) return;
 
-        Ability ability = registry.get(id);
+        Ability ability = AbilityRegistry.get(id);
         if (ability == null) return;
 
         ability.onArrowLaunch(event);

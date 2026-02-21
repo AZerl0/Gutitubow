@@ -11,14 +11,6 @@ import java.util.UUID;
 
 public class AbilityCommand implements CommandExecutor, TabExecutor {
 
-    private final AbilityRegistry registry;
-    private final AbilityManager manager;
-
-    public AbilityCommand(AbilityRegistry registry, AbilityManager manager) {
-        this.registry = registry;
-        this.manager = manager;
-    }
-
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
@@ -37,7 +29,7 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                     player.sendMessage("プレイヤーが見つかりませんでした");
                 } else {
 
-                    player.sendMessage(getPlayer.getName() + "の能力は" + manager.getAbilityId(getPlayer) + "です");
+                    player.sendMessage(getPlayer.getName() + "の能力は" + AbilityManager.getAbilityId(getPlayer) + "です");
                 }
                 return true;
 
@@ -45,7 +37,7 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
             case ("list"):
                 player.sendMessage("Abilities:");
 
-                for (String id : registry.getAllIds()) {
+                for (String id : AbilityRegistry.getAllIds()) {
                     player.sendMessage("- " + id);
                 }
 
@@ -66,7 +58,7 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                     return true;
                 }
 
-                if (registry.get(id) == null) {
+                if (AbilityRegistry.get(id) == null) {
                     player.sendMessage("そのAbilityは存在しません");
                     return true;
                 }
@@ -75,7 +67,7 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                     player.sendMessage("プレイヤーが見つかりませんでした");
                 } else {
 
-                    manager.setAbility(player, id);
+                    AbilityManager.setAbility(player, id);
                     player.sendMessage(setPlayer.getName() + "のAbilityを " + id + " に設定しました！");
                 }
                 return true;
@@ -91,7 +83,7 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                 if (resetPlayer == null) {
                     player.sendMessage("プレイヤーが見つかりませんでした");
                 } else {
-                    manager.resetAbility(resetPlayer);
+                    AbilityManager.resetAbility(resetPlayer);
                     player.sendMessage(resetPlayer.getName() + "の能力を削除しました");
                 }
                 return true;
@@ -128,7 +120,7 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
 
             case ("set"):
                 if (args.length == 2) {
-                    return registry.getAllIds().stream().toList();
+                    return AbilityRegistry.getAllIds().stream().toList();
                 } else if (args.length == 3) {
                     return Bukkit.getOnlinePlayers()
                             .stream()

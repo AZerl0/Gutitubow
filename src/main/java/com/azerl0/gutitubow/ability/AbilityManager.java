@@ -8,17 +8,19 @@ import java.util.UUID;
 
 public class AbilityManager {
 
-    private final Map<UUID, String> playerAbilities = new HashMap<>();
+    static final Map<UUID, String> playerAbilities = new HashMap<>();
 
-    public String getAbilityId(Player player) {
-        return playerAbilities.get(player.getUniqueId());
+    static public String getAbilityId(Player player) {
+        String ability = playerAbilities.get(player.getUniqueId());
+        if (ability == null) ability = "None";
+        return ability;
     }
 
-    public void setAbility(Player player, String id) {
+    static public void setAbility(Player player, String id) {
         playerAbilities.put(player.getUniqueId(), id);
     }
 
-    public void resetAbility(Player player) {
+    static public void resetAbility(Player player) {
         playerAbilities.put(player.getUniqueId(), "None");
     }
 }

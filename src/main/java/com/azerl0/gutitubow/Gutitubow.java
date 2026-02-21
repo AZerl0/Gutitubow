@@ -17,24 +17,21 @@ public final class Gutitubow extends JavaPlugin {
         // Plugin startup logic
         getServer().getPluginManager().registerEvents(new ProjectileHitListener(this), this);
 
-        registry = new AbilityRegistry();
-        manager = new AbilityManager();
-
         // Ability登録
-        registry.register(new RicochetAbility());
+        AbilityRegistry.register(new RicochetAbility());
 
         // Listener登録
         getServer().getPluginManager().registerEvents(
-                new BowListener(registry, manager),
+                new BowListener(),
                 this
         );
 
         // Command登録
         getCommand("ability").setExecutor(
-                new AbilityCommand(registry, manager)
+                new AbilityCommand()
         );
 
-        getLogger().info("Loaded abilities: " + registry.getAllIds());
+        getLogger().info("Loaded abilities: " + AbilityRegistry.getAllIds());
 
 
     }
