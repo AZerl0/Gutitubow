@@ -114,9 +114,8 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                             .stream()
                             .map(Player::getName)
                             .toList();
-                } else {
-                    return Collections.emptyList();
                 }
+                break;
 
             case ("set"):
                 if (args.length == 2) {
@@ -126,10 +125,8 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                             .stream()
                             .map(Player::getName)
                             .toList();
-
-                } else {
-                    return Collections.emptyList();
                 }
+                break;
         }
         return Collections.emptyList();
     }
