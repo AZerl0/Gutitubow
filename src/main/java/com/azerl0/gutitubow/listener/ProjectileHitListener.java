@@ -56,7 +56,7 @@ public class ProjectileHitListener implements Listener {
             Block block = loc.getBlock();
             Material type = block.getType();
 
-            if (GutitubowBlockTags.BREAKABLE_BY_GUTITUBOW_ARROW.contains(type)) return
+            if (!GutitubowBlockTags.BREAKABLE_BY_GUTITUBOW_ARROW.contains(type)) return false;
 
 
             block.breakNaturally(true);
