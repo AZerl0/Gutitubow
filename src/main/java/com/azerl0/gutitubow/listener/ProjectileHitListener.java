@@ -3,19 +3,18 @@ package com.azerl0.gutitubow.listener;
 
 import com.azerl0.gutitubow.ability.AbilityManager;
 import de.tr7zw.nbtapi.NBT;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
-import org.bukkit.entity.AbstractArrow;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -31,11 +30,56 @@ public class ProjectileHitListener implements Listener {
     @EventHandler
     public void onArrowHit(ProjectileHitEvent event) {
 
+        Block block = event.getHitBlock();
+
         RicochetEvent(event);
+
+        if (block != null && event.getEntity() instanceof Arrow) {
+            Location hitBlockLoc = block.getLocation();
+
+            if(GlassBreakEvent.Break(hitBlockLoc, 20)) {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+
+                    NBT.modify(event.getEntity(), nbt -> {
+                        nbt.setBoolean("inGround", false);
+                    });
+                });
+            }
+        }
 
     }
 
-    private void GlassBreakEvent(ProjectileHitEvent event) {
+    private static class GlassBreakEvent {
+
+        static private boolean Break(Location loc, Integer limit) {
+            Block block = loc.getBlock();
+            Material type = block.getType();
+
+            if (!(type == Material.GLASS
+                    || type == Material.TINTED_GLASS
+                    || type.name().endsWith("_STAINED_GLASS")
+                    || type.name().endsWith("_STAINED_GLASS_PANE")
+                    || type == Material.GLASS_PANE)) return false;
+
+//            BlockDisplay display = (BlockDisplay) loc.getWorld().spawnEntity(
+//                    loc,
+//                    EntityType.BLOCK_DISPLAY
+//            );
+//
+//            display.setBlock(Bukkit.createBlockData(Material.RED_STAINED_GLASS));
+
+            block.breakNaturally(true);
+
+            if(limit <= 0) return true;
+
+            Break(loc.clone().add(1,0,0), limit - 1);
+            Break(loc.clone().add(0,1,0), limit - 1);
+            Break(loc.clone().add(0,0,1), limit - 1);
+            Break(loc.clone().add(-1,0,0), limit - 1);
+            Break(loc.clone().add(0,-1,0), limit - 1);
+            Break(loc.clone().add(0,0,-1), limit - 1);
+            return true;
+        }
 
     }
 
@@ -43,7 +87,11 @@ public class ProjectileHitListener implements Listener {
         Projectile proj = event.getEntity();
 
         Player shooter = ((Player) Objects.requireNonNull(proj.getShooter())).getPlayer();
-        if (!(shooter != null && AbilityManager.getAbilityId(shooter).equals("ricochet"))) return;
+        if(shooter == null) return;
+
+        String ability = AbilityManager.getAbilityId(shooter);
+        if(ability == null) return;
+        if (!ability.equals("ricochet")) return;
 
         if (!(proj instanceof AbstractArrow)) return;
 
