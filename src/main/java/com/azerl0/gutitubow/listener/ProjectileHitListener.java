@@ -37,7 +37,7 @@ public class ProjectileHitListener implements Listener {
         if (block != null && event.getEntity() instanceof Arrow) {
             Location hitBlockLoc = block.getLocation();
 
-            if (GlassBreakEvent.Break(hitBlockLoc, 20)) {
+            if (GlassBreakEvent.Break(hitBlockLoc, 64)) {
                 Bukkit.getScheduler().runTask(plugin, () -> {
 
                     NBT.modify(event.getEntity(), nbt -> {
@@ -61,12 +61,6 @@ public class ProjectileHitListener implements Listener {
                     || type.name().endsWith("_STAINED_GLASS_PANE")
                     || type == Material.GLASS_PANE)) return false;
 
-//            BlockDisplay display = (BlockDisplay) loc.getWorld().spawnEntity(
-//                    loc,
-//                    EntityType.BLOCK_DISPLAY
-//            );
-//
-//            display.setBlock(Bukkit.createBlockData(Material.RED_STAINED_GLASS));
 
             block.breakNaturally(true);
 
