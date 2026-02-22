@@ -15,8 +15,8 @@ public final class Gutitubow extends JavaPlugin {
     public void onEnable() {
 
         // Ability登録
-        AbilityRegistry.register(new RicochetAbility());
-        AbilityRegistry.register(new BombAbility());
+        AbilityRegistry.register(new RicochetAbility(this));
+        AbilityRegistry.register(new BombAbility(this));
 
         // Listener登録
         PluginManager pm = getServer().getPluginManager();

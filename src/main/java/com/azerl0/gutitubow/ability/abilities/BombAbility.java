@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.ability.abilities;
 
 import com.azerl0.gutitubow.ability.Ability;
+import de.tr7zw.nbtapi.NBT;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -9,14 +10,29 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
 public class BombAbility implements Ability {
 
+    private final JavaPlugin plugin;
+
+    public BombAbility(JavaPlugin plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     public String getId() {
         return "bomb";
+    }
+
+    public void onArrowLaunch(EntityShootBowEvent event) {
+
+        NBT.modify(event.getProjectile(), nbt -> {
+            nbt.setBoolean("Glowing", true);
+        });
     }
 
 
