@@ -37,7 +37,7 @@ public class ProjectileHitListener implements Listener {
         if (block != null && event.getEntity() instanceof Arrow) {
             Location hitBlockLoc = block.getLocation();
 
-            if(GlassBreakEvent.Break(hitBlockLoc, 20)) {
+            if (GlassBreakEvent.Break(hitBlockLoc, 20)) {
                 Bukkit.getScheduler().runTask(plugin, () -> {
 
                     NBT.modify(event.getEntity(), nbt -> {
@@ -70,14 +70,14 @@ public class ProjectileHitListener implements Listener {
 
             block.breakNaturally(true);
 
-            if(limit <= 0) return true;
+            if (limit <= 0) return true;
 
-            Break(loc.clone().add(1,0,0), limit - 1);
-            Break(loc.clone().add(0,1,0), limit - 1);
-            Break(loc.clone().add(0,0,1), limit - 1);
-            Break(loc.clone().add(-1,0,0), limit - 1);
-            Break(loc.clone().add(0,-1,0), limit - 1);
-            Break(loc.clone().add(0,0,-1), limit - 1);
+            Break(loc.clone().add(1, 0, 0), limit - 1);
+            Break(loc.clone().add(0, 1, 0), limit - 1);
+            Break(loc.clone().add(0, 0, 1), limit - 1);
+            Break(loc.clone().add(-1, 0, 0), limit - 1);
+            Break(loc.clone().add(0, -1, 0), limit - 1);
+            Break(loc.clone().add(0, 0, -1), limit - 1);
             return true;
         }
 
@@ -86,21 +86,24 @@ public class ProjectileHitListener implements Listener {
     private void RicochetEvent(ProjectileHitEvent event) {
         Projectile proj = event.getEntity();
 
-        Player shooter = ((Player) Objects.requireNonNull(proj.getShooter())).getPlayer();
-        if(shooter == null) return;
 
-        String ability = AbilityManager.getAbilityId(shooter);
-        if(ability == null) return;
-        if (!ability.equals("ricochet")) return;
+        Block hitBlock = event.getHitBlock();
+        if (hitBlock == null) return;
+        if (hitBlock.getType() != Material.SLIME_BLOCK) {
+            Player shooter = ((Player) Objects.requireNonNull(proj.getShooter())).getPlayer();
+            if (shooter == null) return;
+
+            String ability = AbilityManager.getAbilityId(shooter);
+            if (ability == null || !ability.equals("ricochet")) return;
+
+        }
 
         if (!(proj instanceof AbstractArrow)) return;
 
-        if (event.getHitBlock() == null) return;
 
         Vector v = event.getEntity().getVelocity();
         if (v.length() < 0.1 & proj.isInWater()) return;
 
-        Block hitBlock = event.getHitBlock();
 
         boolean crit = NBT.get(proj, nbt -> (boolean) nbt.getBoolean("crit"));
 
