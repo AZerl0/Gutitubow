@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.listener;
 
 
 import com.azerl0.gutitubow.ability.AbilityManager;
+import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
 import de.tr7zw.nbtapi.NBT;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -55,11 +56,7 @@ public class ProjectileHitListener implements Listener {
             Block block = loc.getBlock();
             Material type = block.getType();
 
-            if (!(type == Material.GLASS
-                    || type == Material.TINTED_GLASS
-                    || type.name().endsWith("_STAINED_GLASS")
-                    || type.name().endsWith("_STAINED_GLASS_PANE")
-                    || type == Material.GLASS_PANE)) return false;
+            if (GutitubowBlockTags.GUTITUBOW_ARROW_BREAKABLE.contains(type)) return
 
 
             block.breakNaturally(true);
