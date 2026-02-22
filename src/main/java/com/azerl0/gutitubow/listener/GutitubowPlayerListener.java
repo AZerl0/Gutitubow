@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
     import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,6 +18,10 @@ public class GutitubowPlayerListener implements Listener {
         Entity tar = event.getHitEntity();
 
         if (shooter == null || tar == null) return;
+
+        if (shooter == tar) return;
+        if (tar instanceof Enderman) return;
+
         double distance = shooter.getLocation().distance(tar.getLocation());
 
         Component message =
