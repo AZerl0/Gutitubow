@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow;
 
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.azerl0.gutitubow.listener.ProjectileHitListener;
 import com.azerl0.gutitubow.ability.*;
@@ -14,18 +15,15 @@ public final class Gutitubow extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
-        getServer().getPluginManager().registerEvents(new ProjectileHitListener(this), this);
 
         // Ability登録
         AbilityRegistry.register(new RicochetAbility());
         AbilityRegistry.register(new BombAbility());
 
         // Listener登録
-        getServer().getPluginManager().registerEvents(
-                new BowListener(),
-                this
-        );
+        PluginManager pm = getServer().getPluginManager();
+        pm.registerEvents(new ProjectileHitListener(this), this);
+        pm.registerEvents(new BowListener(), this);
 
         // Command登録
         getCommand("ability").setExecutor(
