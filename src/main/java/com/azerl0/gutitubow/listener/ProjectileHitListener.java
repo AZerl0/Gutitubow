@@ -80,13 +80,15 @@ public class ProjectileHitListener implements Listener {
 
         Block hitBlock = event.getHitBlock();
         if (hitBlock == null) return;
-        if (hitBlock.getType() != Material.SLIME_BLOCK) {
-            Player shooter = ((Player) Objects.requireNonNull(proj.getShooter())).getPlayer();
-            if (shooter == null) return;
+        Player shooter = ((Player) Objects.requireNonNull(proj.getShooter())).getPlayer();
+        if (shooter == null) return;
 
-            String ability = AbilityManager.getAbilityId(shooter);
+        String ability = AbilityManager.getAbilityId(shooter);
+        if (hitBlock.getType() == Material.SLIME_BLOCK) {
+            if (ability != null && ability.equals("control")) return;
+
+        } else {
             if (ability == null || !ability.equals("ricochet")) return;
-
         }
 
         if (!(proj instanceof AbstractArrow)) return;
