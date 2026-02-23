@@ -40,8 +40,7 @@ public class BombAbility implements Ability {
                 if (!(arrow.getShooter() instanceof Player shooter)) continue;
                 if (!shooter.getUniqueId().equals(event.getPlayer().getUniqueId())) continue;
 
-                Location loc = arrow.getLocation();
-                loc = loc.add(-0.25,0,0);
+                Location loc = arrow.getLocation().add(0, -0.2, 0);
 
 
                 double radius = 3;
