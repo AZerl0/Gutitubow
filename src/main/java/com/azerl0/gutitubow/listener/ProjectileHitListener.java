@@ -2,9 +2,8 @@ package com.azerl0.gutitubow.listener;
 
 
 import com.azerl0.gutitubow.ability.AbilityManager;
-import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
+import com.azerl0.gutitubow.manager.GlassBreakManager;
 import de.tr7zw.nbtapi.NBT;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.entity.*;
@@ -23,9 +22,11 @@ import java.util.Objects;
 public class ProjectileHitListener implements Listener {
 
     private final JavaPlugin plugin;
+    private final GlassBreakManager breakManager;
 
     public ProjectileHitListener(JavaPlugin plugin) {
         this.plugin = plugin;
+        this.breakManager = new GlassBreakManager();
     }
 
     @EventHandler
@@ -36,43 +37,16 @@ public class ProjectileHitListener implements Listener {
         RicochetEvent(event);
 
         if (block != null && event.getEntity() instanceof Arrow) {
-            Location hitBlockLoc = block.getLocation();
 
-            if (GlassBreakEvent.Break(hitBlockLoc, 64)) {
-                Bukkit.getScheduler().runTask(plugin, () -> {
-
-                    NBT.modify(event.getEntity(), nbt -> {
-                        nbt.setBoolean("inGround", false);
-                    });
-                });
+            if (breakManager.breakConnectedGlass(block, 64)) {
+                Bukkit.getScheduler().runTask(plugin, () -> NBT.modify(event.getEntity(), nbt -> {
+                    nbt.setBoolean("inGround", false);
+                }));
             }
         }
 
     }
 
-    private static class GlassBreakEvent {
-
-        static private boolean Break(Location loc, Integer limit) {
-            Block block = loc.getBlock();
-            Material type = block.getType();
-
-            if (!GutitubowBlockTags.BREAKABLE_BY_GUTITUBOW_ARROW.contains(type)) return false;
-
-
-            block.breakNaturally(true);
-
-            if (limit <= 0) return true;
-
-            Break(loc.clone().add(1, 0, 0), limit - 1);
-            Break(loc.clone().add(0, 1, 0), limit - 1);
-            Break(loc.clone().add(0, 0, 1), limit - 1);
-            Break(loc.clone().add(-1, 0, 0), limit - 1);
-            Break(loc.clone().add(0, -1, 0), limit - 1);
-            Break(loc.clone().add(0, 0, -1), limit - 1);
-            return true;
-        }
-
-    }
 
     private void RicochetEvent(ProjectileHitEvent event) {
         Projectile proj = event.getEntity();
