@@ -60,7 +60,12 @@ public class BombAbility implements Ability {
                 }
                 arrow.getWorld().spawnParticle(
                         Particle.EXPLOSION,
-                        arrow.getLocation(), 1);
+                        arrow.getLocation(),
+                        1,
+                        0,0,0,
+                        0,
+                        null,
+                        true);
 
                 arrow.remove();
             }
