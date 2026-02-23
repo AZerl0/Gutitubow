@@ -135,18 +135,19 @@ public class ControlAbility implements Ability {
                 arrow.getPersistentDataContainer().set(collectingKey, PersistentDataType.BOOLEAN, true);
 
                 arrow.setVelocity(newVelocity);
+                //            https://bugs.mojang.com/browse/MC-112474
+                double x = -newVelocity.getX();
+                double y = -newVelocity.getY();
+                double z = newVelocity.getZ();
+
+                float yaw = (float) Math.toDegrees(Math.atan2(-x, z));
+                float pitch = (float) Math.toDegrees(Math.atan2(-y, Math.sqrt(x * x + z * z)));
+
+                arrow.setRotation(yaw, pitch);
+
                 NBT.modify(arrow, nbt -> {
                     nbt.setBoolean("inGround", false);
 
-                    //            https://bugs.mojang.com/browse/MC-112474
-                    double x = -newVelocity.getX();
-                    double y = -newVelocity.getY();
-                    double z = newVelocity.getZ();
-
-                    float yaw = (float) Math.toDegrees(Math.atan2(-x, z));
-                    float pitch = (float) Math.toDegrees(Math.atan2(-y, Math.sqrt(x * x + z * z)));
-
-                    arrow.setRotation(yaw, pitch);
                 });
             }
         }
