@@ -1,7 +1,6 @@
 package com.azerl0.gutitubow.ability.abilities;
 
 import com.azerl0.gutitubow.ability.Ability;
-import de.tr7zw.nbtapi.NBT;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -29,10 +28,7 @@ public class BombAbility implements Ability {
     }
 
     public void onArrowLaunch(EntityShootBowEvent event) {
-
-        NBT.modify(event.getProjectile(), nbt -> {
-            nbt.setBoolean("Glowing", true);
-        });
+        event.getProjectile().setGlowing(true);
     }
 
 
