@@ -1,10 +1,6 @@
 package com.azerl0.gutitubow.listener;
 
 import com.azerl0.gutitubow.manager.LogManager;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
