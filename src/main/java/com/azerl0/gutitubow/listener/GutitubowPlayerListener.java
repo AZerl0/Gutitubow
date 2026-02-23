@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.listener;
 
 import com.azerl0.gutitubow.manager.LogManager;
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
@@ -14,6 +15,7 @@ public class GutitubowPlayerListener implements Listener {
         Entity shooter = (Entity) event.getEntity().getShooter();
         Entity tar = event.getHitEntity();
 
+        if (!(event.getEntity() instanceof AbstractArrow)) return;
         if (shooter == null || tar == null) return;
 
         if (shooter == tar) return;
