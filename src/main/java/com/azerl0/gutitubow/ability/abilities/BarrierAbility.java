@@ -65,7 +65,7 @@ public class BarrierAbility implements Ability {
 
         if (blockResult != null && blockResult.getHitBlock() != null) {
             double dirY = player.getLocation().getDirection().getY();
-            return blockResult.getHitBlock().getLocation().add(0, (dirY > 0.3 || dirY < -0.4 ? 2 : 0), 0);
+            return blockResult.getHitBlock().getLocation().add(0, (dirY > 0.3 || dirY < -0.25 ? 2 : 0), 0);
         }
         return player.getEyeLocation()
                 .add(player.getEyeLocation().getDirection().multiply(maxDistance));
