@@ -38,7 +38,14 @@ public class ControlAbility implements Ability {
     }
 
     public void onArrowLaunch(EntityShootBowEvent event) {
-        event.getProjectile().setGlowing(true);
+        Arrow arrow = (Arrow) event.getProjectile();
+        arrow.setGlowing(true);
+        arrow.setGravity(false);
+
+        NBT.modify(arrow, nbt -> {
+            nbt.setBoolean("crit", false);
+        });
+
         startControl(event);
     }
 
@@ -63,13 +70,14 @@ public class ControlAbility implements Ability {
     }
 
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
-        Collect(event);
+        int cooldown = event.getPlayer().getCooldown(event.getPlayer().getInventory().getItemInMainHand());
+        if (cooldown != 0) return;
+        Collect(event.getPlayer());
     }
 
     private void startControl(EntityShootBowEvent event) {
 
         Arrow arrow = (Arrow) event.getProjectile();
-        arrow.setGravity(false);
 
         arrow.getPersistentDataContainer().set(controllingKey, PersistentDataType.BOOLEAN, true);
 
@@ -106,10 +114,10 @@ public class ControlAbility implements Ability {
         }.runTaskTimer(plugin, 0L, 1L); // 1tickごと
     }
 
-    private void Collect(PlayerInteractEvent event) {
+    private void Collect(Player player) {
 
-        Player player = event.getPlayer();
 
+        player.setCooldown(player.getInventory().getItemInMainHand(), 20);
         Title title = Title.title(
                 Component.empty(),
                 Component.text("周囲の矢を回収します").color(NamedTextColor.LIGHT_PURPLE),
@@ -127,9 +135,10 @@ public class ControlAbility implements Ability {
             for (Arrow arrow : world.getEntitiesByClass(Arrow.class)) {
 
                 if (!(arrow.getShooter() instanceof Player shooter)) continue;
-                if (!shooter.getUniqueId().equals(event.getPlayer().getUniqueId())) continue;
+                if (!shooter.getUniqueId().equals(player.getUniqueId())) continue;
 
-                Vector newVelocity = shooter.getLocation().toVector().subtract(arrow.getLocation().toVector()).normalize().multiply(3);
+                Location returnLocaton = shooter.getLocation().toVector().midpoint(shooter.getEyeLocation().toVector()).toLocation(player.getWorld());
+                Vector newVelocity = returnLocaton.toVector().subtract(arrow.getLocation().toVector()).normalize().multiply(3);
 
                 arrow.getPersistentDataContainer().set(controllingKey, PersistentDataType.BOOLEAN, false);
                 arrow.getPersistentDataContainer().set(collectingKey, PersistentDataType.BOOLEAN, true);
