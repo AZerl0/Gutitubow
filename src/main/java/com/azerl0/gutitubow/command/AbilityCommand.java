@@ -4,15 +4,20 @@ import com.azerl0.gutitubow.ability.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 public class AbilityCommand implements CommandExecutor, TabExecutor {
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public boolean onCommand(
+            @NotNull CommandSender sender,
+            @NotNull Command cmd,
+            @NotNull String label,
+            String[] args
+    ) {
 
         if (!(sender instanceof Player player)) return true;
 
@@ -96,9 +101,9 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
 
     @Override
     public List<String> onTabComplete(
-            CommandSender sender,
-            Command command,
-            String alias,
+            @NotNull CommandSender sender,
+            @NotNull Command command,
+            @NotNull String alias,
             String[] args
     ) {
         if (args.length == 1) {
