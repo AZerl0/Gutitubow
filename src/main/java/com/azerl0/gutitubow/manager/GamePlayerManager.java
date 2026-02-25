@@ -1,9 +1,7 @@
 package com.azerl0.gutitubow.manager;
 
-import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class GamePlayerManager {
