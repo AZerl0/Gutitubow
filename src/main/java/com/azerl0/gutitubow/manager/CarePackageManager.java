@@ -62,10 +62,10 @@ public class CarePackageManager {
             return Bukkit.getServer().getEntity(this.uuid);
         }
 
-        public void onMove(CarePackage carePackage) {
-            Entity entity = carePackage.getCoreEntity();
+        public void onMove() {
+            Entity entity = this.getCoreEntity();
             if (entity == null) return;
-            boolean isFalling = Boolean.TRUE.equals(entity.getPersistentDataContainer().get(isFallingKey, PersistentDataType.BOOLEAN));
+            boolean isFalling = entity.getPersistentDataContainer().getOrDefault(isFallingKey, PersistentDataType.BOOLEAN, true);
             if (isFalling) {
                 if (entity.isOnGround()) {
                     this.onLand();
@@ -89,11 +89,7 @@ public class CarePackageManager {
             int fallingTick = this.getFallingTick();
             this.setFallingTick(fallingTick + 1);
             if (fallingTick % 60 == 0) {
-                Firework firework = coreEntity.getWorld().spawn(coreEntity.getLocation(), Firework.class);
-                FireworkMeta meta = firework.getFireworkMeta();
-                meta.addEffect(FireworkEffect.builder().withColor(Color.AQUA).with(FireworkEffect.Type.BALL_LARGE).build());
-                meta.setPower(0);
-                firework.setFireworkMeta(meta);
+                spawnFirework();
             }
         }
 
@@ -102,6 +98,18 @@ public class CarePackageManager {
             Entity coreEntity = this.getCoreEntity();
             if (coreEntity == null) return;
             spawnPoofParticle();
+            spawnFirework();
+
+        }
+
+        private void spawnFirework() {
+            Entity coreEntity = this.getCoreEntity();
+            if (coreEntity == null) return;
+            Firework firework = coreEntity.getWorld().spawn(coreEntity.getLocation(), Firework.class);
+            FireworkMeta meta = firework.getFireworkMeta();
+            meta.addEffect(FireworkEffect.builder().withColor(Color.AQUA).with(FireworkEffect.Type.BALL_LARGE).build());
+            meta.setPower(0);
+            firework.setFireworkMeta(meta);
 
         }
 
@@ -114,7 +122,7 @@ public class CarePackageManager {
 
             for (int i = 0  ; i < 15; i++) {
                 double x = Math.random() * 2 - 1;
-                double y = Math.random() * 2 - 1;
+                double y = Math.random();
                 double z = Math.random() * 2 - 1;
                 Vector dir = new Vector(x, y, z).normalize().multiply(0.5);
 
@@ -207,7 +215,7 @@ public class CarePackageManager {
             Random random = new Random();
             double randomX = random.nextDouble(-randomRadius, randomRadius);
             double randomY = random.nextDouble(-randomRadius, randomRadius);
-            world.spawn(location.clone().add(randomX, 3.5, randomY), Chicken.class, (Chicken c) -> {
+            world.spawn(location.clone().add(randomX, 4.5, randomY), Chicken.class, (Chicken c) -> {
                 Objects.requireNonNull(c.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0);
                 c.setLeashHolder(armorStand);
                 c.addScoreboardTag("gutitubow.carePackageEntity");
@@ -216,6 +224,8 @@ public class CarePackageManager {
 
             });
         }
+        CarePackage carePackage = new CarePackage(armorStand.getUniqueId());
+        carePackage.onMove();
     }
 
     public CarePackage getCarePackage(UUID uuid) {
