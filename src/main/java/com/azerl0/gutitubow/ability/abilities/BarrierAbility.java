@@ -26,6 +26,9 @@ public class BarrierAbility implements Ability {
 
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
 
+        int cooldown = event.getPlayer().getCooldown(Material.COMPASS);
+        if (cooldown != 0) return;
+
         Location baseLoc = getBaseLocation(event.getPlayer(), 5);
 
         //Up
@@ -42,6 +45,7 @@ public class BarrierAbility implements Ability {
         fiLLGlass(baseLoc.clone().add(1, -2, 1), baseLoc.clone().add(-1, -2, -1));
 
         baseLoc.getWorld().playSound(baseLoc, Sound.BLOCK_ANVIL_PLACE, 1.0f, 2.0f);
+        event.getPlayer().setCooldown(Material.COMPASS, 100);
 
     }
 
@@ -65,7 +69,8 @@ public class BarrierAbility implements Ability {
 
         if (blockResult != null && blockResult.getHitBlock() != null) {
             double dirY = player.getLocation().getDirection().getY();
-            return blockResult.getHitBlock().getLocation().add(0, (dirY > 0.3 || dirY < -0.25 ? 2 : 0), 0);
+            double offsetY = (dirY > 0.3 ? 2 : 0);
+            return blockResult.getHitBlock().getLocation().add(0, offsetY, 0);
         }
         return player.getEyeLocation()
                 .add(player.getEyeLocation().getDirection().multiply(maxDistance));
