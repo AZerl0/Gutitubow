@@ -24,7 +24,7 @@ public class EntityListener implements Listener {
 
             if (CarePackageManager.isCarePackageEntity(entity)) {
                 CarePackageManager.CarePackage carePackage = carePackageManager.getCarePackage(entity.getUniqueId());
-                carePackage.onMove(carePackage);
+                carePackage.onMove();
             }
         }
 
