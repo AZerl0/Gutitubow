@@ -2,10 +2,11 @@ package com.azerl0.gutitubow.ability.abilities;
 
 
 import com.azerl0.gutitubow.ability.Ability;
+import com.azerl0.gutitubow.util.ArrowUtil;
 import de.tr7zw.nbtapi.NBT;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
-import org.bukkit.*;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
@@ -15,6 +16,11 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.Sound;
 import org.jetbrains.annotations.NotNull;
 import net.kyori.adventure.text.Component;
 
@@ -144,15 +150,7 @@ public class ControlAbility implements Ability {
                 arrow.getPersistentDataContainer().set(collectingKey, PersistentDataType.BOOLEAN, true);
 
                 arrow.setVelocity(newVelocity);
-                //            https://bugs.mojang.com/browse/MC-112474
-                double x = -newVelocity.getX();
-                double y = -newVelocity.getY();
-                double z = newVelocity.getZ();
-
-                float yaw = (float) Math.toDegrees(Math.atan2(-x, z));
-                float pitch = (float) Math.toDegrees(Math.atan2(-y, Math.sqrt(x * x + z * z)));
-
-                arrow.setRotation(yaw, pitch);
+                ArrowUtil.setFixRotation(arrow, newVelocity);
 
                 NBT.modify(arrow, nbt -> {
                     nbt.setBoolean("inGround", false);

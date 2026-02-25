@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.listener;
 
 import com.azerl0.gutitubow.ability.AbilityManager;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
+import com.azerl0.gutitubow.util.ArrowUtil;
 import de.tr7zw.nbtapi.NBT;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -108,17 +109,7 @@ public class ProjectileHitListener implements Listener {
                 nbt.setBoolean("crit", crit);
             });
 
-
-//            https://bugs.mojang.com/browse/MC-112474
-            double x = -newVelocity.getX();
-            double y = -newVelocity.getY();
-            double z = newVelocity.getZ();
-
-            float yaw = (float) Math.toDegrees(Math.atan2(-x, z));
-            float pitch = (float) Math.toDegrees(Math.atan2(-y, Math.sqrt(x * x + z * z)));
-
-            proj.setRotation(yaw, pitch);
-
+            ArrowUtil.setFixRotation((AbstractArrow) proj, newVelocity);
         });
     }
 
