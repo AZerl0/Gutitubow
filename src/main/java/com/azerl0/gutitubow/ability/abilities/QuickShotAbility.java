@@ -38,7 +38,7 @@ public class QuickShotAbility implements Ability {
         arrow.setVelocity(velocity);
         ArrowUtil.setFixRotation(arrow, velocity);
 
-        player.getWorld().spawnParticle(Particle.SWEEP_ATTACK, player.getLocation(), 1);
+        player.getWorld().spawnParticle(Particle.SWEEP_ATTACK, player.getEyeLocation().add(player.getLocation().getDirection().normalize().multiply(1)), 1);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1, 1);
     }
 }
