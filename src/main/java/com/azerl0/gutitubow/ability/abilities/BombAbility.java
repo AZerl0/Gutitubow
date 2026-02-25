@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.ability.abilities;
 
 import com.azerl0.gutitubow.ability.Ability;
+import com.azerl0.gutitubow.ability.AbilityContext;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -11,15 +12,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
 public class BombAbility implements Ability {
-
-    private final JavaPlugin plugin;
-
-    public BombAbility(JavaPlugin plugin) {
-        this.plugin = plugin;
+    private final AbilityContext context;
+    public BombAbility(AbilityContext context) {
+        this.context = context;
     }
 
     @Override
@@ -53,7 +51,6 @@ public class BombAbility implements Ability {
                                 .normalize()
                                 .multiply(1.3);
 
-//                        knockback.setY(0.6);
                         living.setVelocity(knockback);
 
                     }

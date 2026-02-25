@@ -1,6 +1,6 @@
 package com.azerl0.gutitubow.listener;
 
-import com.azerl0.gutitubow.manager.LogManager;
+import com.azerl0.gutitubow.manager.GamePlayerManager;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
@@ -8,7 +8,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
-public class GutitubowPlayerListener implements Listener {
+public class GamePlayerListener implements Listener {
+    private final GamePlayerManager gamePlayerManager;
+
+    public GamePlayerListener(GamePlayerManager gamePlayerManager) {
+        this.gamePlayerManager = gamePlayerManager;
+    }
+
 
     @EventHandler
     public void onArrowHit(ProjectileHitEvent event) {
@@ -23,7 +29,8 @@ public class GutitubowPlayerListener implements Listener {
 
         double distance = shooter.getLocation().distance(tar.getLocation());
 
-        LogManager.broadcastHitLog(shooter, tar, distance);
+        GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(tar);
+        gamePlayer.damage(1, shooter, distance);
 
 
     }

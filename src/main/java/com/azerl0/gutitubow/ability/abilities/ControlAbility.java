@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.ability.abilities;
 
 
 import com.azerl0.gutitubow.ability.Ability;
+import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import de.tr7zw.nbtapi.NBT;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -13,7 +14,6 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.bukkit.Location;
@@ -27,15 +27,14 @@ import net.kyori.adventure.text.Component;
 import java.awt.*;
 
 public class ControlAbility implements Ability {
-
-    private final JavaPlugin plugin;
+    private final AbilityContext context;
     private final NamespacedKey controllingKey;
     private final NamespacedKey collectingKey;
 
-    public ControlAbility(JavaPlugin plugin) {
-        this.plugin = plugin;
-        this.controllingKey = new NamespacedKey(plugin, "controlling");
-        this.collectingKey = new NamespacedKey(plugin, "collecting");
+    public ControlAbility(AbilityContext context) {
+        this.context = context;
+        this.controllingKey = new NamespacedKey(context.plugin(), "controlling");
+        this.collectingKey = new NamespacedKey(context.plugin(), "collecting");
     }
 
     @Override
@@ -117,7 +116,7 @@ public class ControlAbility implements Ability {
 
             }
 
-        }.runTaskTimer(plugin, 0L, 1L); // 1tickごと
+        }.runTaskTimer(context.plugin(), 0L, 1L); // 1tickごと
     }
 
     private void Collect(Player player) {

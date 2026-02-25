@@ -1,29 +1,34 @@
 package com.azerl0.gutitubow.ability.abilities;
 
 import com.azerl0.gutitubow.ability.Ability;
+import com.azerl0.gutitubow.ability.AbilityContext;
+import com.azerl0.gutitubow.manager.GamePlayerManager;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.FluidCollisionMode;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.AbstractArrow;
-import com.azerl0.gutitubow.manager.LogManager;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
 public class SnipeAbility implements Ability {
 
-    private final JavaPlugin plugin;
+    private final AbilityContext context;
     private final GlassBreakManager breakManager;
 
-    public SnipeAbility(JavaPlugin plugin) {
-        this.plugin = plugin;
+    public SnipeAbility(AbilityContext context) {
+        this.context = context;
         this.breakManager = new GlassBreakManager();
     }
 
@@ -74,8 +79,8 @@ public class SnipeAbility implements Ability {
                 double distance = entityHit.getHitEntity().getLocation().distance(player.getLocation());
 
                 if (distance > 36.0) {
-                    ((LivingEntity) entityHit.getHitEntity()).damage(1, arrow);
-                    LogManager.broadcastHitLog(entityHit.getHitEntity(), player, distance);
+                    GamePlayerManager.GamePlayer gamePlayer = context.gamePlayerManager().getGamePlayer(entityHit.getHitEntity());
+                    gamePlayer.damage(1, player, distance);
 
                 } else {
                     Component message =
@@ -114,13 +119,13 @@ public class SnipeAbility implements Ability {
                 true
         );
 
-        if (blockHit == null || blockHit.getHitBlock() == null ) return null;
+        if (blockHit == null || blockHit.getHitBlock() == null) return null;
         Block block = blockHit.getHitBlock();
         if (GutitubowBlockTags.BREAKABLE_BY_GUTITUBOW_ARROW.contains(block.getType())) {
             this.breakManager.breakConnectedGlass(block, 64);
             Location hitLocation = blockHit.getHitPosition().toLocation(world);
             double distance = location.distance(hitLocation);
-            return  __RayTraceSnipe(world, hitLocation, dir, maxDistance - distance);
+            return __RayTraceSnipe(world, hitLocation, dir, maxDistance - distance);
 
         } else {
             return blockHit;

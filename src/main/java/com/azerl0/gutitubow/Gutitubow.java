@@ -3,6 +3,7 @@ package com.azerl0.gutitubow;
 import com.azerl0.gutitubow.command.CarePackageCommand;
 import com.azerl0.gutitubow.listener.EntityListener;
 import com.azerl0.gutitubow.manager.CarePackageManager;
+import com.azerl0.gutitubow.manager.GamePlayerManager;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -11,27 +12,30 @@ import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.ability.abilities.*;
 import com.azerl0.gutitubow.command.AbilityCommand;
 import com.azerl0.gutitubow.listener.BowListener;
-import com.azerl0.gutitubow.listener.GutitubowPlayerListener;
+import com.azerl0.gutitubow.listener.GamePlayerListener;
 
 public final class Gutitubow extends JavaPlugin {
     @Override
     public void onEnable() {
 
+        // Managers
         CarePackageManager cpm = new CarePackageManager(this);
+        GamePlayerManager gamePlayerManager = new GamePlayerManager(this);
 
         // Ability登録
-        AbilityRegistry.register(new RicochetAbility(this));
-        AbilityRegistry.register(new BombAbility(this));
-        AbilityRegistry.register(new ControlAbility(this));
-        AbilityRegistry.register(new BarrierAbility(this));
-        AbilityRegistry.register(new SnipeAbility(this));
-        AbilityRegistry.register(new QuickShotAbility(this));
+        AbilityContext abilityContext = new AbilityContext(this, gamePlayerManager);
+        AbilityRegistry.register(new RicochetAbility(abilityContext));
+        AbilityRegistry.register(new BombAbility(abilityContext));
+        AbilityRegistry.register(new ControlAbility(abilityContext));
+        AbilityRegistry.register(new BarrierAbility(abilityContext));
+        AbilityRegistry.register(new SnipeAbility(abilityContext));
+        AbilityRegistry.register(new QuickShotAbility(abilityContext));
 
         // Listener登録
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new ProjectileHitListener(this), this);
         pm.registerEvents(new BowListener(), this);
-        pm.registerEvents(new GutitubowPlayerListener(), this);
+        pm.registerEvents(new GamePlayerListener(gamePlayerManager), this);
         pm.registerEvents(new EntityListener(cpm), this);
 
         // Command登録
