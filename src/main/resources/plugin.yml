@@ -9,3 +9,9 @@ commands:
     description: Ability command
     usage: /ability
     permission: gutitubow.ability
+
+  carepackage:
+    description: Care package command
+    usage: /carepackage
+    permission: gutitubow.carepackage
+    aliases: [cpack, care]
