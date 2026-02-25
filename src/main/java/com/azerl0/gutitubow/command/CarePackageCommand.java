@@ -47,7 +47,7 @@ public class CarePackageCommand implements CommandExecutor, TabExecutor {
             @NotNull String label,
             @NotNull String @NotNull [] args
     ) {
-        if (args.length == 0) {
+        if (args.length == 1) {
             return List.of("spawn");
         }
         return List.of();
