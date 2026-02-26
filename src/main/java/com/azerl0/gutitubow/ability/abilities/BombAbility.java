@@ -2,6 +2,8 @@ package com.azerl0.gutitubow.ability.abilities;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
+import com.azerl0.gutitubow.manager.GamePlayerManager;
+import com.azerl0.gutitubow.util.EntityUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -41,15 +43,27 @@ public class BombAbility implements Ability {
                 Location loc = arrow.getLocation().add(0, -0.2, 0);
 
 
-                double radius = 3;
+                double damageRadius = 2;
+                for (Entity entity : world.getNearbyEntities(loc, damageRadius, damageRadius, damageRadius)) {
+                    if (entity instanceof LivingEntity damageEntity) {
 
-                for (Entity entity : world.getNearbyEntities(loc, radius, radius, radius)) {
+                        GamePlayerManager gamePlayerManager = context.gamePlayerManager();
+                        GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(damageEntity);
+
+                        if (!shooter.getUniqueId().equals(damageEntity.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damageEntity)) {
+                            gamePlayer.damage(0.5, event.getPlayer());
+                        }
+                    }
+                }
+
+                double knockbackRadius = 3;
+                for (Entity entity : world.getNearbyEntities(loc, knockbackRadius, knockbackRadius, knockbackRadius)) {
                     if (entity instanceof LivingEntity living) {
 
                         Vector knockback = living.getLocation().toVector()
                                 .subtract(loc.toVector())
                                 .normalize()
-                                .multiply(1.3);
+                                .multiply(1.2);
 
                         living.setVelocity(knockback);
 
