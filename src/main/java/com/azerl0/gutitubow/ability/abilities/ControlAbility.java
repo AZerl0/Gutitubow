@@ -112,7 +112,7 @@ public class ControlAbility implements Ability {
 
             }
 
-        }.runTaskTimer(context.plugin(), 0L, 1L); // 1tickごと
+        }.runTaskTimer(context.plugin(), 0L, 1L);
     }
 
     private void Collect(Player player) {
