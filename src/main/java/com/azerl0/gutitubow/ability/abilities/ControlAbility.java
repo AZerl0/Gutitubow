@@ -7,7 +7,7 @@ import com.azerl0.gutitubow.util.ArrowUtil;
 import de.tr7zw.nbtapi.NBT;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
@@ -16,11 +16,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.Sound;
 import org.jetbrains.annotations.NotNull;
 import net.kyori.adventure.text.Component;
 
@@ -62,6 +57,7 @@ public class ControlAbility implements Ability {
 
         if (event.getHitEntity() == shooter) {
             shooter.sendMessage("Collect!!");
+            event.setCancelled(true);
             event.getEntity().remove();
         }
 
