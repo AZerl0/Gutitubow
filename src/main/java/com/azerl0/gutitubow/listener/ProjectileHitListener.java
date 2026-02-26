@@ -36,7 +36,9 @@ public class ProjectileHitListener implements Listener {
         if (event.isCancelled()) return;
 
         Block block = event.getHitBlock();
-        Player shooter = ((Player) Objects.requireNonNull(event.getEntity().getShooter())).getPlayer();
+        Arrow arrow = (Arrow) event.getEntity();
+        Player shooter = (Player) arrow.getShooter();
+
         if (shooter == null) return;
 
         String ability = AbilityManager.getAbilityId(shooter);

@@ -24,6 +24,8 @@ public class GamePlayerListener implements Listener {
 
     @EventHandler
     public void onArrowHit(ProjectileHitEvent event) {
+        if (event.isCancelled()) return;
+
         Entity shooter = (Entity) event.getEntity().getShooter();
         Entity tar = event.getHitEntity();
 
@@ -31,11 +33,13 @@ public class GamePlayerListener implements Listener {
         if (shooter == null || tar == null) return;
 
         if (shooter == tar) return;
-        if (EntityUtil.isInvaildHitEntity(tar)) return;
+        if (EntityUtil.isInvalidHitEntity(tar)) return;
         double distance = shooter.getLocation().distance(tar.getLocation());
 
         GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(tar);
         gamePlayer.damage(1, shooter, distance);
+        event.setCancelled(true);
+        event.getEntity().remove();
 
     }
 
