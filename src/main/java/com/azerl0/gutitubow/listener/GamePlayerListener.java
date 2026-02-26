@@ -1,8 +1,8 @@
 package com.azerl0.gutitubow.listener;
 
 import com.azerl0.gutitubow.manager.GamePlayerManager;
+import com.azerl0.gutitubow.util.EntityUtil;
 import org.bukkit.entity.AbstractArrow;
-import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,13 +25,11 @@ public class GamePlayerListener implements Listener {
         if (shooter == null || tar == null) return;
 
         if (shooter == tar) return;
-        if (tar instanceof Enderman) return;
-
+        if (EntityUtil.isInvaildHitEntity(tar)) return;
         double distance = shooter.getLocation().distance(tar.getLocation());
 
         GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(tar);
         gamePlayer.damage(1, shooter, distance);
-
 
     }
 }
