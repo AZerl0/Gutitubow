@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.listener;
 
 
 import com.azerl0.gutitubow.ability.AbilityManager;
+import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import de.tr7zw.nbtapi.NBT;
@@ -32,85 +33,38 @@ public class ProjectileHitListener implements Listener {
 
     @EventHandler
     public void onArrowHit(ProjectileHitEvent event) {
+        if (event.isCancelled()) return;
 
         Block block = event.getHitBlock();
-
-        RicochetEvent(event);
-
-        if (block != null && event.getEntity() instanceof Arrow) {
-
-            if (breakManager.breakConnectedGlass(block, 64)) {
-                Bukkit.getScheduler().runTask(plugin, () -> NBT.modify(event.getEntity(), nbt -> {
-                    nbt.setBoolean("inGround", false);
-                }));
-            }
-        }
-
-    }
-
-
-    private void RicochetEvent(ProjectileHitEvent event) {
-        Projectile proj = event.getEntity();
-
-
-        Block hitBlock = event.getHitBlock();
-        if (hitBlock == null) return;
-        Player shooter = ((Player) Objects.requireNonNull(proj.getShooter())).getPlayer();
+        Player shooter = ((Player) Objects.requireNonNull(event.getEntity().getShooter())).getPlayer();
         if (shooter == null) return;
 
         String ability = AbilityManager.getAbilityId(shooter);
-        if (hitBlock.getType() == Material.SLIME_BLOCK) {
-            if (ability != null && ability.equals("control")) return;
 
-        } else {
-            if (ability == null || !ability.equals("ricochet")) return;
+
+        if (block != null && event.getEntity() instanceof Arrow) {
+
+            if (block.getType() == Material.SLIME_BLOCK) {
+                if (!(ability != null && ability.equals("control"))) {
+                    ArrowUtil.RicochetEvent(plugin, event);
+                }
+
+            } else if (GutitubowBlockTags.BREAKABLE_BY_GUTITUBOW_ARROW.contains(block.getType())) {
+                if (breakManager.breakConnectedGlass(block, 64)) {
+
+                    Bukkit.getScheduler().runTask(plugin, () -> NBT.modify(event.getEntity(), nbt -> {
+                        nbt.setBoolean("inGround", false);
+                    }));
+
+                    if (ability != null && ability.equals("control")) {
+                        event.getEntity().remove();
+                    }
+                }
+            }
+
+
         }
 
-        if (!(proj instanceof AbstractArrow)) return;
-
-
-        Vector v = event.getEntity().getVelocity();
-        if (v.length() < 0.1 & proj.isInWater()) return;
-
-
-        boolean crit = NBT.get(proj, nbt -> (boolean) nbt.getBoolean("crit"));
-
-        Vector newVelocity = event.getEntity().getVelocity().clone();
-        BlockFace face = event.getHitBlockFace();
-        switch (Objects.requireNonNull(face)) {
-            case EAST:
-            case WEST:
-                newVelocity.setX(-newVelocity.getX());
-                break;
-            case UP:
-            case DOWN:
-                newVelocity.setY(-newVelocity.getY());
-                break;
-            case NORTH:
-            case SOUTH:
-                newVelocity.setZ(-newVelocity.getZ());
-                break;
-        }
-
-
-        proj.getWorld().spawnParticle(
-                Particle.BLOCK,
-                proj.getLocation(),
-                5,
-                0, 0, 0,
-                0.1,
-                hitBlock.getBlockData());
-
-        Bukkit.getScheduler().runTask(plugin, () -> {
-
-            proj.setVelocity(newVelocity);
-            NBT.modify(proj, nbt -> {
-                nbt.setBoolean("inGround", false);
-                nbt.setBoolean("crit", crit);
-            });
-
-            ArrowUtil.setFixRotation((AbstractArrow) proj, newVelocity);
-        });
     }
 
 }

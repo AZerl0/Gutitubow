@@ -1,7 +1,17 @@
 package com.azerl0.gutitubow.util;
 
+import de.tr7zw.nbtapi.NBT;
+import org.bukkit.Bukkit;
+import org.bukkit.Particle;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.AbstractArrow;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
+
+import java.util.Objects;
 
 public class ArrowUtil {
 
@@ -15,6 +25,59 @@ public class ArrowUtil {
         float pitch = (float) Math.toDegrees(Math.atan2(-y, Math.sqrt(x * x + z * z)));
 
         arrow.setRotation(yaw, pitch);
+    }
 
+    public static void RicochetEvent(JavaPlugin plugin, ProjectileHitEvent event) {
+        Projectile proj = event.getEntity();
+
+
+        Block hitBlock = event.getHitBlock();
+        if (hitBlock == null) return;
+
+        if (!(proj instanceof AbstractArrow)) return;
+
+
+        Vector v = event.getEntity().getVelocity();
+        if (v.length() < 0.1 & proj.isInWater()) return;
+
+
+        boolean crit = NBT.get(proj, nbt -> (boolean) nbt.getBoolean("crit"));
+
+        Vector newVelocity = event.getEntity().getVelocity().clone();
+        BlockFace face = event.getHitBlockFace();
+        switch (Objects.requireNonNull(face)) {
+            case EAST:
+            case WEST:
+                newVelocity.setX(-newVelocity.getX());
+                break;
+            case UP:
+            case DOWN:
+                newVelocity.setY(-newVelocity.getY());
+                break;
+            case NORTH:
+            case SOUTH:
+                newVelocity.setZ(-newVelocity.getZ());
+                break;
+        }
+
+
+        proj.getWorld().spawnParticle(
+                Particle.BLOCK,
+                proj.getLocation(),
+                5,
+                0, 0, 0,
+                0.1,
+                hitBlock.getBlockData());
+
+        Bukkit.getScheduler().runTask(plugin, () -> {
+
+            proj.setVelocity(newVelocity);
+            NBT.modify(proj, nbt -> {
+                nbt.setBoolean("inGround", false);
+                nbt.setBoolean("crit", crit);
+            });
+
+            ArrowUtil.setFixRotation((AbstractArrow) proj, newVelocity);
+        });
     }
 }
