@@ -140,17 +140,23 @@ public class ControlAbility implements Ability {
 
                 Location returnLocaton = shooter.getLocation().toVector().midpoint(shooter.getEyeLocation().toVector()).toLocation(player.getWorld());
                 Vector newVelocity = returnLocaton.toVector().subtract(arrow.getLocation().toVector()).normalize().multiply(3);
+                double distance = arrow.getLocation().distance(returnLocaton);
 
-                arrow.getPersistentDataContainer().set(controllingKey, PersistentDataType.BOOLEAN, false);
-                arrow.getPersistentDataContainer().set(collectingKey, PersistentDataType.BOOLEAN, true);
+                if (distance < 30) {
 
-                arrow.setVelocity(newVelocity);
-                ArrowUtil.setFixRotation(arrow, newVelocity);
+                    arrow.getPersistentDataContainer().set(controllingKey, PersistentDataType.BOOLEAN, false);
+                    arrow.getPersistentDataContainer().set(collectingKey, PersistentDataType.BOOLEAN, true);
 
-                NBT.modify(arrow, nbt -> {
-                    nbt.setBoolean("inGround", false);
+                    arrow.setVelocity(newVelocity);
+                    ArrowUtil.setFixRotation(arrow, newVelocity);
 
-                });
+                    NBT.modify(arrow, nbt -> {
+                        nbt.setBoolean("inGround", false);
+
+                    });
+                } else {
+                    arrow.remove();
+                }
             }
         }
     }
