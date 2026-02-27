@@ -32,7 +32,10 @@ public class GamePlayerListener implements Listener {
         if (!(event.getEntity() instanceof AbstractArrow)) return;
         if (shooter == null || tar == null) return;
 
-        if (shooter == tar) return;
+        if (shooter.getUniqueId().equals(tar.getUniqueId())) {
+            event.setCancelled(true);
+            return;
+        }
         if (EntityUtil.isInvalidHitEntity(tar)) return;
         double distance = shooter.getLocation().distance(tar.getLocation());
 
