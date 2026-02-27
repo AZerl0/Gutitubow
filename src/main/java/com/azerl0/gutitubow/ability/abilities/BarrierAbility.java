@@ -28,7 +28,7 @@ public class BarrierAbility implements Ability {
         int cooldown = event.getPlayer().getCooldown(Material.COMPASS);
         if (cooldown != 0) return;
 
-        Location baseLoc = getBaseLocation(event.getPlayer(), 5);
+        Location baseLoc = getBaseLocation(event.getPlayer());
 
         //Up
         fiLLGlass(baseLoc.clone().add(1, 2, 1), baseLoc.clone().add(-1, 2, -1));
@@ -48,7 +48,8 @@ public class BarrierAbility implements Ability {
 
     }
 
-    private @NotNull Location getBaseLocation(Player player, int maxDistance) {
+    private @NotNull Location getBaseLocation(Player player) {
+        int maxDistance = 5;
 
         RayTraceResult blockResult = player.getWorld().rayTraceBlocks(
                 player.getEyeLocation(),
