@@ -5,6 +5,7 @@ import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.manager.GamePlayerManager;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.EntityUtil;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
@@ -33,9 +34,12 @@ public class RicochetAbility implements Ability {
     }
 
     public void onArrowLaunch(EntityShootBowEvent event) {
-        event.getProjectile().setGlowing(true);
-        setRicochetCount(event.getProjectile(), event.getEntity().isSneaking() ? 5 : 1);
-        setRicochetDamageCount(event.getProjectile(), 0);
+        Arrow arrow = (Arrow) event.getProjectile();
+
+        EntityUtil.setGlow(arrow, NamedTextColor.AQUA);
+        arrow.setGlowing(true);
+        setRicochetCount(arrow, event.getEntity().isSneaking() ? 5 : 1);
+        setRicochetDamageCount(arrow, 0);
     }
 
     @Override

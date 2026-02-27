@@ -4,6 +4,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.util.ArrowUtil;
+import com.azerl0.gutitubow.util.EntityUtil;
 import de.tr7zw.nbtapi.NBT;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -39,6 +40,8 @@ public class ControlAbility implements Ability {
 
     public void onArrowLaunch(EntityShootBowEvent event) {
         Arrow arrow = (Arrow) event.getProjectile();
+
+        EntityUtil.setGlow(arrow, NamedTextColor.DARK_PURPLE);
         arrow.setGlowing(true);
         arrow.setGravity(false);
 

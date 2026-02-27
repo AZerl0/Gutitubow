@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.manager.GamePlayerManager;
 import com.azerl0.gutitubow.util.EntityUtil;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -28,7 +29,9 @@ public class BombAbility implements Ability {
     }
 
     public void onArrowLaunch(EntityShootBowEvent event) {
-        event.getProjectile().setGlowing(true);
+        Arrow arrow = (Arrow) event.getProjectile();
+        EntityUtil.setGlow(arrow, NamedTextColor.RED);
+        arrow.setGlowing(true);
     }
 
 
