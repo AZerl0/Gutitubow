@@ -7,18 +7,14 @@ import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import de.tr7zw.nbtapi.NBT;
 import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Arrow;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.util.Vector;
-
-import java.util.Objects;
 
 
 public class ProjectileHitListener implements Listener {
