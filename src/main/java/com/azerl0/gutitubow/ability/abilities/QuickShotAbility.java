@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.ability.abilities;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
+import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -19,9 +20,8 @@ public class QuickShotAbility implements Ability {
         this.context = context;
     }
 
-    @Override
-    public String getId() {
-        return "quickshot";
+    public final AbilityType getType() {
+        return AbilityType.QUICKSHOT;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.ability.abilities;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
+import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.manager.GamePlayerManager;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.EntityUtil;
@@ -28,9 +29,8 @@ public class RicochetAbility implements Ability {
         this.ricochetDamageCountKey = new NamespacedKey(context.plugin(), "ricochetDamageCount");
     }
 
-    @Override
-    public String getId() {
-        return "ricochet";
+    public final AbilityType getType() {
+        return AbilityType.RICOCHET;
     }
 
     public void onArrowLaunch(EntityShootBowEvent event) {

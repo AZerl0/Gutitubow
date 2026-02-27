@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.ability.abilities;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
+import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.manager.GamePlayerManager;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
 import net.kyori.adventure.text.Component;
@@ -32,9 +33,8 @@ public class SnipeAbility implements Ability {
         this.breakManager = new GlassBreakManager();
     }
 
-    @Override
-    public String getId() {
-        return "snipe";
+    public final AbilityType getType() {
+        return AbilityType.SNIPE;
     }
 
     public void onArrowLaunch(EntityShootBowEvent event) {

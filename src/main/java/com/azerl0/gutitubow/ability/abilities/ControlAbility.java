@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
+import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.EntityUtil;
 import de.tr7zw.nbtapi.NBT;
@@ -33,9 +34,8 @@ public class ControlAbility implements Ability {
         this.collectingKey = new NamespacedKey(context.plugin(), "collecting");
     }
 
-    @Override
-    public String getId() {
-        return "control";
+    public final AbilityType getType() {
+        return AbilityType.CONTROL;
     }
 
     public void onArrowLaunch(EntityShootBowEvent event) {

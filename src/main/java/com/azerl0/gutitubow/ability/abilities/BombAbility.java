@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.ability.abilities;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
+import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.manager.GamePlayerManager;
 import com.azerl0.gutitubow.util.EntityUtil;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -23,9 +24,8 @@ public class BombAbility implements Ability {
         this.context = context;
     }
 
-    @Override
-    public String getId() {
-        return "bomb";
+    public final AbilityType getType() {
+        return AbilityType.BOMB;
     }
 
     public void onArrowLaunch(EntityShootBowEvent event) {

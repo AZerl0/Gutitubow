@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.ability.abilities;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
+import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.util.MathUtil;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import org.bukkit.*;
@@ -38,9 +39,8 @@ public class DashAbility implements Ability {
         this.replacedBlocks = new java.util.HashSet<>();
     }
 
-    @Override
-    public String getId() {
-        return "dash";
+    public final AbilityType getType() {
+        return AbilityType.DASH;
     }
 
     public void onToggleSprint(PlayerToggleSprintEvent event) {

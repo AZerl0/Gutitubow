@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.ability.abilities;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
+import com.azerl0.gutitubow.ability.AbilityType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -18,9 +19,8 @@ public class BarrierAbility implements Ability {
         this.context = context;
     }
 
-    @Override
-    public String getId() {
-        return "barrier";
+    public final AbilityType getType() {
+        return AbilityType.BARRIER;
     }
 
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {

@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 
 public interface Ability {
-    String getId();
+    AbilityType getType();
 
     default void onArrowLaunch(EntityShootBowEvent event) {}
 
