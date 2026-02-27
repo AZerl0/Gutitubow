@@ -76,6 +76,9 @@ public class RicochetAbility implements Ability {
             if (getRicochetDamageCount(arrow) >= 2) {
                 arrow.remove();
             }
+        } else {
+            arrow.setLifetimeTicks(1000);
+            arrow.setGlowing(false);
         }
 
     }

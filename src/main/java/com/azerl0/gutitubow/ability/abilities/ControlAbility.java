@@ -51,7 +51,8 @@ public class ControlAbility implements Ability {
 
     @Override
     public void onArrowHit(ProjectileHitEvent event) {
-        Player shooter = (Player) event.getEntity().getShooter();
+        Arrow arrow = (Arrow) event.getEntity();
+        Player shooter = (Player) arrow.getShooter();
 
         if (shooter == null) return;
 
@@ -62,9 +63,10 @@ public class ControlAbility implements Ability {
         }
 
         if (event.getHitBlock() != null) {
-            Boolean collecting = event.getEntity().getPersistentDataContainer().get(collectingKey, PersistentDataType.BOOLEAN);
+            arrow.setLifetimeTicks(1000);
+            Boolean collecting = arrow.getPersistentDataContainer().get(collectingKey, PersistentDataType.BOOLEAN);
             if (collecting == null) return;
-            if (collecting) event.getEntity().remove();
+            if (collecting) arrow.remove();
         }
 
 
