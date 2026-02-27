@@ -8,6 +8,7 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
@@ -23,12 +24,18 @@ public class QuickShotAbility implements Ability {
         return "quickshot";
     }
 
+    @Override
+    public void onArrowHit(ProjectileHitEvent event) {
+        Player player = (Player) event.getEntity().getShooter();
+        if (player != null && event.getHitEntity() != null) player.setCooldown(Material.BOW, 0);
+    }
+
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         int cooldown = player.getCooldown(Material.BOW);
         if (cooldown != 0) return;
         QuickShot(player);
-        player.setCooldown(Material.BOW, 100);
+        player.setCooldown(Material.BOW, 3 * 20);
     }
 
     private void QuickShot(Player player) {
