@@ -81,9 +81,9 @@ public class GameManager {
 
         public void reset() {
             this.started = false;
-            this.nextTick = this.gamePhase0Ticks;
+            this.nextTick = 11 * 20;
             this.currentTicks = 0;
-            this.phase = 0;
+            this.phase = -1;
             this.isShrinking = false;
             this.players = new java.util.HashSet<>();
             this.bossBar.progress(0.0f);
@@ -96,6 +96,7 @@ public class GameManager {
 
         public void start() {
             this.started = true;
+            Bukkit.getServer().broadcast(Component.text("game start"));
 
             if (task != null && !task.isCancelled()) return;
 
@@ -115,7 +116,7 @@ public class GameManager {
         private void update() {
             this.currentTicks += 1;
 
-            if (this.currentTicks >= this.nextTick && this.phase != 7) phaseUpdate();
+            if (this.currentTicks > this.nextTick && this.phase != 7) phaseUpdate();
 
             this.bossBar.progress((float) (this.phase == 7 ? 0.0 : 1.0 - getProgress()));
 
@@ -142,8 +143,21 @@ public class GameManager {
             // プレイヤーへの処理
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 
-                player.sendActionBar(Component.text(""));
-                player.showBossBar(this.bossBar);
+                if (remainedSeconds <= 10 && this.currentTicks % 20 == 0 && this.phase == -1) {
+                    Title title = Title.title(
+                            Component.text("後").color(NamedTextColor.GOLD)
+                                    .append(Component.text(remainedSeconds).color(NamedTextColor.RED)
+                                    .append(Component.text("秒で始まります").color(NamedTextColor.GOLD))
+                                    ),
+                            Component.empty(),
+                            Title.Times.times(
+                                    java.time.Duration.ofMillis(0),
+                                    java.time.Duration.ofMillis(1100),
+                                    java.time.Duration.ofMillis(0)
+                            )
+                    );
+                    player.showTitle(title);
+                }
 
                 if (remainedSeconds <= 10 && this.currentTicks % 20 == 0 && this.phase != 7) {
                     player.playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
@@ -167,13 +181,22 @@ public class GameManager {
 
         }
 
+        private void init() {
+            this.nextTick = 15 * 20;
+            for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+                player.showBossBar(this.bossBar);
+            }
+        }
+
         private void phaseUpdate() {
-            if (this.isShrinking || this.phase == 0 || this.phase == 6) {
+            if (this.isShrinking || this.phase == -1 || this.phase == 0 || this.phase == 6) {
                 this.phase += 1;
 
+                if (this.phase == 0) init();
                 this.bossBar.color(BossBar.Color.RED);
                 this.isShrinking = false;
-                if (this.phase >= 0 && this.phase <= 5) {
+
+                if (this.phase > 0 && this.phase <= 5) {
                     this.bossBar.color(BossBar.Color.BLUE);
                     this.nextTick = phaseTicks.valueOf("PHASE" + this.phase).getTicks();
                 } else if (this.phase == 6) {
