@@ -15,3 +15,8 @@ commands:
     usage: /carepackage
     permission: gutitubow.carepackage
     aliases: [cpack, care]
+
+  game:
+    description: Gutitubow game command
+    usage: /game
+    permission: gutitubow.game

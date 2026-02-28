@@ -1,8 +1,10 @@
 package com.azerl0.gutitubow;
 
 import com.azerl0.gutitubow.command.CarePackageCommand;
+import com.azerl0.gutitubow.command.GameCommand;
 import com.azerl0.gutitubow.listener.EntityListener;
 import com.azerl0.gutitubow.manager.CarePackageManager;
+import com.azerl0.gutitubow.manager.GameManager;
 import com.azerl0.gutitubow.manager.GamePlayerManager;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -25,6 +27,10 @@ public final class Gutitubow extends JavaPlugin {
         // Managers
         CarePackageManager cpm = new CarePackageManager(this);
         GamePlayerManager gamePlayerManager = new GamePlayerManager(this);
+        GameManager gameManager = new GameManager(this);
+
+        // MainGame
+        GameManager.Game game = gameManager.newGame();
 
         // Ability登録
         AbilityContext abilityContext = new AbilityContext(this, gamePlayerManager);
@@ -46,6 +52,7 @@ public final class Gutitubow extends JavaPlugin {
         // Command登録
         getCommand("ability").setExecutor(new AbilityCommand());
         getCommand("carepackage").setExecutor(new CarePackageCommand(cpm));
+        getCommand("game").setExecutor(new GameCommand(game));
 
         getLogger().info("Loaded abilities: " + AbilityRegistry.getAllIds());
 
