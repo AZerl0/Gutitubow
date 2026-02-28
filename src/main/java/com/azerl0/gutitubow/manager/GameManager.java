@@ -143,7 +143,7 @@ public class GameManager {
             // プレイヤーへの処理
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 
-                if (remainedSeconds <= 10 && this.currentTicks % 20 == 0 && this.phase == -1) {
+                if (remainedSeconds <= 10 && this.currentTicks % 20 == 1 && this.phase == -1) {
                     Title title = Title.title(
                             Component.text("後").color(NamedTextColor.GOLD)
                                     .append(Component.text(remainedSeconds).color(NamedTextColor.RED)
@@ -213,6 +213,7 @@ public class GameManager {
             }
 
             this.currentTicks = 0;
+            this.nextTick += 20;
         }
 
         private void showSubtitle(Player player, Component subtitle) {
