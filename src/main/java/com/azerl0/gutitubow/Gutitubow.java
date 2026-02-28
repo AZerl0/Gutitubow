@@ -21,16 +21,18 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 public final class Gutitubow extends JavaPlugin {
+    // Managers
+    CarePackageManager cpm = new CarePackageManager(this);
+    GamePlayerManager gamePlayerManager = new GamePlayerManager(this);
+    GameManager gameManager = new GameManager(this);
+
+    // MainGame
+    GameManager.Game game = gameManager.newGame();
+
+
     @Override
     public void onEnable() {
 
-        // Managers
-        CarePackageManager cpm = new CarePackageManager(this);
-        GamePlayerManager gamePlayerManager = new GamePlayerManager(this);
-        GameManager gameManager = new GameManager(this);
-
-        // MainGame
-        GameManager.Game game = gameManager.newGame();
 
         // Ability登録
         AbilityContext abilityContext = new AbilityContext(this, gamePlayerManager);
@@ -70,5 +72,7 @@ public final class Gutitubow extends JavaPlugin {
                 team.unregister();
             }
         }
+
+        game.reset();
     }
 }
