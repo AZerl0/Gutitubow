@@ -52,7 +52,7 @@ public class DashAbility implements Ability {
             task = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (!player.isSprinting() || player.isSwimming()) {
+                    if (!player.isSprinting() || player.isSwimming() || player.isFlying() || player.isSneaking()) {
                         stopSprinting(player);
                         this.cancel();
                         return;
