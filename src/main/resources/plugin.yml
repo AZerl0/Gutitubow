@@ -20,3 +20,9 @@ commands:
     description: Gutitubow game command
     usage: /game
     permission: gutitubow.game
+
+  gameplayer:
+    description: Gutitubow game player command
+    usage: /gameplayer
+    permission: gutitubow.gameplayer
+    aliases: [gplayer, gp]

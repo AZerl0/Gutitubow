@@ -1,14 +1,20 @@
 package com.azerl0.gutitubow.manager;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class GamePlayerManager {
-    private JavaPlugin plugin;
+    private final NamespacedKey playerArrowReloadTickKey;
+    private final NamespacedKey playerArrowMaxStackSizeKey;
+    private final NamespacedKey playerTotalHitKey;
 
     public GamePlayerManager(JavaPlugin plugin) {
-        this.plugin = plugin;
+        playerArrowReloadTickKey = new NamespacedKey(plugin, "gameplayer.arrowReloadTick");
+        playerArrowMaxStackSizeKey = new NamespacedKey(plugin, "gameplayer.arrowMaxStackSize");
+        playerTotalHitKey = new NamespacedKey(plugin, "player.totalHIt");
     }
 
     public GamePlayer getGamePlayer(Entity player) {
@@ -16,7 +22,7 @@ public class GamePlayerManager {
     }
 
 
-    public static class GamePlayer {
+    public class GamePlayer {
         private final Entity player;
 
         public GamePlayer(Entity player) {
@@ -41,6 +47,30 @@ public class GamePlayerManager {
 
         public void kill() {
 
+        }
+
+        public  int getTotalHit() {
+            return this.player.getPersistentDataContainer().getOrDefault(playerTotalHitKey, PersistentDataType.INTEGER, 0);
+        }
+
+        public void setTotalHit(int count ) {
+            this.player.getPersistentDataContainer().set(playerTotalHitKey, PersistentDataType.INTEGER, count);
+        }
+
+        public int getArrowReloadTick() {
+            return this.player.getPersistentDataContainer().getOrDefault(playerArrowReloadTickKey, PersistentDataType.INTEGER, 0);
+        }
+
+        public void setArrowReloadTick(int tick) {
+            this.player.getPersistentDataContainer().set(playerArrowReloadTickKey, PersistentDataType.INTEGER, tick);
+        }
+
+        public int getMaxArrowStackSize() {
+            return this.player.getPersistentDataContainer().getOrDefault(playerArrowMaxStackSizeKey, PersistentDataType.INTEGER, 0);
+        }
+
+        public void setMaxArrowStackSize(int size) {
+            this.player.getPersistentDataContainer().set(playerArrowMaxStackSizeKey, PersistentDataType.INTEGER, size);
         }
     }
 }

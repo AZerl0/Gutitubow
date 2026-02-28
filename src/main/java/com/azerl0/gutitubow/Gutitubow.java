@@ -2,6 +2,7 @@ package com.azerl0.gutitubow;
 
 import com.azerl0.gutitubow.command.CarePackageCommand;
 import com.azerl0.gutitubow.command.GameCommand;
+import com.azerl0.gutitubow.command.GamePlayerCommand;
 import com.azerl0.gutitubow.listener.EntityListener;
 import com.azerl0.gutitubow.manager.CarePackageManager;
 import com.azerl0.gutitubow.manager.GameManager;
@@ -55,6 +56,7 @@ public final class Gutitubow extends JavaPlugin {
         getCommand("ability").setExecutor(new AbilityCommand());
         getCommand("carepackage").setExecutor(new CarePackageCommand(cpm));
         getCommand("game").setExecutor(new GameCommand(game));
+        getCommand("gameplayer").setExecutor(new GamePlayerCommand(gamePlayerManager));
 
         getLogger().info("Loaded abilities: " + AbilityRegistry.getAllIds());
 
