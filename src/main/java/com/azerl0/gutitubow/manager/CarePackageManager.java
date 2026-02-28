@@ -1,6 +1,9 @@
 package com.azerl0.gutitubow.manager;
 
+import com.azerl0.gutitubow.data.item.GutitubowItem;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
@@ -28,13 +31,12 @@ public class CarePackageManager {
     public class CarePackage {
 
         private final UUID uuid;
-        private final NamespacedKey isFallingKey;
-        private final NamespacedKey fallingTickKey;
+        private final NamespacedKey isFallingKey = new NamespacedKey(plugin, "carePackage.isFalling");
+        private final NamespacedKey fallingTickKey = new NamespacedKey(plugin, "carePackage.fallingTick");
+        private final NamespacedKey remainedPotionKey = new NamespacedKey(plugin, "carePackage.remainedPotion");
 
         public CarePackage(UUID uniqueId) {
             this.uuid = uniqueId;
-            this.isFallingKey = new NamespacedKey(plugin, "carePackage.isFalling");
-            this.fallingTickKey = new NamespacedKey(plugin, "gutitubow.fallingTick");
         }
 
 
@@ -47,6 +49,33 @@ public class CarePackageManager {
             if (coreEntity == null) return 0;
             PersistentDataContainer pdc = coreEntity.getPersistentDataContainer();
             return pdc.getOrDefault(fallingTickKey, PersistentDataType.INTEGER, 0);
+        }
+
+        private int getRemainedPotion() {
+            Entity coreEntity = this.getCoreEntity();
+            if (coreEntity == null) return 0;
+            return coreEntity.getPersistentDataContainer().getOrDefault(remainedPotionKey, PersistentDataType.INTEGER, 0);
+        }
+
+        private void setRemainedPotion(int count) {
+            Entity coreEntity = this.getCoreEntity();
+            if (coreEntity == null) return;
+
+            coreEntity.getPersistentDataContainer().set(remainedPotionKey, PersistentDataType.INTEGER, count);
+        }
+
+        private void setDisplayName(Component displayName) {
+            Entity coreEntity = this.getCoreEntity();
+            if (coreEntity == null) return;
+            for (Entity entity : coreEntity.getPassengers()) {
+                if (entity instanceof Interaction) {
+                    entity.customName(displayName);
+                }
+            }
+        }
+
+        private Component getRemainedPotionDisplay() {
+            return Component.text("ケアパッケージ[" + this.getRemainedPotion() + "]").color(NamedTextColor.GREEN);
         }
 
         private void setFallingTick(int tick) {
@@ -150,7 +179,16 @@ public class CarePackageManager {
 
         public void onInteract(Player player) {
             player.sendMessage("回復ポーションを入手しました");
-            this.remove();
+
+            player.give(GutitubowItem.RECOVERY_POTION);
+
+            if (this.getRemainedPotion() <= 1) {
+                this.remove();
+                return;
+            }
+
+            this.setRemainedPotion(getRemainedPotion() - 1);
+            setDisplayName(this.getRemainedPotionDisplay());
         }
 
         public void removeBalloonEntities() {
@@ -225,6 +263,8 @@ public class CarePackageManager {
             });
         }
         CarePackage carePackage = new CarePackage(armorStand.getUniqueId());
+        carePackage.setRemainedPotion(3);
+        carePackage.setDisplayName(carePackage.getRemainedPotionDisplay());
         carePackage.onMove();
     }
 
