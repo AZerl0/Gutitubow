@@ -32,12 +32,10 @@ public class GameManager {
         private int phase;
         private boolean isShrinking;
         private Set<Player> players;
-        private final int gamePhase0Ticks;
         private BukkitTask task = null;
         private final BossBar bossBar = BossBar.bossBar(Component.text(""), 0.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
 
         private Game() {
-            this.gamePhase0Ticks = 10 * 20;
             reset();
         }
 
@@ -114,7 +112,7 @@ public class GameManager {
         }
 
         private void update() {
-            this.currentTicks += 1;
+            this.currentTicks++;
 
             if (this.currentTicks > this.nextTick && this.phase != 7) phaseUpdate();
 
