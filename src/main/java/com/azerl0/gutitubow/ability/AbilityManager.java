@@ -21,6 +21,13 @@ public class AbilityManager {
         return AbilityRegistry.get(getAbilityId(player));
     }
 
+    @Nullable
+    static public AbilityType getAbilityType(Player player) {
+        String id = getAbilityId(player);
+        if (id == null) return null;
+        return AbilityType.valueOf(id.toUpperCase());
+    }
+
     static public void setAbility(Player player, String id) {
         playerAbilities.put(player.getUniqueId(), id);
     }

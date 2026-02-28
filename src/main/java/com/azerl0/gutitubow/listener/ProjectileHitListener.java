@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.listener;
 
 
 import com.azerl0.gutitubow.ability.AbilityManager;
+import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.util.ArrowUtil;
@@ -37,13 +38,13 @@ public class ProjectileHitListener implements Listener {
 
         if (shooter == null) return;
 
-        String ability = AbilityManager.getAbilityId(shooter);
+        AbilityType ability = AbilityManager.getAbilityType(shooter);
 
 
         if (block != null && event.getEntity() instanceof Arrow) {
 
             if (block.getType() == Material.SLIME_BLOCK) {
-                if (!(ability != null && ability.equals("control"))) {
+                if (ability != AbilityType.CONTROL) {
                     ArrowUtil.RicochetEvent(plugin, event);
                 }
 
@@ -54,7 +55,7 @@ public class ProjectileHitListener implements Listener {
                         nbt.setBoolean("inGround", false);
                     }));
 
-                    if (ability != null && ability.equals("control")) {
+                    if (ability == AbilityType.CONTROL) {
                         event.getEntity().remove();
                     }
                 }
