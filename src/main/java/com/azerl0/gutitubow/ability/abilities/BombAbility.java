@@ -6,10 +6,7 @@ import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.manager.GamePlayerManager;
 import com.azerl0.gutitubow.util.EntityUtil;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -32,6 +29,7 @@ public class BombAbility implements Ability {
         Arrow arrow = (Arrow) event.getProjectile();
         EntityUtil.setGlow(arrow, NamedTextColor.RED);
         arrow.setGlowing(true);
+        arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_TNT_PRIMED, 1.0f, 1.0f);
     }
 
 
@@ -80,6 +78,8 @@ public class BombAbility implements Ability {
                         0,
                         null,
                         true);
+
+                arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_PUFFER_FISH_STING, 1.0f, 1.0f);
 
                 arrow.remove();
             }
