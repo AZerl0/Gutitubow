@@ -16,10 +16,12 @@ import java.util.Set;
 public class GameManager {
     private final JavaPlugin plugin;
     private final MapManager mapManager;
+    private final DebugManager debugManager;
 
-    public GameManager(JavaPlugin plugin, MapManager mapManager) {
+    public GameManager(JavaPlugin plugin, MapManager mapManager, DebugManager debugManager) {
         this.plugin = plugin;
         this.mapManager = mapManager;
+        this.debugManager = debugManager;
     }
 
     public Game newGame() {
@@ -148,7 +150,7 @@ public class GameManager {
                     Title title = Title.title(
                             Component.text("後").color(NamedTextColor.GOLD)
                                     .append(Component.text(remainedSeconds).color(NamedTextColor.RED)
-                                    .append(Component.text("秒で始まります").color(NamedTextColor.GOLD))
+                                            .append(Component.text("秒で始まります").color(NamedTextColor.GOLD))
                                     ),
                             Component.empty(),
                             Title.Times.times(
@@ -191,8 +193,10 @@ public class GameManager {
 
                 if (this.phase > 0 && this.phase <= 5) {
                     this.bossBar.color(BossBar.Color.BLUE);
-                    this.nextTick = phaseTicks.valueOf("PHASE" + this.phase).getTicks();
-                    this.nextTick = 15 * 20;
+                    if (debugManager.isQuickPhase()) {
+                        this.nextTick = 15 * 20;
+                    } else this.nextTick = phaseTicks.valueOf("PHASE" + this.phase).getTicks();
+
                 } else if (this.phase == 6) {
                     this.nextTick = 15 * 20;
                 }

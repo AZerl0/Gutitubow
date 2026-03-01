@@ -26,3 +26,9 @@ commands:
     usage: /gameplayer
     permission: gutitubow.gameplayer
     aliases: [gplayer, gp]
+
+  gutitubowdebug:
+    description: Gutitubow debug command
+    usage: /gutitubowdebug
+    permission: gutitubow.gutitubowdebug
+    aliases: [gdebug]
