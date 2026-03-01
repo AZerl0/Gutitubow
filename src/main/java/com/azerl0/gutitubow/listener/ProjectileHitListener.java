@@ -8,6 +8,7 @@ import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import de.tr7zw.nbtapi.NBT;
 import org.bukkit.Material;
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Arrow;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,10 +31,10 @@ public class ProjectileHitListener implements Listener {
 
     @EventHandler
     public void onArrowHit(ProjectileHitEvent event) {
+        if (!(event.getEntity() instanceof AbstractArrow arrow)) return;
         if (event.isCancelled()) return;
 
         Block block = event.getHitBlock();
-        Arrow arrow = (Arrow) event.getEntity();
         AbilityType ability = null;
 
         if (arrow.getShooter() instanceof Player shooter) {
