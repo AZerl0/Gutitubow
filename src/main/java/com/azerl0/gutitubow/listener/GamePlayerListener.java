@@ -5,8 +5,11 @@ import com.azerl0.gutitubow.ability.AbilityManager;
 import com.azerl0.gutitubow.manager.GamePlayerManager;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
+import org.bukkit.GameMode;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -42,7 +45,13 @@ public class GamePlayerListener implements Listener {
         double distance = shooter.getLocation().distance(tar.getLocation());
 
         GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(tar);
-        gamePlayer.damage(1, shooter, distance);
+        if (tar instanceof LivingEntity livingTar) {
+            if (livingTar.getHealth() <= 1.0) {
+                gamePlayer.kill(shooter, distance);
+            } else {
+                gamePlayer.damage(1, shooter, distance);
+            }
+        }
 
         gamePlayer = gamePlayerManager.getGamePlayer(shooter);
         gamePlayer.setTotalHit(gamePlayer.getTotalHit() + 1);

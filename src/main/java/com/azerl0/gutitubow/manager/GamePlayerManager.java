@@ -2,11 +2,8 @@ package com.azerl0.gutitubow.manager;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.*;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -57,7 +54,25 @@ public class GamePlayerManager {
         }
 
         public void kill() {
+            World world = this.player.getWorld();
+            Location location = this.player.getLocation();
+            world.spawnParticle(Particle.EXPLOSION_EMITTER, location, 3);
+            world.spawn(location, LightningStrike.class, (LightningStrike c) -> {
+            });
+            if (this.player instanceof Player livingPlayer) {
+                livingPlayer.setGameMode(GameMode.SPECTATOR);
+            }
 
+
+        }
+
+        public void kill(Entity attacker) {
+            this.kill();
+        }
+
+        public void kill(Entity attacker, double distance) {
+            this.kill();
+            LogManager.broadcastKillLog(attacker, this.player, distance);
         }
 
         public int getTotalHit() {
@@ -181,7 +196,7 @@ public class GamePlayerManager {
             Player player = (Player) this.player;
             List<Integer> slots = List.of(8, 7, 6, 5, 4, 3, 2, 1, 0, 35, 34, 33, 32, 31, 30, 29, 28, 27);
 
-            for (Integer slot :  slots) {
+            for (Integer slot : slots) {
                 ItemStack item = player.getInventory().getItem(slot);
                 if (item != null && item.getItemMeta().getPersistentDataContainer().has(gutitubowArrowItemKey)) {
                     return slot;
@@ -195,7 +210,7 @@ public class GamePlayerManager {
             Player player = (Player) this.player;
             List<Integer> slots = List.of(8, 7, 6, 5, 4, 3, 2, 1, 0, 35, 34, 33, 32, 31, 30, 29, 28, 27);
 
-            for (Integer slot :  slots) {
+            for (Integer slot : slots) {
                 ItemStack item = player.getInventory().getItem(slot);
                 if (item == null) {
                     return slot;

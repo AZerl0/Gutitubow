@@ -55,6 +55,51 @@ public class LogManager {
         broadcastHitLog(shooter, ((Entity) target), distance);
     }
 
+    public static void broadcastKillLog(Entity shooter, Entity target, double distance) {
+
+        Component message =
+                Component.text("")
+                        .append(Component.text("[")
+                                .color(NamedTextColor.WHITE)
+                                .decorate(TextDecoration.BOLD)
+                                .append(
+                                        Component.text("KILL")
+                                                .color(NamedTextColor.DARK_RED)
+                                ).append(
+                                        Component.text("] ")
+                                                .color(NamedTextColor.WHITE)
+                                ).append(
+                                        Component.text(getDisplayName(shooter))
+                                                .color(NamedTextColor.WHITE)
+                                                .decoration(TextDecoration.BOLD, false)
+                                ).append(
+                                        Component.text(" ➽ ")
+                                ).append(
+                                        Component.text(getDisplayName(target)).color(NamedTextColor.DARK_RED)
+                                                .decoration(TextDecoration.BOLD, false)
+                                ).append(
+                                        Component.text(" (" + Math.floor(distance * 10) / 10 + "m)")
+                                                .color(NamedTextColor.GRAY)
+                                                .decoration(TextDecoration.BOLD, false)
+                                ));
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.sendMessage(message);
+        }
+
+    }
+    public static void broadcastKillLog(Player shooter, Player target, double distance) {
+        broadcastKillLog(((Entity) shooter), ((Entity) target), distance);
+    }
+
+    public static void broadcastKillLog(Player shooter, Entity target, double distance) {
+        broadcastKillLog(((Entity) shooter), target, distance);
+    }
+
+    public static void broadcastKillLog(Entity shooter, Player target, double distance) {
+        broadcastKillLog(shooter, ((Entity) target), distance);
+    }
+
     private static String getDisplayName(Player player) {
         return player.getName();
     }
