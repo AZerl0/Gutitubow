@@ -34,11 +34,12 @@ public class ProjectileHitListener implements Listener {
 
         Block block = event.getHitBlock();
         Arrow arrow = (Arrow) event.getEntity();
-        Player shooter = (Player) arrow.getShooter();
+        AbilityType ability = null;
 
-        if (shooter == null) return;
+        if (arrow.getShooter() instanceof Player shooter) {
+            ability = AbilityManager.getAbilityType(shooter);
 
-        AbilityType ability = AbilityManager.getAbilityType(shooter);
+        }
 
 
         if (block != null && event.getEntity() instanceof Arrow) {
