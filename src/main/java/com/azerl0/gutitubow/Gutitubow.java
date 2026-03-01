@@ -7,6 +7,7 @@ import com.azerl0.gutitubow.listener.EntityListener;
 import com.azerl0.gutitubow.manager.CarePackageManager;
 import com.azerl0.gutitubow.manager.GameManager;
 import com.azerl0.gutitubow.manager.GamePlayerManager;
+import com.azerl0.gutitubow.manager.MapManager;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -22,17 +23,26 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 public final class Gutitubow extends JavaPlugin {
-    // Managers
-    CarePackageManager cpm = new CarePackageManager(this);
-    GamePlayerManager gamePlayerManager = new GamePlayerManager(this);
-    GameManager gameManager = new GameManager(this);
+    private CarePackageManager carePackageManager;
+    private GamePlayerManager gamePlayerManager;
+    private MapManager mapManager;
+    private GameManager gameManager;
 
-    // MainGame
-    GameManager.Game game = gameManager.newGame();
 
+    private GameManager.Game game;
 
     @Override
     public void onEnable() {
+
+        // Managers
+        this.carePackageManager = new CarePackageManager(this);
+        this.gamePlayerManager = new GamePlayerManager(this);
+        this.mapManager = new MapManager(this);
+        this.gameManager = new GameManager(this, mapManager);
+
+        // MainGame
+        this.game = gameManager.newGame();
+
 
 
         // Ability登録
@@ -50,11 +60,11 @@ public final class Gutitubow extends JavaPlugin {
         pm.registerEvents(new ProjectileHitListener(this), this);
         pm.registerEvents(new BowListener(), this);
         pm.registerEvents(new GamePlayerListener(gamePlayerManager), this);
-        pm.registerEvents(new EntityListener(cpm), this);
+        pm.registerEvents(new EntityListener(carePackageManager), this);
 
         // Command登録
         getCommand("ability").setExecutor(new AbilityCommand());
-        getCommand("carepackage").setExecutor(new CarePackageCommand(cpm));
+        getCommand("carepackage").setExecutor(new CarePackageCommand(carePackageManager));
         getCommand("game").setExecutor(new GameCommand(game));
         getCommand("gameplayer").setExecutor(new GamePlayerCommand(gamePlayerManager));
 

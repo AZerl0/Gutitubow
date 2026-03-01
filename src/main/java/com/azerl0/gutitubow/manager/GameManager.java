@@ -14,11 +14,12 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.Set;
 
 public class GameManager {
-
     private final JavaPlugin plugin;
+    private final MapManager mapManager;
 
-    public GameManager(JavaPlugin plugin) {
+    public GameManager(JavaPlugin plugin, MapManager mapManager) {
         this.plugin = plugin;
+        this.mapManager = mapManager;
     }
 
     public Game newGame() {
@@ -34,6 +35,7 @@ public class GameManager {
         private Set<Player> players;
         private BukkitTask task = null;
         private final BossBar bossBar = BossBar.bossBar(Component.text(""), 0.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
+        private final MapManager.Map map = mapManager.getTestMap();
 
         private Game() {
             reset();
@@ -89,6 +91,7 @@ public class GameManager {
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 player.hideBossBar(this.bossBar);
             }
+            this.map.getBorder().setSize(59999968);
 
         }
 
@@ -165,22 +168,14 @@ public class GameManager {
                     showSubtitle(player, lastPhaseRemainedText);
                 }
 
-                if (this.phase == 7 && this.currentTicks == 0) {
-                    showSubtitle(player,
-                            Component.text("最終フェーズ").color(NamedTextColor.RED)
-                                    .append(Component.text("が始まりました").color(NamedTextColor.GOLD))
-                    );
-                }
-
-                if (this.currentTicks == 0 && this.phase != 0) {
-                    player.playSound(player, Sound.ENTITY_WITHER_SPAWN, 0.75f, 1.0f);
-                }
             }
 
         }
 
         private void init() {
             this.nextTick = 15 * 20;
+            this.map.getBorder().setSize(this.map.getSize());
+
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 player.showBossBar(this.bossBar);
             }
@@ -197,6 +192,7 @@ public class GameManager {
                 if (this.phase > 0 && this.phase <= 5) {
                     this.bossBar.color(BossBar.Color.BLUE);
                     this.nextTick = phaseTicks.valueOf("PHASE" + this.phase).getTicks();
+                    this.nextTick = 15 * 20;
                 } else if (this.phase == 6) {
                     this.nextTick = 15 * 20;
                 }
@@ -204,10 +200,39 @@ public class GameManager {
                 this.bossBar.color(BossBar.Color.RED);
                 this.isShrinking = true;
                 this.nextTick = 30 * 20;
+                int borderChangeTicks = 31 * 20;
+                switch (this.phase) {
+                    case (1):
+                        map.getBorder().changeSize(150, borderChangeTicks);
+                        break;
+                    case (2):
+                        map.getBorder().changeSize(105, borderChangeTicks);
+                        break;
+                    case (3):
+                        map.getBorder().changeSize(63, borderChangeTicks);
+                        break;
+                    case (4):
+                        map.getBorder().changeSize(31, borderChangeTicks);
+                        break;
+                    case (5):
+                        map.getBorder().changeSize(10, borderChangeTicks);
+                        break;
+                }
             }
 
             if (this.phase == 7) {
                 this.bossBar.name(Component.text("最終フェーズ進行中"));
+            }
+
+            // Player への処理
+            for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+                player.playSound(player, Sound.ENTITY_WITHER_SPAWN, 0.75f, 1.0f);
+                if (this.phase == 7) {
+                    showSubtitle(player,
+                            Component.text("最終フェーズ").color(NamedTextColor.RED)
+                                    .append(Component.text("が始まりました").color(NamedTextColor.GOLD))
+                    );
+                }
             }
 
             this.currentTicks = 0;
