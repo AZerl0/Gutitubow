@@ -55,7 +55,7 @@ public class ProjectileHitListener implements Listener {
                         nbt.setBoolean("inGround", false);
                     }));
 
-                    if (ability == AbilityType.CONTROL) {
+                    if (ability != AbilityType.RICOCHET) {
                         event.getEntity().remove();
                     }
                 }
