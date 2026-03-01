@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.command;
 
 import com.azerl0.gutitubow.manager.GameManager;
+import net.kyori.adventure.text.Component;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -36,6 +37,7 @@ public class GameCommand implements CommandExecutor, TabExecutor {
                 break;
             case ("reset"):
                 this.game.reset();
+                sender.sendMessage(Component.text("ゲームをリセットしました"));
                 return true;
         }
 
