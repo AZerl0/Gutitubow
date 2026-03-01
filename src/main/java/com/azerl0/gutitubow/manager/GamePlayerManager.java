@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.manager;
 
+import com.azerl0.gutitubow.data.GutitubowDamageType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
@@ -9,16 +10,26 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class GamePlayerManager {
+    private final JavaPlugin plugin;
     private final NamespacedKey playerArrowReloadTickKey;
     private final NamespacedKey playerArrowMaxStackSizeKey;
     private final NamespacedKey playerTotalHitKey;
     private final NamespacedKey gutitubowArrowItemKey;
+    private final Map<UUID, Integer> playerBorderOutsideTimers = new HashMap<>();
+    private BukkitTask task = null;
+
 
     public GamePlayerManager(JavaPlugin plugin) {
+        this.plugin = plugin;
         playerArrowReloadTickKey = new NamespacedKey(plugin, "gameplayer.arrowReloadTick");
         playerArrowMaxStackSizeKey = new NamespacedKey(plugin, "gameplayer.arrowMaxStackSize");
         playerTotalHitKey = new NamespacedKey(plugin, "player.totalHIt");
@@ -38,41 +49,105 @@ public class GamePlayerManager {
         }
 
         public void damage(double amount, Entity entity, double distance) {
-            damage(amount);
-            LogManager.broadcastHitLog(entity, this.player, distance);
+            if (!(this.player instanceof LivingEntity livingEntity)) return;
+
+            if (livingEntity.getHealth() <= amount) {
+                this.kill(entity, distance);
+
+            } else {
+                damage(amount);
+                LogManager.broadcastHitLog(entity, this.player, distance);
+            }
+        }
+
+        public void damage(double amount, GutitubowDamageType damageType) {
+            if (!(this.player instanceof LivingEntity livingEntity)) return;
+
+            if (livingEntity.getHealth() <= amount) {
+                this.death(damageType, false);
+
+            } else {
+                damage(amount);
+            }
+
         }
 
         public void damage(double amount, Entity entity) {
-            damage(amount);
-
             double distance = entity.getLocation().distance(this.player.getLocation());
-            LogManager.broadcastHitLog(entity, this.player, distance);
+            damage(amount, entity, distance);
+
         }
 
         public void damage(double amount) {
             ((LivingEntity) this.player).damage(amount);
         }
 
-        public void kill() {
+        public void kill(Entity attacker, double distance) {
+            this.death(GutitubowDamageType.ARROW_SHOT, true);
+            LogManager.broadcastKillLog(attacker, this.player, distance);
+        }
+
+        public void death(GutitubowDamageType damageType, boolean hideLog) {
+            if (!(this.player instanceof Player _player)) return;
+
             World world = this.player.getWorld();
             Location location = this.player.getLocation();
             world.spawnParticle(Particle.EXPLOSION_EMITTER, location, 3);
             world.spawn(location, LightningStrike.class, (LightningStrike c) -> {
             });
-            if (this.player instanceof Player livingPlayer) {
-                livingPlayer.setGameMode(GameMode.SPECTATOR);
+            _player.setGameMode(GameMode.SPECTATOR);
+            if (hideLog) return;
+            if (damageType == GutitubowDamageType.OUTSIDE_BORDER) {
+                LogManager.broadcastDeathLog(_player);
             }
 
-
         }
 
-        public void kill(Entity attacker) {
-            this.kill();
+        public void death(GutitubowDamageType damageType) {
+            this.death(damageType, false);
         }
 
-        public void kill(Entity attacker, double distance) {
-            this.kill();
-            LogManager.broadcastKillLog(attacker, this.player, distance);
+
+
+        private int getBorderOutsideTicks() {
+            if (!(this.player instanceof Player)) return 0;
+            return playerBorderOutsideTimers.getOrDefault(this.player.getUniqueId(), 0);
+        }
+
+        private void setBorderOutsideTicks(int ticks) {
+            if (!(this.player instanceof Player)) return;
+            playerBorderOutsideTimers.put(this.player.getUniqueId(), ticks);
+        }
+
+        public void borderOutside() {
+            if (!(this.player instanceof Player player)) return;
+
+            if (task != null && !task.isCancelled()) return;
+
+            task = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (player.getWorld().getWorldBorder().isInside(player.getLocation()) || player.getGameMode() != GameMode.ADVENTURE) {
+                        setBorderOutsideTicks(0);
+                        this.cancel();
+                        return;
+                    }
+
+                    int borderOutsideTick = getBorderOutsideTicks() + 1;
+                    setBorderOutsideTicks(borderOutsideTick);
+                    int borderOutsideDamageTick = 30;
+                    if (borderOutsideTick % borderOutsideDamageTick == 0) {
+                        if (borderOutsideTick % (10 * borderOutsideDamageTick) == 0) {
+                            damage(1, GutitubowDamageType.OUTSIDE_BORDER);
+                        } else {
+                            ((LivingEntity) player).playHurtAnimation(0.0f);
+                            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0f, 1.0f);
+                        }
+                    }
+
+                }
+
+            }.runTaskTimer(plugin, 0L, 1L);
         }
 
         public int getTotalHit() {
@@ -136,10 +211,10 @@ public class GamePlayerManager {
         }
 
         public int getArrowAmount() {
-            if (!(this.player instanceof Player player)) return 0;
+            if (!(this.player instanceof Player _player)) return 0;
             int slot = getArrowItemSlot();
             if (slot != -1) {
-                ItemStack item = player.getInventory().getItem(slot);
+                ItemStack item = _player.getInventory().getItem(slot);
                 if (item == null) return 0;
                 if (item.getType() == Material.ARROW) {
                     return item.getAmount();

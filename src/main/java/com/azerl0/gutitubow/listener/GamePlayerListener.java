@@ -5,13 +5,14 @@ import com.azerl0.gutitubow.ability.AbilityManager;
 import com.azerl0.gutitubow.manager.GamePlayerManager;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
-import org.bukkit.GameMode;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInputEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -46,11 +47,7 @@ public class GamePlayerListener implements Listener {
 
         GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(tar);
         if (tar instanceof LivingEntity livingTar) {
-            if (livingTar.getHealth() <= 1.0) {
-                gamePlayer.kill(shooter, distance);
-            } else {
-                gamePlayer.damage(1, shooter, distance);
-            }
+            gamePlayer.damage(2, shooter, distance);
         }
 
         gamePlayer = gamePlayerManager.getGamePlayer(shooter);
@@ -70,6 +67,23 @@ public class GamePlayerListener implements Listener {
 
         event.setCancelled(true);
         event.getEntity().remove();
+
+    }
+
+    @EventHandler
+    public void onDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        if (event.getDamage() == 0.0) return;
+
+        DamageType type = event.getDamageSource().getDamageType();
+        if (type == DamageType.OUTSIDE_BORDER) {
+            gamePlayerManager.getGamePlayer(player).borderOutside();
+            event.setCancelled(true);
+            return;
+        }
+        if (type == DamageType.GENERIC) return;
+        event.setCancelled(true);
 
     }
 

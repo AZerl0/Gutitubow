@@ -100,6 +100,35 @@ public class LogManager {
         broadcastKillLog(shooter, ((Entity) target), distance);
     }
 
+    public static void broadcastDeathLog(Player player) {
+
+        Component message =
+                Component.text("")
+                        .append(Component.text("[")
+                                .color(NamedTextColor.WHITE)
+                                .decorate(TextDecoration.BOLD)
+                                .append(
+                                        Component.text("DEATH")
+                                                .color(NamedTextColor.DARK_RED)
+                                ).append(
+                                        Component.text("] ")
+                                                .color(NamedTextColor.WHITE)
+                                ).append(
+                                        Component.text(getDisplayName(player))
+                                                .color(NamedTextColor.WHITE)
+                                                .decoration(TextDecoration.BOLD, false)
+                                ).append(
+                                        Component.text(" (エリア外)")
+                                                .color(NamedTextColor.GRAY)
+                                ));
+
+        for (Player toPlayer : Bukkit.getOnlinePlayers()) {
+            toPlayer.sendMessage(message);
+        }
+
+    }
+
+
     private static String getDisplayName(Player player) {
         return player.getName();
     }
