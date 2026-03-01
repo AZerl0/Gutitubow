@@ -29,25 +29,24 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
             @NotNull String @NotNull [] args
     ) {
         if (!(sender instanceof Player player)) return true;
+        Player target;
+        GamePlayerManager.GamePlayer gamePlayer;
 
         switch (args[0]) {
             case ("data"):
-                Player target;
-                GamePlayerManager.GamePlayer gamePlayer;
+                if (args[2].equals("@s")) {
+                    target = player;
+                } else {
+                    target = Bukkit.getPlayer(args[2]);
+                }
+
+                if (target == null) {
+                    player.sendMessage("プレイヤーが見つかりませんでした");
+                    return true;
+                }
+
                 switch (args[1]) {
                     case ("get"):
-                        if (args[2].equals("@s")) {
-                            target = player;
-                        } else {
-                            target = Bukkit.getPlayer(args[2]);
-                        }
-
-                        if (target == null) {
-                            player.sendMessage("プレイヤーが見つかりませんでした");
-                            return true;
-                        }
-
-
                         gamePlayer = this.gamePlayerManager.getGamePlayer(target);
                         switch (args[3]) {
                             case ("playerTotalHit"):
@@ -63,18 +62,6 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
                         return true;
 
                     case ("set"):
-                        if (args[2].equals("@s")) {
-                            target = player;
-                        } else {
-                            target = Bukkit.getPlayer(args[2]);
-                        }
-
-                        if (target == null) {
-                            player.sendMessage("プレイヤーが見つかりませんでした");
-                            return true;
-                        }
-
-
                         int value;
                         try {
                             value = Integer.parseInt(args[4]);
@@ -90,17 +77,85 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
                                 player.sendMessage(target.getName() + "の" + args[3] + "を" + value + "に設定しました");
                                 break;
                             case ("playerArrowReloadTick"):
-                                player.sendMessage(target.getName() + "の" + args[3] + "を" + value + "に設定しました");
                                 gamePlayer.setArrowReloadTick(value);
+                                player.sendMessage(target.getName() + "の" + args[3] + "を" + value + "に設定しました");
                                 break;
                             case ("playerMaxArrowStackSize"):
-                                player.sendMessage(target.getName() + "の" + args[3] + "を" + value + "に設定しました");
                                 gamePlayer.setMaxArrowStackSize(value);
+                                player.sendMessage(target.getName() + "の" + args[3] + "を" + value + "に設定しました");
+                                break;
+
+                        }
+                        return true;
+                    case ("reset"):
+                        gamePlayer = this.gamePlayerManager.getGamePlayer(target);
+                        switch (args[3]) {
+                            case ("*"):
+                                gamePlayer.resetTotalHit();
+                                gamePlayer.resetArrowReloadTick();
+                                gamePlayer.resetMaxArrowStackSize();
+                                player.sendMessage(target.getName() + "のデータをリセットしました");
+                                break;
+                            case ("playerTotalHit"):
+                                gamePlayer.resetTotalHit();
+                                player.sendMessage(target.getName() + "の" + args[3] + "を" + gamePlayer.getTotalHit() + "にリセットしました");
+                                break;
+                            case ("playerArrowReloadTick"):
+                                gamePlayer.resetArrowReloadTick();
+                                player.sendMessage(target.getName() + "の" + args[3] + "を" + gamePlayer.getArrowReloadTick() + "にリセットしました");
+                                break;
+                            case ("playerMaxArrowStackSize"):
+                                gamePlayer.resetMaxArrowStackSize();
+                                player.sendMessage(target.getName() + "の" + args[3] + "を" + gamePlayer.getMaxArrowStackSize() + "にリセットしました");
                                 break;
 
                         }
                         return true;
                 }
+                break;
+            case ("arrow"):
+                boolean canSet = args[1].equals("set") && args.length == 4;
+                boolean canAdd = args[1].equals("add") && args.length >= 3;
+                boolean canRemove = args[1].equals("remove") && args.length >= 3;
+                if (!(canSet || canAdd || canRemove)) {
+                    sender.sendMessage("引数が不足しています");
+                    return true;
+                }
+                if (args[2].equals("@s")) {
+                    target = player;
+                } else {
+                    target = Bukkit.getPlayer(args[2]);
+                }
+
+                if (target == null) {
+                    player.sendMessage("プレイヤーが見つかりませんでした");
+                    return true;
+                }
+                int value;
+                try {
+                    if ((args[1].equals("add") || args[1].equals("remove")) && args.length != 4) {
+                        value = 1;
+                    } else {
+                        value = Integer.parseInt(args[3]);
+                    }
+                } catch (Error error) {
+                    player.sendMessage(error.toString());
+                    return true;
+                }
+
+                gamePlayer = this.gamePlayerManager.getGamePlayer(target);
+                switch (args[1]) {
+                    case ("set"):
+                        gamePlayer.setArrowAmount(value);
+                        return true;
+                    case ("add"):
+                        gamePlayer.addArrow(value);
+                        return true;
+                    case ("remove"):
+                        gamePlayer.removeArrow(value);
+                        return true;
+                }
+
         }
         return false;
     }
@@ -113,23 +168,41 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
             @NotNull String
             @NotNull [] args
     ) {
-        List<String> list = new ArrayList<String>();;
+        List<String> list = new ArrayList<String>();
+        ;
         if (args.length == 1) {
-            return List.of("data");
+            return List.of("data", "arrow");
 
         } else if (args[0].equals("data")) {
-            if (args.length == 2) return List.of("get", "set");
+            if (args.length == 2) return List.of("get", "set", "reset");
             if (args.length == 3) {
-                list =  Bukkit.getOnlinePlayers()
+                list = Bukkit.getOnlinePlayers()
                         .stream()
                         .map(Player::getName)
                         .collect(Collectors.toCollection(ArrayList::new));
                 list.add("@s");
                 return list;
             }
-            if (args.length == 4) return List.of("playerTotalHit", "playerArrowReloadTick", "playerMaxArrowStackSize");
-        }
+            if (args.length == 4) {
+                if (args[1].equals("reset")) {
+                    return List.of("*", "playerTotalHit", "playerArrowReloadTick", "playerMaxArrowStackSize");
 
+                } else return List.of("playerTotalHit", "playerArrowReloadTick", "playerMaxArrowStackSize");
+            }
+
+        } else if (args[0].equals("arrow")) {
+            if (args.length == 2) return List.of("set","add", "remove");
+            if (args.length == 3) {
+                list = Bukkit.getOnlinePlayers()
+                        .stream()
+                        .map(Player::getName)
+                        .collect(Collectors.toCollection(ArrayList::new));
+                list.add("@s");
+                return list;
+
+            }
+
+        }
         return List.of();
     }
 }

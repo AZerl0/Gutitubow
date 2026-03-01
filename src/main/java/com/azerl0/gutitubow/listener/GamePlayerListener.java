@@ -14,6 +14,8 @@ import org.bukkit.event.player.PlayerInputEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 
+import java.util.Random;
+
 public class GamePlayerListener implements Listener {
     private final GamePlayerManager gamePlayerManager;
 
@@ -41,6 +43,22 @@ public class GamePlayerListener implements Listener {
 
         GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(tar);
         gamePlayer.damage(1, shooter, distance);
+
+        gamePlayer = gamePlayerManager.getGamePlayer(shooter);
+        gamePlayer.setTotalHit(gamePlayer.getTotalHit() + 1);
+        if (gamePlayer.getTotalHit() % 2 == 0) {
+            Random random = new Random();
+            if (random.nextBoolean()) {
+                if (!gamePlayer.upgradeArrowReloadTick()) {
+                    gamePlayer.upgradeMaxArrowStackSize();
+                }
+            } else {
+                if (!gamePlayer.upgradeMaxArrowStackSize()) {
+                    gamePlayer.upgradeArrowReloadTick();
+                }
+            }
+        }
+
         event.setCancelled(true);
         event.getEntity().remove();
 
