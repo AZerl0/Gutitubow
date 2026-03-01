@@ -105,12 +105,12 @@ public class ControlAbility implements Ability {
                 arrow.getWorld().spawnParticle(
                         Particle.WITCH,
                         arrow.getLocation(),
-                        2, // count
+                        2,
                         0, 0, 0,
                         0
                 );
 
-                @NotNull Vector v = event.getEntity().getEyeLocation().getDirection().multiply(1.0);
+                @NotNull Vector v = event.getEntity().getEyeLocation().getDirection().multiply(0.5);
 
                 arrow.setVelocity(v);
 
@@ -147,7 +147,7 @@ public class ControlAbility implements Ability {
                 Vector newVelocity = returnLocaton.toVector().subtract(arrow.getLocation().toVector()).normalize().multiply(3);
                 double distance = arrow.getLocation().distance(returnLocaton);
 
-                if (distance < 30) {
+                if (distance < 48) {
 
                     arrow.getPersistentDataContainer().set(controllingKey, PersistentDataType.BOOLEAN, false);
                     arrow.getPersistentDataContainer().set(collectingKey, PersistentDataType.BOOLEAN, true);
