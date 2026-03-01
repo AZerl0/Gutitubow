@@ -176,6 +176,7 @@ public class GameManager {
 
         private void init() {
             this.nextTick = 15 * 20;
+            this.map.getBorder().setCenter(this.map.getCenter());
             this.map.getBorder().setSize(this.map.getSize());
 
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {

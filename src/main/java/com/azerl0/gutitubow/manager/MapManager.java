@@ -25,6 +25,10 @@ public class MapManager {
             this.size = size;
         }
 
+        public Location getCenter() {
+            return this.center;
+        }
+
         public WorldBorder getBorder() {
             return this.center.getWorld().getWorldBorder();
         }
