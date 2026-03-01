@@ -94,6 +94,7 @@ public class GameManager {
                 player.hideBossBar(this.bossBar);
             }
             this.map.getBorder().setSize(59999968);
+            this.map.getBorder().setDamageBuffer(0.0);
 
         }
 
