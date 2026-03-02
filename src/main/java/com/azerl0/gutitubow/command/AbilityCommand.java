@@ -10,6 +10,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class AbilityCommand implements CommandExecutor, TabExecutor {
+    AbilityManager abilityManager;
+
+    public AbilityCommand(AbilityManager abilityManager) {
+        this.abilityManager = abilityManager;
+    }
 
     @Override
     public boolean onCommand(
@@ -34,7 +39,7 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                     player.sendMessage("プレイヤーが見つかりませんでした");
                 } else {
 
-                    player.sendMessage(getPlayer.getName() + "の能力は" + AbilityManager.getAbilityId(getPlayer) + "です");
+                    player.sendMessage(getPlayer.getName() + "の能力は" + abilityManager.getAbilityId(getPlayer) + "です");
                 }
                 return true;
 
@@ -50,7 +55,7 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
 
             case ("set"):
 
-                String id = args[1];
+                AbilityType id = AbilityType.valueOf(args[1].toUpperCase());
                 Player setPlayer;
                 if (args.length == 2) {
                     setPlayer = player;
@@ -72,7 +77,7 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                     player.sendMessage("プレイヤーが見つかりませんでした");
                 } else {
 
-                    AbilityManager.setAbility(player, id);
+                    abilityManager.setAbility(player, id);
                     player.sendMessage(setPlayer.getName() + "のAbilityを " + id + " に設定しました！");
                 }
                 return true;
@@ -88,7 +93,7 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                 if (resetPlayer == null) {
                     player.sendMessage("プレイヤーが見つかりませんでした");
                 } else {
-                    AbilityManager.resetAbility(resetPlayer);
+                    abilityManager.resetAbility(resetPlayer);
                     player.sendMessage(resetPlayer.getName() + "の能力を削除しました");
                 }
                 return true;

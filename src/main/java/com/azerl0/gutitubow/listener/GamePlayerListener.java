@@ -23,9 +23,11 @@ import java.util.Random;
 
 public class GamePlayerListener implements Listener {
     private final GamePlayerManager gamePlayerManager;
+    private final AbilityManager abilityManager;
 
-    public GamePlayerListener(GamePlayerManager gamePlayerManager) {
+    public GamePlayerListener(GamePlayerManager gamePlayerManager, AbilityManager abilityManager) {
         this.gamePlayerManager = gamePlayerManager;
+        this.abilityManager = abilityManager;
     }
 
     @EventHandler
@@ -36,7 +38,7 @@ public class GamePlayerListener implements Listener {
         GamePlayerManager.GamePlayer gamePlayer = this.gamePlayerManager.getGamePlayer(player);
         gamePlayer.consumeArrow();
 
-        Ability ability = AbilityManager.getAbility(player);
+        Ability ability = abilityManager.getAbility(player);
         if (ability != null) {
             ability.onArrowLaunch(event);
         }
@@ -104,26 +106,26 @@ public class GamePlayerListener implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        Ability ability = AbilityManager.getAbility(event.getPlayer());
+        Ability ability = abilityManager.getAbility(event.getPlayer());
         if (ability != null) ability.onMove(event);
     }
 
     @EventHandler
     public void onToggleSprint(PlayerToggleSprintEvent event) {
-        Ability ability = AbilityManager.getAbility(event.getPlayer());
+        Ability ability = abilityManager.getAbility(event.getPlayer());
         if (ability != null) ability.onToggleSprint(event);
     }
 
     @EventHandler
     public void onJump(PlayerJumpEvent event) {
-        Ability ability = AbilityManager.getAbility(event.getPlayer());
+        Ability ability = abilityManager.getAbility(event.getPlayer());
         if (ability != null) ability.onJump(event);
     }
 
     @EventHandler
     public void onPressJumpKey(PlayerInputEvent event) {
         if (!event.getInput().isJump()) return;
-        Ability ability = AbilityManager.getAbility(event.getPlayer());
+        Ability ability = abilityManager.getAbility(event.getPlayer());
         if (ability != null) ability.onPressJumpKey(event);
 
     }

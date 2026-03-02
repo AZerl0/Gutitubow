@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.data.GutitubowDamageType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
@@ -27,6 +28,8 @@ public class GamePlayerManager {
     private final Map<UUID, Integer> playerBorderOutsideTimers = new HashMap<>();
     private BukkitTask borderOutsideTimerTask = null;
     private BukkitTask arrowReloadTask = null;
+    private BukkitTask firstElytraTask = null;
+
 
 
     public GamePlayerManager(JavaPlugin plugin) {
@@ -321,6 +324,27 @@ public class GamePlayerManager {
             }.runTaskTimer(plugin, getArrowReloadTick(), getArrowReloadTick());
         }
 
+        public void firstElytra() {
+            if (!(this.player instanceof Player player)) return;
 
+            ItemStack elytra = ItemStack.of(Material.ELYTRA);
+            ItemMeta meta = elytra.getItemMeta();
+            meta.addEnchant(Enchantment.BINDING_CURSE,1, true);
+
+            player.getInventory().setChestplate(elytra);
+            player.setGliding(true);
+
+            if (firstElytraTask != null && !firstElytraTask.isCancelled()) return;
+
+            firstElytraTask = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (!player.isFlying() || player.isGliding()) {
+                        player.getInventory().setChestplate(ItemStack.of(Material.AIR));
+                        this.cancel();
+                    }
+                }
+            }.runTaskTimer(plugin, 0L, 1L);
+        }
     }
 }

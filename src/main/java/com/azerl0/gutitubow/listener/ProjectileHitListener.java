@@ -23,10 +23,12 @@ public class ProjectileHitListener implements Listener {
 
     private final JavaPlugin plugin;
     private final GlassBreakManager breakManager;
+    private final AbilityManager abilityManager;
 
-    public ProjectileHitListener(JavaPlugin plugin) {
+    public ProjectileHitListener(JavaPlugin plugin, AbilityManager abilityManager) {
         this.plugin = plugin;
         this.breakManager = new GlassBreakManager();
+        this.abilityManager = abilityManager;
     }
 
     @EventHandler
@@ -38,7 +40,7 @@ public class ProjectileHitListener implements Listener {
         AbilityType ability = null;
 
         if (arrow.getShooter() instanceof Player shooter) {
-            ability = AbilityManager.getAbilityType(shooter);
+            ability = abilityManager.getAbilityType(shooter);
 
         }
 

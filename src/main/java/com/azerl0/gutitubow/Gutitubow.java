@@ -18,6 +18,7 @@ import org.bukkit.scoreboard.Team;
 
 public final class Gutitubow extends JavaPlugin {
     private DebugManager debugManager;
+    private AbilityManager abilityManager;
     private CarePackageManager carePackageManager;
     private GamePlayerManager gamePlayerManager;
     private MapManager mapManager;
@@ -31,10 +32,11 @@ public final class Gutitubow extends JavaPlugin {
 
         // Managers
         this.debugManager = new DebugManager(this);
+        this.abilityManager = new AbilityManager(this);
         this.carePackageManager = new CarePackageManager(this);
         this.gamePlayerManager = new GamePlayerManager(this);
         this.mapManager = new MapManager(this);
-        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.gamePlayerManager);
+        this.gameManager = new GameManager(this, this.abilityManager, this.mapManager, this.debugManager, this.gamePlayerManager);
 
         // MainGame
         this.game = gameManager.newGame();
@@ -53,13 +55,13 @@ public final class Gutitubow extends JavaPlugin {
 
         // Listener登録
         PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new ProjectileHitListener(this), this);
-        pm.registerEvents(new BowListener(), this);
-        pm.registerEvents(new GamePlayerListener(gamePlayerManager), this);
+        pm.registerEvents(new ProjectileHitListener(this, abilityManager), this);
+        pm.registerEvents(new BowListener(abilityManager), this);
+        pm.registerEvents(new GamePlayerListener(gamePlayerManager, abilityManager), this);
         pm.registerEvents(new EntityListener(carePackageManager), this);
 
         // Command登録
-        getCommand("ability").setExecutor(new AbilityCommand());
+        getCommand("ability").setExecutor(new AbilityCommand(abilityManager));
         getCommand("carepackage").setExecutor(new CarePackageCommand(carePackageManager));
         getCommand("game").setExecutor(new GameCommand(game));
         getCommand("gameplayer").setExecutor(new GamePlayerCommand(gamePlayerManager));

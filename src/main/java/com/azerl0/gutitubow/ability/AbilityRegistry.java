@@ -1,5 +1,7 @@
 package com.azerl0.gutitubow.ability;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.*;
 
 public class AbilityRegistry {
@@ -10,8 +12,10 @@ public class AbilityRegistry {
         abilities.put(ability.getType().toString().toLowerCase(), ability);
     }
 
-    static public Ability get(String id) {
-        return abilities.get(id);
+    @Nullable
+    static public Ability get(AbilityType type) {
+        if (abilities.containsKey(type.toString().toLowerCase())) return abilities.get(type.toString().toLowerCase());
+        return null;
     }
 
     static public Set<String> getAllIds() {

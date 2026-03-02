@@ -1,5 +1,7 @@
 package com.azerl0.gutitubow.manager;
 
+import com.azerl0.gutitubow.ability.AbilityManager;
+import com.azerl0.gutitubow.ability.AbilityType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -12,18 +14,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class GameManager {
     private final JavaPlugin plugin;
+    private final AbilityManager abilityManager;
     private final MapManager mapManager;
     private final DebugManager debugManager;
     private final GamePlayerManager gamePlayerManager;
 
-    public GameManager(JavaPlugin plugin, MapManager mapManager, DebugManager debugManager, GamePlayerManager gamePlayerManager) {
+    public GameManager(JavaPlugin plugin, AbilityManager abilityManager, MapManager mapManager, DebugManager debugManager, GamePlayerManager gamePlayerManager) {
         this.plugin = plugin;
         this.mapManager = mapManager;
+        this.abilityManager = abilityManager;
         this.debugManager = debugManager;
         this.gamePlayerManager = gamePlayerManager;
     }
@@ -192,11 +195,36 @@ public class GameManager {
             this.nextTick = 15 * 20;
             this.map.getBorder().setCenter(this.map.getCenter());
             this.map.getBorder().setSize(this.map.getSize());
+            Random random = new Random();
+            List<AbilityType> abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
 
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 player.showBossBar(this.bossBar);
                 Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(6);
                 player.setHealth(6);
+                player.getLocation().setY(200);
+
+                GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(player);
+                gamePlayer.firstElytra();
+
+                int randomIndex = random.nextInt(0, abilityTypeList.size());
+                AbilityType ability = abilityTypeList.get(randomIndex);
+
+                abilityTypeList.remove(randomIndex);
+                if (abilityTypeList.isEmpty()) abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
+
+                abilityManager.setAbility(player, ability);
+
+                Title title = Title.title(
+                        Component.text("GAME START").color(NamedTextColor.GOLD),
+                        Component.text("あなたの能力は「" + ability.toString().toLowerCase() + "」です").color(NamedTextColor.GOLD),
+                        Title.Times.times(
+                                java.time.Duration.ofMillis(100),
+                                java.time.Duration.ofSeconds(1),
+                                java.time.Duration.ofMillis(500)
+                        )
+                );
+                player.showTitle(title);
             }
         }
 

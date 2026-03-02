@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.ability;
 
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -8,31 +9,39 @@ import java.util.Map;
 import java.util.UUID;
 
 public class AbilityManager {
+    private final JavaPlugin plugin;
+
+    public AbilityManager(JavaPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     static final Map<UUID, String> playerAbilities = new HashMap<>();
 
     @Nullable
-    static public String getAbilityId(Player player) {
+    public String getAbilityId(Player player) {
         return playerAbilities.get(player.getUniqueId());
     }
 
     @Nullable
-    static public Ability getAbility(Player player) {
-        return AbilityRegistry.get(getAbilityId(player));
+    public Ability getAbility(Player player) {
+        AbilityType type = getAbilityType(player);
+        if (type == null) return null;
+        if (AbilityRegistry.get(type) == null) return null;
+        return AbilityRegistry.get(type);
     }
 
     @Nullable
-    static public AbilityType getAbilityType(Player player) {
+    public AbilityType getAbilityType(Player player) {
         String id = getAbilityId(player);
         if (id == null) return null;
         return AbilityType.valueOf(id.toUpperCase());
     }
 
-    static public void setAbility(Player player, String id) {
-        playerAbilities.put(player.getUniqueId(), id);
+    public void setAbility(Player player, AbilityType type) {
+        playerAbilities.put(player.getUniqueId(), type.toString());
     }
 
-    static public void resetAbility(Player player) {
+    public void resetAbility(Player player) {
         playerAbilities.put(player.getUniqueId(), "None");
     }
 }

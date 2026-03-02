@@ -10,13 +10,18 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class BowListener implements Listener {
+    AbilityManager abilityManager;
+
+    public BowListener(AbilityManager abilityManager) {
+        this.abilityManager = abilityManager;
+    }
 
     @EventHandler
     public void onHit(ProjectileHitEvent event) {
 
         if (!(event.getEntity().getShooter() instanceof Player player)) return;
 
-        Ability ability = AbilityManager.getAbility(player);
+        Ability ability = abilityManager.getAbility(player);
         if (ability == null) return;
 
         ability.onArrowHit(event);
@@ -30,7 +35,7 @@ public class BowListener implements Listener {
         Action action = event.getAction();
         if (!(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) return;
 
-        Ability ability = AbilityManager.getAbility(event.getPlayer());
+        Ability ability = abilityManager.getAbility(event.getPlayer());
         if (ability != null) ability.onPlayerRightClickBow(event);
 
     }
@@ -43,7 +48,7 @@ public class BowListener implements Listener {
         Action action = event.getAction();
         if (!(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) return;
 
-        Ability ability = AbilityManager.getAbility(event.getPlayer());
+        Ability ability = abilityManager.getAbility(event.getPlayer());
         if(ability != null) ability.onPlayerLeftClickBow(event);
 
     }
