@@ -19,11 +19,13 @@ public class GameManager {
     private final JavaPlugin plugin;
     private final MapManager mapManager;
     private final DebugManager debugManager;
+    private final GamePlayerManager gamePlayerManager;
 
-    public GameManager(JavaPlugin plugin, MapManager mapManager, DebugManager debugManager) {
+    public GameManager(JavaPlugin plugin, MapManager mapManager, DebugManager debugManager, GamePlayerManager gamePlayerManager) {
         this.plugin = plugin;
         this.mapManager = mapManager;
         this.debugManager = debugManager;
+        this.gamePlayerManager = gamePlayerManager;
     }
 
     public Game newGame() {
@@ -100,6 +102,11 @@ public class GameManager {
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(20);
                 player.setHealth(20.0);
+
+                GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(player);
+                gamePlayer.resetTotalHit();
+                gamePlayer.resetMaxArrowStackSize();
+                gamePlayer.resetArrowReloadTick();
             }
 
         }

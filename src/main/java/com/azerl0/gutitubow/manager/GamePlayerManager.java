@@ -25,7 +25,8 @@ public class GamePlayerManager {
     private final NamespacedKey playerTotalHitKey;
     private final NamespacedKey gutitubowArrowItemKey;
     private final Map<UUID, Integer> playerBorderOutsideTimers = new HashMap<>();
-    private BukkitTask task = null;
+    private BukkitTask borderOutsideTimerTask = null;
+    private BukkitTask arrowReloadTask = null;
 
 
     public GamePlayerManager(JavaPlugin plugin) {
@@ -122,9 +123,9 @@ public class GamePlayerManager {
         public void borderOutside() {
             if (!(this.player instanceof Player player)) return;
 
-            if (task != null && !task.isCancelled()) return;
+            if (borderOutsideTimerTask != null && !borderOutsideTimerTask.isCancelled()) return;
 
-            task = new BukkitRunnable() {
+            borderOutsideTimerTask = new BukkitRunnable() {
                 @Override
                 public void run() {
                     if (player.getWorld().getWorldBorder().isInside(player.getLocation()) || player.getGameMode() != GameMode.ADVENTURE) {
@@ -151,6 +152,7 @@ public class GamePlayerManager {
         }
 
         public int getTotalHit() {
+            if (!this.player.getPersistentDataContainer().has(playerTotalHitKey)) this.resetTotalHit();
             return this.player.getPersistentDataContainer().getOrDefault(playerTotalHitKey, PersistentDataType.INTEGER, 0);
         }
 
@@ -163,6 +165,7 @@ public class GamePlayerManager {
         }
 
         public int getArrowReloadTick() {
+            if (!this.player.getPersistentDataContainer().has(playerArrowReloadTickKey)) this.resetArrowReloadTick();
             return this.player.getPersistentDataContainer().getOrDefault(playerArrowReloadTickKey, PersistentDataType.INTEGER, 0);
         }
 
@@ -175,6 +178,7 @@ public class GamePlayerManager {
         }
 
         public int getMaxArrowStackSize() {
+            if (!this.player.getPersistentDataContainer().has(playerArrowMaxStackSizeKey)) this.resetMaxArrowStackSize();
             return this.player.getPersistentDataContainer().getOrDefault(playerArrowMaxStackSizeKey, PersistentDataType.INTEGER, 0);
         }
 
@@ -292,6 +296,29 @@ public class GamePlayerManager {
                 }
             }
             return -1;
+        }
+
+        public void consumeArrow() {
+            if (!(this.player instanceof Player player)) return;
+
+            this.removeArrow(1);
+
+            if (arrowReloadTask != null && !arrowReloadTask.isCancelled()) return;
+
+            arrowReloadTask = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    GamePlayer gamePlayer = getGamePlayer(player);
+
+                    if (gamePlayer.getArrowAmount() >= gamePlayer.getMaxArrowStackSize()) {
+                        cancel();
+                        arrowReloadTask = null;
+                        return;
+                    }
+
+                    gamePlayer.addArrow(1);
+                }
+            }.runTaskTimer(plugin, getArrowReloadTick(), getArrowReloadTick());
         }
 
 

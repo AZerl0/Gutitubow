@@ -34,7 +34,7 @@ public final class Gutitubow extends JavaPlugin {
         this.carePackageManager = new CarePackageManager(this);
         this.gamePlayerManager = new GamePlayerManager(this);
         this.mapManager = new MapManager(this);
-        this.gameManager = new GameManager(this, this.mapManager, this.debugManager);
+        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.gamePlayerManager);
 
         // MainGame
         this.game = gameManager.newGame();
