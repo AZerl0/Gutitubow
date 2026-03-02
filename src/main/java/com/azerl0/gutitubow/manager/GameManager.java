@@ -7,6 +7,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
@@ -202,7 +203,9 @@ public class GameManager {
                 player.showBossBar(this.bossBar);
                 Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(6);
                 player.setHealth(6);
-                player.getLocation().setY(200);
+                Location location = player.getLocation();
+                location.setY(200.0);
+                player.teleport(location);
 
                 GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(player);
                 gamePlayer.firstElytra();

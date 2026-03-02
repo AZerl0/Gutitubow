@@ -332,19 +332,28 @@ public class GamePlayerManager {
             meta.addEnchant(Enchantment.BINDING_CURSE,1, true);
 
             player.getInventory().setChestplate(elytra);
-            player.setGliding(true);
 
             if (firstElytraTask != null && !firstElytraTask.isCancelled()) return;
 
             firstElytraTask = new BukkitRunnable() {
+
+                private boolean startedGliding = false;
+
                 @Override
                 public void run() {
-                    if (!player.isFlying() || player.isGliding()) {
-                        player.getInventory().setChestplate(ItemStack.of(Material.AIR));
+
+                    if (player.isGliding()) {
+                        startedGliding = true;
+                        return;
+                    }
+
+                    if (startedGliding) {
+                        player.getInventory().setChestplate(new ItemStack(Material.AIR));
                         this.cancel();
                     }
+                    player.setGliding(true);
                 }
-            }.runTaskTimer(plugin, 0L, 1L);
+            }.runTaskTimer(plugin, 1L, 1L);
         }
     }
 }
