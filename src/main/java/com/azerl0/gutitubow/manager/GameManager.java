@@ -203,8 +203,9 @@ public class GameManager {
                 player.showBossBar(this.bossBar);
                 Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(6);
                 player.setHealth(6);
-                Location location = player.getLocation();
+                Location location = this.map.getRandomXZPosition(30);
                 location.setY(200.0);
+                location.getDirection().setY(0);
                 player.teleport(location);
 
                 GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(player);
