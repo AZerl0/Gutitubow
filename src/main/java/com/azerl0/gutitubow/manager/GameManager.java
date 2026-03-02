@@ -6,11 +6,13 @@ import net.kyori.adventure.title.Title;
 import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class GameManager {
@@ -95,6 +97,10 @@ public class GameManager {
             }
             this.map.getBorder().setSize(59999968);
             this.map.getBorder().setDamageBuffer(0.0);
+            for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+                Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(20);
+                player.setHealth(20.0);
+            }
 
         }
 
@@ -182,6 +188,8 @@ public class GameManager {
 
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 player.showBossBar(this.bossBar);
+                Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(6);
+                player.setHealth(6);
             }
         }
 
