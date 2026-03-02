@@ -1,18 +1,15 @@
 package com.azerl0.gutitubow;
 
 import com.azerl0.gutitubow.command.*;
-import com.azerl0.gutitubow.listener.EntityListener;
+import com.azerl0.gutitubow.listener.*;
 import com.azerl0.gutitubow.manager.*;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.azerl0.gutitubow.listener.ProjectileHitListener;
 import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.ability.abilities.*;
-import com.azerl0.gutitubow.listener.BowListener;
-import com.azerl0.gutitubow.listener.GamePlayerListener;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -59,6 +56,7 @@ public final class Gutitubow extends JavaPlugin {
         pm.registerEvents(new BowListener(abilityManager), this);
         pm.registerEvents(new GamePlayerListener(gamePlayerManager, abilityManager), this);
         pm.registerEvents(new EntityListener(carePackageManager), this);
+        pm.registerEvents(new ItemListener(), this);
 
         // Command登録
         getCommand("ability").setExecutor(new AbilityCommand(abilityManager));
