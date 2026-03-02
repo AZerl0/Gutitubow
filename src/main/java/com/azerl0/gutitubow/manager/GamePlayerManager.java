@@ -330,6 +330,8 @@ public class GamePlayerManager {
             ItemStack elytra = ItemStack.of(Material.ELYTRA);
             ItemMeta meta = elytra.getItemMeta();
             meta.addEnchant(Enchantment.BINDING_CURSE,1, true);
+            meta.setUnbreakable(true);
+            elytra.setItemMeta(meta);
 
             player.getInventory().setChestplate(elytra);
 
