@@ -265,7 +265,7 @@ public class CarePackageManager {
         CarePackage carePackage = new CarePackage(armorStand.getUniqueId());
         carePackage.setRemainedPotion(3);
         carePackage.setDisplayName(carePackage.getRemainedPotionDisplay());
-        carePackage.onMove();
+        Bukkit.getScheduler().runTaskLater(plugin, carePackage::onMove, 3L);
     }
 
     public CarePackage getCarePackage(UUID uuid) {
