@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInputEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -101,7 +102,15 @@ public class GamePlayerListener implements Listener {
         }
         if (type == DamageType.GENERIC) return;
         event.setCancelled(true);
+    }
 
+    @EventHandler
+    public void onFoodLevelChange(FoodLevelChangeEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        event.setCancelled(true);
+        player.setFoodLevel(20);
+        player.setSaturation(20f);
     }
 
     @EventHandler
