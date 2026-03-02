@@ -1,0 +1,12 @@
+name: Gutitubow
+version: "1.0.0-SNAPSHOT"
+main: com.azerl0.gutitubow.Gutitubow
+api-version: "1.21.11"
+bootstrapper: com.azerl0.gutitubow.GutitubowBootstrap
+
+dependencies:
+  server:
+    NBTAPI:
+      load: BEFORE
+      required: true
+      join-classpath: true

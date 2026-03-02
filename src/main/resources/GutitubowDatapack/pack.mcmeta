@@ -1,0 +1,22 @@
+{
+  "pack": {
+    "description": "Gutitubow datapack",
+    "pack_format": 94.1
+  },
+  "filter": {
+    "block": [
+      {
+        "namespace": "minecraft.disable",
+        "path": "recipe/.*"
+      },
+      {
+        "namespace": "minecraft",
+        "path": "advancement/.*"
+      },
+      {
+        "namespace": "minecraft.disable",
+        "path": "loot_table/.*"
+      }
+    ]
+  }
+}
