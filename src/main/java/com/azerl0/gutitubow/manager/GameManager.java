@@ -149,6 +149,20 @@ public class GameManager {
 
             if (this.currentTicks > this.nextTick && this.phase != 7) phaseUpdate();
 
+            switch (phase) {
+                case (1):
+                    if (this.currentTicks == 0 || this.currentTicks == 60 * 20 || this.currentTicks == 120 * 20) {
+                        this.randomCarePackageSpawn(4);
+                    }
+                    break;
+                case (2):
+                case (3):
+                    if (this.currentTicks == 0 || this.currentTicks == 60 * 20) {
+                        this.randomCarePackageSpawn(4);
+                    }
+                    break;
+            }
+
             this.bossBar.progress((float) (this.phase == 7 ? 0.0 : 1.0 - getProgress()));
 
             int remainedSeconds = (this.nextTick - this.currentTicks) / 20;
@@ -202,6 +216,14 @@ public class GameManager {
 
         }
 
+        private void randomCarePackageSpawn(int count) {
+            for (int i = 0; i < count; i++) {
+                Location location = this.map.getRandomXZPosition(50);
+                location.setY(175);
+                carePackageManager.summonPackage(location);
+            }
+        }
+
         private void init() {
             this.nextTick = 15 * 20;
             this.map.getBorder().setCenter(this.map.getCenter());
@@ -225,7 +247,8 @@ public class GameManager {
                 AbilityType ability = abilityTypeList.get(randomIndex);
 
                 abilityTypeList.remove(randomIndex);
-                if (abilityTypeList.isEmpty()) abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
+                if (abilityTypeList.isEmpty())
+                    abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
 
                 abilityManager.setAbility(player, ability);
 
