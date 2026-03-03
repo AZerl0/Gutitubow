@@ -32,3 +32,9 @@ commands:
     usage: /gutitubowdebug
     permission: gutitubow.gutitubowdebug
     aliases: [gdebug]
+
+  gutitubowitem:
+    description: Gutitubow item command
+    usage: /gutitubowitem
+    permission: gutitubow.gutitubowitem
+    aliases: [gitem, gi]
