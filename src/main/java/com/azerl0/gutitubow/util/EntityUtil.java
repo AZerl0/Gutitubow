@@ -15,6 +15,7 @@ public class EntityUtil {
     public static boolean isInvalidHitEntity(Entity entity) {
         if (entity instanceof Enderman) return true;
         if (entity instanceof Player && ((Player) entity).getGameMode() == GameMode.CREATIVE) return true;
+        if (entity instanceof Player && ((Player) entity).getGameMode() == GameMode.SPECTATOR) return true;
         return false;
     }
     public static void setGlow(Entity entity, NamedTextColor color) {
