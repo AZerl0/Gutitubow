@@ -16,13 +16,11 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-import java.util.Objects;
-import java.util.UUID;
-import java.util.Random;
+import java.util.*;
 
 public class CarePackageManager {
-
     private final JavaPlugin plugin;
+    private Map<UUID, CarePackage> carePackages = new HashMap<>();
 
     public CarePackageManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -34,6 +32,7 @@ public class CarePackageManager {
         private final NamespacedKey isFallingKey = new NamespacedKey(plugin, "carePackage.isFalling");
         private final NamespacedKey fallingTickKey = new NamespacedKey(plugin, "carePackage.fallingTick");
         private final NamespacedKey remainedPotionKey = new NamespacedKey(plugin, "carePackage.remainedPotion");
+        private Set<UUID> used_players = new HashSet<>();
 
         public CarePackage(UUID uniqueId) {
             this.uuid = uniqueId;
@@ -174,12 +173,14 @@ public class CarePackageManager {
             for (Entity passenger : armorStand.getPassengers()) {
                 passenger.remove();
             }
+            carePackages.remove(armorStand.getUniqueId());
             armorStand.remove();
         }
 
         public void onInteract(Player player) {
+            if (this.used_players.contains(player.getUniqueId())) return;
             player.sendMessage("回復ポーションを入手しました");
-
+            this.used_players.add(player.getUniqueId());
             player.give(GutitubowItem.RECOVERY_POTION);
 
             if (this.getRemainedPotion() <= 1) {
@@ -190,6 +191,8 @@ public class CarePackageManager {
             this.setRemainedPotion(getRemainedPotion() - 1);
             setDisplayName(this.getRemainedPotionDisplay());
         }
+
+
 
         public void removeBalloonEntities() {
             ArmorStand armorStand = (ArmorStand) Bukkit.getEntity(this.uuid);
@@ -204,8 +207,6 @@ public class CarePackageManager {
                     }
                 }
             }
-
-
         }
 
     }
@@ -266,11 +267,12 @@ public class CarePackageManager {
         CarePackage carePackage = new CarePackage(armorStand.getUniqueId());
         carePackage.setRemainedPotion(3);
         carePackage.setDisplayName(carePackage.getRemainedPotionDisplay());
+        carePackages.put(armorStand.getUniqueId(), carePackage);
         Bukkit.getScheduler().runTaskLater(plugin, carePackage::onMove, 3L);
     }
 
     public CarePackage getCarePackage(UUID uuid) {
-        return new CarePackage(uuid);
+        return this.carePackages.get(uuid);
     }
 
     public static boolean isCarePackageEntity(Entity entity) {
