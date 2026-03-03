@@ -92,17 +92,19 @@ public class GamePlayerManager {
         }
 
         public void death(GutitubowDamageType damageType, boolean hideLog) {
-            if (!(this.player instanceof Player _player)) return;
 
             World world = this.player.getWorld();
             Location location = this.player.getLocation();
             world.spawnParticle(Particle.EXPLOSION_EMITTER, location, 3);
-            world.spawn(location, LightningStrike.class, (LightningStrike c) -> {
-            });
-            _player.setGameMode(GameMode.SPECTATOR);
-            if (hideLog) return;
-            if (damageType == GutitubowDamageType.OUTSIDE_BORDER) {
-                LogManager.broadcastDeathLog(_player);
+            world.strikeLightningEffect(location);
+            if (this.player instanceof Player _player) {
+                _player.setGameMode(GameMode.SPECTATOR);
+                if (hideLog) return;
+                if (damageType == GutitubowDamageType.OUTSIDE_BORDER) {
+                    LogManager.broadcastDeathLog(_player);
+                }
+            } else if (this.player instanceof LivingEntity livingEntity) {
+                livingEntity.damage(999999);
             }
 
         }
