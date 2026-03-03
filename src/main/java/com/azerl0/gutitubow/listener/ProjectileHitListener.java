@@ -46,6 +46,7 @@ public class ProjectileHitListener implements Listener {
 
 
         if (block != null && event.getEntity() instanceof Arrow) {
+            ((Arrow) event.getEntity()).setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
 
             if (block.getType() == Material.SLIME_BLOCK) {
                 if (ability != AbilityType.CONTROL) {
