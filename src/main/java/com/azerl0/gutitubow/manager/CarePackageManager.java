@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.manager;
 
 import com.azerl0.gutitubow.data.item.GutitubowItem;
+import com.azerl0.gutitubow.util.EntityUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
@@ -216,6 +217,7 @@ public class CarePackageManager {
         BlockDisplay blockDisplay = world.spawn(location, BlockDisplay.class, (BlockDisplay display) -> {
             display.setBlock(Material.CHEST.createBlockData());
             display.setGlowing(true);
+            EntityUtil.setGlow(display, NamedTextColor.YELLOW);
             Vector3f translation = new Vector3f(-0.5f, -0.1f, -0.5f);
             Transformation transformation = display.getTransformation();
             Transformation newTransformation = new Transformation(
