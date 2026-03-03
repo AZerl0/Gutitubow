@@ -258,9 +258,10 @@ public class GameManager {
 
                 abilityManager.setAbility(player, ability);
 
+                Component abilityMessage = Component.text("あなたの能力は「").color(NamedTextColor.GOLD).append(ability.getName()).append(Component.text("」です"));
                 Title title = Title.title(
                         Component.text("GAME START").color(NamedTextColor.GOLD),
-                        Component.text("あなたの能力は「" + ability.toString().toLowerCase() + "」です").color(NamedTextColor.GOLD),
+                        abilityMessage,
                         Title.Times.times(
                                 java.time.Duration.ofMillis(100),
                                 java.time.Duration.ofSeconds(1),
@@ -268,7 +269,7 @@ public class GameManager {
                         )
                 );
                 player.showTitle(title);
-                player.sendMessage(Component.text("あなたの能力は「" + ability.toString().toLowerCase() + "」です").color(NamedTextColor.GOLD));
+                player.sendMessage(abilityMessage);
 
                 PlayerInventory inventory = player.getInventory();
                 inventory.clear();

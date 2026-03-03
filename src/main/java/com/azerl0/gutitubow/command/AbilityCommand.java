@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.command;
 
 import com.azerl0.gutitubow.ability.*;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -38,8 +39,13 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                 if (getPlayer == null) {
                     player.sendMessage("プレイヤーが見つかりませんでした");
                 } else {
+                    AbilityType type = abilityManager.getAbilityType(getPlayer);
+                    if (type == null) {
+                        player.sendMessage(getPlayer.getName() + "は能力を持っていません");
+                    } else {
+                        player.sendMessage(Component.text(getPlayer.getName() + "の能力は").append(type.getName()).append(Component.text("です")));
+                    }
 
-                    player.sendMessage(getPlayer.getName() + "の能力は" + abilityManager.getAbilityId(getPlayer) + "です");
                 }
                 return true;
 
@@ -78,7 +84,7 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                 } else {
 
                     abilityManager.setAbility(player, id);
-                    player.sendMessage(setPlayer.getName() + "のAbilityを " + id + " に設定しました！");
+                    player.sendMessage(Component.text(setPlayer.getName() + "のAbilityを ").append(id.getName()).append(Component.text(" に設定しました！")));
                 }
                 return true;
 
