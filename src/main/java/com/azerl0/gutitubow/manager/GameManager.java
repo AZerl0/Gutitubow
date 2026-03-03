@@ -7,11 +7,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.bossbar.BossBar;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -127,6 +125,11 @@ public class GameManager {
             }
             carePackageManager.removeAllCarePackage();
 
+            for (World world : Bukkit.getWorlds()) {
+                for (Arrow arrow : world.getEntitiesByClass(Arrow.class)) {
+                    arrow.remove();
+                }
+            }
         }
 
         public void start() {
