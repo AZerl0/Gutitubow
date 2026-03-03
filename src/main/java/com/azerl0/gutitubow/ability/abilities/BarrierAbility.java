@@ -44,7 +44,7 @@ public class BarrierAbility implements Ability {
         fiLLGlass(baseLoc.clone().add(1, -2, 1), baseLoc.clone().add(-1, -2, -1));
 
         baseLoc.getWorld().playSound(baseLoc, Sound.BLOCK_ANVIL_PLACE, 1.0f, 2.0f);
-        event.getPlayer().setCooldown(Material.COMPASS, 100);
+        event.getPlayer().setCooldown(Material.COMPASS, 10 * 20);
 
     }
 
