@@ -34,6 +34,9 @@ public class CarePackageCommand implements CommandExecutor, TabExecutor {
             case ("spawn"):
                 carePackageManager.summonPackage(player.getLocation());
                 break;
+            case ("killall"):
+                carePackageManager.removeAllCarePackage();
+                break;
 
         }
 
@@ -48,7 +51,7 @@ public class CarePackageCommand implements CommandExecutor, TabExecutor {
             @NotNull String @NotNull [] args
     ) {
         if (args.length == 1) {
-            return List.of("spawn");
+            return List.of("spawn", "killall");
         }
         return List.of();
     }

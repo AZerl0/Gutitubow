@@ -3,7 +3,6 @@ package com.azerl0.gutitubow.manager;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
@@ -274,5 +273,15 @@ public class CarePackageManager {
 
     public static boolean isCarePackageEntity(Entity entity) {
         return entity.getScoreboardTags().contains("gutitubow.carePackageEntity");
+    }
+
+    public void removeAllCarePackage(){
+        for (World world : Bukkit.getWorlds()) {
+            for (ArmorStand armorStand : world.getEntitiesByClass(ArmorStand.class)) {
+                if (!isCarePackageEntity(armorStand)) return;
+                CarePackage carePackage = getCarePackage(armorStand.getUniqueId());
+                carePackage.remove();
+            }
+        }
     }
 }
