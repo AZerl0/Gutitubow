@@ -2,15 +2,19 @@ package com.azerl0.gutitubow.manager;
 
 import com.azerl0.gutitubow.ability.AbilityManager;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.data.item.GutitubowItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -241,7 +245,6 @@ public class GameManager {
                 player.teleport(location);
 
                 GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(player);
-                gamePlayer.firstElytra();
 
                 int randomIndex = random.nextInt(0, abilityTypeList.size());
                 AbilityType ability = abilityTypeList.get(randomIndex);
@@ -262,6 +265,14 @@ public class GameManager {
                         )
                 );
                 player.showTitle(title);
+                player.sendMessage(Component.text("あなたの能力は「" + ability.toString().toLowerCase() + "」です").color(NamedTextColor.GOLD));
+
+                PlayerInventory inventory = player.getInventory();
+                inventory.clear();
+                inventory.setItem(0, GutitubowItem.GUTITUBOW);
+                inventory.setItem(7, ItemStack.of(Material.SPYGLASS));
+                gamePlayer.firstElytra();
+                gamePlayer.setArrowAmount(0);
             }
         }
 
