@@ -23,13 +23,22 @@ public class GameManager {
     private final MapManager mapManager;
     private final DebugManager debugManager;
     private final GamePlayerManager gamePlayerManager;
+    private final CarePackageManager carePackageManager;
 
-    public GameManager(JavaPlugin plugin, AbilityManager abilityManager, MapManager mapManager, DebugManager debugManager, GamePlayerManager gamePlayerManager) {
+    public GameManager(
+            JavaPlugin plugin,
+            AbilityManager abilityManager,
+            MapManager mapManager,
+            DebugManager debugManager,
+            GamePlayerManager gamePlayerManager,
+            CarePackageManager carePackageManager
+    ) {
         this.plugin = plugin;
         this.mapManager = mapManager;
         this.abilityManager = abilityManager;
         this.debugManager = debugManager;
         this.gamePlayerManager = gamePlayerManager;
+        this.carePackageManager = carePackageManager;
     }
 
     public Game newGame() {
@@ -112,6 +121,7 @@ public class GameManager {
                 gamePlayer.resetMaxArrowStackSize();
                 gamePlayer.resetArrowReloadTick();
             }
+            carePackageManager.removeAllCarePackage();
 
         }
 
