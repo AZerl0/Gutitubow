@@ -3,15 +3,12 @@ package com.azerl0.gutitubow;
 import com.azerl0.gutitubow.command.*;
 import com.azerl0.gutitubow.listener.*;
 import com.azerl0.gutitubow.manager.*;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
+import com.azerl0.gutitubow.util.EntityUtil;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.ability.abilities.*;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
 public final class Gutitubow extends JavaPlugin {
     private DebugManager debugManager;
@@ -73,15 +70,7 @@ public final class Gutitubow extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // グローバル発光カラー用スコアボードの削除
-        Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
-        for (NamedTextColor color : NamedTextColor.NAMES.values()) {
-
-            Team team = board.getTeam("glow_" + color.toString().toLowerCase());
-            if (team != null) {
-                team.unregister();
-            }
-        }
+        EntityUtil.removeAllGlowTeam();
 
         game.reset();
     }

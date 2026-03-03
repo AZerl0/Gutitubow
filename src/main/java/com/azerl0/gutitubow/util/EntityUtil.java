@@ -10,23 +10,34 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 public class EntityUtil {
+    static Scoreboard glowBoard = Bukkit.getScoreboardManager().getMainScoreboard();
+
     public static boolean isInvalidHitEntity(Entity entity) {
         if (entity instanceof Enderman) return true;
         if (entity instanceof Player && ((Player) entity).getGameMode() == GameMode.CREATIVE) return true;
         return false;
     }
     public static void setGlow(Entity entity, NamedTextColor color) {
-        Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 
         String teamName = "glow_" + color.toString().toLowerCase();
-        Team team = board.getTeam(teamName);
+        Team team = glowBoard.getTeam(teamName);
 
         if (team == null) {
-            team = board.registerNewTeam(teamName);
+            team = glowBoard.registerNewTeam(teamName);
             team.color(color);
         }
 
         team.addEntry(entity.getUniqueId().toString());
         entity.setGlowing(true);
+    }
+
+    public static void removeAllGlowTeam() {
+        for (NamedTextColor color : NamedTextColor.NAMES.values()) {
+
+            Team team = glowBoard.getTeam("glow_" + color.toString().toLowerCase());
+            if (team != null) {
+                team.unregister();
+            }
+        }
     }
 }
