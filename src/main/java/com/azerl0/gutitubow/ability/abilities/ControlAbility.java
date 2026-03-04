@@ -110,7 +110,7 @@ public class ControlAbility implements Ability {
                         0
                 );
 
-                @NotNull Vector v = event.getEntity().getEyeLocation().getDirection().multiply(0.5);
+                @NotNull Vector v = event.getEntity().getEyeLocation().getDirection().multiply(0.75);
 
                 arrow.setVelocity(v);
 
