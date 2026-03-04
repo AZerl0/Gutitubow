@@ -37,7 +37,7 @@ public class GamePlayerListener implements Listener {
         if (!(event.getEntity() instanceof Player player)) return;
 
         GamePlayerManager.GamePlayer gamePlayer = this.gamePlayerManager.getGamePlayer(player);
-        gamePlayer.consumeArrow();
+        gamePlayer.removeArrow(1);
 
         Ability ability = abilityManager.getAbility(player);
         if (ability != null) {

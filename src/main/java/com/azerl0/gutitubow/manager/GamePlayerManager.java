@@ -26,10 +26,7 @@ public class GamePlayerManager {
     private final NamespacedKey playerTotalHitKey;
     private final NamespacedKey gutitubowArrowItemKey;
     private final Map<UUID, Integer> playerBorderOutsideTimers = new HashMap<>();
-    private BukkitTask borderOutsideTimerTask = null;
-    private BukkitTask arrowReloadTask = null;
-    private BukkitTask firstElytraTask = null;
-
+    private final Map<UUID, GamePlayer> gamePlayers = new HashMap<>();
 
 
     public GamePlayerManager(JavaPlugin plugin) {
@@ -41,12 +38,20 @@ public class GamePlayerManager {
     }
 
     public GamePlayer getGamePlayer(Entity player) {
-        return new GamePlayer(player);
+        if (!gamePlayers.containsKey(player.getUniqueId())) {
+            gamePlayers.put(player.getUniqueId(), new GamePlayer(player));
+        }
+        return gamePlayers.get(player.getUniqueId());
+
     }
 
 
     public class GamePlayer {
         private final Entity player;
+        private BukkitTask borderOutsideTimerTask = null;
+        private BukkitTask arrowReloadTask = null;
+        private BukkitTask firstElytraTask = null;
+
 
         public GamePlayer(Entity player) {
             this.player = player;
@@ -112,7 +117,6 @@ public class GamePlayerManager {
         public void death(GutitubowDamageType damageType) {
             this.death(damageType, false);
         }
-
 
 
         private int getBorderOutsideTicks() {
@@ -183,7 +187,8 @@ public class GamePlayerManager {
         }
 
         public int getMaxArrowStackSize() {
-            if (!this.player.getPersistentDataContainer().has(playerArrowMaxStackSizeKey)) this.resetMaxArrowStackSize();
+            if (!this.player.getPersistentDataContainer().has(playerArrowMaxStackSizeKey))
+                this.resetMaxArrowStackSize();
             return this.player.getPersistentDataContainer().getOrDefault(playerArrowMaxStackSizeKey, PersistentDataType.INTEGER, 0);
         }
 
@@ -240,18 +245,20 @@ public class GamePlayerManager {
             int slot = this.getArrowItemSlot();
             if (slot == -1) slot = this.getCanAddArrowSlot();
             if (slot != -1) player.getInventory().setItem(slot, getArrowItem(amount));
+            this.updateArrow();
+
         }
 
         public void addArrow(int amount) {
-            setArrowAmount(getArrowAmount() + amount);
+            this.setArrowAmount(getArrowAmount() + amount);
         }
 
         public void addArrow() {
-            addArrow(1);
+            this.addArrow(1);
         }
 
         public void removeArrow(int amount) {
-            setArrowAmount(getArrowAmount() - amount);
+            this.setArrowAmount(getArrowAmount() - amount);
         }
 
         public void removeArrow() {
@@ -303,12 +310,16 @@ public class GamePlayerManager {
             return -1;
         }
 
-        public void consumeArrow() {
+        public void updateArrow() {
             if (!(this.player instanceof Player player)) return;
 
-            this.removeArrow(1);
+            if (this.getArrowAmount() >= this.getMaxArrowStackSize()) {
+                arrowReloadTask = null;
+                return;
+            }
 
-            if (arrowReloadTask != null && !arrowReloadTask.isCancelled()) return;
+
+            if (arrowReloadTask != null ) return;
 
             arrowReloadTask = new BukkitRunnable() {
                 @Override
@@ -321,41 +332,42 @@ public class GamePlayerManager {
                         return;
                     }
 
+                    if (!player.isOnline()) {
+                        cancel();
+                        arrowReloadTask = null;
+                        return;
+                    }
+
                     gamePlayer.addArrow(1);
                 }
-            }.runTaskTimer(plugin, getArrowReloadTick(), getArrowReloadTick());
+            }.runTaskTimer(plugin, this.getArrowReloadTick(), getArrowReloadTick());
         }
 
         public void firstElytra() {
-            if (!(this.player instanceof Player player)) return;
+            if (!(this.player instanceof Player pl)) return;
 
             ItemStack elytra = ItemStack.of(Material.ELYTRA);
             ItemMeta meta = elytra.getItemMeta();
-            meta.addEnchant(Enchantment.BINDING_CURSE,1, true);
+            meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
             meta.setUnbreakable(true);
             elytra.setItemMeta(meta);
-
-            player.getInventory().setChestplate(elytra);
+            pl.getInventory().setChestplate(elytra);
 
             if (firstElytraTask != null && !firstElytraTask.isCancelled()) return;
-
             firstElytraTask = new BukkitRunnable() {
-
                 private boolean startedGliding = false;
 
                 @Override
                 public void run() {
-
-                    if (player.isGliding()) {
+                    if (pl.isGliding()) {
                         startedGliding = true;
                         return;
                     }
-
                     if (startedGliding) {
-                        player.getInventory().setChestplate(new ItemStack(Material.AIR));
+                        pl.getInventory().setChestplate(new ItemStack(Material.AIR));
                         this.cancel();
                     }
-                    player.setGliding(true);
+                    pl.setGliding(true);
                 }
             }.runTaskTimer(plugin, 1L, 1L);
         }
