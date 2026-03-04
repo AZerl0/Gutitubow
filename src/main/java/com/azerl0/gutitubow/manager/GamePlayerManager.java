@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.manager;
 
 import com.azerl0.gutitubow.data.GutitubowDamageType;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
@@ -204,8 +205,13 @@ public class GamePlayerManager {
             int reload = this.getArrowReloadTick();
             if (reload > 3 * 20) {
                 this.setArrowReloadTick(reload - 20);
-                Component message = Component.text("リロード時間短縮");
+                Component message = Component.text("[!]").color(NamedTextColor.GOLD)
+                        .append(Component.text(" リロード時間短縮").color(NamedTextColor.AQUA)
+                                .append(Component.text(" の強化を得た！").color(NamedTextColor.WHITE))
+                        );
+                this.player.sendMessage(Component.empty());
                 this.player.sendMessage(message);
+                this.player.sendMessage(Component.empty());
                 return true;
             } else {
                 return false;
@@ -216,8 +222,13 @@ public class GamePlayerManager {
             int size = this.getMaxArrowStackSize();
             if (size < 3) {
                 this.setMaxArrowStackSize(size + 1);
-                Component message = Component.text("矢最大保持数の強化");
+                Component message = Component.text("[!]").color(NamedTextColor.GOLD)
+                        .append(Component.text(" 矢所持数増加").color(NamedTextColor.AQUA)
+                                .append(Component.text(" の強化を得た！").color(NamedTextColor.WHITE))
+                        );
+                this.player.sendMessage(Component.empty());
                 this.player.sendMessage(message);
+                this.player.sendMessage(Component.empty());
                 return true;
             } else {
                 return false;
