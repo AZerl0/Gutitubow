@@ -64,7 +64,7 @@ public class RicochetAbility implements Ability {
 
             int ricochetDamageCount = getRicochetDamageCount(arrow);
             Location loc = arrow.getLocation();
-            double damageRadius = 2.5;
+            double damageRadius = 2.0;
             for (Entity entity : world.getNearbyEntities(loc, damageRadius, damageRadius, damageRadius)) {
                 if (entity instanceof LivingEntity damageEntity) {
 
