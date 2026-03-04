@@ -178,6 +178,7 @@ public class CarePackageManager {
         }
 
         public void onInteract(Player player) {
+            if (player.getGameMode() == GameMode.SPECTATOR) return;
             if (this.used_players.contains(player.getUniqueId())) return;
             player.sendMessage(Component.empty());
             player.sendMessage(
