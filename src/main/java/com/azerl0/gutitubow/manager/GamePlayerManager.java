@@ -22,6 +22,7 @@ import java.util.UUID;
 
 public class GamePlayerManager {
     private final JavaPlugin plugin;
+    private final DebugManager debugManager;
     private final NamespacedKey playerArrowReloadTickKey;
     private final NamespacedKey playerArrowMaxStackSizeKey;
     private final NamespacedKey playerTotalHitKey;
@@ -30,8 +31,9 @@ public class GamePlayerManager {
     private final Map<UUID, GamePlayer> gamePlayers = new HashMap<>();
 
 
-    public GamePlayerManager(JavaPlugin plugin) {
+    public GamePlayerManager(JavaPlugin plugin, DebugManager debugManager) {
         this.plugin = plugin;
+        this.debugManager = debugManager;
         playerArrowReloadTickKey = new NamespacedKey(plugin, "gameplayer.arrowReloadTick");
         playerArrowMaxStackSizeKey = new NamespacedKey(plugin, "gameplayer.arrowMaxStackSize");
         playerTotalHitKey = new NamespacedKey(plugin, "player.totalHIt");
@@ -60,6 +62,8 @@ public class GamePlayerManager {
 
         public void damage(double amount, Entity entity, double distance) {
             if (!(this.player instanceof LivingEntity livingEntity)) return;
+
+            if (!(entity instanceof Player) && !debugManager.isCanMobHit()) return;
 
             if (livingEntity.getHealth() <= amount) {
                 this.kill(entity, distance);
