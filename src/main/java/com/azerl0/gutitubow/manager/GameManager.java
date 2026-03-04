@@ -13,6 +13,8 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.CompassMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -284,6 +286,13 @@ public class GameManager {
                 inventory.clear();
                 inventory.setItem(0, GutitubowItem.GUTITUBOW);
                 inventory.setItem(7, ItemStack.of(Material.SPYGLASS));
+
+                ItemStack compass = ItemStack.of(Material.COMPASS);
+                CompassMeta compassMeta = (CompassMeta) compass.getItemMeta();
+                compassMeta.setLodestone(this.map.getCenter());
+                compass.setItemMeta(compassMeta);
+                inventory.setItem(6, compass);
+
                 gamePlayer.firstElytra();
                 gamePlayer.setArrowAmount(0);
             }
