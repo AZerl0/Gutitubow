@@ -179,7 +179,14 @@ public class CarePackageManager {
 
         public void onInteract(Player player) {
             if (this.used_players.contains(player.getUniqueId())) return;
-            player.sendMessage("回復ポーションを入手しました");
+            player.sendMessage(Component.empty());
+            player.sendMessage(
+                    Component.text("[!] ").color(NamedTextColor.RED)
+                            .append(Component.text("ケアパッケージから[").color(NamedTextColor.WHITE)
+                            .append(Component.text("回復ポーション").color(NamedTextColor.LIGHT_PURPLE))
+                            .append(Component.text("]を入手した!").color(NamedTextColor.WHITE))
+                    ));
+            player.sendMessage(Component.empty());
             this.used_players.add(player.getUniqueId());
             player.give(GutitubowItem.RECOVERY_POTION);
 

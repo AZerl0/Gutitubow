@@ -159,13 +159,13 @@ public class GameManager {
             switch (phase) {
                 case (1):
                     if (this.currentTicks == 0 || this.currentTicks == 60 * 20 || this.currentTicks == 120 * 20) {
-                        this.randomCarePackageSpawn(4);
+                        this.randomCarePackageSpawn(4, true);
                     }
                     break;
                 case (2):
                 case (3):
                     if (this.currentTicks == 0 || this.currentTicks == 60 * 20) {
-                        this.randomCarePackageSpawn(4);
+                        this.randomCarePackageSpawn(4, true);
                     }
                     break;
             }
@@ -223,7 +223,16 @@ public class GameManager {
 
         }
 
-        private void randomCarePackageSpawn(int count) {
+        private void randomCarePackageSpawn(int count, boolean showLog) {
+            if (showLog) {
+                for (World world : Bukkit.getWorlds()) {
+                    for (Player player : world.getEntitiesByClass(Player.class)) {
+                        player.sendMessage(Component.empty());
+                        player.sendMessage(Component.text("[!] ケアパッケージが投下されました！").color(NamedTextColor.RED));
+                        player.sendMessage(Component.empty());
+                    }
+                }
+            }
             for (int i = 0; i < count; i++) {
                 Location location = this.map.getRandomXZPosition(50);
                 location.setY(175);
