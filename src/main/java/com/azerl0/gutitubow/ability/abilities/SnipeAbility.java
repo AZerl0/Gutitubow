@@ -80,7 +80,7 @@ public class SnipeAbility implements Ability {
 
                 if (distance > 36.0) {
                     GamePlayerManager.GamePlayer gamePlayer = context.gamePlayerManager().getGamePlayer(entityHit.getHitEntity());
-                    gamePlayer.damage(1, player, distance);
+                    gamePlayer.damage(2, player, distance);
 
                 } else {
                     Component message =
