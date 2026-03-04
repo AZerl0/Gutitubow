@@ -4,6 +4,10 @@ import com.azerl0.gutitubow.command.*;
 import com.azerl0.gutitubow.listener.*;
 import com.azerl0.gutitubow.manager.*;
 import com.azerl0.gutitubow.util.EntityUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.GameRules;
+import org.bukkit.World;
+import org.bukkit.entity.Arrow;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -64,6 +68,21 @@ public final class Gutitubow extends JavaPlugin {
         getCommand("gutitubowdebug").setExecutor(new DebugCommand(debugManager));
 
         getLogger().info("Loaded abilities: " + AbilityRegistry.getAllIds());
+
+        for (World world : Bukkit.getWorlds()) {
+            world.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, false);
+            world.setGameRule(GameRules.LOCATOR_BAR, false);
+            world.setGameRule(GameRules.ADVANCE_TIME, false);
+            world.setGameRule(GameRules.ADVANCE_WEATHER, false);
+            world.setGameRule(GameRules.SPREAD_VINES, false);
+            world.setGameRule(GameRules.MOB_GRIEFING, false);
+            world.setGameRule(GameRules.SPAWN_MOBS, false);
+
+            for (Arrow arrow : world.getEntitiesByClass(Arrow.class)) {
+                arrow.remove();
+            }
+        }
+
 
 
     }
