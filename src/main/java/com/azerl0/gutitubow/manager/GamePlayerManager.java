@@ -253,16 +253,8 @@ public class GamePlayerManager {
             this.setArrowAmount(getArrowAmount() + amount);
         }
 
-        public void addArrow() {
-            this.addArrow(1);
-        }
-
         public void removeArrow(int amount) {
             this.setArrowAmount(getArrowAmount() - amount);
-        }
-
-        public void removeArrow() {
-            removeArrow(1);
         }
 
         private ItemStack getArrowItem(int amount) {
