@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.listener;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityManager;
+import com.azerl0.gutitubow.manager.DebugManager;
 import com.azerl0.gutitubow.manager.GamePlayerManager;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
@@ -25,10 +26,12 @@ import java.util.Random;
 public class GamePlayerListener implements Listener {
     private final GamePlayerManager gamePlayerManager;
     private final AbilityManager abilityManager;
+    private final DebugManager debugManager;
 
-    public GamePlayerListener(GamePlayerManager gamePlayerManager, AbilityManager abilityManager) {
+    public GamePlayerListener(GamePlayerManager gamePlayerManager, AbilityManager abilityManager, DebugManager debugManager) {
         this.gamePlayerManager = gamePlayerManager;
         this.abilityManager = abilityManager;
+        this.debugManager = debugManager;
     }
 
     @EventHandler
@@ -61,6 +64,10 @@ public class GamePlayerListener implements Listener {
             return;
         }
         if (EntityUtil.isInvalidHitEntity(tar)) return;
+        if (!(tar instanceof Player) && !debugManager.isCanMobHit()) {
+            event.setCancelled(true);
+            return;
+        }
         double distance = shooter.getLocation().distance(tar.getLocation());
 
         GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(tar);

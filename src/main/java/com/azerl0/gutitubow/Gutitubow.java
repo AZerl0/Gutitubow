@@ -32,7 +32,7 @@ public final class Gutitubow extends JavaPlugin {
         this.debugManager = new DebugManager(this);
         this.abilityManager = new AbilityManager(this);
         this.carePackageManager = new CarePackageManager(this);
-        this.gamePlayerManager = new GamePlayerManager(this, this.debugManager);
+        this.gamePlayerManager = new GamePlayerManager(this);
         this.mapManager = new MapManager(this);
         this.gameManager = new GameManager(this, this.abilityManager, this.mapManager, this.debugManager, this.gamePlayerManager, this.carePackageManager);
 
@@ -55,7 +55,7 @@ public final class Gutitubow extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new ProjectileHitListener(this, abilityManager), this);
         pm.registerEvents(new BowListener(abilityManager), this);
-        pm.registerEvents(new GamePlayerListener(gamePlayerManager, abilityManager), this);
+        pm.registerEvents(new GamePlayerListener(gamePlayerManager, abilityManager, debugManager), this);
         pm.registerEvents(new EntityListener(carePackageManager), this);
         pm.registerEvents(new ItemListener(), this);
         pm.registerEvents(new GameListener(), this);
