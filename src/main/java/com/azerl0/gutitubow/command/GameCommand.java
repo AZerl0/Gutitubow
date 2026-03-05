@@ -1,6 +1,6 @@
 package com.azerl0.gutitubow.command;
 
-import com.azerl0.gutitubow.manager.GameManager;
+import com.azerl0.gutitubow.game.GameManager;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,10 +13,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class GameCommand implements CommandExecutor, TabExecutor {
-    private final GameManager.Game game;
+    private final GameManager gameManager;
 
-    public GameCommand(GameManager.Game game) {
-        this.game = game;
+    public GameCommand(GameManager gameManager) {
+        this.gameManager = gameManager;
     }
 
     @Override
@@ -30,13 +30,13 @@ public class GameCommand implements CommandExecutor, TabExecutor {
 
         switch (args[0]) {
             case ("start"):
-                if (!this.game.isStarted()) {
-                    this.game.start();
+                if (!this.gameManager.isStarted()) {
+                    this.gameManager.startGame();
                     return true;
                 }
                 break;
             case ("reset"):
-                this.game.reset();
+                this.gameManager.resetGame();
                 sender.sendMessage(Component.text("ゲームをリセットしました"));
                 return true;
         }

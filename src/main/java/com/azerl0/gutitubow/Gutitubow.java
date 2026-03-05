@@ -1,8 +1,15 @@
 package com.azerl0.gutitubow;
 
+import com.azerl0.gutitubow.carepackage.CarePackageManager;
+import com.azerl0.gutitubow.carepackage.CarePackageListener;
 import com.azerl0.gutitubow.command.*;
+import com.azerl0.gutitubow.debug.DebugManager;
+import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.game.GameListener;
+import com.azerl0.gutitubow.game.GameManager;
 import com.azerl0.gutitubow.listener.*;
 import com.azerl0.gutitubow.manager.*;
+import com.azerl0.gutitubow.map.MapManager;
 import com.azerl0.gutitubow.util.EntityUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRules;
@@ -23,7 +30,7 @@ public final class Gutitubow extends JavaPlugin {
     private GameManager gameManager;
 
 
-    private GameManager.Game game;
+    private Game game;
 
     @Override
     public void onEnable() {
@@ -56,14 +63,14 @@ public final class Gutitubow extends JavaPlugin {
         pm.registerEvents(new ProjectileHitListener(this, abilityManager), this);
         pm.registerEvents(new BowListener(abilityManager), this);
         pm.registerEvents(new GamePlayerListener(gamePlayerManager, abilityManager, debugManager), this);
-        pm.registerEvents(new EntityListener(carePackageManager), this);
+        pm.registerEvents(new CarePackageListener(carePackageManager), this);
         pm.registerEvents(new ItemListener(), this);
         pm.registerEvents(new GameListener(), this);
 
         // Command登録
         getCommand("ability").setExecutor(new AbilityCommand(abilityManager));
         getCommand("carepackage").setExecutor(new CarePackageCommand(carePackageManager));
-        getCommand("game").setExecutor(new GameCommand(game));
+        getCommand("game").setExecutor(new GameCommand(gameManager));
         getCommand("gameplayer").setExecutor(new GamePlayerCommand(gamePlayerManager));
         getCommand("gutitubowdebug").setExecutor(new DebugCommand(debugManager));
 

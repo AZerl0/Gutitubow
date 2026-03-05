@@ -1,6 +1,6 @@
 package com.azerl0.gutitubow.command;
 
-import com.azerl0.gutitubow.manager.CarePackageManager;
+import com.azerl0.gutitubow.carepackage.CarePackageManager;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

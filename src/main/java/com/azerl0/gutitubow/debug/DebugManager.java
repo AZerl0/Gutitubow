@@ -1,4 +1,4 @@
-package com.azerl0.gutitubow.manager;
+package com.azerl0.gutitubow.debug;
 
 import org.bukkit.plugin.java.JavaPlugin;
 

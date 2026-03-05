@@ -1,6 +1,6 @@
 package com.azerl0.gutitubow.command;
 
-import com.azerl0.gutitubow.manager.DebugManager;
+import com.azerl0.gutitubow.debug.DebugManager;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

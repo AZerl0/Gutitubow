@@ -1,4 +1,4 @@
-package com.azerl0.gutitubow.listener;
+package com.azerl0.gutitubow.game;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

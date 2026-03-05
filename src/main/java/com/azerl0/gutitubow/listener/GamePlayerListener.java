@@ -2,7 +2,7 @@ package com.azerl0.gutitubow.listener;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityManager;
-import com.azerl0.gutitubow.manager.DebugManager;
+import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.manager.GamePlayerManager;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
