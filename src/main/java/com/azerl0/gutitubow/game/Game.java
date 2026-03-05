@@ -109,11 +109,6 @@ public class Game {
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(20);
             player.setHealth(20.0);
-
-            GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(player);
-            gamePlayer.resetTotalHit();
-            gamePlayer.resetMaxArrowStackSize();
-            gamePlayer.resetArrowReloadTick();
         }
         carePackageManager.removeAllCarePackage();
 
@@ -236,6 +231,10 @@ public class Game {
 
             GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(player);
 
+            gamePlayer.resetMaxArrowStackSize();
+            gamePlayer.resetArrowReloadTick();
+            gamePlayer.resetTotalHit();
+
             int randomIndex = random.nextInt(0, abilityTypeList.size());
             AbilityType ability = abilityTypeList.get(randomIndex);
 
@@ -347,5 +346,8 @@ public class Game {
         player.showTitle(title);
     }
 
+    public void handlePlayerDeath() {
+
+    }
 
 }

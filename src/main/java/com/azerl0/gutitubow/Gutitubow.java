@@ -84,6 +84,8 @@ public final class Gutitubow extends JavaPlugin {
             world.setGameRule(GameRules.SPREAD_VINES, false);
             world.setGameRule(GameRules.MOB_GRIEFING, false);
             world.setGameRule(GameRules.SPAWN_MOBS, false);
+            world.setGameRule(GameRules.MOB_DROPS, false);
+            world.setGameRule(GameRules.PLAYER_MOVEMENT_CHECK, false);
 
             for (Arrow arrow : world.getEntitiesByClass(Arrow.class)) {
                 arrow.remove();
