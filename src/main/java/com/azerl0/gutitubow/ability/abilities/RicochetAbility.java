@@ -3,7 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
-import com.azerl0.gutitubow.manager.GamePlayerManager;
+import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.EntityUtil;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -13,7 +13,7 @@ import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -46,7 +46,8 @@ public class RicochetAbility implements Ability {
     public void onArrowHit(ProjectileHitEvent event) {
         Arrow arrow = (Arrow) event.getEntity();
         World world = arrow.getWorld();
-        Entity shooter = (Entity) arrow.getShooter();
+
+        if (!(arrow.getShooter() instanceof Player shooterPlayer)) return;
 
         int ricochetCount = getRicochetCount(arrow);
         if (ricochetCount > 0) {
@@ -66,13 +67,12 @@ public class RicochetAbility implements Ability {
             Location loc = arrow.getLocation();
             double damageRadius = 2.0;
             for (Entity entity : world.getNearbyEntities(loc, damageRadius, damageRadius, damageRadius)) {
-                if (entity instanceof LivingEntity damageEntity) {
+                if (entity instanceof Player damageEntity) {
 
-                    GamePlayerManager gamePlayerManager = context.gamePlayerManager();
-                    GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(damageEntity);
+                    Game game = context.game();
 
-                    if (shooter != null && !damageEntity.getUniqueId().equals(shooter.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damageEntity)) {
-                        gamePlayer.damage(0.5, shooter);
+                    if (!damageEntity.getUniqueId().equals(shooterPlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damageEntity)) {
+                        game.damage(damageEntity, 0.5, shooterPlayer);
                         setRicochetDamageCount(arrow, ricochetDamageCount + 1);
                     }
                 }

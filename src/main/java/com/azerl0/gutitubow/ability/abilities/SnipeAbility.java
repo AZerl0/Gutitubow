@@ -3,7 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
-import com.azerl0.gutitubow.manager.GamePlayerManager;
+import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -16,6 +16,7 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.AbstractArrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
@@ -74,13 +75,14 @@ public class SnipeAbility implements Ability {
         );
 
         if (entityHit != null) {
-            if (entityHit.getHitEntity() != null) {
+            Entity hitEntity = entityHit.getHitEntity();
+            if (hitEntity instanceof Player hitPlayer) {
                 hitPos = entityHit.getHitPosition().toLocation(player.getWorld());
                 double distance = entityHit.getHitEntity().getLocation().distance(player.getLocation());
 
                 if (distance > 36.0) {
-                    GamePlayerManager.GamePlayer gamePlayer = context.gamePlayerManager().getGamePlayer(entityHit.getHitEntity());
-                    gamePlayer.damage(2, player, distance);
+                    Game game = context.game();
+                    game.damage(hitPlayer, 2, player, distance);
 
                 } else {
                     Component message =

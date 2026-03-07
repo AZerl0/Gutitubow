@@ -3,7 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
-import com.azerl0.gutitubow.manager.GamePlayerManager;
+import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -35,7 +35,7 @@ public class QuickShotAbility implements Ability {
         Player player = event.getPlayer();
         int cooldown = player.getCooldown(Material.BOW);
         if (cooldown != 0) return;
-        GamePlayerManager.GamePlayer gamePlayer = context.gamePlayerManager().getGamePlayer(player);
+        GamePlayer gamePlayer = context.game().getGamePlayer(player);
         if (gamePlayer.getArrowAmount() == 0) return;
         QuickShot(player);
         player.setCooldown(Material.BOW, 3 * 20);
@@ -47,7 +47,7 @@ public class QuickShotAbility implements Ability {
         arrow.setShooter(player);
         arrow.setVelocity(velocity);
         ArrowUtil.setFixRotation(arrow, velocity);
-        GamePlayerManager.GamePlayer gamePlayer = context.gamePlayerManager().getGamePlayer(player);
+        GamePlayer gamePlayer = context.game().getGamePlayer(player);
         gamePlayer.removeArrow(1);
 
         player.getWorld().spawnParticle(Particle.SWEEP_ATTACK, player.getEyeLocation().add(player.getLocation().getDirection().normalize().multiply(1)), 1);

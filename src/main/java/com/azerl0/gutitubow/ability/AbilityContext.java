@@ -1,17 +1,17 @@
 package com.azerl0.gutitubow.ability;
 
-import com.azerl0.gutitubow.manager.GamePlayerManager;
+import com.azerl0.gutitubow.game.Game;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class AbilityContext {
     private final JavaPlugin plugin;
-    private final GamePlayerManager gamePlayerManager;
+    private final Game game;
 
-    public AbilityContext(JavaPlugin plugin, GamePlayerManager gamePlayerManager) {
+    public AbilityContext(JavaPlugin plugin, Game game) {
         this.plugin = plugin;
-        this.gamePlayerManager = gamePlayerManager;
+        this.game = game;
     }
 
     public JavaPlugin plugin() { return plugin; }
-    public GamePlayerManager gamePlayerManager() { return gamePlayerManager; }
+    public Game game() { return game; }
 }

@@ -3,9 +3,10 @@ package com.azerl0.gutitubow.game;
 import com.azerl0.gutitubow.ability.AbilityManager;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.carepackage.CarePackageManager;
+import com.azerl0.gutitubow.data.GutitubowDamageType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.debug.DebugManager;
-import com.azerl0.gutitubow.manager.GamePlayerManager;
+import com.azerl0.gutitubow.manager.LogManager;
 import com.azerl0.gutitubow.map.Map;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -18,10 +19,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.CompassMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 
 public class Game {
+    private JavaPlugin plugin;
     private boolean started;
     private int nextTick;
     private int currentTicks;
@@ -36,18 +39,23 @@ public class Game {
     private final DebugManager debugManager;
 
     public Game(
+            JavaPlugin plugin,
             Map map,
             CarePackageManager carePackageManager,
-            GamePlayerManager gamePlayerManager,
             AbilityManager abilityManager,
             DebugManager debugManager
     ) {
+        this.plugin = plugin;
         this.map = map;
         this.carePackageManager = carePackageManager;
-        this.gamePlayerManager = gamePlayerManager;
         this.abilityManager = abilityManager;
         this.debugManager = debugManager;
+        this.gamePlayerManager = new GamePlayerManager(plugin, this);
         reset();
+    }
+
+    public GamePlayer getGamePlayer(Player player) {
+        return gamePlayerManager.getGamePlayer(player);
     }
 
     public boolean isStarted() {
@@ -103,6 +111,8 @@ public class Game {
         this.bossBar.color(BossBar.Color.BLUE);
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             player.hideBossBar(this.bossBar);
+            GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(player);
+            gamePlayer.resetFirstElytra();
         }
         this.map.getBorder().setSize(59999968);
         this.map.getBorder().setDamageBuffer(0.0);
@@ -119,6 +129,67 @@ public class Game {
         }
     }
 
+
+    private void init() {
+        this.nextTick = 15 * 20;
+        this.map.getBorder().setCenter(this.map.getCenter());
+        this.map.getBorder().setSize(this.map.getSize());
+        Random random = new Random();
+        List<AbilityType> abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
+
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            player.showBossBar(this.bossBar);
+            Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(6);
+            player.setHealth(6);
+            Location location = this.map.getRandomXZPosition(30);
+            location.setY(200.0);
+            location.getDirection().setY(0);
+            player.teleport(location);
+
+            GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(player);
+
+            gamePlayer.resetMaxArrowStackSize();
+            gamePlayer.resetArrowReloadTick();
+            gamePlayer.resetTotalHit();
+
+            int randomIndex = random.nextInt(0, abilityTypeList.size());
+            AbilityType ability = abilityTypeList.get(randomIndex);
+
+            abilityTypeList.remove(randomIndex);
+            if (abilityTypeList.isEmpty())
+                abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
+
+            abilityManager.setAbility(player, ability);
+
+            Component abilityMessage = Component.text("あなたの能力は「").color(NamedTextColor.GOLD).append(ability.getName()).append(Component.text("」です"));
+            Title title = Title.title(
+                    Component.text("GAME START").color(NamedTextColor.GOLD),
+                    abilityMessage,
+                    Title.Times.times(
+                            java.time.Duration.ofMillis(100),
+                            java.time.Duration.ofSeconds(1),
+                            java.time.Duration.ofMillis(500)
+                    )
+            );
+            player.showTitle(title);
+            player.sendMessage(abilityMessage);
+
+            PlayerInventory inventory = player.getInventory();
+            inventory.clear();
+            inventory.setItem(0, GutitubowItem.GUTITUBOW);
+            inventory.setItem(7, ItemStack.of(Material.SPYGLASS));
+
+            ItemStack compass = ItemStack.of(Material.COMPASS);
+            CompassMeta compassMeta = (CompassMeta) compass.getItemMeta();
+            compassMeta.setLodestone(this.map.getCenter());
+            compass.setItemMeta(compassMeta);
+            inventory.setItem(6, compass);
+
+            gamePlayer.firstElytra();
+            gamePlayer.setArrowAmount(0);
+        }
+    }
+
     public void tick() {
         this.update();
     }
@@ -127,7 +198,7 @@ public class Game {
     private void update() {
         this.currentTicks++;
 
-        if (this.currentTicks > this.nextTick && this.phase != 7) phaseUpdate();
+        if (this.currentTicks > this.nextTick && this.phase != 7) this.phaseUpdate();
 
         switch (phase) {
             case (1):
@@ -143,7 +214,7 @@ public class Game {
                 break;
         }
 
-        this.bossBar.progress((float) (this.phase == 7 ? 0.0 : 1.0 - getProgress()));
+        this.bossBar.progress((float) (this.phase == 7 ? 0.0 : 1.0 - this.getProgress()));
 
         int remainedSeconds = (this.nextTick - this.currentTicks) / 20;
         String remainedText = this.phase == 0 ? "セーフエリア決定まで後 " : this.isShrinking ? "次のフェーズまで後 " : "縮小開始まで後 ";
@@ -210,66 +281,6 @@ public class Game {
             Location location = this.map.getRandomXZPosition(50);
             location.setY(175);
             carePackageManager.summonPackage(location);
-        }
-    }
-
-    private void init() {
-        this.nextTick = 15 * 20;
-        this.map.getBorder().setCenter(this.map.getCenter());
-        this.map.getBorder().setSize(this.map.getSize());
-        Random random = new Random();
-        List<AbilityType> abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
-
-        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            player.showBossBar(this.bossBar);
-            Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(6);
-            player.setHealth(6);
-            Location location = this.map.getRandomXZPosition(30);
-            location.setY(200.0);
-            location.getDirection().setY(0);
-            player.teleport(location);
-
-            GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(player);
-
-            gamePlayer.resetMaxArrowStackSize();
-            gamePlayer.resetArrowReloadTick();
-            gamePlayer.resetTotalHit();
-
-            int randomIndex = random.nextInt(0, abilityTypeList.size());
-            AbilityType ability = abilityTypeList.get(randomIndex);
-
-            abilityTypeList.remove(randomIndex);
-            if (abilityTypeList.isEmpty())
-                abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
-
-            abilityManager.setAbility(player, ability);
-
-            Component abilityMessage = Component.text("あなたの能力は「").color(NamedTextColor.GOLD).append(ability.getName()).append(Component.text("」です"));
-            Title title = Title.title(
-                    Component.text("GAME START").color(NamedTextColor.GOLD),
-                    abilityMessage,
-                    Title.Times.times(
-                            java.time.Duration.ofMillis(100),
-                            java.time.Duration.ofSeconds(1),
-                            java.time.Duration.ofMillis(500)
-                    )
-            );
-            player.showTitle(title);
-            player.sendMessage(abilityMessage);
-
-            PlayerInventory inventory = player.getInventory();
-            inventory.clear();
-            inventory.setItem(0, GutitubowItem.GUTITUBOW);
-            inventory.setItem(7, ItemStack.of(Material.SPYGLASS));
-
-            ItemStack compass = ItemStack.of(Material.COMPASS);
-            CompassMeta compassMeta = (CompassMeta) compass.getItemMeta();
-            compassMeta.setLodestone(this.map.getCenter());
-            compass.setItemMeta(compassMeta);
-            inventory.setItem(6, compass);
-
-            gamePlayer.firstElytra();
-            gamePlayer.setArrowAmount(0);
         }
     }
 
@@ -348,6 +359,55 @@ public class Game {
 
     public void handlePlayerDeath() {
 
+    }
+
+    public void damage(Player player, double amount, Player attacker, double distance) {
+
+        if (player.getHealth() <= amount) {
+            this.kill(player, attacker, distance);
+
+        } else {
+            player.damage(amount);
+            LogManager.broadcastHitLog(player, player, distance);
+        }
+    }
+
+    public void damage(Player player, double amount, GutitubowDamageType damageType) {
+
+        if (player.getHealth() <= amount) {
+            this.death(player, damageType, false);
+
+        } else {
+            player.damage(amount);
+        }
+    }
+
+    public void damage(Player player, double amount, Player attacker) {
+        double distance = player.getLocation().distance(attacker.getLocation());
+        damage(player, amount, attacker, distance);
+
+    }
+
+    public void kill(Player player, Player attacker, double distance) {
+        this.death(player, GutitubowDamageType.ARROW_SHOT, true);
+        LogManager.broadcastKillLog(attacker, player, distance);
+    }
+
+    public void death(Player player, GutitubowDamageType damageType, boolean hideLog) {
+
+        World world = player.getWorld();
+        Location location = player.getLocation();
+        world.spawnParticle(Particle.EXPLOSION_EMITTER, location, 3);
+        world.strikeLightningEffect(location);
+        player.setGameMode(GameMode.SPECTATOR);
+        if (hideLog) return;
+        if (damageType == GutitubowDamageType.OUTSIDE_BORDER) {
+            LogManager.broadcastDeathLog(player);
+        }
+    }
+
+    public void death(Player player, GutitubowDamageType damageType) {
+        this.death(player, damageType, false);
     }
 
 }

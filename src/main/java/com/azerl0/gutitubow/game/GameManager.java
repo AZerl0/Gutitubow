@@ -3,7 +3,6 @@ package com.azerl0.gutitubow.game;
 import com.azerl0.gutitubow.ability.AbilityManager;
 import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.debug.DebugManager;
-import com.azerl0.gutitubow.manager.GamePlayerManager;
 import com.azerl0.gutitubow.map.MapManager;
 
 import net.kyori.adventure.text.Component;
@@ -17,7 +16,6 @@ public class GameManager {
     private final AbilityManager abilityManager;
     private final MapManager mapManager;
     private final DebugManager debugManager;
-    private final GamePlayerManager gamePlayerManager;
     private final CarePackageManager carePackageManager;
     private final Game game;
     private BukkitTask gameTask;
@@ -27,20 +25,18 @@ public class GameManager {
             AbilityManager abilityManager,
             MapManager mapManager,
             DebugManager debugManager,
-            GamePlayerManager gamePlayerManager,
             CarePackageManager carePackageManager
     ) {
         this.plugin = plugin;
         this.mapManager = mapManager;
         this.abilityManager = abilityManager;
         this.debugManager = debugManager;
-        this.gamePlayerManager = gamePlayerManager;
         this.carePackageManager = carePackageManager;
         game = newGame();
     }
 
     public Game newGame() {
-        return new Game(mapManager.getTestMap(), carePackageManager, gamePlayerManager, abilityManager, debugManager);
+        return new Game(plugin, mapManager.getTestMap(), carePackageManager, abilityManager, debugManager);
     }
 
     public void resetGame() {

@@ -3,7 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
-import com.azerl0.gutitubow.manager.GamePlayerManager;
+import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.util.EntityUtil;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
@@ -46,13 +46,12 @@ public class BombAbility implements Ability {
 
                 double damageRadius = 2;
                 for (Entity entity : world.getNearbyEntities(loc, damageRadius, damageRadius, damageRadius)) {
-                    if (entity instanceof LivingEntity damageEntity) {
+                    if (entity instanceof Player damageEntity) {
 
-                        GamePlayerManager gamePlayerManager = context.gamePlayerManager();
-                        GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(damageEntity);
+                        Game game = context.game();
 
                         if (!shooter.getUniqueId().equals(damageEntity.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damageEntity)) {
-                            gamePlayer.damage(0.5, event.getPlayer());
+                            game.damage(damageEntity, 0.5, event.getPlayer());
                         }
                     }
                 }

@@ -4,11 +4,8 @@ import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.carepackage.CarePackageListener;
 import com.azerl0.gutitubow.command.*;
 import com.azerl0.gutitubow.debug.DebugManager;
-import com.azerl0.gutitubow.game.Game;
-import com.azerl0.gutitubow.game.GameListener;
-import com.azerl0.gutitubow.game.GameManager;
+import com.azerl0.gutitubow.game.*;
 import com.azerl0.gutitubow.listener.*;
-import com.azerl0.gutitubow.manager.*;
 import com.azerl0.gutitubow.map.MapManager;
 import com.azerl0.gutitubow.util.EntityUtil;
 import org.bukkit.Bukkit;
@@ -39,17 +36,18 @@ public final class Gutitubow extends JavaPlugin {
         this.debugManager = new DebugManager(this);
         this.abilityManager = new AbilityManager(this);
         this.carePackageManager = new CarePackageManager(this);
-        this.gamePlayerManager = new GamePlayerManager(this);
         this.mapManager = new MapManager(this);
-        this.gameManager = new GameManager(this, this.abilityManager, this.mapManager, this.debugManager, this.gamePlayerManager, this.carePackageManager);
-
+        this.gameManager = new GameManager(this, this.abilityManager, this.mapManager, this.debugManager, this.carePackageManager);
         // MainGame
         this.game = gameManager.newGame();
+
+        this.gamePlayerManager = new GamePlayerManager(this, game);
+
 
 
 
         // Ability登録
-        AbilityContext abilityContext = new AbilityContext(this, gamePlayerManager);
+        AbilityContext abilityContext = new AbilityContext(this, game);
         AbilityRegistry.register(new RicochetAbility(abilityContext));
         AbilityRegistry.register(new BombAbility(abilityContext));
         AbilityRegistry.register(new ControlAbility(abilityContext));
@@ -62,7 +60,7 @@ public final class Gutitubow extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new ProjectileHitListener(this, abilityManager), this);
         pm.registerEvents(new BowListener(abilityManager), this);
-        pm.registerEvents(new GamePlayerListener(gamePlayerManager, abilityManager, debugManager), this);
+        pm.registerEvents(new GamePlayerListener(game, abilityManager), this);
         pm.registerEvents(new CarePackageListener(carePackageManager), this);
         pm.registerEvents(new ItemListener(), this);
         pm.registerEvents(new GameListener(gameManager), this);

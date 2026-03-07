@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.command;
 
-import com.azerl0.gutitubow.manager.GamePlayerManager;
+import com.azerl0.gutitubow.game.GamePlayer;
+import com.azerl0.gutitubow.game.GamePlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -30,7 +31,7 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
     ) {
         if (!(sender instanceof Player player)) return true;
         Player target;
-        GamePlayerManager.GamePlayer gamePlayer;
+        GamePlayer gamePlayer;
 
         switch (args[0]) {
             case ("data"):

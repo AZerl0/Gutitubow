@@ -1,15 +1,12 @@
-package com.azerl0.gutitubow.listener;
+package com.azerl0.gutitubow.game;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityManager;
-import com.azerl0.gutitubow.debug.DebugManager;
-import com.azerl0.gutitubow.manager.GamePlayerManager;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,14 +21,12 @@ import org.bukkit.event.player.PlayerToggleSprintEvent;
 import java.util.Random;
 
 public class GamePlayerListener implements Listener {
-    private final GamePlayerManager gamePlayerManager;
+    private final Game game;
     private final AbilityManager abilityManager;
-    private final DebugManager debugManager;
 
-    public GamePlayerListener(GamePlayerManager gamePlayerManager, AbilityManager abilityManager, DebugManager debugManager) {
-        this.gamePlayerManager = gamePlayerManager;
+    public GamePlayerListener(Game game, AbilityManager abilityManager) {
+        this.game = game;
         this.abilityManager = abilityManager;
-        this.debugManager = debugManager;
     }
 
     @EventHandler
@@ -39,7 +34,7 @@ public class GamePlayerListener implements Listener {
 
         if (!(event.getEntity() instanceof Player player)) return;
 
-        GamePlayerManager.GamePlayer gamePlayer = this.gamePlayerManager.getGamePlayer(player);
+        GamePlayer gamePlayer = this.game.getGamePlayer(player);
         gamePlayer.removeArrow(1);
 
         Ability ability = abilityManager.getAbility(player);
@@ -64,18 +59,18 @@ public class GamePlayerListener implements Listener {
             return;
         }
         if (EntityUtil.isInvalidHitEntity(tar)) return;
-        if (!(tar instanceof Player) && !debugManager.isCanMobHit()) {
+
+        if (!(tar instanceof Player tarPlayer)) {
             event.setCancelled(true);
             return;
         }
+        if (!(shooter instanceof Player shooterPlayer)) return;
+
         double distance = shooter.getLocation().distance(tar.getLocation());
 
-        GamePlayerManager.GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(tar);
-        if (tar instanceof LivingEntity livingTar) {
-            gamePlayer.damage(2, shooter, distance);
-        }
+        this.game.damage(tarPlayer, 2, shooterPlayer, distance);
 
-        gamePlayer = gamePlayerManager.getGamePlayer(shooter);
+        GamePlayer gamePlayer = game.getGamePlayer(shooterPlayer);
         gamePlayer.setTotalHit(gamePlayer.getTotalHit() + 1);
         if (gamePlayer.getTotalHit() % 2 == 0) {
             Random random = new Random();
@@ -103,7 +98,7 @@ public class GamePlayerListener implements Listener {
 
         DamageType type = event.getDamageSource().getDamageType();
         if (type == DamageType.OUTSIDE_BORDER) {
-            gamePlayerManager.getGamePlayer(player).borderOutside();
+            this.game.getGamePlayer(player).borderOutside();
             event.setCancelled(true);
             return;
         }
