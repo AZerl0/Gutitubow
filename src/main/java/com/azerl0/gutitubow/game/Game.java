@@ -6,8 +6,10 @@ import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.data.GutitubowDamageType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.debug.DebugManager;
+import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.manager.LogManager;
 import com.azerl0.gutitubow.map.Map;
+import com.azerl0.gutitubow.map.MapRepairManager;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -37,6 +39,8 @@ public class Game {
     private final GamePlayerManager gamePlayerManager;
     private final AbilityManager abilityManager;
     private final DebugManager debugManager;
+    private final MapRepairManager mapRepairManager = new MapRepairManager();
+    private final GlassBreakManager glassBreakManager = new GlassBreakManager(mapRepairManager);
 
     public Game(
             JavaPlugin plugin,
@@ -127,6 +131,10 @@ public class Game {
                 arrow.remove();
             }
         }
+
+        this.mapRepairManager.repairPlacedBlocks();
+        this.mapRepairManager.repairBrokeBlocks();
+        this.mapRepairManager.reset();
     }
 
 
@@ -408,6 +416,18 @@ public class Game {
 
     public void death(Player player, GutitubowDamageType damageType) {
         this.death(player, damageType, false);
+    }
+
+    public MapRepairManager getMapRepairManager() {
+        return this.mapRepairManager;
+    }
+
+    public GlassBreakManager getGlassBreakManager() {
+        return this.glassBreakManager;
+    }
+
+    public AbilityManager getAbilityManager() {
+        return this.abilityManager;
     }
 
 }

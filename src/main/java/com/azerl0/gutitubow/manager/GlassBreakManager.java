@@ -1,17 +1,23 @@
 package com.azerl0.gutitubow.manager;
 
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
+import com.azerl0.gutitubow.map.MapRepairManager;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 public class GlassBreakManager {
+    MapRepairManager mapRepairManager;
+
+    public GlassBreakManager(MapRepairManager mapRepairManager) {
+        this.mapRepairManager = mapRepairManager;
+    }
 
     public boolean breakConnectedGlass(Block block, int limit) {
         Material type = block.getType();
 
         if (!GutitubowBlockTags.BREAKABLE_BY_GUTITUBOW_ARROW.contains(type)) return false;
 
-
+        mapRepairManager.savedBrokeBlock(block);
         block.breakNaturally(true);
 
         if (limit <= 0) return true;

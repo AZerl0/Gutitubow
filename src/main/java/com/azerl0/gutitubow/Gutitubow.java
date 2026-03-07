@@ -58,17 +58,16 @@ public final class Gutitubow extends JavaPlugin {
 
         // Listener登録
         PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new ProjectileHitListener(this, abilityManager), this);
         pm.registerEvents(new BowListener(abilityManager), this);
         pm.registerEvents(new GamePlayerListener(game, abilityManager), this);
         pm.registerEvents(new CarePackageListener(carePackageManager), this);
         pm.registerEvents(new ItemListener(), this);
-        pm.registerEvents(new GameListener(gameManager), this);
+        pm.registerEvents(new GameListener(this, game), this);
 
         // Command登録
         getCommand("ability").setExecutor(new AbilityCommand(abilityManager));
         getCommand("carepackage").setExecutor(new CarePackageCommand(carePackageManager));
-        getCommand("game").setExecutor(new GameCommand(gameManager));
+        getCommand("game").setExecutor(new GameCommand(gameManager, game));
         getCommand("gameplayer").setExecutor(new GamePlayerCommand(gamePlayerManager));
         getCommand("gutitubowdebug").setExecutor(new DebugCommand(debugManager));
 

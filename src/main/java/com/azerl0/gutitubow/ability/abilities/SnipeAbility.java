@@ -31,7 +31,7 @@ public class SnipeAbility implements Ability {
 
     public SnipeAbility(AbilityContext context) {
         this.context = context;
-        this.breakManager = new GlassBreakManager();
+        this.breakManager = context.game().getGlassBreakManager();
     }
 
     public final AbilityType getType() {

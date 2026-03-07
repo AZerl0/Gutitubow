@@ -39,7 +39,7 @@ public class GameManager {
         return new Game(plugin, mapManager.getTestMap(), carePackageManager, abilityManager, debugManager);
     }
 
-    public void resetGame() {
+    public void resetGame(Game game) {
         game.reset();
     }
 
@@ -47,7 +47,7 @@ public class GameManager {
         return game.isStarted();
     }
 
-    public void startGame() {
+    public void startGame(Game game) {
         if (game == null || game.isStarted()) return;
 
         Bukkit.getServer().broadcast(Component.text("start"));

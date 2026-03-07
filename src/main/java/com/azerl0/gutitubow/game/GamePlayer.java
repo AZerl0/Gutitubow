@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.game;
 
+import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.data.GutitubowDamageType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -43,7 +44,9 @@ public class GamePlayer {
         gutitubowArrowItemKey = new NamespacedKey(this.plugin, "gutitubow.arrow");
     }
 
-
+    public Ability getAbility() {
+        return game.getAbilityManager().getAbility(this.player);
+    }
 
 
     private int getBorderOutsideTicks() {

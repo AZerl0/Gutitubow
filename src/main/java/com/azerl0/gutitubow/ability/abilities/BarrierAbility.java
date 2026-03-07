@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.map.MapRepairManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -101,6 +102,9 @@ public class BarrierAbility implements Ability {
 
         if (!(type == Material.AIR || type == Material.WATER)) return;
 
+        MapRepairManager mapRepairManager = context.game().getMapRepairManager();
+
+        mapRepairManager.savedPlacedBlock(block);
         block.setType(Material.GLASS);
     }
 }
