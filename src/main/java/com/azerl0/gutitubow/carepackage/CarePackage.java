@@ -156,15 +156,16 @@ public class CarePackage {
     }
 
     public void remove() {
-        ArmorStand armorStand = (ArmorStand) Bukkit.getEntity(this.uuid);
-        if (armorStand == null) return;
+        Entity coreEntity = getCoreEntity();
+
+        if (coreEntity == null) return;
 
         this.removeBalloonEntities();
 
-        for (Entity passenger : armorStand.getPassengers()) {
+        for (Entity passenger : coreEntity.getPassengers()) {
             passenger.remove();
         }
-        armorStand.remove();
+        coreEntity.remove();
     }
 
     public void onInteract(Player player) {
@@ -193,13 +194,13 @@ public class CarePackage {
 
 
     public void removeBalloonEntities() {
-        ArmorStand armorStand = (ArmorStand) Bukkit.getEntity(this.uuid);
-        if (armorStand == null) return;
+        Entity coreEntity = getCoreEntity();
+        if (coreEntity == null) return;
 
-        for (Entity entity : armorStand.getNearbyEntities(10, 10, 10)) {
+        for (Entity entity : coreEntity.getNearbyEntities(10, 10, 10)) {
             if (entity instanceof LivingEntity living) {
                 if (living.isLeashed()) {
-                    if (living.getLeashHolder().equals(armorStand)) {
+                    if (living.getLeashHolder().equals(coreEntity)) {
                         living.remove();
                     }
                 }

@@ -8,6 +8,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Transformation;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -20,14 +21,12 @@ public class CarePackageManager {
     private final NamespacedKey remainedPotionKey;
 
 
-
     public CarePackageManager(JavaPlugin plugin) {
         this.plugin = plugin;
         isFallingKey = new NamespacedKey(plugin, "carePackage.isFalling");
         fallingTickKey = new NamespacedKey(plugin, "carePackage.fallingTick");
         remainedPotionKey = new NamespacedKey(plugin, "carePackage.remainedPotion");
     }
-
 
 
     public void summonPackage(Location location) {
@@ -60,13 +59,17 @@ public class CarePackageManager {
 
         });
 
-        ArmorStand armorStand = world.spawn(location, ArmorStand.class, (ArmorStand as) -> {
-            as.setInvisible(true);
-            Objects.requireNonNull(as.getAttribute(Attribute.SCALE)).setBaseValue(0);
-            Objects.requireNonNull(as.getAttribute(Attribute.GRAVITY)).setBaseValue(0.005f);
-            as.addPassenger(blockDisplay);
-            as.addPassenger(interaction);
-            as.addScoreboardTag("gutitubow.carePackageEntity");
+        Chicken coreEntity = world.spawn(location, Chicken.class, (Chicken core) -> {
+            core.setInvisible(true);
+            core.setInvulnerable(true);
+            core.setCollidable(false);
+            Objects.requireNonNull(core.getAttribute(Attribute.SCALE)).setBaseValue(0);
+            Objects.requireNonNull(core.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0);
+            core.setSilent(true);
+            core.addPassenger(blockDisplay);
+            core.addPassenger(interaction);
+            core.addScoreboardTag("gutitubow.carePackageEntity");
+            core.addScoreboardTag("gutitubow.carePackageCoreEntity");
         });
 
         for (int i = 0; i < 10; i++) {
@@ -76,19 +79,20 @@ public class CarePackageManager {
             double randomY = random.nextDouble(-randomRadius, randomRadius);
             world.spawn(location.clone().add(randomX, 4.5, randomY), Chicken.class, (Chicken c) -> {
                 Objects.requireNonNull(c.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0);
-                c.setLeashHolder(armorStand);
+                c.setLeashHolder(coreEntity);
                 c.addScoreboardTag("gutitubow.carePackageEntity");
                 c.setVariant(Chicken.Variant.TEMPERATE);
                 c.setInvulnerable(true);
 
             });
         }
-        CarePackage carePackage = new CarePackage(armorStand.getUniqueId(), isFallingKey, fallingTickKey, remainedPotionKey);
+        CarePackage carePackage = new CarePackage(coreEntity.getUniqueId(), isFallingKey, fallingTickKey, remainedPotionKey);
         carePackage.setRemainedPotion(3);
-        carePackages.put(armorStand.getUniqueId(), carePackage);
+        carePackages.put(coreEntity.getUniqueId(), carePackage);
         Bukkit.getScheduler().runTaskLater(plugin, carePackage::onMove, 3L);
     }
 
+    @Nullable
     public CarePackage getCarePackage(UUID uuid) {
         return this.carePackages.get(uuid);
     }
@@ -97,12 +101,17 @@ public class CarePackageManager {
         return entity.getScoreboardTags().contains("gutitubow.carePackageEntity");
     }
 
-    public void removeAllCarePackage(){
+    public static boolean isCarePackageCoreEntity(Entity entity) {
+        return entity.getScoreboardTags().contains("gutitubow.carePackageCoreEntity");
+    }
+
+    public void removeAllCarePackage() {
         for (World world : Bukkit.getWorlds()) {
-            for (ArmorStand armorStand : world.getEntitiesByClass(ArmorStand.class)) {
-                if (!isCarePackageEntity(armorStand)) return;
-                CarePackage carePackage = getCarePackage(armorStand.getUniqueId());
-                carePackage.remove();
+            for (Chicken chicken : world.getEntitiesByClass(Chicken.class)) {
+                if (!isCarePackageCoreEntity(chicken)) return;
+                CarePackage carePackage = getCarePackage(chicken.getUniqueId());
+                if (carePackage != null) carePackage.remove();
+
             }
         }
     }
