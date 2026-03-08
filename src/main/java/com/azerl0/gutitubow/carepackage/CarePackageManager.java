@@ -65,6 +65,7 @@ public class CarePackageManager {
             core.setCollidable(false);
             Objects.requireNonNull(core.getAttribute(Attribute.SCALE)).setBaseValue(0);
             Objects.requireNonNull(core.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0);
+            Objects.requireNonNull(core.getAttribute(Attribute.JUMP_STRENGTH)).setBaseValue(0);
             core.setSilent(true);
             core.addPassenger(blockDisplay);
             core.addPassenger(interaction);
