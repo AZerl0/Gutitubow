@@ -51,7 +51,7 @@ public class BombAbility implements Ability {
                         Game game = context.game();
 
                         if (!shooter.getUniqueId().equals(damageEntity.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damageEntity)) {
-                            game.damage(damageEntity, 0.5, event.getPlayer());
+                            game.damage(damageEntity, 0.5, event.getPlayer(), true);
                         }
                     }
                 }

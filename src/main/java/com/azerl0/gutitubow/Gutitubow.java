@@ -68,7 +68,7 @@ public final class Gutitubow extends JavaPlugin {
         getCommand("ability").setExecutor(new AbilityCommand(abilityManager));
         getCommand("carepackage").setExecutor(new CarePackageCommand(carePackageManager));
         getCommand("game").setExecutor(new GameCommand(gameManager, game));
-        getCommand("gameplayer").setExecutor(new GamePlayerCommand(gamePlayerManager));
+        getCommand("gameplayer").setExecutor(new GamePlayerCommand(game));
         getCommand("gutitubowdebug").setExecutor(new DebugCommand(debugManager));
 
         getLogger().info("Loaded abilities: " + AbilityRegistry.getAllIds());

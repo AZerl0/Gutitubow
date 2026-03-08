@@ -4,6 +4,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.EntityUtil;
 import de.tr7zw.nbtapi.NBT;
@@ -60,7 +61,8 @@ public class ControlAbility implements Ability {
         if (shooter == null) return;
 
         if (event.getHitEntity() == shooter) {
-            shooter.sendMessage("Collect!!");
+            GamePlayer gamePlayer = context.game().getGamePlayer(shooter);
+            if (gamePlayer.getArrowAmount() < gamePlayer.getMaxArrowStackSize()) gamePlayer.addArrow(1);
             event.setCancelled(true);
             event.getEntity().remove();
         }

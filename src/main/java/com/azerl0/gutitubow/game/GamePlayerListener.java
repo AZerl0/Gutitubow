@@ -68,22 +68,7 @@ public class GamePlayerListener implements Listener {
 
         double distance = shooter.getLocation().distance(tar.getLocation());
 
-        this.game.damage(tarPlayer, 2, shooterPlayer, distance);
-
-        GamePlayer gamePlayer = game.getGamePlayer(shooterPlayer);
-        gamePlayer.setTotalHit(gamePlayer.getTotalHit() + 1);
-        if (gamePlayer.getTotalHit() % 2 == 0) {
-            Random random = new Random();
-            if (random.nextBoolean()) {
-                if (!gamePlayer.upgradeArrowReloadTick()) {
-                    gamePlayer.upgradeMaxArrowStackSize();
-                }
-            } else {
-                if (!gamePlayer.upgradeMaxArrowStackSize()) {
-                    gamePlayer.upgradeArrowReloadTick();
-                }
-            }
-        }
+        this.game.damage(tarPlayer, 2, shooterPlayer, distance, true);
 
         event.setCancelled(true);
         event.getEntity().remove();

@@ -127,6 +127,7 @@ public class GamePlayer {
 
     public void setMaxArrowStackSize(int size) {
         this.playerArrowMaxStackSize = size;
+        this.updateArrow();
     }
 
     public void resetMaxArrowStackSize() {
@@ -240,34 +241,28 @@ public class GamePlayer {
     }
 
     public void updateArrow() {
-        if (this.getArrowAmount() >= this.getMaxArrowStackSize()) {
-            arrowReloadTask = null;
-            return;
-        }
-
 
         if (arrowReloadTask != null ) return;
 
         arrowReloadTask = new BukkitRunnable() {
             @Override
             public void run() {
-                GamePlayer gamePlayer = game.getGamePlayer(player);
-
-                if (gamePlayer.getArrowAmount() >= gamePlayer.getMaxArrowStackSize()) {
-                    cancel();
-                    arrowReloadTask = null;
-                    return;
-                }
-
                 if (!player.isOnline()) {
                     cancel();
                     arrowReloadTask = null;
                     return;
                 }
 
-                gamePlayer.addArrow(1);
+
+                if (getArrowAmount() >= getMaxArrowStackSize()) {
+                    cancel();
+                    arrowReloadTask = null;
+                    return;
+                }
+
+                addArrow(1);
             }
-        }.runTaskTimer(plugin, this.getArrowReloadTick(), getArrowReloadTick());
+        }.runTaskTimer(plugin, getArrowReloadTick(), getArrowReloadTick());
     }
 
     public void firstElytra() {

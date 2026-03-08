@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.command;
 
+import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.game.GamePlayerManager;
 import org.bukkit.Bukkit;
@@ -16,10 +17,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GamePlayerCommand implements CommandExecutor, TabExecutor {
-    private final GamePlayerManager gamePlayerManager;
+    private final Game game;
 
-    public GamePlayerCommand(GamePlayerManager gamePlayerManager) {
-        this.gamePlayerManager = gamePlayerManager;
+    public GamePlayerCommand(Game game) {
+        this.game = game;
     }
 
     @Override
@@ -48,7 +49,7 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
 
                 switch (args[1]) {
                     case ("get"):
-                        gamePlayer = this.gamePlayerManager.getGamePlayer(target);
+                        gamePlayer = game.getGamePlayer(target);
                         switch (args[3]) {
                             case ("playerTotalHit"):
                                 player.sendMessage(target.getName() + "の" + args[3] + "は" + gamePlayer.getTotalHit() + "です");
@@ -71,7 +72,7 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
                             return true;
                         }
 
-                        gamePlayer = this.gamePlayerManager.getGamePlayer(target);
+                        gamePlayer = game.getGamePlayer(target);
                         switch (args[3]) {
                             case ("playerTotalHit"):
                                 gamePlayer.setTotalHit(value);
@@ -89,7 +90,7 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
                         }
                         return true;
                     case ("reset"):
-                        gamePlayer = this.gamePlayerManager.getGamePlayer(target);
+                        gamePlayer = game.getGamePlayer(target);
                         switch (args[3]) {
                             case ("*"):
                                 gamePlayer.resetTotalHit();
@@ -144,7 +145,7 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
                     return true;
                 }
 
-                gamePlayer = this.gamePlayerManager.getGamePlayer(target);
+                gamePlayer = game.getGamePlayer(target);
                 switch (args[1]) {
                     case ("set"):
                         gamePlayer.setArrowAmount(value);

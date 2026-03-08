@@ -82,7 +82,7 @@ public class SnipeAbility implements Ability {
 
                 if (distance > 36.0) {
                     Game game = context.game();
-                    game.damage(hitPlayer, 2, player, distance);
+                    game.damage(hitPlayer, 2, player, distance, true);
 
                 } else {
                     Component message =

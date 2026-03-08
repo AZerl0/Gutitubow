@@ -139,8 +139,8 @@ public class Game {
             }
         }
 
-        this.mapRepairManager.repairPlacedBlocks();
         this.mapRepairManager.repairBrokeBlocks();
+        this.mapRepairManager.repairPlacedBlocks();
         this.mapRepairManager.reset();
     }
 
@@ -433,14 +433,30 @@ public class Game {
 
     }
 
-    public void damage(Player player, double amount, Player attacker, double distance) {
+    public void damage(Player player, double amount, Player attacker, double distance, boolean canUpgrade) {
 
         if (player.getHealth() <= amount) {
             this.kill(player, attacker, distance);
 
         } else {
             player.damage(amount);
-            LogManager.broadcastHitLog(player, player, distance);
+            if (canUpgrade) {
+                GamePlayer gamePlayer = getGamePlayer(attacker);
+                gamePlayer.setTotalHit(gamePlayer.getTotalHit() + 1);
+                if (gamePlayer.getTotalHit() % 2 == 0) {
+                    Random random = new Random();
+                    if (random.nextBoolean()) {
+                        if (!gamePlayer.upgradeArrowReloadTick()) {
+                            gamePlayer.upgradeMaxArrowStackSize();
+                        }
+                    } else {
+                        if (!gamePlayer.upgradeMaxArrowStackSize()) {
+                            gamePlayer.upgradeArrowReloadTick();
+                        }
+                    }
+                }
+            }
+            LogManager.broadcastHitLog(attacker, player, distance);
         }
     }
 
@@ -454,9 +470,9 @@ public class Game {
         }
     }
 
-    public void damage(Player player, double amount, Player attacker) {
+    public void damage(Player player, double amount, Player attacker, boolean canUpgrade) {
         double distance = player.getLocation().distance(attacker.getLocation());
-        damage(player, amount, attacker, distance);
+        damage(player, amount, attacker, distance, canUpgrade);
 
     }
 

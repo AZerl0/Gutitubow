@@ -72,7 +72,7 @@ public class RicochetAbility implements Ability {
                     Game game = context.game();
 
                     if (!damageEntity.getUniqueId().equals(shooterPlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damageEntity)) {
-                        game.damage(damageEntity, 0.5, shooterPlayer);
+                        game.damage(damageEntity, 0.5, shooterPlayer, true);
                         setRicochetDamageCount(arrow, ricochetDamageCount + 1);
                     }
                 }
