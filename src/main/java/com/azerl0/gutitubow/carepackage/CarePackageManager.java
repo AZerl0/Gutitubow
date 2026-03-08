@@ -15,7 +15,7 @@ import java.util.*;
 
 public class CarePackageManager {
     private final JavaPlugin plugin;
-    private Map<UUID, CarePackage> carePackages = new HashMap<>();
+    private final Map<UUID, CarePackage> carePackages = new HashMap<>();
     private final NamespacedKey isFallingKey;
     private final NamespacedKey fallingTickKey;
     private final NamespacedKey remainedPotionKey;
@@ -95,6 +95,10 @@ public class CarePackageManager {
     @Nullable
     public CarePackage getCarePackage(UUID uuid) {
         return this.carePackages.get(uuid);
+    }
+
+    public Collection<CarePackage> getCarePackages() {
+        return this.carePackages.values();
     }
 
     public static boolean isCarePackageEntity(Entity entity) {

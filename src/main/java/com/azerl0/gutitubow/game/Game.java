@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.game;
 
 import com.azerl0.gutitubow.ability.AbilityManager;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.carepackage.CarePackage;
 import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.data.GutitubowDamageType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
@@ -17,6 +18,7 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -398,6 +400,15 @@ public class Game {
                         Component.text("最終フェーズ").color(NamedTextColor.RED)
                                 .append(Component.text("が始まりました").color(NamedTextColor.GOLD))
                 );
+            }
+        }
+
+        for (CarePackage carePackage : carePackageManager.getCarePackages()) {
+            Entity coreEntity = carePackage.getCoreEntity();
+            if (coreEntity != null) {
+                if (!map.getBorder().isInside(coreEntity.getLocation())) {
+                    carePackage.remove();
+                }
             }
         }
 
