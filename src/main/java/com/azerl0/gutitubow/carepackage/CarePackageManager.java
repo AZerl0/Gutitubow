@@ -108,7 +108,7 @@ public class CarePackageManager {
     public void removeAllCarePackage() {
         for (World world : Bukkit.getWorlds()) {
             for (Chicken chicken : world.getEntitiesByClass(Chicken.class)) {
-                if (!isCarePackageCoreEntity(chicken)) return;
+                if (!isCarePackageCoreEntity(chicken)) continue;
                 CarePackage carePackage = getCarePackage(chicken.getUniqueId());
                 if (carePackage != null) carePackage.remove();
 
