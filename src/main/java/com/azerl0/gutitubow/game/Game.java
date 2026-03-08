@@ -159,6 +159,7 @@ public class Game {
             gamePlayer.resetMaxArrowStackSize();
             gamePlayer.resetArrowReloadTick();
             gamePlayer.resetTotalHit();
+            gamePlayer.setTotalKill(0);
 
             int randomIndex = random.nextInt(0, abilityTypeList.size());
             AbilityType ability = abilityTypeList.get(randomIndex);
@@ -398,6 +399,8 @@ public class Game {
 
     public void kill(Player player, Player attacker, double distance) {
         this.death(player, GutitubowDamageType.ARROW_SHOT, true);
+        GamePlayer gamePlayer = getGamePlayer(attacker);
+        gamePlayer.setTotalKill(gamePlayer.getTotalKill() + 1);
         LogManager.broadcastKillLog(attacker, player, distance);
     }
 

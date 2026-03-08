@@ -28,6 +28,7 @@ public class GamePlayer {
     private int playerArrowReloadTick;
     private int playerArrowMaxStackSize;
     private int playerTotalHit;
+    private int playerTotalKill;
     private int playerBorderOutsideTick;
     private final NamespacedKey gutitubowArrowItemKey;
 
@@ -40,6 +41,7 @@ public class GamePlayer {
         this.playerArrowReloadTick = 100;
         this.playerArrowMaxStackSize = 1;
         this.playerTotalHit = 0;
+        this.playerTotalKill = 0;
         this.playerBorderOutsideTick = 0;
         gutitubowArrowItemKey = new NamespacedKey(this.plugin, "gutitubow.arrow");
     }
@@ -93,6 +95,14 @@ public class GamePlayer {
 
     public void setTotalHit(int count) {
         this.playerTotalHit = count;
+    }
+
+    public int getTotalKill() {
+        return this.playerTotalKill;
+    }
+
+    public void setTotalKill(int count) {
+        this.playerTotalKill = count;
     }
 
     public void resetTotalHit() {
