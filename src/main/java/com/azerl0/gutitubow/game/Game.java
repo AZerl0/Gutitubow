@@ -429,10 +429,6 @@ public class Game {
         player.showTitle(title);
     }
 
-    public void handlePlayerDeath() {
-
-    }
-
     public void damage(Player player, double amount, Player attacker, double distance, boolean canUpgrade) {
 
         if (player.getHealth() <= amount) {
