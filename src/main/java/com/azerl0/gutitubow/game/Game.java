@@ -34,7 +34,9 @@ public class Game {
     private int currentTicks;
     private int phase;
     private boolean isShrinking;
-    private Set<Player> players;
+    private Set<UUID> players;
+    private final Set<UUID> alivePlayers  = new java.util.HashSet<>();
+    private final List<UUID> deathOrder = new ArrayList<>();
     private final BossBar bossBar = BossBar.bossBar(Component.text(""), 0.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
     private final Map map;
     private Location safeArea;
@@ -104,8 +106,12 @@ public class Game {
         return (double) this.currentTicks / (double) this.nextTick;
     }
 
-    public Set<Player> getPlayers() {
+    public Set<UUID> getPlayers() {
         return this.players;
+    }
+
+    public Set<UUID> getAlivePlayers() {
+        return this.alivePlayers;
     }
 
     public void reset() {
@@ -115,6 +121,8 @@ public class Game {
         this.phase = -1;
         this.isShrinking = false;
         this.players = new java.util.HashSet<>();
+        this.alivePlayers.clear();
+        this.deathOrder.clear();
         this.bossBar.progress(0.0f);
         this.bossBar.color(BossBar.Color.BLUE);
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
@@ -150,10 +158,13 @@ public class Game {
         this.map.getBorder().setCenter(this.map.getCenter());
         this.map.getBorder().setSize(this.map.getSize());
         safeArea = map.getRandomSafeArea();
+        deathOrder.clear();
+        alivePlayers.clear();
         Random random = new Random();
         List<AbilityType> abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
 
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            alivePlayers.add(player.getUniqueId());
             player.showBossBar(this.bossBar);
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(6);
             player.setHealth(6);
@@ -294,7 +305,7 @@ public class Game {
 
                     safeArea = newSafeArea;
                 } else {
-                    setWorldBorderToSafeAreaByProgress(oldSafeArea, (float) lastPhaseCycleCurrentTick / (float)  lastPhaseCycleTick);
+                    setWorldBorderToSafeAreaByProgress(oldSafeArea, (float) lastPhaseCycleCurrentTick / (float) lastPhaseCycleTick);
                 }
             }
 
@@ -416,6 +427,69 @@ public class Game {
         this.nextTick += 20;
     }
 
+    private void checkGameOver() {
+        if (alivePlayers.isEmpty()) {
+            gameOver();
+        } else if (alivePlayers.size() == 1) {
+            gameOver(Bukkit.getPlayer(alivePlayers.iterator().next()));
+        }
+    }
+
+    private void gameOver() {
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            player.setGameMode(GameMode.ADVENTURE);
+            player.stopSound(Sound.ENTITY_LIGHTNING_BOLT_THUNDER);
+            player.stopSound(Sound.ENTITY_LIGHTNING_BOLT_IMPACT);
+            player.playSound(player, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
+        }
+    }
+
+    private void gameOver(Player winner) {
+        gameOver();
+        GamePlayer gamePlayer = getGamePlayer(winner);
+
+        Title title = Title.title(
+                Component.text(winner.getName() + " WON!").color(NamedTextColor.GOLD),
+                Component.text(gamePlayer.getTotalKill() + "Kill, " + gamePlayer.getTotalHit() + "Hit").color(NamedTextColor.YELLOW),
+                Title.Times.times(
+                        java.time.Duration.ofMillis(100),
+                        java.time.Duration.ofSeconds(3),
+                        java.time.Duration.ofMillis(500)
+                )
+        );
+
+        deathOrder.add(winner.getUniqueId());
+
+        Component rankingComponent = Component.text("");
+
+        for (int i = 0; i < deathOrder.size(); i++) {
+            Player player = Bukkit.getPlayer(deathOrder.reversed().get(i));
+            boolean isLast = i == deathOrder.size() - 1;
+
+            if (player != null) {
+                gamePlayer = getGamePlayer(player);
+                Component abilityType = gamePlayer.getAbility().getType().getName();
+                Component playerRank = Component.text((i + 1) + "st. " + player.getName() + " [").append(abilityType).append(Component.text("]"));
+                Component playerRankingComponent = playerRank.append(Component.text(
+                        " - " + gamePlayer.getTotalKill() + "Kill, " + gamePlayer.getTotalHit() + "Hit"
+                ));
+                rankingComponent = rankingComponent.append(playerRankingComponent
+                        .color(i == 0 ? NamedTextColor.YELLOW : NamedTextColor.RED));
+
+                if (!isLast) rankingComponent = rankingComponent.append(Component.text("\n"));
+
+            }
+        }
+
+        Bukkit.getServer().broadcast(Component.text("\n§lGame Set!\n").color(NamedTextColor.LIGHT_PURPLE));
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            player.showTitle(title);
+            player.sendMessage(rankingComponent);
+        }
+        reset();
+
+    }
+
     private void showSubtitle(Player player, Component subtitle) {
         Title title = Title.title(
                 Component.empty(),
@@ -473,23 +547,39 @@ public class Game {
     }
 
     public void kill(Player player, Player attacker, double distance) {
-        this.death(player, GutitubowDamageType.ARROW_SHOT, true);
         GamePlayer gamePlayer = getGamePlayer(attacker);
         gamePlayer.setTotalKill(gamePlayer.getTotalKill() + 1);
         LogManager.broadcastKillLog(attacker, player, distance);
+        this.death(player, GutitubowDamageType.ARROW_SHOT, true);
     }
 
     public void death(Player player, GutitubowDamageType damageType, boolean hideLog) {
-
         World world = player.getWorld();
         Location location = player.getLocation();
         world.spawnParticle(Particle.EXPLOSION_EMITTER, location, 3);
         world.strikeLightningEffect(location);
+        Title title = Title.title(
+                Component.text("You Died!").color(NamedTextColor.RED),
+                Component.empty(),
+                Title.Times.times(
+                        java.time.Duration.ofMillis(500),
+                        java.time.Duration.ofSeconds(3),
+                        java.time.Duration.ofMillis(500)
+                )
+        );
+        player.showTitle(title);
+
+        UUID uuid = player.getUniqueId();
         player.setGameMode(GameMode.SPECTATOR);
-        if (hideLog) return;
-        if (damageType == GutitubowDamageType.OUTSIDE_BORDER) {
-            LogManager.broadcastDeathLog(player);
+        alivePlayers.remove(uuid);
+        deathOrder.remove(uuid);
+        deathOrder.add(uuid);
+        if (!hideLog) {
+            if (damageType == GutitubowDamageType.OUTSIDE_BORDER) {
+                LogManager.broadcastDeathLog(player);
+            }
         }
+        checkGameOver();
     }
 
     public void death(Player player, GutitubowDamageType damageType) {
