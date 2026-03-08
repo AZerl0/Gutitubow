@@ -28,7 +28,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.*;
 
 public class Game {
-    private JavaPlugin plugin;
+    private final JavaPlugin plugin;
     private boolean started;
     private int nextTick;
     private int currentTicks;
@@ -436,6 +436,7 @@ public class Game {
     }
 
     private void gameOver() {
+        this.started = false;
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             player.setGameMode(GameMode.ADVENTURE);
             player.stopSound(Sound.ENTITY_LIGHTNING_BOLT_THUNDER);
@@ -570,16 +571,22 @@ public class Game {
         player.showTitle(title);
 
         UUID uuid = player.getUniqueId();
-        player.setGameMode(GameMode.SPECTATOR);
-        alivePlayers.remove(uuid);
-        deathOrder.remove(uuid);
-        deathOrder.add(uuid);
+        if (isStarted()) {
+            player.setGameMode(GameMode.SPECTATOR);
+            alivePlayers.remove(uuid);
+            deathOrder.remove(uuid);
+            deathOrder.add(uuid);
+
+        } else {
+            double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getBaseValue();
+            player.setHealth(maxHealth);
+        }
         if (!hideLog) {
             if (damageType == GutitubowDamageType.OUTSIDE_BORDER) {
                 LogManager.broadcastDeathLog(player);
             }
         }
-        checkGameOver();
+        if (!isStarted()) checkGameOver();
     }
 
     public void death(Player player, GutitubowDamageType damageType) {
