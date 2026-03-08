@@ -7,8 +7,8 @@ import org.bukkit.util.Vector;
 import java.util.Random;
 
 public class Map {
-    private Location center;
-    private double size;
+    private final Location center;
+    private final double size;
 
     public Map(Location center, double size) {
         this.center = center;
@@ -27,10 +27,6 @@ public class Map {
         return this.size;
     }
 
-    public void setCenter(Location location) {
-        this.center = location;
-    }
-
     public Location getRandomXZPosition(double borderOffset) {
         Random random = new Random();
 
@@ -47,5 +43,13 @@ public class Map {
         return this.center.clone().add(vector);
     }
 
+    public Location getRandomSafeArea() {
+        Random random = new Random();
+        Location area = this.center.clone();
+        double sizeOffset = size / 2 - 75;
+        area.setX(center.clone().getX() + random.nextDouble(-sizeOffset, sizeOffset));
+        area.setZ(center.clone().getZ() + random.nextDouble(-sizeOffset, sizeOffset));
+        return area;
+    }
 
 }

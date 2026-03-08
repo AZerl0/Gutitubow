@@ -20,7 +20,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.CompassMeta;
+import org.bukkit.util.Vector;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -35,6 +35,8 @@ public class Game {
     private Set<Player> players;
     private final BossBar bossBar = BossBar.bossBar(Component.text(""), 0.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
     private final Map map;
+    private Location safeArea;
+    private Location oldSafeArea;
     private final CarePackageManager carePackageManager;
     private final GamePlayerManager gamePlayerManager;
     private final AbilityManager abilityManager;
@@ -118,12 +120,15 @@ public class Game {
             GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(player);
             gamePlayer.resetFirstElytra();
         }
-        this.map.getBorder().setSize(59999968);
-        this.map.getBorder().setDamageBuffer(0.0);
+        map.getBorder().setCenter(0.0, 0.0);
+        map.getBorder().setSize(59999968);
+        map.getBorder().setDamageBuffer(0.0);
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(20);
             player.setHealth(20.0);
         }
+
+        this.safeArea = map.getCenter();
         carePackageManager.removeAllCarePackage();
 
         for (World world : Bukkit.getWorlds()) {
@@ -142,6 +147,7 @@ public class Game {
         this.nextTick = 15 * 20;
         this.map.getBorder().setCenter(this.map.getCenter());
         this.map.getBorder().setSize(this.map.getSize());
+        safeArea = map.getRandomSafeArea();
         Random random = new Random();
         List<AbilityType> abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
 
@@ -189,10 +195,9 @@ public class Game {
             inventory.setItem(7, ItemStack.of(Material.SPYGLASS));
 
             ItemStack compass = ItemStack.of(Material.COMPASS);
-            CompassMeta compassMeta = (CompassMeta) compass.getItemMeta();
-            compassMeta.setLodestone(this.map.getCenter());
-            compass.setItemMeta(compassMeta);
             inventory.setItem(6, compass);
+
+            player.setCompassTarget(safeArea);
 
             gamePlayer.firstElytra();
             gamePlayer.setArrowAmount(0);
@@ -264,6 +269,33 @@ public class Game {
                 player.showTitle(title);
             }
 
+            if (phase > 0 && phase < 6 && isShrinking) {
+                setWorldBorderToSafeAreaByProgress(map.getCenter(), getShrinkProgress());
+            }
+
+            if (phase == 7) {
+                int lastPhaseCycleTick = 15 * 20;
+                int lastPhaseCycleCurrentTick = currentTicks % lastPhaseCycleTick;
+                if (lastPhaseCycleCurrentTick == 0) {
+                    oldSafeArea = safeArea;
+                    Location newSafeArea = map.getRandomSafeArea();
+
+                    double maxDistance = 15.0;
+
+                    Vector diff = newSafeArea.toVector().subtract(safeArea.toVector());
+                    double distance = diff.length();
+
+                    if (distance > maxDistance) {
+                        diff.normalize().multiply(maxDistance);
+                        newSafeArea = safeArea.clone().add(diff);
+                    }
+
+                    safeArea = newSafeArea;
+                } else {
+                    setWorldBorderToSafeAreaByProgress(oldSafeArea, (float) lastPhaseCycleCurrentTick / (float)  lastPhaseCycleTick);
+                }
+            }
+
             if (remainedSeconds <= 10 && this.currentTicks % 20 == 0 && this.phase != 7) {
                 player.playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             }
@@ -274,6 +306,26 @@ public class Game {
 
         }
 
+    }
+
+    private float getShrinkProgress() {
+        if (phase > 0 && phase < 6) {
+            float phaseTick = (30 * 20 + 20);
+            float base = phaseTick * 5;
+            float current = phaseTick * (phase - 1) + currentTicks;
+            return current / base;
+        }
+        return 0.0f;
+    }
+
+    private void setWorldBorderToSafeAreaByProgress(Location start, float progress) {
+        WorldBorder border = map.getBorder();
+        if (progress >= 0.0f && progress <= 1.0f) {
+            Vector offset = safeArea.toVector().subtract(start.toVector()).multiply(progress);
+            border.setCenter(start.clone().add(offset));
+        } else {
+            border.setCenter(start);
+        }
     }
 
     private void randomCarePackageSpawn(int count, boolean showLog) {
