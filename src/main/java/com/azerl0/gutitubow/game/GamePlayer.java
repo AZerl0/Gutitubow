@@ -290,8 +290,7 @@ public class GamePlayer {
                     return;
                 }
                 if (startedGliding) {
-                    player.getInventory().setChestplate(new ItemStack(Material.AIR));
-                    this.cancel();
+                    resetFirstElytra();
                 }
                 player.setGliding(true);
             }
@@ -300,6 +299,7 @@ public class GamePlayer {
 
     public void resetFirstElytra() {
         if (this.firstElytraTask == null) return;
+        player.getInventory().setChestplate(new ItemStack(Material.AIR));
         this.firstElytraTask.cancel();
     }
 }
