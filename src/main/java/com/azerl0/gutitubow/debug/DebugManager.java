@@ -5,12 +5,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class DebugManager {
     private final JavaPlugin plugin;
     private boolean quick_phase;
-    private boolean can_mob_hit;
+    private boolean no_start_teleport;
 
     public DebugManager(JavaPlugin plugin) {
         this.plugin = plugin;
         this.quick_phase = false;
-        this.can_mob_hit = false;
+        this.no_start_teleport = false;
     }
 
     public boolean isQuickPhase() {
@@ -21,12 +21,12 @@ public class DebugManager {
         this.quick_phase = quick_phase;
     }
 
-    public boolean isCanMobHit() {
-        return this.can_mob_hit;
+    public boolean isNoStartTeleport() {
+        return this.no_start_teleport;
     }
 
-    public void setCanMobHit(boolean can_mob_hit) {
-        this.can_mob_hit = can_mob_hit;
+    public void setNoStartTeleport(boolean no_start_teleport) {
+        this.no_start_teleport = no_start_teleport;
     }
 
 }

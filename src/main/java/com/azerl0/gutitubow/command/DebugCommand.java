@@ -47,9 +47,9 @@ public class DebugCommand implements CommandExecutor, TabExecutor {
                 }
                 return true;
 
-            case ("can_mob_hit"):
+            case ("no_start_teleport"):
                 if (args.length <= 1) {
-                    player.sendMessage(Component.text(args[0] + "は" + this.debugManager.isCanMobHit() + "に設定されています"));
+                    player.sendMessage(Component.text(args[0] + "は" + this.debugManager.isNoStartTeleport() + "に設定されています"));
 
                 } else {
                     boolean value;
@@ -59,7 +59,7 @@ public class DebugCommand implements CommandExecutor, TabExecutor {
                         player.sendMessage(error.toString());
                         return true;
                     }
-                    this.debugManager.setCanMobHit(value);
+                    this.debugManager.setNoStartTeleport(value);
                     player.sendMessage(Component.text(args[0] + "が" + args[1] + "に設定されました"));
                 }
                 return true;
@@ -74,7 +74,7 @@ public class DebugCommand implements CommandExecutor, TabExecutor {
             @NotNull String label,
             @NotNull String @NotNull [] args
     ) {
-        if (args.length == 1) return List.of("quick_phase", "can_mob_hit");
+        if (args.length == 1) return List.of("quick_phase", "no_start_teleport");
         if (args.length == 2) return List.of("true", "false");
         return List.of();
     }

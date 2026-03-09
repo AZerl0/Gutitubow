@@ -35,7 +35,7 @@ public class Game {
     private int phase;
     private boolean isShrinking;
     private Set<UUID> players;
-    private final Set<UUID> alivePlayers  = new java.util.HashSet<>();
+    private final Set<UUID> alivePlayers = new java.util.HashSet<>();
     private final List<UUID> deathOrder = new ArrayList<>();
     private final BossBar bossBar = BossBar.bossBar(Component.text(""), 0.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
     private final Map map;
@@ -74,6 +74,10 @@ public class Game {
 
     public void start() {
         this.started = true;
+        this.players.clear();
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            this.players.add(player.getUniqueId());
+        }
     }
 
     private enum phaseTicks {
@@ -136,6 +140,11 @@ public class Game {
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(20);
             player.setHealth(20.0);
+            for (Player otherPlayer : Bukkit.getServer().getOnlinePlayers()) {
+                if (player.getUniqueId() != otherPlayer.getUniqueId()) {
+                    player.showPlayer(plugin, otherPlayer);
+                }
+            }
         }
 
         this.safeArea = map.getCenter();
@@ -163,15 +172,19 @@ public class Game {
         Random random = new Random();
         List<AbilityType> abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
 
-        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            alivePlayers.add(player.getUniqueId());
+        for (UUID uuid : this.players) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null || !player.isOnline()) continue;
+            alivePlayers.add(uuid);
             player.showBossBar(this.bossBar);
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(6);
             player.setHealth(6);
-            Location location = this.map.getRandomXZPosition(30);
-            location.setY(200.0);
-            location.getDirection().setY(0);
-            player.teleport(location);
+            if (!debugManager.isNoStartTeleport()) {
+                Location location = this.map.getRandomXZPosition(30);
+                location.setY(200.0);
+                location.getDirection().setY(0);
+                player.teleport(location);
+            }
 
             GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(player);
 
@@ -212,8 +225,15 @@ public class Game {
 
             player.setCompassTarget(safeArea);
 
-            gamePlayer.firstElytra();
+            if (!debugManager.isNoStartTeleport()) gamePlayer.firstElytra();
             gamePlayer.setArrowAmount(0);
+
+            for (UUID otherPlayerUUID : players) {
+                Player target = Bukkit.getPlayer(otherPlayerUUID);
+                if (target != null && player.getUniqueId() != target.getUniqueId()) {
+                    player.hidePlayer(plugin, target);
+                }
+            }
         }
     }
 
@@ -280,6 +300,22 @@ public class Game {
                         )
                 );
                 player.showTitle(title);
+            }
+
+            if (phase == 0 && (currentTicks + 10) % 20 == 0) {
+                for (UUID uuid : alivePlayers) {
+                    Player target = Bukkit.getPlayer(uuid);
+                    if (target != null && uuid != player.getUniqueId()) {
+                        Location base = target.getLocation();
+                        player.spawnParticle(
+                                Particle.SMOKE,
+                                base.clone().add(0.0, 1.0, 0.0),
+                                30,
+                                1.25, 1.5, 1.25,
+                                0
+                        );
+                    }
+                }
             }
 
             if (phase > 0 && phase < 6 && isShrinking) {
@@ -411,6 +447,14 @@ public class Game {
                         Component.text("最終フェーズ").color(NamedTextColor.RED)
                                 .append(Component.text("が始まりました").color(NamedTextColor.GOLD))
                 );
+            }
+            if (this.phase == 1 && !isShrinking) {
+                for (UUID uuid : players) {
+                    Player target = Bukkit.getPlayer(uuid);
+                    if (target != null) {
+                        player.showPlayer(plugin, target);
+                    }
+                }
             }
         }
 
