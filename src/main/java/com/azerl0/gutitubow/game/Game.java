@@ -456,6 +456,21 @@ public class Game {
                     }
                 }
             }
+
+            if (phase >= 1 && phase <= 5 && isShrinking) {
+                if (!isInsideNextSafeArea(player.getLocation())) {
+                    Title title = Title.title(
+                            Component.empty(),
+                            Component.text("セーフエリア外にいる！ コンパスの方向に向かえ！").color(NamedTextColor.DARK_RED),
+                            Title.Times.times(
+                                    java.time.Duration.ofMillis(500),
+                                    java.time.Duration.ofMillis(2000),
+                                    java.time.Duration.ofMillis(500)
+                            )
+                    );
+                    player.showTitle(title);
+                }
+            }
         }
 
         for (CarePackage carePackage : carePackageManager.getCarePackages()) {
@@ -647,6 +662,28 @@ public class Game {
 
     public AbilityManager getAbilityManager() {
         return this.abilityManager;
+    }
+
+    public boolean isInsideNextSafeArea(Location location) {
+        double size = 300;
+        switch (phase) {
+            case (0):
+            case (1):
+                size = 150;
+            case (2):
+                size = 105;
+            case (3):
+                size = 63;
+            case (4):
+                size = 31;
+            case (5):
+                size = 10;
+        }
+
+        Location center = safeArea;
+        return Math.abs(center.getX() - location.getX()) <= size
+                && Math.abs(center.getZ() - location.getZ()) <= size;
+
     }
 
 }
