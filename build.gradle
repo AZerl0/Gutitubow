@@ -59,3 +59,9 @@ processResources {
         expand props
     }
 }
+
+tasks.register('deployPlugin', Copy) {
+    dependsOn jar
+    from(tasks.jar)
+    into(serverPluginsDir)
+}
