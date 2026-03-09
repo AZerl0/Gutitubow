@@ -630,7 +630,7 @@ public class Game {
                 LogManager.broadcastDeathLog(player);
             }
         }
-        if (!isStarted()) checkGameOver();
+        if (isStarted()) checkGameOver();
     }
 
     public void death(Player player, GutitubowDamageType damageType) {
