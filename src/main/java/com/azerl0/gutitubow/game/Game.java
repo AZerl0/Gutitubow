@@ -471,6 +471,20 @@ public class Game {
                     player.showTitle(title);
                 }
             }
+
+            if (phase >= 1 && phase <= 5 && !isShrinking) {
+                if (Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getValue() - player.getHealth() < 2.0) {
+                    player.give(GutitubowItem.RECOVERY_POTION);
+                    player.sendMessage(Component.text("\n[!]").color(NamedTextColor.GOLD)
+                            .append(Component.text("フェーズを生き延びたため、回復ポーションを入手しました。\n").color(NamedTextColor.GREEN))
+                    );
+                } else {
+                    player.setHealth(player.getHealth() + 2.0);
+                    player.sendMessage(Component.text("\n[!]").color(NamedTextColor.GOLD)
+                            .append(Component.text("フェーズを生き延びたため、体力が回復しました。\n").color(NamedTextColor.GREEN))
+                    );
+                }
+            }
         }
 
         for (CarePackage carePackage : carePackageManager.getCarePackages()) {
