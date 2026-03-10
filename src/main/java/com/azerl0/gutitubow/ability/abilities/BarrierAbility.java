@@ -20,10 +20,12 @@ public class BarrierAbility implements Ability {
         this.context = context;
     }
 
+    @Override
     public final AbilityType getType() {
         return AbilityType.BARRIER;
     }
 
+    @Override
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
 
         int cooldown = event.getPlayer().getCooldown(Material.COMPASS);

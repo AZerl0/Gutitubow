@@ -35,10 +35,12 @@ public class ControlAbility implements Ability {
         this.collectingKey = new NamespacedKey(context.plugin(), "collecting");
     }
 
+    @Override
     public final AbilityType getType() {
         return AbilityType.CONTROL;
     }
 
+    @Override
     public void onArrowLaunch(EntityShootBowEvent event) {
         Arrow arrow = (Arrow) event.getProjectile();
 
@@ -77,6 +79,7 @@ public class ControlAbility implements Ability {
 
     }
 
+    @Override
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
         int cooldown = event.getPlayer().getCooldown(event.getPlayer().getInventory().getItemInMainHand());
         if (cooldown != 0) return;

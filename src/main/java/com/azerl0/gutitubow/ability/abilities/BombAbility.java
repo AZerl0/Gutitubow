@@ -21,10 +21,12 @@ public class BombAbility implements Ability {
         this.context = context;
     }
 
+    @Override
     public final AbilityType getType() {
         return AbilityType.BOMB;
     }
 
+    @Override
     public void onArrowLaunch(EntityShootBowEvent event) {
         Arrow arrow = (Arrow) event.getProjectile();
         EntityUtil.setGlow(arrow, NamedTextColor.RED);
@@ -32,7 +34,7 @@ public class BombAbility implements Ability {
         arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_TNT_PRIMED, 1.0f, 1.0f);
     }
 
-
+    @Override
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
 
         for (World world : Bukkit.getWorlds()) {

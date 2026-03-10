@@ -39,10 +39,12 @@ public class DashAbility implements Ability {
         this.replacedBlocks = new java.util.HashSet<>();
     }
 
+    @Override
     public final AbilityType getType() {
         return AbilityType.DASH;
     }
 
+    @Override
     public void onToggleSprint(PlayerToggleSprintEvent event) {
         Player player = event.getPlayer();
 
@@ -111,6 +113,7 @@ public class DashAbility implements Ability {
         undoWater();
     }
 
+    @Override
     public void onPressJumpKey(PlayerInputEvent event) {
         Player player = event.getPlayer();
         if (this.dashingTick >= topSpeedTick) {
@@ -120,10 +123,12 @@ public class DashAbility implements Ability {
         stopSprinting(player);
     }
 
+    @Override
     public void onJump(PlayerJumpEvent event) {
         stopSprinting(event.getPlayer());
     }
 
+    @Override
     public void onPlayerRightClickBow(PlayerInteractEvent event) {
         stopSprinting(event.getPlayer());
     }
@@ -160,7 +165,6 @@ public class DashAbility implements Ability {
             }
         }
     }
-
 
     private void undoWater() {
         for (Block block : this.replacedBlocks) {

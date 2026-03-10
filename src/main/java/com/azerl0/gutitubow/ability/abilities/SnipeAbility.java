@@ -34,10 +34,12 @@ public class SnipeAbility implements Ability {
         this.breakManager = context.game().getGlassBreakManager();
     }
 
+    @Override
     public final AbilityType getType() {
         return AbilityType.SNIPE;
     }
 
+    @Override
     public void onArrowLaunch(EntityShootBowEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
         if (!player.isSneaking()) return;

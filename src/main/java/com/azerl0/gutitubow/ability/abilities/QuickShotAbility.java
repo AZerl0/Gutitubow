@@ -21,6 +21,7 @@ public class QuickShotAbility implements Ability {
         this.context = context;
     }
 
+    @Override
     public final AbilityType getType() {
         return AbilityType.QUICKSHOT;
     }
@@ -31,6 +32,7 @@ public class QuickShotAbility implements Ability {
         if (player != null && event.getHitEntity() != null) player.setCooldown(Material.BOW, 0);
     }
 
+    @Override
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         int cooldown = player.getCooldown(Material.BOW);

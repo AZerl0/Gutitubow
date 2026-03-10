@@ -29,10 +29,12 @@ public class RicochetAbility implements Ability {
         this.ricochetDamageCountKey = new NamespacedKey(context.plugin(), "ricochetDamageCount");
     }
 
+    @Override
     public final AbilityType getType() {
         return AbilityType.RICOCHET;
     }
 
+    @Override
     public void onArrowLaunch(EntityShootBowEvent event) {
         Arrow arrow = (Arrow) event.getProjectile();
 
