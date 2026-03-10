@@ -16,6 +16,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInputEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 
 import java.util.Random;
@@ -124,5 +125,12 @@ public class GamePlayerListener implements Listener {
         Ability ability = abilityManager.getAbility(event.getPlayer());
         if (ability != null) ability.onPressJumpKey(event);
 
+    }
+
+
+    @EventHandler
+    public void onToggleFlight(PlayerToggleFlightEvent event) {
+        Ability ability = abilityManager.getAbility(event.getPlayer());
+        if (ability != null) ability.onToggleFlight(event);
     }
 }

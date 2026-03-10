@@ -38,10 +38,16 @@ public class AbilityManager {
     }
 
     public void setAbility(Player player, AbilityType type) {
+        Ability ability = getAbility(player);
+        if (ability != null) ability.reset(player);
         playerAbilities.put(player.getUniqueId(), type.toString());
+        Ability newAbility = getAbility(player);
+        if (newAbility != null) newAbility.init(player);
     }
 
     public void resetAbility(Player player) {
+        Ability ability = getAbility(player);
+        if (ability != null) ability.reset(player);
         playerAbilities.put(player.getUniqueId(), "None");
     }
 }
