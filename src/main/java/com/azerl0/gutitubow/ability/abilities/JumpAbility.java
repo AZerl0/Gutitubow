@@ -21,7 +21,7 @@ public class JumpAbility implements Ability {
     private final AbilityContext context;
     private BukkitTask task = null;
     private int charge;
-    private final int aa = 40;
+    private final int gaugeCount = 40;
 
     public JumpAbility(AbilityContext context) {
         this.context = context;
@@ -49,12 +49,12 @@ public class JumpAbility implements Ability {
 
     public void update(Player player) {
         charge++;
-        if (charge > aa * 10) charge = aa * 10;
-        if (((Entity) player).isOnGround()) player.setAllowFlight(true);
+        if (charge > gaugeCount * 10) charge = gaugeCount * 10;
+        if (((Entity) player).isOnGround() && charge >= gaugeCount) player.setAllowFlight(true);
 
         Component chargeText = Component.text("");
         for (int i = 0; i < 10; i ++) {
-            TextColor color = charge - aa * i >= aa ? NamedTextColor.GREEN : NamedTextColor.GRAY;
+            TextColor color = charge - gaugeCount * i >= gaugeCount ? NamedTextColor.GREEN : NamedTextColor.GRAY;
             chargeText =  chargeText.append(Component.text("■").color(color));
         }
         Component message = Component.text("跳躍チャージ: [").append(chargeText).append(Component.text("]").color(NamedTextColor.WHITE));
@@ -74,10 +74,14 @@ public class JumpAbility implements Ability {
         Player player = event.getPlayer();
         if (player.getGameMode() == GameMode.CREATIVE) return;
         if (!event.isFlying()) return;
+        if (charge < gaugeCount) {
+            event.setCancelled(true);
+            return;
+        }
 
         Vector velocity = player.getLocation().clone().getDirection();
         if (velocity.getY() < 0.4) velocity.setY(0.4);
-        player.setVelocity(velocity.multiply(MathUtil.getLerp(charge, 0, aa * 10, 0.0, 2.25)));
+        player.setVelocity(velocity.multiply(MathUtil.getLerp(charge, 0, gaugeCount * 10, 0.0, 2.25)));
         World world = player.getWorld();
         Location location = player.getLocation();
         player.playSound(location, Sound.ENTITY_BAT_TAKEOFF, 1.0f, 1.0f);
