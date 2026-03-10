@@ -7,6 +7,7 @@ import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.data.GutitubowDamageType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.debug.DebugManager;
+import com.azerl0.gutitubow.game.scoreboard.GameInfoScoreboard;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.manager.LogManager;
 import com.azerl0.gutitubow.map.Map;
@@ -47,6 +48,7 @@ public class Game {
     private final DebugManager debugManager;
     private final MapRepairManager mapRepairManager = new MapRepairManager();
     private final GlassBreakManager glassBreakManager = new GlassBreakManager(mapRepairManager);
+    private final GameInfoScoreboard gameInfoScoreboard;
 
     public Game(
             JavaPlugin plugin,
@@ -62,6 +64,7 @@ public class Game {
         this.debugManager = debugManager;
         this.gamePlayerManager = new GamePlayerManager(plugin, this);
         reset();
+        this.gameInfoScoreboard = new GameInfoScoreboard(this);
     }
 
     public GamePlayer getGamePlayer(Player player) {
@@ -145,6 +148,7 @@ public class Game {
                     player.showPlayer(plugin, otherPlayer);
                 }
             }
+            updateGameInfoScoreboard(player);
         }
 
         this.safeArea = map.getCenter();
@@ -234,6 +238,7 @@ public class Game {
                     player.hidePlayer(plugin, target);
                 }
             }
+            updateGameInfoScoreboard(player);
         }
     }
 
@@ -678,26 +683,27 @@ public class Game {
         return this.abilityManager;
     }
 
-    public boolean isInsideNextSafeArea(Location location) {
-        double size = 300;
-        switch (phase) {
-            case (0):
-            case (1):
-                size = 150;
-            case (2):
-                size = 105;
-            case (3):
-                size = 63;
-            case (4):
-                size = 31;
-            case (5):
-                size = 10;
-        }
+    public boolean isInsideNextSafeArea(Location loc) {
 
-        Location center = safeArea;
-        return Math.abs(center.getX() - location.getX()) <= size
-                && Math.abs(center.getZ() - location.getZ()) <= size;
+        if (!loc.getWorld().equals(safeArea.getWorld())) return false;
 
+        double size = switch (phase) {
+            case 0, 1 -> 150;
+            case 2 -> 105;
+            case 3 -> 63;
+            case 4 -> 31;
+            case 5, 6, 7 -> 10;
+            default -> 300;
+        };
+
+        double dx = Math.abs(loc.getX() - safeArea.getX());
+        double dz = Math.abs(loc.getZ() - safeArea.getZ());
+
+        return dx <= size / 2 && dz <= size / 2;
+    }
+
+    public void updateGameInfoScoreboard(Player player) {
+        gameInfoScoreboard.update(player);
     }
 
 }

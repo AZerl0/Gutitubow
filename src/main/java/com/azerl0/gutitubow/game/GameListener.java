@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -43,6 +44,7 @@ public class GameListener implements Listener {
             PlayerInventory inventory = player.getInventory();
             inventory.setChestplate(ItemStack.of(Material.AIR));
         }
+        game.updateGameInfoScoreboard(player);
     }
 
     @EventHandler
@@ -83,5 +85,11 @@ public class GameListener implements Listener {
 
         }
 
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        game.updateGameInfoScoreboard(player);
     }
 }
