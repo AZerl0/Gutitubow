@@ -36,6 +36,7 @@ public class JumpAbility implements Ability {
     @Override
     public void init(Player player) {
         player.setAllowFlight(true);
+        charge = 0;
         if (task != null && !task.isCancelled()) return;
 
         task = new BukkitRunnable() {
