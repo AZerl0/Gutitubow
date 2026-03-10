@@ -84,7 +84,7 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                 } else {
 
                     abilityManager.setAbility(player, id);
-                    player.sendMessage(Component.text(setPlayer.getName() + "のAbilityを ").append(id.getName()).append(Component.text(" に設定しました！")));
+                    player.sendMessage(Component.text(setPlayer.getName() + "の能力を ").append(id.getName()).append(Component.text(" に設定しました！")));
                 }
                 return true;
 
