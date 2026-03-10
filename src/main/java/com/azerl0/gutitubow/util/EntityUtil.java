@@ -10,7 +10,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 public class EntityUtil {
-    static Scoreboard glowBoard = Bukkit.getScoreboardManager().getMainScoreboard();
+    static Scoreboard glowBoard = Bukkit.getScoreboardManager().getNewScoreboard();
 
     public static boolean isInvalidHitEntity(Entity entity) {
         if (entity instanceof Enderman) return true;
@@ -20,18 +20,25 @@ public class EntityUtil {
     }
     public static void setGlow(Entity entity, NamedTextColor color) {
 
+        String entry = entity.getScoreboardEntryName();
         String teamName = "glow_" + color.toString().toLowerCase();
-        Team team = glowBoard.getTeam(teamName);
 
-        if (team == null) {
-            team = glowBoard.registerNewTeam(teamName);
-            team.color(color);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+
+            Scoreboard board = player.getScoreboard();
+
+            Team team = board.getTeam(teamName);
+
+            if (team == null) {
+                team = board.registerNewTeam(teamName);
+                team.color(color);
+            }
+
+            team.addEntry(entry);
         }
 
-        team.addEntry(entity.getUniqueId().toString());
         entity.setGlowing(true);
     }
-
     public static void removeAllGlowTeam() {
         for (NamedTextColor color : NamedTextColor.NAMES.values()) {
 
