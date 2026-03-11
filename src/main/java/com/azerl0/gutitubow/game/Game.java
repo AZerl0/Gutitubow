@@ -43,6 +43,10 @@ public class Game {
     private final Map map;
     private Location safeArea;
     private Location oldSafeArea;
+    private double nextSafeAreaMinX;
+    private double nextSafeAreaMaxX;
+    private double nextSafeAreaMinZ;
+    private double nextSafeAreaMaxZ;
     private final CarePackageManager carePackageManager;
     private final GamePlayerManager gamePlayerManager;
     private final AbilityManager abilityManager;
@@ -172,6 +176,7 @@ public class Game {
         this.map.getBorder().setCenter(this.map.getCenter());
         this.map.getBorder().setSize(this.map.getSize());
         safeArea = map.getRandomSafeArea();
+        updateNextSafeAreaSize();
         deathOrder.clear();
         alivePlayers.clear();
         Random random = new Random();
@@ -403,6 +408,7 @@ public class Game {
     private void phaseUpdate() {
         if (this.isShrinking || this.phase == -1 || this.phase == 0 || this.phase == 6) {
             this.phase += 1;
+            updateNextSafeAreaSize();
 
             if (this.phase == 0) init();
             this.bossBar.color(BossBar.Color.RED);
@@ -504,6 +510,25 @@ public class Game {
 
         this.currentTicks = 0;
         this.nextTick += 20;
+    }
+
+    private void updateNextSafeAreaSize() {
+        double size = switch (phase) {
+            case 0, 1 -> 150;
+            case 2 -> 105;
+            case 3 -> 63;
+            case 4 -> 31;
+            case 5, 6, 7 -> 10;
+            default -> 300;
+        };
+
+        double centerX = safeArea.getX();
+        double centerZ = safeArea.getZ();
+        double half = size / 2;
+        nextSafeAreaMaxX = centerX + half;
+        nextSafeAreaMinX = centerX - half;
+        nextSafeAreaMaxZ = centerZ + half;
+        nextSafeAreaMinZ = centerZ - half;
     }
 
     private void checkGameOver() {
@@ -688,19 +713,9 @@ public class Game {
 
         if (!loc.getWorld().equals(safeArea.getWorld())) return false;
 
-        double size = switch (phase) {
-            case 0, 1 -> 150;
-            case 2 -> 105;
-            case 3 -> 63;
-            case 4 -> 31;
-            case 5, 6, 7 -> 10;
-            default -> 300;
-        };
-
-        double dx = Math.abs(loc.getX() - safeArea.getX());
-        double dz = Math.abs(loc.getZ() - safeArea.getZ());
-
-        return dx <= size / 2 && dz <= size / 2;
+        double x = loc.getX();
+        double z = loc.getZ();
+        return x <= nextSafeAreaMaxX && x >= nextSafeAreaMinX && z <= nextSafeAreaMaxZ && z >= nextSafeAreaMinZ;
     }
 
 
