@@ -322,7 +322,7 @@ public class GamePlayer {
         flashParticleTask = new BukkitRunnable() {
             @Override
             public void run() {
-                if (!player.hasPotionEffect(PotionEffectType.BLINDNESS)) {
+                if (!player.isOnline() || !player.hasPotionEffect(PotionEffectType.BLINDNESS)) {
                     this.cancel();
                     flashParticleTask = null;
                     return;
