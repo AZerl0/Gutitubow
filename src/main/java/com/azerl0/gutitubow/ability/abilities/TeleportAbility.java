@@ -78,6 +78,7 @@ public class TeleportAbility implements Ability {
                         )
                 );
                 for (Player nearPlayer : player.getWorld().getNearbyPlayers(player.getLocation(), 5)) {
+                    if (nearPlayer.getUniqueId() == player.getUniqueId()) continue;
                     nearPlayer.addPotionEffect(effect);
                     nearPlayer.showTitle(title);
                 }

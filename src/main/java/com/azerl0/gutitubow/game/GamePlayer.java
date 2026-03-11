@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
@@ -34,6 +35,7 @@ public class GamePlayer {
     private int playerBorderOutsideTick;
     private final NamespacedKey gutitubowArrowItemKey;
     private PlayerBoard playerBoard;
+    private BukkitTask flashParticleTask = null;
 
 
 
@@ -312,5 +314,21 @@ public class GamePlayer {
 
     public void updatePlayerBoard() {
         this.playerBoard.update();
+    }
+
+    public void setFlashParticleTask() {
+        if (flashParticleTask != null && !flashParticleTask.isCancelled()) return;
+
+        flashParticleTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!player.hasPotionEffect(PotionEffectType.BLINDNESS)) {
+                    this.cancel();
+                    flashParticleTask = null;
+                    return;
+                }
+                player.getWorld().spawnParticle(Particle.INSTANT_EFFECT, player.getEyeLocation(),3, 0.15, 0.15, 0.15, new Particle.Spell(Color.fromRGB(255, 255, 255), 1));
+            }
+        }.runTaskTimer(plugin, 0L, 1L);
     }
 }
