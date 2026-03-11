@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.game;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.data.GutitubowDamageType;
+import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -32,6 +33,7 @@ public class GamePlayer {
     private int playerTotalKill;
     private int playerBorderOutsideTick;
     private final NamespacedKey gutitubowArrowItemKey;
+    private PlayerBoard playerBoard;
 
 
 
@@ -45,6 +47,7 @@ public class GamePlayer {
         this.playerTotalKill = 0;
         this.playerBorderOutsideTick = 0;
         gutitubowArrowItemKey = new NamespacedKey(this.plugin, "gutitubow.arrow");
+        this.playerBoard = game.getPlayerBoard(this);
     }
 
     @Nullable
@@ -52,6 +55,13 @@ public class GamePlayer {
         return game.getAbilityManager().getAbility(this.player);
     }
 
+    public Player getPlayer() {
+        return this.player;
+    }
+
+    public Game getGame() {
+        return this.game;
+    }
 
     private int getBorderOutsideTicks() {
         return this.playerBorderOutsideTick;
@@ -298,5 +308,9 @@ public class GamePlayer {
         if (this.firstElytraTask == null) return;
         player.getInventory().setChestplate(new ItemStack(Material.AIR));
         this.firstElytraTask.cancel();
+    }
+
+    public void updatePlayerBoard() {
+        this.playerBoard.update();
     }
 }

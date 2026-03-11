@@ -39,12 +39,13 @@ public class GameListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        GamePlayer gamePlayer = game.getGamePlayer(player);
         if (game.isStarted()) {
             player.setGameMode(GameMode.SPECTATOR);
             PlayerInventory inventory = player.getInventory();
             inventory.setChestplate(ItemStack.of(Material.AIR));
         }
-        game.updateGameInfoScoreboard(player);
+        gamePlayer.updatePlayerBoard();
     }
 
     @EventHandler
@@ -90,6 +91,7 @@ public class GameListener implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        game.updateGameInfoScoreboard(player);
+        GamePlayer gamePlayer = game.getGamePlayer(player);
+        gamePlayer.updatePlayerBoard();
     }
 }

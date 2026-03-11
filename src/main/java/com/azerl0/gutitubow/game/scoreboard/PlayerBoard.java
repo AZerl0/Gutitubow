@@ -1,7 +1,6 @@
 package com.azerl0.gutitubow.game.scoreboard;
 
 import com.azerl0.gutitubow.ability.Ability;
-import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GamePlayer;
 import io.papermc.paper.scoreboard.numbers.NumberFormat;
@@ -10,8 +9,10 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
+import org.bukkit.scoreboard.ScoreboardManager;
 
-public class GameInfoScoreboard {
+public class PlayerBoard {
+    private final GamePlayer gamePlayer;
     private final Game game;
     private final ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
     private final Scoreboard scoreboard = scoreboardManager.getNewScoreboard();
@@ -23,8 +24,9 @@ public class GameInfoScoreboard {
     private final Team _insideSafeArea;
     private final Team _abilityName;
 
-    public GameInfoScoreboard(Game game) {
-        this.game = game;
+    public PlayerBoard(GamePlayer gamePlayer) {
+        this.gamePlayer = gamePlayer;
+        this.game = gamePlayer.getGame();
         Component scoreboardName = Component.text("ぐちつボウ").color(NamedTextColor.GREEN);
         obj = scoreboard.registerNewObjective("gutitubow.info", Criteria.DUMMY, scoreboardName);
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -56,7 +58,8 @@ public class GameInfoScoreboard {
         obj.getScore(entry).setScore(-4);
     }
 
-    public void update(Player player) {
+    public void update() {
+        Player player = this.gamePlayer.getPlayer();
         if (game.isStarted() && game.getPhase() != -1) {
             GamePlayer gamePlayer = game.getGamePlayer(player);
             Ability ability = gamePlayer.getAbility();

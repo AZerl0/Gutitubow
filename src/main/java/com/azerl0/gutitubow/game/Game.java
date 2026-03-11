@@ -7,7 +7,8 @@ import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.data.GutitubowDamageType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.debug.DebugManager;
-import com.azerl0.gutitubow.game.scoreboard.GameInfoScoreboard;
+import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
+import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.manager.LogManager;
 import com.azerl0.gutitubow.map.Map;
@@ -48,7 +49,7 @@ public class Game {
     private final DebugManager debugManager;
     private final MapRepairManager mapRepairManager = new MapRepairManager();
     private final GlassBreakManager glassBreakManager = new GlassBreakManager(mapRepairManager);
-    private final GameInfoScoreboard gameInfoScoreboard;
+    private final ScoreboardManager scoreboardManager;
 
     public Game(
             JavaPlugin plugin,
@@ -64,7 +65,7 @@ public class Game {
         this.debugManager = debugManager;
         this.gamePlayerManager = new GamePlayerManager(plugin, this);
         reset();
-        this.gameInfoScoreboard = new GameInfoScoreboard(this);
+        this.scoreboardManager = new ScoreboardManager(this);
     }
 
     public GamePlayer getGamePlayer(Player player) {
@@ -136,6 +137,7 @@ public class Game {
             player.hideBossBar(this.bossBar);
             GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(player);
             gamePlayer.resetFirstElytra();
+            gamePlayer.updatePlayerBoard();
         }
         map.getBorder().setCenter(0.0, 0.0);
         map.getBorder().setSize(59999968);
@@ -148,7 +150,6 @@ public class Game {
                     player.showPlayer(plugin, otherPlayer);
                 }
             }
-            updateGameInfoScoreboard(player);
         }
 
         this.safeArea = map.getCenter();
@@ -196,6 +197,7 @@ public class Game {
             gamePlayer.resetArrowReloadTick();
             gamePlayer.resetTotalHit();
             gamePlayer.setTotalKill(0);
+            gamePlayer.updatePlayerBoard();
 
             int randomIndex = random.nextInt(0, abilityTypeList.size());
             AbilityType ability = abilityTypeList.get(randomIndex);
@@ -238,7 +240,6 @@ public class Game {
                     player.hidePlayer(plugin, target);
                 }
             }
-            updateGameInfoScoreboard(player);
         }
     }
 
@@ -702,8 +703,9 @@ public class Game {
         return dx <= size / 2 && dz <= size / 2;
     }
 
-    public void updateGameInfoScoreboard(Player player) {
-        gameInfoScoreboard.update(player);
+
+    public PlayerBoard getPlayerBoard(GamePlayer gamePlayer) {
+        return scoreboardManager.getPlayerBoard(gamePlayer);
     }
 
 }
