@@ -65,7 +65,7 @@ public class JumpAbility implements Ability {
     public void reset(Player player) {
         player.setAllowFlight(false);
         player.sendActionBar(Component.empty());
-        task.cancel();
+        if (task != null) task.cancel();
         task = null;
     }
 
