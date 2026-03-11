@@ -34,7 +34,7 @@ public class GamePlayer {
     private int playerTotalKill;
     private int playerBorderOutsideTick;
     private final NamespacedKey gutitubowArrowItemKey;
-    private PlayerBoard playerBoard;
+    private final PlayerBoard playerBoard;
     private BukkitTask flashParticleTask = null;
 
 
