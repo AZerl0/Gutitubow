@@ -1,9 +1,6 @@
 package com.azerl0.gutitubow.game;
 
-import com.azerl0.gutitubow.ability.Ability;
-import com.azerl0.gutitubow.ability.AbilityManager;
 import com.azerl0.gutitubow.util.EntityUtil;
-import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
@@ -14,20 +11,12 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.player.PlayerInputEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerToggleFlightEvent;
-import org.bukkit.event.player.PlayerToggleSprintEvent;
-
-import java.util.Random;
 
 public class GamePlayerListener implements Listener {
     private final Game game;
-    private final AbilityManager abilityManager;
 
-    public GamePlayerListener(Game game, AbilityManager abilityManager) {
+    public GamePlayerListener(Game game) {
         this.game = game;
-        this.abilityManager = abilityManager;
     }
 
     @EventHandler
@@ -37,12 +26,6 @@ public class GamePlayerListener implements Listener {
 
         GamePlayer gamePlayer = this.game.getGamePlayer(player);
         gamePlayer.removeArrow(1);
-
-        Ability ability = abilityManager.getAbility(player);
-        if (ability != null) {
-            ability.onArrowLaunch(event);
-        }
-
     }
 
     @EventHandler
@@ -73,7 +56,6 @@ public class GamePlayerListener implements Listener {
 
         event.setCancelled(true);
         event.getEntity().remove();
-
     }
 
     @EventHandler
@@ -99,38 +81,5 @@ public class GamePlayerListener implements Listener {
         event.setCancelled(true);
         player.setFoodLevel(20);
         player.setSaturation(20f);
-    }
-
-    @EventHandler
-    public void onMove(PlayerMoveEvent event) {
-        Ability ability = abilityManager.getAbility(event.getPlayer());
-        if (ability != null) ability.onMove(event);
-    }
-
-    @EventHandler
-    public void onToggleSprint(PlayerToggleSprintEvent event) {
-        Ability ability = abilityManager.getAbility(event.getPlayer());
-        if (ability != null) ability.onToggleSprint(event);
-    }
-
-    @EventHandler
-    public void onJump(PlayerJumpEvent event) {
-        Ability ability = abilityManager.getAbility(event.getPlayer());
-        if (ability != null) ability.onJump(event);
-    }
-
-    @EventHandler
-    public void onPressJumpKey(PlayerInputEvent event) {
-        if (!event.getInput().isJump()) return;
-        Ability ability = abilityManager.getAbility(event.getPlayer());
-        if (ability != null) ability.onPressJumpKey(event);
-
-    }
-
-
-    @EventHandler
-    public void onToggleFlight(PlayerToggleFlightEvent event) {
-        Ability ability = abilityManager.getAbility(event.getPlayer());
-        if (ability != null) ability.onToggleFlight(event);
     }
 }

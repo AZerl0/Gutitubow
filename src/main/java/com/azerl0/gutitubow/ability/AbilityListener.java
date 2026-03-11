@@ -1,0 +1,96 @@
+package com.azerl0.gutitubow.ability;
+
+import com.destroystokyo.paper.event.player.PlayerJumpEvent;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.*;
+
+public class AbilityListener implements Listener {
+    private final AbilityManager abilityManager;
+
+    public AbilityListener(AbilityManager abilityManager) {
+        this.abilityManager = abilityManager;
+    }
+
+
+    @EventHandler
+    public void onShoot(EntityShootBowEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        Ability ability = abilityManager.getAbility(player);
+        if (ability != null) {
+            ability.onArrowLaunch(event);
+        }
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
+        Ability ability = abilityManager.getAbility(event.getPlayer());
+        if (ability != null) ability.onMove(event);
+    }
+
+    @EventHandler
+    public void onToggleSprint(PlayerToggleSprintEvent event) {
+        Ability ability = abilityManager.getAbility(event.getPlayer());
+        if (ability != null) ability.onToggleSprint(event);
+    }
+
+    @EventHandler
+    public void onToggleFlight(PlayerToggleFlightEvent event) {
+        Ability ability = abilityManager.getAbility(event.getPlayer());
+        if (ability != null) ability.onToggleFlight(event);
+    }
+
+    @EventHandler
+    public void onJump(PlayerJumpEvent event) {
+        Ability ability = abilityManager.getAbility(event.getPlayer());
+        if (ability != null) ability.onJump(event);
+    }
+
+    @EventHandler
+    public void onPressJumpKey(PlayerInputEvent event) {
+        if (!event.getInput().isJump()) return;
+        Ability ability = abilityManager.getAbility(event.getPlayer());
+        if (ability != null) ability.onPressJumpKey(event);
+    }
+
+    @EventHandler
+    public void onHit(ProjectileHitEvent event) {
+
+        if (!(event.getEntity().getShooter() instanceof Player player)) return;
+
+        Ability ability = abilityManager.getAbility(player);
+        if (ability != null) ability.onArrowHit(event);
+    }
+
+    @EventHandler
+    public void onPlayerRightClickBow(PlayerInteractEvent event) {
+        if (!(event.getItem() != null &&
+                event.getItem().getType() == Material.BOW)) return;
+
+        Action action = event.getAction();
+        if (!(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) return;
+
+        Ability ability = abilityManager.getAbility(event.getPlayer());
+        if (ability != null) ability.onPlayerRightClickBow(event);
+
+    }
+
+    @EventHandler
+    public void onPlayerLeftClickBow(PlayerInteractEvent event) {
+        if (!(event.getItem() != null &&
+                event.getItem().getType() == Material.BOW)) return;
+
+        Action action = event.getAction();
+        if (!(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) return;
+
+        Ability ability = abilityManager.getAbility(event.getPlayer());
+        if(ability != null) ability.onPlayerLeftClickBow(event);
+
+    }
+}

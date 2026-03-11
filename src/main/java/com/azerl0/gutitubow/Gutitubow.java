@@ -59,8 +59,8 @@ public final class Gutitubow extends JavaPlugin {
 
         // Listener登録
         PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new BowListener(abilityManager), this);
-        pm.registerEvents(new GamePlayerListener(game, abilityManager), this);
+        pm.registerEvents(new AbilityListener(abilityManager), this);
+        pm.registerEvents(new GamePlayerListener(game), this);
         pm.registerEvents(new CarePackageListener(carePackageManager), this);
         pm.registerEvents(new ItemListener(), this);
         pm.registerEvents(new GameListener(this, game), this);
