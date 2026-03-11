@@ -10,7 +10,8 @@ public enum AbilityType {
     RICOCHET(Component.text("跳弾")),
     SNIPE(Component.text("狙撃")),
     DASH(Component.text("疾走")),
-    JUMP(Component.text("跳躍"));
+    JUMP(Component.text("跳躍")),
+    TELEPORT(Component.text("転移"));
 
     private final Component name;
 

@@ -31,5 +31,7 @@ public interface Ability {
     default void onPressJumpKey(PlayerInputEvent event) {}
 
     default void onToggleFlight(PlayerToggleFlightEvent event) {}
+
+    default void onInteract(PlayerInteractEvent event) {}
 }
 

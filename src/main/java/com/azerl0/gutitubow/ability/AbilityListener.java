@@ -91,6 +91,13 @@ public class AbilityListener implements Listener {
 
         Ability ability = abilityManager.getAbility(event.getPlayer());
         if(ability != null) ability.onPlayerLeftClickBow(event);
+    }
 
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+
+        Ability ability = abilityManager.getAbility(player);
+        if (ability != null) ability.onInteract(event);
     }
 }
