@@ -53,7 +53,7 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(new ControlAbility(abilityContext));
         AbilityRegistry.register(new BarrierAbility(abilityContext));
         AbilityRegistry.register(new SnipeAbility(abilityContext));
-        AbilityRegistry.register(new QuickShotAbility(abilityContext));
+        AbilityRegistry.register(new RapidFireAbility(abilityContext));
         AbilityRegistry.register(new DashAbility(abilityContext));
         AbilityRegistry.register(new JumpAbility(abilityContext));
 

@@ -14,16 +14,16 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
-public class QuickShotAbility implements Ability {
+public class RapidFireAbility implements Ability {
     private final AbilityContext context;
 
-    public QuickShotAbility(AbilityContext context) {
+    public RapidFireAbility(AbilityContext context) {
         this.context = context;
     }
 
     @Override
     public final AbilityType getType() {
-        return AbilityType.QUICKSHOT;
+        return AbilityType.RAPIDFIRE;
     }
 
     @Override

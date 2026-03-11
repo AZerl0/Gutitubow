@@ -6,7 +6,7 @@ public enum AbilityType {
     BARRIER(Component.text("障壁")),
     BOMB(Component.text("爆弾")),
     CONTROL(Component.text("操弾")),
-    QUICKSHOT(Component.text("速射")),
+    RAPIDFIRE(Component.text("速射")),
     RICOCHET(Component.text("跳弾")),
     SNIPE(Component.text("狙撃")),
     DASH(Component.text("疾走")),
