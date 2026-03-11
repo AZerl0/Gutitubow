@@ -27,6 +27,12 @@ public class RapidFireAbility implements Ability {
     }
 
     @Override
+    public void init(Player player) {
+        GamePlayer gamePlayer = context.game().getGamePlayer(player);
+        gamePlayer.setMaxArrowStackSize(3);
+    }
+
+    @Override
     public void onArrowHit(ProjectileHitEvent event) {
         Player player = (Player) event.getEntity().getShooter();
         if (player != null && event.getHitEntity() != null) player.setCooldown(Material.BOW, 0);
@@ -40,7 +46,7 @@ public class RapidFireAbility implements Ability {
         GamePlayer gamePlayer = context.game().getGamePlayer(player);
         if (gamePlayer.getArrowAmount() == 0) return;
         QuickShot(player);
-        player.setCooldown(Material.BOW, 3 * 20);
+        player.setCooldown(Material.BOW, gamePlayer.getArrowReloadTick());
     }
 
     private void QuickShot(Player player) {
