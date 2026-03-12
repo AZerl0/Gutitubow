@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.game;
 
+import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityManager;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.carepackage.CarePackage;
@@ -26,6 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -59,13 +61,13 @@ public class Game {
             JavaPlugin plugin,
             Map map,
             CarePackageManager carePackageManager,
-            AbilityManager abilityManager,
             DebugManager debugManager
     ) {
         this.plugin = plugin;
         this.map = map;
         this.carePackageManager = carePackageManager;
-        this.abilityManager = abilityManager;
+        AbilityContext abilityContext = new AbilityContext(plugin, this);
+        this.abilityManager = new AbilityManager(abilityContext);
         this.debugManager = debugManager;
         this.gamePlayerManager = new GamePlayerManager(plugin, this);
         reset();
@@ -697,15 +699,15 @@ public class Game {
         this.death(player, damageType, false);
     }
 
-    public MapRepairManager getMapRepairManager() {
+    public @NotNull MapRepairManager getMapRepairManager() {
         return this.mapRepairManager;
     }
 
-    public GlassBreakManager getGlassBreakManager() {
+    public @NotNull GlassBreakManager getGlassBreakManager() {
         return this.glassBreakManager;
     }
 
-    public AbilityManager getAbilityManager() {
+    public @NotNull AbilityManager getAbilityManager() {
         return this.abilityManager;
     }
 

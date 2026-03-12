@@ -82,10 +82,7 @@ public class GameListener implements Listener {
                     }
                 }
             }
-
-
         }
-
     }
 
     @EventHandler

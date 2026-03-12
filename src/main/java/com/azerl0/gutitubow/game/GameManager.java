@@ -1,6 +1,5 @@
 package com.azerl0.gutitubow.game;
 
-import com.azerl0.gutitubow.ability.AbilityManager;
 import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.map.MapManager;
@@ -13,37 +12,32 @@ import org.bukkit.scheduler.BukkitTask;
 
 public class GameManager {
     private final JavaPlugin plugin;
-    private final AbilityManager abilityManager;
     private final MapManager mapManager;
     private final DebugManager debugManager;
     private final CarePackageManager carePackageManager;
-    private final Game game;
     private BukkitTask gameTask;
 
     public GameManager(
             JavaPlugin plugin,
-            AbilityManager abilityManager,
             MapManager mapManager,
             DebugManager debugManager,
             CarePackageManager carePackageManager
     ) {
         this.plugin = plugin;
         this.mapManager = mapManager;
-        this.abilityManager = abilityManager;
         this.debugManager = debugManager;
         this.carePackageManager = carePackageManager;
-        game = newGame();
     }
 
     public Game newGame() {
-        return new Game(plugin, mapManager.getTestMap(), carePackageManager, abilityManager, debugManager);
+        return new Game(plugin, mapManager.getTestMap(), carePackageManager, debugManager);
     }
 
     public void resetGame(Game game) {
         game.reset();
     }
 
-    public boolean isStarted() {
+    public boolean isStarted(Game game) {
         return game.isStarted();
     }
 

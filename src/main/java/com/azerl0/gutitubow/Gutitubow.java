@@ -20,9 +20,7 @@ import com.azerl0.gutitubow.ability.abilities.*;
 
 public final class Gutitubow extends JavaPlugin {
     private DebugManager debugManager;
-    private AbilityManager abilityManager;
     private CarePackageManager carePackageManager;
-    private GamePlayerManager gamePlayerManager;
     private MapManager mapManager;
     private GameManager gameManager;
 
@@ -36,17 +34,14 @@ public final class Gutitubow extends JavaPlugin {
         this.debugManager = new DebugManager(this);
         this.carePackageManager = new CarePackageManager(this);
         this.mapManager = new MapManager(this);
-        this.gameManager = new GameManager(this, this.abilityManager, this.mapManager, this.debugManager, this.carePackageManager);
+        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.carePackageManager);
         // MainGame
         this.game = gameManager.newGame();
 
-        this.gamePlayerManager = new GamePlayerManager(this, game);
 
 
 
         // Ability登録
-        AbilityContext abilityContext = new AbilityContext(this, game);
-        this.abilityManager = new AbilityManager(abilityContext);
         AbilityRegistry.register(AbilityType.RICOCHET, RicochetAbility::new);
         AbilityRegistry.register(AbilityType.BOMB, BombAbility::new);
         AbilityRegistry.register(AbilityType.CONTROL, ControlAbility::new);
@@ -59,14 +54,14 @@ public final class Gutitubow extends JavaPlugin {
 
         // Listener登録
         PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new AbilityListener(abilityManager), this);
+        pm.registerEvents(new AbilityListener(game.getAbilityManager()), this);
         pm.registerEvents(new GamePlayerListener(game), this);
         pm.registerEvents(new CarePackageListener(carePackageManager), this);
         pm.registerEvents(new ItemListener(), this);
         pm.registerEvents(new GameListener(this, game), this);
 
         // Command登録
-        getCommand("ability").setExecutor(new AbilityCommand(abilityManager));
+        getCommand("ability").setExecutor(new AbilityCommand(game.getAbilityManager()));
         getCommand("carepackage").setExecutor(new CarePackageCommand(carePackageManager));
         getCommand("game").setExecutor(new GameCommand(gameManager, game));
         getCommand("gameplayer").setExecutor(new GamePlayerCommand(game));

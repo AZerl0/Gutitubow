@@ -33,7 +33,7 @@ public class GameCommand implements CommandExecutor, TabExecutor {
 
         switch (args[0]) {
             case ("start"):
-                if (!this.gameManager.isStarted()) {
+                if (!this.gameManager.isStarted(game)) {
                     this.gameManager.startGame(game);
                     return true;
                 }
