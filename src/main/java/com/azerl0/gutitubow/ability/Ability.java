@@ -19,9 +19,7 @@ public abstract class Ability {
     @NotNull
     public abstract AbilityType getType();
 
-    public void init(Player player) {
-        this.player = player;
-    }
+    public void init(Player player) {}
 
     public void reset() {}
 

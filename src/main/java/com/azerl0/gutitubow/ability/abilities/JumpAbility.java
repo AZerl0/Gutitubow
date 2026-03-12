@@ -34,6 +34,7 @@ public class JumpAbility extends Ability {
 
     @Override
     public void init(Player player) {
+        this.player = player;
         player.setAllowFlight(true);
         charge = 0;
         if (task != null && !task.isCancelled()) return;

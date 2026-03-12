@@ -35,6 +35,7 @@ public class TeleportAbility extends Ability {
 
     @Override
     public void init(Player player) {
+        this.player = player;
         player.setCooldown(Material.COMPASS, 0);
     }
 
