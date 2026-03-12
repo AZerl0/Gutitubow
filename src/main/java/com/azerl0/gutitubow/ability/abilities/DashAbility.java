@@ -19,28 +19,28 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
-public class DashAbility implements Ability {
-    private final AbilityContext context;
+public class DashAbility extends Ability {
     private int dashingTick;
     private BukkitTask task = null;
     private final int topSpeedTick = 5 * 20;
-    private Set<Block> replaceableBlocks;
-    private Set<Block> replacedBlocks;
+    private final Set<Block> replaceableBlocks;
+    private final Set<Block> replacedBlocks;
 
     public DashAbility(AbilityContext context) {
-        this.context = context;
+        super(context);
         this.dashingTick = 0;
         this.replaceableBlocks = new java.util.HashSet<>();
         this.replacedBlocks = new java.util.HashSet<>();
     }
 
     @Override
-    public final AbilityType getType() {
+    public final @NotNull AbilityType getType() {
         return AbilityType.DASH;
     }
 

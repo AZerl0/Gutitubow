@@ -22,20 +22,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SnipeAbility implements Ability {
-
-    private final AbilityContext context;
+public class SnipeAbility extends Ability {
     private final GlassBreakManager breakManager;
 
     public SnipeAbility(AbilityContext context) {
-        this.context = context;
+        super(context);
         this.breakManager = context.game().getGlassBreakManager();
     }
 
     @Override
-    public final AbilityType getType() {
+    public final @NotNull AbilityType getType() {
         return AbilityType.SNIPE;
     }
 

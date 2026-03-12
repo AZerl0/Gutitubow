@@ -7,6 +7,7 @@ import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,11 +40,11 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                 if (getPlayer == null) {
                     player.sendMessage("プレイヤーが見つかりませんでした");
                 } else {
-                    AbilityType type = abilityManager.getAbilityType(getPlayer);
-                    if (type == null) {
+                    Ability ability = abilityManager.getAbility(getPlayer);
+                    if (ability == null) {
                         player.sendMessage(getPlayer.getName() + "は能力を持っていません");
                     } else {
-                        player.sendMessage(Component.text(getPlayer.getName() + "の能力は").append(type.getName()).append(Component.text("です")));
+                        player.sendMessage(Component.text(getPlayer.getName() + "の能力は").append(ability.getType().getName()).append(Component.text("です")));
                     }
 
                 }
@@ -53,15 +54,15 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
             case ("list"):
                 player.sendMessage("Abilities:");
 
-                for (String id : AbilityRegistry.getAllIds()) {
-                    player.sendMessage("- " + id);
+                for (AbilityType type : AbilityRegistry.getTypes()) {
+                    player.sendMessage(Component.text("- " + type.toString().toLowerCase() + " ").append(type.getName()));
                 }
 
                 return true;
 
             case ("set"):
 
-                AbilityType id = AbilityType.valueOf(args[1].toUpperCase());
+                String id = args[1];
                 Player setPlayer;
                 if (args.length == 2) {
                     setPlayer = player;
@@ -70,12 +71,14 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                 }
 
                 if (id == null) {
-                    player.sendMessage("Abilityを指定する必要があります");
+                    player.sendMessage("能力を指定する必要があります");
                     return true;
                 }
 
-                if (AbilityRegistry.get(id) == null) {
-                    player.sendMessage("そのAbilityは存在しません");
+                AbilityType type = AbilityRegistry.getType(id);
+
+                if (type == null) {
+                    player.sendMessage("その能力は存在しません");
                     return true;
                 }
 
@@ -83,8 +86,8 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                     player.sendMessage("プレイヤーが見つかりませんでした");
                 } else {
 
-                    abilityManager.setAbility(player, id);
-                    player.sendMessage(Component.text(setPlayer.getName() + "の能力を ").append(id.getName()).append(Component.text(" に設定しました！")));
+                    abilityManager.setAbility(player, type);
+                    player.sendMessage(Component.text(setPlayer.getName() + "の能力を ").append(type.getName()).append(Component.text(" に設定しました！")));
                 }
                 return true;
 
@@ -135,7 +138,12 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
 
             case ("set"):
                 if (args.length == 2) {
-                    return AbilityRegistry.getAllIds().stream().toList();
+                    List<AbilityType> types = AbilityRegistry.getTypes().stream().toList();
+                    List<String> typesList = new ArrayList<>();
+                    for (AbilityType type : types) {
+                        typesList.add(type.toString().toLowerCase());
+                    }
+                    return typesList;
                 } else if (args.length == 3) {
                     return Bukkit.getOnlinePlayers()
                             .stream()

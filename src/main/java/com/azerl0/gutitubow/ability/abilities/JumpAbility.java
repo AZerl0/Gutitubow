@@ -14,22 +14,21 @@ import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 
-
-public class JumpAbility implements Ability {
-    private final AbilityContext context;
+public class JumpAbility extends Ability {
     private BukkitTask task = null;
     private int charge;
     private final int gaugeCount = 40;
 
     public JumpAbility(AbilityContext context) {
-        this.context = context;
+        super(context);
         this.charge = 0;
     }
 
     @Override
-    public AbilityType getType() {
+    public @NotNull AbilityType getType() {
         return AbilityType.JUMP;
     }
 
@@ -62,7 +61,7 @@ public class JumpAbility implements Ability {
     }
 
     @Override
-    public void reset(Player player) {
+    public void reset() {
         player.setAllowFlight(false);
         player.sendActionBar(Component.empty());
         if (task != null) task.cancel();

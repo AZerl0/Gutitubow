@@ -13,16 +13,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
-public class RapidFireAbility implements Ability {
-    private final AbilityContext context;
+public class RapidFireAbility extends Ability {
 
     public RapidFireAbility(AbilityContext context) {
-        this.context = context;
+        super(context);
     }
 
     @Override
-    public final AbilityType getType() {
+    public final @NotNull AbilityType getType() {
         return AbilityType.RAPIDFIRE;
     }
 

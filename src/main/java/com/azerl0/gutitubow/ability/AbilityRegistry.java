@@ -3,24 +3,34 @@ package com.azerl0.gutitubow.ability;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class AbilityRegistry {
 
-    static private final Map<String, Ability> abilities = new HashMap<>();
+    private static final Map<AbilityType, Function<AbilityContext, Ability>> abilities = new HashMap<>();
 
-    static public void register(Ability ability) {
-        abilities.put(ability.getType().toString().toLowerCase(), ability);
+    public static void register(AbilityType type, Function<AbilityContext, Ability> factory) {
+        abilities.put(type, factory);
     }
 
     @Nullable
-    static public Ability get(AbilityType type) {
-        if (abilities.containsKey(type.toString().toLowerCase())) return abilities.get(type.toString().toLowerCase());
-        return null;
+    public static Ability create(AbilityType type, AbilityContext context) {
+        Function<AbilityContext, Ability> factory = abilities.get(type);
+        if (factory == null) return null;
+        return factory.apply(context);
     }
 
-    static public Set<String> getAllIds() {
+    public static Set<AbilityType> getTypes() {
         return abilities.keySet();
     }
 
-
+    @Nullable
+    public static AbilityType getType(String type) {
+        AbilityType abilityType = AbilityType.valueOf(type.toUpperCase());
+        if (abilities.containsKey(abilityType)) {
+            return abilityType;
+        } else {
+            return null;
+        }
+    }
 }

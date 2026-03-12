@@ -17,14 +17,19 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 
-public class TeleportAbility implements Ability {
-    private final AbilityContext context;
+public class TeleportAbility extends Ability {
     private Location savedLocation;
     private BukkitTask cooldownTask = null;
 
+    public TeleportAbility(AbilityContext context) {
+        super(context);
+    }
+
+
     @Override
-    public AbilityType getType() {
+    public @NotNull AbilityType getType() {
         return AbilityType.TELEPORT;
     }
 
@@ -34,13 +39,10 @@ public class TeleportAbility implements Ability {
     }
 
     @Override
-    public void reset(Player player) {
+    public void reset() {
         player.setCooldown(Material.COMPASS, 0);
     }
 
-    public TeleportAbility(AbilityContext context) {
-        this.context = context;
-    }
 
     @Override
     public void onInteract(PlayerInteractEvent event) {

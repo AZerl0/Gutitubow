@@ -17,20 +17,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
-public class RicochetAbility implements Ability {
-    private final AbilityContext context;
+public class RicochetAbility extends Ability {
     private final NamespacedKey ricochetCountKey;
     private final NamespacedKey ricochetDamageCountKey;
 
     public RicochetAbility(AbilityContext context) {
-        this.context = context;
+        super(context);
         this.ricochetCountKey = new NamespacedKey(context.plugin(), "ricochetCount");
         this.ricochetDamageCountKey = new NamespacedKey(context.plugin(), "ricochetDamageCount");
     }
 
     @Override
-    public final AbilityType getType() {
+    public final @NotNull AbilityType getType() {
         return AbilityType.RICOCHET;
     }
 

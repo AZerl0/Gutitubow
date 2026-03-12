@@ -6,32 +6,43 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.*;
+import org.jetbrains.annotations.NotNull;
 
-public interface Ability {
-    AbilityType getType();
+public abstract class Ability {
+    protected Player player;
+    protected final AbilityContext context;
 
-    default void init(Player player) {}
+    public Ability(AbilityContext context) {
+        this.context = context;
+    }
 
-    default void reset(Player player) {}
+    @NotNull
+    public abstract AbilityType getType();
 
-    default void onArrowLaunch(EntityShootBowEvent event) {}
+    public void init(Player player) {
+        this.player = player;
+    }
 
-    default void onArrowHit(ProjectileHitEvent event) {}
+    public void reset() {}
 
-    default void onPlayerRightClickBow(PlayerInteractEvent event) {}
+    public void onArrowLaunch(EntityShootBowEvent event) {}
 
-    default void onPlayerLeftClickBow(PlayerInteractEvent event) {}
+    public void onArrowHit(ProjectileHitEvent event) {}
 
-    default void onMove(PlayerMoveEvent event) {}
+    public void onPlayerRightClickBow(PlayerInteractEvent event) {}
 
-    default void onToggleSprint(PlayerToggleSprintEvent event) {}
+    public void onPlayerLeftClickBow(PlayerInteractEvent event) {}
 
-    default void onJump(PlayerJumpEvent event) {}
+    public void onMove(PlayerMoveEvent event) {}
 
-    default void onPressJumpKey(PlayerInputEvent event) {}
+    public void onToggleSprint(PlayerToggleSprintEvent event) {}
 
-    default void onToggleFlight(PlayerToggleFlightEvent event) {}
+    public void onJump(PlayerJumpEvent event) {}
 
-    default void onInteract(PlayerInteractEvent event) {}
+    public void onPressJumpKey(PlayerInputEvent event) {}
+
+    public void onToggleFlight(PlayerToggleFlightEvent event) {}
+
+    public void onInteract(PlayerInteractEvent event) {}
+
 }
-

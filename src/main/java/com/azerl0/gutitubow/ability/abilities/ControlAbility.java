@@ -24,19 +24,18 @@ import net.kyori.adventure.text.Component;
 
 import java.awt.*;
 
-public class ControlAbility implements Ability {
-    private final AbilityContext context;
+public class ControlAbility extends Ability {
     private final NamespacedKey controllingKey;
     private final NamespacedKey collectingKey;
 
     public ControlAbility(AbilityContext context) {
-        this.context = context;
+        super(context);
         this.controllingKey = new NamespacedKey(context.plugin(), "controlling");
         this.collectingKey = new NamespacedKey(context.plugin(), "collecting");
     }
 
     @Override
-    public final AbilityType getType() {
+    public final @NotNull AbilityType getType() {
         return AbilityType.CONTROL;
     }
 

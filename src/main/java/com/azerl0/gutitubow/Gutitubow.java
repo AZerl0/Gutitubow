@@ -34,7 +34,6 @@ public final class Gutitubow extends JavaPlugin {
 
         // Managers
         this.debugManager = new DebugManager(this);
-        this.abilityManager = new AbilityManager(this);
         this.carePackageManager = new CarePackageManager(this);
         this.mapManager = new MapManager(this);
         this.gameManager = new GameManager(this, this.abilityManager, this.mapManager, this.debugManager, this.carePackageManager);
@@ -45,18 +44,18 @@ public final class Gutitubow extends JavaPlugin {
 
 
 
-
         // Ability登録
         AbilityContext abilityContext = new AbilityContext(this, game);
-        AbilityRegistry.register(new RicochetAbility(abilityContext));
-        AbilityRegistry.register(new BombAbility(abilityContext));
-        AbilityRegistry.register(new ControlAbility(abilityContext));
-        AbilityRegistry.register(new BarrierAbility(abilityContext));
-        AbilityRegistry.register(new SnipeAbility(abilityContext));
-        AbilityRegistry.register(new RapidFireAbility(abilityContext));
-        AbilityRegistry.register(new DashAbility(abilityContext));
-        AbilityRegistry.register(new JumpAbility(abilityContext));
-        AbilityRegistry.register(new TeleportAbility(abilityContext));
+        this.abilityManager = new AbilityManager(abilityContext);
+        AbilityRegistry.register(AbilityType.RICOCHET, RicochetAbility::new);
+        AbilityRegistry.register(AbilityType.BOMB, BombAbility::new);
+        AbilityRegistry.register(AbilityType.CONTROL, ControlAbility::new);
+        AbilityRegistry.register(AbilityType.BARRIER, BarrierAbility::new);
+        AbilityRegistry.register(AbilityType.SNIPE, SnipeAbility::new);
+        AbilityRegistry.register(AbilityType.RAPIDFIRE, RapidFireAbility::new);
+        AbilityRegistry.register(AbilityType.DASH, DashAbility::new);
+        AbilityRegistry.register(AbilityType.JUMP, JumpAbility::new);
+        AbilityRegistry.register(AbilityType.TELEPORT, TeleportAbility::new);
 
         // Listener登録
         PluginManager pm = getServer().getPluginManager();
@@ -72,8 +71,6 @@ public final class Gutitubow extends JavaPlugin {
         getCommand("game").setExecutor(new GameCommand(gameManager, game));
         getCommand("gameplayer").setExecutor(new GamePlayerCommand(game));
         getCommand("gutitubowdebug").setExecutor(new DebugCommand(debugManager));
-
-        getLogger().info("Loaded abilities: " + AbilityRegistry.getAllIds());
 
         for (World world : Bukkit.getWorlds()) {
             world.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, false);

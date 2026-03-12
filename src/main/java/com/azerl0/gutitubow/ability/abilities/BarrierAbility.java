@@ -13,15 +13,14 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.RayTraceResult;
 import org.jetbrains.annotations.NotNull;
 
-public class BarrierAbility implements Ability {
-    private final AbilityContext context;
+public class BarrierAbility extends Ability {
 
     public BarrierAbility(AbilityContext context) {
-        this.context = context;
+        super(context);
     }
 
     @Override
-    public final AbilityType getType() {
+    public final @NotNull AbilityType getType() {
         return AbilityType.BARRIER;
     }
 

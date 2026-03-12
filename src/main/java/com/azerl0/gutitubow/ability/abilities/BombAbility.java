@@ -14,15 +14,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
-public class BombAbility implements Ability {
-    private final AbilityContext context;
+public class BombAbility extends Ability {
     public BombAbility(AbilityContext context) {
-        this.context = context;
+        super(context);
     }
 
     @Override
-    public final AbilityType getType() {
+    public final @NotNull AbilityType getType() {
         return AbilityType.BOMB;
     }
 
