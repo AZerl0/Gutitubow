@@ -27,9 +27,8 @@ public class ArrowUtil {
         arrow.setRotation(yaw, pitch);
     }
 
-    public static void RicochetEvent(JavaPlugin plugin, ProjectileHitEvent event) {
+    public static void RicochetEvent(JavaPlugin plugin, ProjectileHitEvent event, double multiple) {
         Projectile proj = event.getEntity();
-
 
         Block hitBlock = event.getHitBlock();
         if (hitBlock == null) return;
@@ -40,10 +39,9 @@ public class ArrowUtil {
         Vector v = event.getEntity().getVelocity();
         if (v.length() < 0.1 & proj.isInWater()) return;
 
-
         boolean crit = NBT.get(proj, nbt -> (boolean) nbt.getBoolean("crit"));
 
-        Vector newVelocity = event.getEntity().getVelocity().clone();
+        Vector newVelocity = event.getEntity().getVelocity().clone().multiply(multiple);
         BlockFace face = event.getHitBlockFace();
         switch (Objects.requireNonNull(face)) {
             case EAST:
@@ -59,7 +57,6 @@ public class ArrowUtil {
                 newVelocity.setZ(-newVelocity.getZ());
                 break;
         }
-
 
         proj.getWorld().spawnParticle(
                 Particle.BLOCK,
@@ -79,5 +76,9 @@ public class ArrowUtil {
 
             ArrowUtil.setFixRotation((AbstractArrow) proj, newVelocity);
         });
+    }
+
+    public static void RicochetEvent(JavaPlugin plugin, ProjectileHitEvent event) {
+        RicochetEvent(plugin, event, 1.0);
     }
 }

@@ -53,7 +53,7 @@ public class RicochetAbility extends Ability {
 
         int ricochetCount = getRicochetCount(arrow);
         if (ricochetCount > 0) {
-            ArrowUtil.RicochetEvent(context.plugin(), event);
+            ArrowUtil.RicochetEvent(context.plugin(), event, 0.75);
             setRicochetCount(arrow, ricochetCount - 1);
             world.spawnParticle(
                     Particle.EXPLOSION,
