@@ -47,9 +47,10 @@ public class EscapeAbility extends Ability {
     @Override
     public void onDamage(GamePlayerDamageEvent event) {
         GutitubowDamageType type = event.getDamageType();
-//        if (!(type == GutitubowDamageType.ARROW_SHOT ||
-//                type == GutitubowDamageType.BOMB_BLAST ||
-//                type == GutitubowDamageType.RICOCHET_BLAST)) return;
+        if (!(type == GutitubowDamageType.ARROW_SHOT ||
+                type == GutitubowDamageType.BOMB_BLAST ||
+                type == GutitubowDamageType.RICOCHET_BLAST)) return;
+        if (!player.isSneaking()) return;
 
         escape();
 
