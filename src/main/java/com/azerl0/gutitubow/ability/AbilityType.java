@@ -11,7 +11,8 @@ public enum AbilityType {
     SNIPE(Component.text("狙撃")),
     DASH(Component.text("疾走")),
     JUMP(Component.text("跳躍")),
-    TELEPORT(Component.text("転移"));
+    TELEPORT(Component.text("転移")),
+    ESCAPE(Component.text("脱出"));
 
     private final Component name;
 

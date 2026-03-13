@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.ability;
 
 
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
@@ -42,5 +43,7 @@ public abstract class Ability {
     public void onToggleFlight(PlayerToggleFlightEvent event) {}
 
     public void onInteract(PlayerInteractEvent event) {}
+
+    public void onDamage(GamePlayerDamageEvent event) {}
 
 }

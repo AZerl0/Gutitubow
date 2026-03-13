@@ -8,6 +8,7 @@ import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.data.GutitubowDamageType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.debug.DebugManager;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
 import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
@@ -612,6 +613,10 @@ public class Game {
 
     public void damage(Player player, double amount, Player attacker, double distance, boolean canUpgrade) {
 
+        GamePlayerDamageEvent event = new GamePlayerDamageEvent(player, amount, attacker, GutitubowDamageType.ARROW_SHOT);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
+
         if (player.getHealth() <= amount) {
             this.kill(player, attacker, distance);
 
@@ -638,6 +643,10 @@ public class Game {
     }
 
     public void damage(Player player, double amount, GutitubowDamageType damageType) {
+
+        GamePlayerDamageEvent event = new GamePlayerDamageEvent(player, amount, damageType);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
 
         if (player.getHealth() <= amount) {
             this.death(player, damageType, false);

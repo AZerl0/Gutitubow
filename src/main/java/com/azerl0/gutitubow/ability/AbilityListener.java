@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.ability;
 
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -99,5 +100,11 @@ public class AbilityListener implements Listener {
 
         Ability ability = abilityManager.getAbility(player);
         if (ability != null) ability.onInteract(event);
+    }
+
+    @EventHandler
+    public void onDamage(GamePlayerDamageEvent event) {
+        Ability ability = abilityManager.getAbility(event.getPlayer());
+        if (ability != null) ability.onDamage(event);
     }
 }

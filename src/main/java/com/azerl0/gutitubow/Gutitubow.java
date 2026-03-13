@@ -51,6 +51,7 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.DASH, DashAbility::new);
         AbilityRegistry.register(AbilityType.JUMP, JumpAbility::new);
         AbilityRegistry.register(AbilityType.TELEPORT, TeleportAbility::new);
+        AbilityRegistry.register(AbilityType.ESCAPE, EscapeAbility::new);
 
         // Listener登録
         PluginManager pm = getServer().getPluginManager();
