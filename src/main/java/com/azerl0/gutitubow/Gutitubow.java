@@ -65,7 +65,7 @@ public final class Gutitubow extends JavaPlugin {
         getCommand("ability").setExecutor(new AbilityCommand(game.getAbilityManager()));
         getCommand("carepackage").setExecutor(new CarePackageCommand(carePackageManager));
         getCommand("game").setExecutor(new GameCommand(gameManager, game));
-        getCommand("gameplayer").setExecutor(new GamePlayerCommand(game));
+        getCommand("gameplayer").setExecutor(new GamePlayerCommand(this, game));
         getCommand("gutitubowdebug").setExecutor(new DebugCommand(debugManager));
 
         for (World world : Bukkit.getWorlds()) {

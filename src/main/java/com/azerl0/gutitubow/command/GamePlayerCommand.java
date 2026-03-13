@@ -9,6 +9,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,9 +18,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GamePlayerCommand implements CommandExecutor, TabExecutor {
+    private final JavaPlugin plugin;
     private final Game game;
 
-    public GamePlayerCommand(Game game) {
+    public GamePlayerCommand(JavaPlugin plugin, Game game) {
+        this.plugin = plugin;
         this.game = game;
     }
 
@@ -174,10 +177,19 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
                     return true;
                 }
                 double damageAmount = Double.parseDouble(args[2]);
-                GutitubowDamageType damageType = GutitubowDamageType.UNKNOWN;
-                if (args.length == 4) GutitubowDamageType.valueOf(args[3].toUpperCase());
+                GutitubowDamageType damageType;
+                if (args.length >= 4) damageType = GutitubowDamageType.valueOf(args[3].toUpperCase());
+                else {
+                    damageType = GutitubowDamageType.UNKNOWN;
+                }
 
-                game.damage(target, damageAmount, damageType);
+                long delay = 0L;
+                if (args.length == 5) delay = Long.parseLong(args[4]);
+
+                Player finalTarget = target;
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    game.damage(finalTarget, damageAmount, damageType);
+                }, delay * 20);
                 return true;
 
         }
