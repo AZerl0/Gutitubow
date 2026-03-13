@@ -4,5 +4,6 @@ public enum GutitubowDamageType {
     ARROW_SHOT,
     BOMB_BLAST,
     RICOCHET_BLAST,
-    OUTSIDE_BORDER
+    OUTSIDE_BORDER,
+    UNKNOWN
 }

@@ -1,8 +1,8 @@
 package com.azerl0.gutitubow.command;
 
+import com.azerl0.gutitubow.data.GutitubowDamageType;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GamePlayer;
-import com.azerl0.gutitubow.game.GamePlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -158,6 +158,28 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
                         return true;
                 }
 
+            case ("damage"):
+                // /gp damage @s 1 border
+                if (args.length < 3) {
+                    sender.sendMessage("引数が不足しています");
+                    return true;
+                }
+                if (args[1].equals("@s")) {
+                    target = player;
+                } else {
+                    target = Bukkit.getPlayer(args[1]);
+                }
+                if (target == null) {
+                    player.sendMessage("プレイヤーが見つかりませんでした");
+                    return true;
+                }
+                double damageAmount = Double.parseDouble(args[2]);
+                GutitubowDamageType damageType = GutitubowDamageType.UNKNOWN;
+                if (args.length == 4) GutitubowDamageType.valueOf(args[3].toUpperCase());
+
+                game.damage(target, damageAmount, damageType);
+                return true;
+
         }
         return false;
     }
@@ -173,38 +195,52 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
         List<String> list = new ArrayList<String>();
         ;
         if (args.length == 1) {
-            return List.of("data", "arrow");
-
-        } else if (args[0].equals("data")) {
-            if (args.length == 2) return List.of("get", "set", "reset");
-            if (args.length == 3) {
-                list = Bukkit.getOnlinePlayers()
-                        .stream()
-                        .map(Player::getName)
-                        .collect(Collectors.toCollection(ArrayList::new));
-                list.add("@s");
-                return list;
-            }
-            if (args.length == 4) {
-                if (args[1].equals("reset")) {
-                    return List.of("*", "playerTotalHit", "playerArrowReloadTick", "playerMaxArrowStackSize");
-
-                } else return List.of("playerTotalHit", "playerArrowReloadTick", "playerMaxArrowStackSize");
-            }
-
-        } else if (args[0].equals("arrow")) {
-            if (args.length == 2) return List.of("set","add", "remove");
-            if (args.length == 3) {
-                list = Bukkit.getOnlinePlayers()
-                        .stream()
-                        .map(Player::getName)
-                        .collect(Collectors.toCollection(ArrayList::new));
-                list.add("@s");
-                return list;
-
-            }
+            return List.of("data", "arrow", "damage");
 
         }
+        switch (args[0]) {
+            case ("data"):
+                if (args.length == 2) return List.of("get", "set", "reset");
+                if (args.length == 3) {
+                    return getPlayerList();
+                }
+                if (args.length == 4) {
+                    if (args[1].equals("reset")) {
+                        return List.of("*", "playerTotalHit", "playerArrowReloadTick", "playerMaxArrowStackSize");
+                    } else return List.of("playerTotalHit", "playerArrowReloadTick", "playerMaxArrowStackSize");
+                }
+            case ("arrow"):
+                if (args.length == 2) return List.of("set","add", "remove");
+                if (args.length == 3) {
+                    return getPlayerList();
+
+                }
+            case ("damage"):
+                switch (args.length) {
+                    case (2):
+                        return getPlayerList();
+                    case (3):
+                        return List.of();
+                    case (4):
+                        List<String> damageTypeList = new ArrayList<>();
+                        for (GutitubowDamageType damageType : GutitubowDamageType.values()) {
+                            damageTypeList.add(damageType.toString().toLowerCase());
+                        }
+                        return damageTypeList;
+                }
+
+        }
+
         return List.of();
+    }
+
+    private List<String> getPlayerList() {
+        List<String> list = new ArrayList<String>();
+        list = Bukkit.getOnlinePlayers()
+                .stream()
+                .map(Player::getName)
+                .collect(Collectors.toCollection(ArrayList::new));
+        list.add("@s");
+        return list;
     }
 }
