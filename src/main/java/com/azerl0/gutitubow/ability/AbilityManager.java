@@ -1,6 +1,8 @@
 package com.azerl0.gutitubow.ability;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -31,10 +33,12 @@ public class AbilityManager {
 
         ability.init(player);
         abilities.put(player.getUniqueId(), ability);
+        player.getInventory().setItem(13, type.getDisplayItem());
     }
 
     public void resetAbility(Player player) {
         Ability ability = abilities.remove(player.getUniqueId());
         if (ability != null) ability.reset();
+        player.getInventory().setItem(13, ItemStack.of(Material.AIR));
     }
 }
