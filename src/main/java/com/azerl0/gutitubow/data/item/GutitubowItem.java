@@ -1,6 +1,8 @@
 package com.azerl0.gutitubow.data.item;
 
+import com.azerl0.gutitubow.util.ItemUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -13,7 +15,6 @@ import org.bukkit.inventory.meta.components.ToolComponent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class GutitubowItem {
 
@@ -49,7 +50,43 @@ public class GutitubowItem {
 
             item.setItemMeta(meta);
         }
+        ItemUtil.setCantDrop(item, true);
         GUTITUBOW = item;
+    }
+
+    public static final ItemStack AREA_COMPASS;
+    static {
+        ItemStack itemStack = new ItemStack(Material.COMPASS);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta != null) {
+            meta.displayName(Component.text("エリアコンパス").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+        }
+        itemStack.setItemMeta(meta);
+        ItemUtil.setCantDrop(itemStack, true);
+        AREA_COMPASS = itemStack;
+    }
+
+    public static final ItemStack SPYGLASS;
+    static {
+        ItemStack itemStack = new ItemStack(Material.SPYGLASS);
+
+        ItemUtil.setCantDrop(itemStack, true);
+        SPYGLASS = itemStack;
+    }
+
+    public static final ItemStack INVALID_SLOT_BLACK;
+    static {
+        ItemStack itemStack = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta != null) {
+            meta.setHideTooltip(true);
+        }
+        itemStack.setItemMeta(meta);
+        ItemUtil.setCantDrop(itemStack, true);
+        ItemUtil.setCantMove(itemStack, true);
+        INVALID_SLOT_BLACK = itemStack;
     }
 
     public static final ItemStack ABILITY_ICON_NULL;

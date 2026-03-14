@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.game;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.data.GutitubowDamageType;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
+import com.azerl0.gutitubow.util.ItemUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -227,6 +228,8 @@ public class GamePlayer {
 
         item.setItemMeta(meta);
         if (amount > 1) item.setAmount(amount);
+        ItemUtil.setCantDrop(item, true);
+        ItemUtil.setCantMove(item, true);
         return item;
     }
 

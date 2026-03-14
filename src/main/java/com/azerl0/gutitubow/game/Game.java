@@ -24,7 +24,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -232,15 +231,18 @@ public class Game {
             PlayerInventory inventory = player.getInventory();
             inventory.clear();
             inventory.setItem(0, GutitubowItem.GUTITUBOW);
-            inventory.setItem(7, ItemStack.of(Material.SPYGLASS));
-
-            ItemStack compass = ItemStack.of(Material.COMPASS);
-            inventory.setItem(6, compass);
+            inventory.setItem(6, GutitubowItem.AREA_COMPASS);
+            inventory.setItem(7, GutitubowItem.SPYGLASS);
+            abilityManager.setDisplayItem(player, ability, 13);
 
             player.setCompassTarget(safeArea);
 
             if (!debugManager.isNoStartTeleport()) gamePlayer.firstElytra();
             gamePlayer.setArrowAmount(0);
+
+            for (int i = 9; i <= 26; i++) {
+                if (i != 13) inventory.setItem(i, GutitubowItem.INVALID_SLOT_BLACK);
+            }
 
             for (UUID otherPlayerUUID : players) {
                 Player target = Bukkit.getPlayer(otherPlayerUUID);

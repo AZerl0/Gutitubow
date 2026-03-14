@@ -5,9 +5,10 @@ import com.azerl0.gutitubow.carepackage.CarePackageListener;
 import com.azerl0.gutitubow.command.*;
 import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.game.*;
-import com.azerl0.gutitubow.listener.*;
 import com.azerl0.gutitubow.map.MapManager;
+import com.azerl0.gutitubow.item.ItemListener;
 import com.azerl0.gutitubow.util.EntityUtil;
+import com.azerl0.gutitubow.util.ItemUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRules;
 import org.bukkit.World;
@@ -29,6 +30,8 @@ public final class Gutitubow extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        ItemUtil.init(this);
 
         // Managers
         this.debugManager = new DebugManager(this);
@@ -67,6 +70,7 @@ public final class Gutitubow extends JavaPlugin {
         getCommand("game").setExecutor(new GameCommand(gameManager, game));
         getCommand("gameplayer").setExecutor(new GamePlayerCommand(this, game));
         getCommand("gutitubowdebug").setExecutor(new DebugCommand(debugManager));
+        getCommand("gutitubowitem").setExecutor(new ItemCommand());
 
         for (World world : Bukkit.getWorlds()) {
             world.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, false);

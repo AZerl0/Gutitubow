@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.ability;
 
+import com.azerl0.gutitubow.util.ItemUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -33,7 +34,14 @@ public class AbilityManager {
 
         ability.init(player);
         abilities.put(player.getUniqueId(), ability);
-        player.getInventory().setItem(13, type.getDisplayItem());
+        setDisplayItem(player, type, 13);
+    }
+
+    public void setDisplayItem(Player player, AbilityType type, int index) {
+        ItemStack displayItem = type.getDisplayItem();
+        ItemUtil.setCantMove(displayItem, true);
+        ItemUtil.setCantDrop(displayItem, true);
+        player.getInventory().setItem(index, displayItem);
     }
 
     public void resetAbility(Player player) {
