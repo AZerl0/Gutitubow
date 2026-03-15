@@ -6,12 +6,14 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.components.ToolComponent;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +90,22 @@ public class GutitubowItem {
         ItemUtil.setCantMove(itemStack, true);
         INVALID_SLOT_BLACK = itemStack;
     }
+
+
+    public static final ItemStack GAME_MASTER;
+    static {
+        final NamespacedKey gamemasterKey = new NamespacedKey("gutitubow", "item.gamemaster");
+        ItemStack itemStack = new ItemStack(Material.NETHER_STAR);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta != null) {
+            meta.displayName(Component.text("ゲーム設定").decoration(TextDecoration.ITALIC, false));
+            meta.getPersistentDataContainer().set(gamemasterKey, PersistentDataType.BOOLEAN, true);
+        }
+        itemStack.setItemMeta(meta);
+        GAME_MASTER = itemStack;
+    }
+
 
     public static final ItemStack ABILITY_ICON_NULL;
     static {

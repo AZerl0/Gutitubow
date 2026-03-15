@@ -5,6 +5,9 @@ import com.azerl0.gutitubow.carepackage.CarePackageListener;
 import com.azerl0.gutitubow.command.*;
 import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.game.*;
+import com.azerl0.gutitubow.gui.AllGUI;
+import com.azerl0.gutitubow.gui.GUIListener;
+import com.azerl0.gutitubow.gui.guis.GameGUI;
 import com.azerl0.gutitubow.map.MapManager;
 import com.azerl0.gutitubow.item.ItemListener;
 import com.azerl0.gutitubow.util.EntityUtil;
@@ -42,8 +45,6 @@ public final class Gutitubow extends JavaPlugin {
         this.game = gameManager.newGame();
 
 
-
-
         // Ability登録
         AbilityRegistry.register(AbilityType.RICOCHET, RicochetAbility::new);
         AbilityRegistry.register(AbilityType.BOMB, BombAbility::new);
@@ -56,6 +57,12 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.TELEPORT, TeleportAbility::new);
         AbilityRegistry.register(AbilityType.ESCAPE, EscapeAbility::new);
 
+        //GUI
+        GameGUI gameGUI = new GameGUI(gameManager, game);
+
+        AllGUI allGUI = new AllGUI(gameGUI);
+
+
         // Listener登録
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new AbilityListener(game.getAbilityManager()), this);
@@ -63,6 +70,7 @@ public final class Gutitubow extends JavaPlugin {
         pm.registerEvents(new CarePackageListener(carePackageManager), this);
         pm.registerEvents(new ItemListener(), this);
         pm.registerEvents(new GameListener(this, game), this);
+        pm.registerEvents(new GUIListener(allGUI), this);
 
         // Command登録
         getCommand("ability").setExecutor(new AbilityCommand(game.getAbilityManager()));

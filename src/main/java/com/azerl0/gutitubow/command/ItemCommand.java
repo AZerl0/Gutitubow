@@ -16,11 +16,13 @@ public class ItemCommand implements CommandExecutor {
             @NotNull String @NotNull [] args
     ) {
         if (!(sender instanceof Player player)) return true;
-
-        if (args[0].equals("gutitubow")) {
-            player.give(GutitubowItem.GUTITUBOW);
-            return true;
+        switch (args[0]) {
+            case ("gutitubow"):
+                player.give(GutitubowItem.GUTITUBOW);
+            case ("gamemaster"):
+                player.give(GutitubowItem.GAME_MASTER);
         }
-        return false;
+
+        return true;
     }
 }
