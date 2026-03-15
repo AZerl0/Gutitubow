@@ -263,16 +263,17 @@ public class Game {
 
         if (this.currentTicks > this.nextTick && this.phase != 7) this.phaseUpdate();
 
+        Random random = new Random();
         switch (phase) {
             case (1):
                 if (this.currentTicks == 0 || this.currentTicks == 60 * 20 || this.currentTicks == 120 * 20) {
-                    this.randomCarePackageSpawn(4, true);
+                    this.randomCarePackageSpawn(random.nextInt(2, 4), true);
                 }
                 break;
             case (2):
             case (3):
                 if (this.currentTicks == 0 || this.currentTicks == 60 * 20) {
-                    this.randomCarePackageSpawn(4, true);
+                    this.randomCarePackageSpawn(random.nextInt(2, 4), true);
                 }
                 break;
         }
