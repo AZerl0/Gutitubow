@@ -30,17 +30,11 @@ public class Map {
     public Location getRandomXZPosition(double borderOffset) {
         Random random = new Random();
 
-        double angle = random.nextDouble() * 2 * Math.PI;
-        double maxRadius = this.size / 2 - borderOffset;
+        double maxSize = size / 2 - borderOffset;
+        double offsetX = random.nextDouble(-maxSize, maxSize);
+        double offsetZ = random.nextDouble(-maxSize, maxSize);
 
-        double radius = Math.sqrt(random.nextDouble()) * maxRadius;
-
-        Vector vector = new Vector(
-                Math.cos(angle) * radius,
-                0.0,
-                Math.sin(angle) * radius
-        );
-        return this.center.clone().add(vector);
+        return this.center.clone().add(offsetX, 0, offsetZ);
     }
 
     public Location getRandomSafeArea() {
