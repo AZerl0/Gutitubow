@@ -641,6 +641,17 @@ public class Game {
                     }
                 }
             }
+            attacker.playSound(attacker, Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 1.0f);
+            Title title = Title.title(
+                    Component.empty(),
+                    Component.text("§cHIT §6§bᐅ §f" + player.getName() + "§r§6 (" + Math.floor(distance * 10) / 10 + "m)").color(NamedTextColor.LIGHT_PURPLE),
+                    Title.Times.times(
+                            java.time.Duration.ofMillis(100),
+                            java.time.Duration.ofMillis(1250),
+                            java.time.Duration.ofMillis(500)
+                    )
+            );
+            attacker.showTitle(title);
             LogManager.broadcastHitLog(attacker, player, distance);
         }
     }
