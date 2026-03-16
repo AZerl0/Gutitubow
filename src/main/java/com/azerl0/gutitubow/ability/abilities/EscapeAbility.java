@@ -8,9 +8,7 @@ import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -35,7 +33,7 @@ public class EscapeAbility extends Ability {
 
     @Override
     public void init(Player player) {
-        this.player = player;
+        this.playerUUID = player.getUniqueId();
         reset();
     }
 
@@ -50,7 +48,7 @@ public class EscapeAbility extends Ability {
         if (!(type == GutitubowDamageType.ARROW_SHOT ||
                 type == GutitubowDamageType.BOMB_BLAST ||
                 type == GutitubowDamageType.RICOCHET_BLAST)) return;
-        if (!player.isSneaking()) return;
+        if (!getPlayer().isSneaking()) return;
 
         escape();
 
@@ -58,15 +56,17 @@ public class EscapeAbility extends Ability {
 
     private void escape() {
         if (escapeTask != null && !escapeTask.isCancelled()) return;
+        Location location = getPlayer().getLocation();
+        World world = getPlayer().getWorld();
 
         ItemStack elytra = ItemStack.of(Material.ELYTRA);
         ItemMeta meta = elytra.getItemMeta();
         meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
         meta.setUnbreakable(true);
         elytra.setItemMeta(meta);
-        player.getInventory().setChestplate(elytra);
+        getPlayer().getInventory().setChestplate(elytra);
 
-        player.setVelocity(new Vector(0.0, 4.0, 0.0));
+        getPlayer().setVelocity(new Vector(0.0, 4.0, 0.0));
 
         Title title = Title.title(
                 Component.text("⚠").color(NamedTextColor.YELLOW)
@@ -80,12 +80,12 @@ public class EscapeAbility extends Ability {
                         java.time.Duration.ofMillis(500)
                 )
         );
-        player.showTitle(title);
-        player.getLocation().getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.8f, 1.0f);
+        getPlayer().showTitle(title);
+        world.playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 0.8f, 1.0f);
 
-        player.getWorld().spawnParticle(
+        world.spawnParticle(
                 Particle.EXPLOSION,
-                player.getEyeLocation(), 1);
+                location, 1);
 
 
         escapeTask = new BukkitRunnable() {
@@ -93,21 +93,21 @@ public class EscapeAbility extends Ability {
 
             @Override
             public void run() {
-                if (player.isGliding()) {
+                if (getPlayer().isGliding()) {
                     startedGliding = true;
                     return;
                 }
                 if (startedGliding) {
                     resetEscape();
                 }
-                player.setGliding(true);
+                getPlayer().setGliding(true);
             }
         }.runTaskTimer(context.plugin(), 1L, 1L);
     }
 
 
     private void resetEscape() {
-        player.getInventory().setChestplate(ItemStack.of(Material.AIR));
+        getPlayer().getInventory().setChestplate(ItemStack.of(Material.AIR));
         if (escapeTask != null) escapeTask.cancel();
         escapeTask = null;
     }

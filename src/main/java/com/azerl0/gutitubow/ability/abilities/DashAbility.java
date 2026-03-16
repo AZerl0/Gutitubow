@@ -45,8 +45,18 @@ public class DashAbility extends Ability {
     }
 
     @Override
+    public void init(Player player) {
+        this.playerUUID = player.getUniqueId();
+    }
+
+    @Override
+    public void reset() {
+        stopSprinting();
+    }
+
+    @Override
     public void onToggleSprint(PlayerToggleSprintEvent event) {
-        Player player = event.getPlayer();
+        Player player = getPlayer();
 
         if (event.isSprinting()) {
             if (task != null && !task.isCancelled()) return;
@@ -55,7 +65,7 @@ public class DashAbility extends Ability {
                 @Override
                 public void run() {
                     if (!player.isSprinting() || player.isSwimming() || player.isFlying() || player.isSneaking()) {
-                        stopSprinting(player);
+                        stopSprinting();
                         this.cancel();
                         return;
                     }
@@ -106,7 +116,8 @@ public class DashAbility extends Ability {
         }
     }
 
-    private void stopSprinting(Player player) {
+    private void stopSprinting() {
+        Player player = getPlayer();
         this.dashingTick = 0;
         Objects.requireNonNull(player.getAttribute(Attribute.STEP_HEIGHT)).setBaseValue(0.6);
         Objects.requireNonNull(player.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0.1);
@@ -120,17 +131,17 @@ public class DashAbility extends Ability {
             Vector velocity = player.getLocation().getDirection().clone().setY(0.25).normalize().multiply(0.8);
             player.setVelocity(velocity);
         }
-        stopSprinting(player);
+        stopSprinting();
     }
 
     @Override
     public void onJump(PlayerJumpEvent event) {
-        stopSprinting(event.getPlayer());
+        stopSprinting();
     }
 
     @Override
     public void onPlayerRightClickBow(PlayerInteractEvent event) {
-        stopSprinting(event.getPlayer());
+        stopSprinting();
     }
 
     private void checkReplaceFill(Location a, Location b) {

@@ -3,14 +3,17 @@ package com.azerl0.gutitubow.ability;
 
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
+
 public abstract class Ability {
-    protected Player player;
+    protected UUID playerUUID;
     protected final AbilityContext context;
 
     public Ability(AbilityContext context) {
@@ -19,6 +22,10 @@ public abstract class Ability {
 
     @NotNull
     public abstract AbilityType getType();
+
+    public Player getPlayer() {
+        return Bukkit.getPlayer(playerUUID);
+    }
 
     public void init(Player player) {}
 
