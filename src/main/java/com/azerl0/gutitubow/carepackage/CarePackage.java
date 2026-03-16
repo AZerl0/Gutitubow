@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.carepackage;
 
 import com.azerl0.gutitubow.data.item.GutitubowItem;
+import com.azerl0.gutitubow.packet.EntityGlowManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
@@ -16,14 +17,18 @@ import java.util.Set;
 import java.util.UUID;
 
 public class CarePackage {
+    private final EntityGlowManager glowManager;
     private final UUID uuid;
-    private Set<UUID> used_players = new HashSet<>();
+    private final UUID displayEntityUUID;
+    private final Set<UUID> used_players = new HashSet<>();
     private final NamespacedKey isFallingKey;
     private final NamespacedKey fallingTickKey;
     private final NamespacedKey remainedPotionKey;
 
-    public CarePackage(UUID uniqueId, NamespacedKey isFallingKey, NamespacedKey fallingTickKey, NamespacedKey remainedPotionKey) {
+    public CarePackage(UUID uniqueId, UUID displayEntityUUID, EntityGlowManager glowManager, NamespacedKey isFallingKey, NamespacedKey fallingTickKey, NamespacedKey remainedPotionKey) {
+        this.glowManager = glowManager;
         this.uuid = uniqueId;
+        this.displayEntityUUID = displayEntityUUID;
         this.isFallingKey = isFallingKey;
         this.fallingTickKey = fallingTickKey;
         this.remainedPotionKey = remainedPotionKey;
@@ -79,6 +84,10 @@ public class CarePackage {
     @Nullable
     public Entity getCoreEntity() {
         return Bukkit.getServer().getEntity(this.uuid);
+    }
+
+    public Entity getDisplayEntity() {
+        return Bukkit.getServer().getEntity(this.displayEntityUUID);
     }
 
     public void onMove() {
@@ -180,6 +189,7 @@ public class CarePackage {
                         ));
         player.sendMessage(Component.empty());
         this.used_players.add(player.getUniqueId());
+        glowManager.removeGlow(player, getDisplayEntity());
         player.give(GutitubowItem.RECOVERY_POTION);
 
         if (this.getRemainedPotion() <= 1) {

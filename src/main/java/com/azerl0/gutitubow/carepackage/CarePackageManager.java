@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.carepackage;
 
+import com.azerl0.gutitubow.packet.EntityGlowManager;
 import com.azerl0.gutitubow.util.EntityUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -16,13 +17,15 @@ import java.util.*;
 public class CarePackageManager {
     private final JavaPlugin plugin;
     private final Map<UUID, CarePackage> carePackages = new HashMap<>();
+    private final EntityGlowManager glowManager;
     private final NamespacedKey isFallingKey;
     private final NamespacedKey fallingTickKey;
     private final NamespacedKey remainedPotionKey;
 
 
-    public CarePackageManager(JavaPlugin plugin) {
+    public CarePackageManager(JavaPlugin plugin, EntityGlowManager glowManager) {
         this.plugin = plugin;
+        this.glowManager = glowManager;
         isFallingKey = new NamespacedKey(plugin, "carePackage.isFalling");
         fallingTickKey = new NamespacedKey(plugin, "carePackage.fallingTick");
         remainedPotionKey = new NamespacedKey(plugin, "carePackage.remainedPotion");
@@ -87,7 +90,7 @@ public class CarePackageManager {
 
             });
         }
-        CarePackage carePackage = new CarePackage(coreEntity.getUniqueId(), isFallingKey, fallingTickKey, remainedPotionKey);
+        CarePackage carePackage = new CarePackage(coreEntity.getUniqueId(), blockDisplay.getUniqueId(), glowManager, isFallingKey, fallingTickKey, remainedPotionKey);
         carePackage.setRemainedPotion(3);
         carePackages.put(coreEntity.getUniqueId(), carePackage);
         Bukkit.getScheduler().runTaskLater(plugin, carePackage::onMove, 3L);

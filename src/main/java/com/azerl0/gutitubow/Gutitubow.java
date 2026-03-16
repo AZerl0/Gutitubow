@@ -10,6 +10,9 @@ import com.azerl0.gutitubow.gui.GUIListener;
 import com.azerl0.gutitubow.gui.guis.GameGUI;
 import com.azerl0.gutitubow.map.MapManager;
 import com.azerl0.gutitubow.item.ItemListener;
+import com.azerl0.gutitubow.packet.EntityFlagManager;
+import com.azerl0.gutitubow.packet.EntityGlowManager;
+import com.azerl0.gutitubow.packet.PacketListener;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
 import org.bukkit.Bukkit;
@@ -27,6 +30,8 @@ public final class Gutitubow extends JavaPlugin {
     private CarePackageManager carePackageManager;
     private MapManager mapManager;
     private GameManager gameManager;
+    private EntityFlagManager flagManager;
+    private EntityGlowManager glowManager;
 
 
     private Game game;
@@ -37,8 +42,10 @@ public final class Gutitubow extends JavaPlugin {
         ItemUtil.init(this);
 
         // Managers
+        this.flagManager = new EntityFlagManager();
+        this.glowManager = new EntityGlowManager(flagManager);
         this.debugManager = new DebugManager(this);
-        this.carePackageManager = new CarePackageManager(this);
+        this.carePackageManager = new CarePackageManager(this, glowManager);
         this.mapManager = new MapManager(this);
         this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.carePackageManager);
         // MainGame
@@ -71,6 +78,7 @@ public final class Gutitubow extends JavaPlugin {
         pm.registerEvents(new ItemListener(), this);
         pm.registerEvents(new GameListener(this, game), this);
         pm.registerEvents(new GUIListener(allGUI), this);
+        pm.registerEvents(new PacketListener(flagManager), this);
 
         // Command登録
         getCommand("ability").setExecutor(new AbilityCommand(game.getAbilityManager()));
