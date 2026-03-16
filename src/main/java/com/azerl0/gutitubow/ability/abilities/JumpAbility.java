@@ -34,7 +34,7 @@ public class JumpAbility extends Ability {
 
     @Override
     public void init(Player player) {
-        this.player = player;
+        this.playerUUID = player.getUniqueId();
         player.setAllowFlight(true);
         charge = 0;
         if (task != null && !task.isCancelled()) return;
@@ -63,8 +63,8 @@ public class JumpAbility extends Ability {
 
     @Override
     public void reset() {
-        player.setAllowFlight(false);
-        player.sendActionBar(Component.empty());
+        getPlayer().setAllowFlight(false);
+        getPlayer().sendActionBar(Component.empty());
         if (task != null) task.cancel();
         task = null;
     }
