@@ -39,52 +39,55 @@ public class BombAbility extends Ability {
 
         for (World world : Bukkit.getWorlds()) {
             for (Arrow arrow : world.getEntitiesByClass(Arrow.class)) {
-
                 if (!(arrow.getShooter() instanceof Player shooter)) continue;
                 if (!shooter.getUniqueId().equals(event.getPlayer().getUniqueId())) continue;
+                explode(arrow);
 
-                Location loc = arrow.getLocation().add(0, -0.2, 0);
-
-
-                double damageRadius = 2;
-                for (Entity entity : world.getNearbyEntities(loc, damageRadius, damageRadius, damageRadius)) {
-                    if (entity instanceof Player damageEntity) {
-
-                        Game game = context.game();
-
-                        if (!shooter.getUniqueId().equals(damageEntity.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damageEntity)) {
-                            game.damage(damageEntity, 0.5, event.getPlayer(), true);
-                        }
-                    }
-                }
-
-                double knockbackRadius = 3;
-                for (Entity entity : world.getNearbyEntities(loc, knockbackRadius, knockbackRadius, knockbackRadius)) {
-                    if (entity instanceof LivingEntity living) {
-
-                        Vector knockback = living.getLocation().toVector()
-                                .subtract(loc.toVector())
-                                .normalize()
-                                .multiply(1.2);
-
-                        living.setVelocity(knockback);
-
-                    }
-                }
-                arrow.getWorld().spawnParticle(
-                        Particle.EXPLOSION,
-                        arrow.getLocation(),
-                        1,
-                        0,0,0,
-                        0,
-                        null,
-                        true);
-
-                arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_PUFFER_FISH_STING, 1.0f, 1.0f);
-
-                arrow.remove();
             }
         }
 
+    }
+
+    private void explode(Arrow arrow) {
+        if (!(arrow.getShooter() instanceof Player shooter)) return;
+        World world = arrow.getWorld();
+        Location loc = arrow.getLocation().clone();
+
+        double knockbackRadius = 3;
+        for (Entity entity : world.getNearbyEntities(loc.add(0, -0.2, 0), knockbackRadius, knockbackRadius, knockbackRadius)) {
+            if (entity instanceof LivingEntity living) {
+
+                Vector knockback = living.getLocation().toVector()
+                        .subtract(loc.toVector())
+                        .normalize()
+                        .multiply(1.5);
+
+                living.setVelocity(knockback);
+            }
+        }
+
+        double damageRadius = 2;
+        for (Entity entity : world.getNearbyEntities(loc, damageRadius, damageRadius, damageRadius)) {
+            if (entity instanceof Player damagePlayer) {
+
+                Game game = context.game();
+
+                if (!shooter.getUniqueId().equals(damagePlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damagePlayer)) {
+                    game.damage(damagePlayer, 0.5, shooter, true);
+                }
+            }
+        }
+        arrow.getWorld().spawnParticle(
+                Particle.EXPLOSION,
+                arrow.getLocation(),
+                1,
+                0,0,0,
+                0,
+                null,
+                true);
+
+        arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_PUFFER_FISH_STING, 1.0f, 1.0f);
+
+        arrow.remove();
     }
 }
