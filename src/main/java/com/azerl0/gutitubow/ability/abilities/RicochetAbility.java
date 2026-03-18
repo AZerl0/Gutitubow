@@ -50,8 +50,8 @@ public class RicochetAbility extends Ability {
 
         int ricochetCount = getRicochetCount(arrow);
         if (ricochetCount > 0) {
+            arrow.setHitSound(Sound.ENTITY_SLIME_JUMP);
             ArrowUtil.RicochetEvent(context.plugin(), event, 0.75);
-            world.playSound(arrow.getLocation(), Sound.ENTITY_SLIME_JUMP, 1.0f, 1.0f);
 
             setRicochetCount(arrow, ricochetCount - 1);
             world.spawnParticle(
