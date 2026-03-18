@@ -618,13 +618,14 @@ public class Game {
 
         GamePlayerDamageEvent event = new GamePlayerDamageEvent(player, amount, attacker, GutitubowDamageType.ARROW_SHOT);
         Bukkit.getPluginManager().callEvent(event);
+        double newAmount = event.getAmount();
         if (event.isCancelled()) return;
 
-        if (player.getHealth() <= amount) {
+        if (player.getHealth() <= newAmount) {
             this.kill(player, attacker, distance);
 
         } else {
-            player.damage(amount);
+            player.damage(newAmount);
             if (canUpgrade) {
                 GamePlayer gamePlayer = getGamePlayer(attacker);
                 gamePlayer.setTotalHit(gamePlayer.getTotalHit() + 1);

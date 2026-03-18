@@ -55,4 +55,6 @@ public abstract class Ability {
 
     public void onDamage(GamePlayerDamageEvent event) {}
 
+    public void onDealDamage(GamePlayerDamageEvent event) {}
+
 }

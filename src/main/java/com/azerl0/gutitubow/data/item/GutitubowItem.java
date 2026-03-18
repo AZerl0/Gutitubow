@@ -159,6 +159,25 @@ public class GutitubowItem {
         ABILITY_ICON_FLOAT = itemStack;
     }
 
+    public static final ItemStack ABILITY_ICON_SHRINK;
+    static {
+        ItemStack itemStack = new ItemStack(Material.FERMENTED_SPIDER_EYE);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「縮身」は、小柄で身軽な身体で敵を翻弄する能力。"),
+                Component.text("§fあなたは通常より少し体が小さい。"),
+                Component.empty(),
+                Component.text("§f相手から被弾すると、一定時間さらに小さく素早くなる。"),
+                Component.text("§fただし、「縮身」発動中は与えるダメージが半分になる。"),
+                Component.text("§7操作"),
+                Component.text("§7 なし")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_SHRINK = itemStack;
+    }
+
     public static final ItemStack ABILITY_ICON_BOMB;
     static {
         ItemStack itemStack = new ItemStack(Material.TNT);

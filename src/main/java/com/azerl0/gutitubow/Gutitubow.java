@@ -64,6 +64,7 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.TELEPORT, TeleportAbility::new);
         AbilityRegistry.register(AbilityType.ESCAPE, EscapeAbility::new);
         AbilityRegistry.register(AbilityType.FLOAT, FloatAbility::new);
+        AbilityRegistry.register(AbilityType.SHRINK, ShrinkAbility::new);
 
         //GUI
         GameGUI gameGUI = new GameGUI(gameManager, game);
