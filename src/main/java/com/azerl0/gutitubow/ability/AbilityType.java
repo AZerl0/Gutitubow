@@ -17,7 +17,8 @@ public enum AbilityType {
     DASH(Component.text("疾走"), GutitubowItem.ABILITY_ICON_DASH),
     JUMP(Component.text("跳躍"), GutitubowItem.ABILITY_ICON_JUMP),
     TELEPORT(Component.text("転移"), GutitubowItem.ABILITY_ICON_TELEPORT),
-    ESCAPE(Component.text("脱出"), GutitubowItem.ABILITY_ICON_ESCAPE);
+    ESCAPE(Component.text("脱出"), GutitubowItem.ABILITY_ICON_ESCAPE),
+    FLOAT(Component.text("浮遊"), GutitubowItem.ABILITY_ICON_FLOAT);
 
     private final Component name;
     private final ItemStack displayItem;

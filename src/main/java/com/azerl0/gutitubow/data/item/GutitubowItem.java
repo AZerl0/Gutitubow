@@ -138,6 +138,27 @@ public class GutitubowItem {
         ABILITY_ICON_BARRIER = itemStack;
     }
 
+    public static final ItemStack ABILITY_ICON_FLOAT;
+    static {
+        ItemStack itemStack = new ItemStack(Material.STRING);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「浮遊」は、空中を浮遊し重力に縛られない移動が可能な能力。"),
+                Component.text("§f自身を中心とした半径3メートルに反重力フィールドを生成できる。"),
+                Component.empty(),
+                Component.text("§fフィールドの範囲外に出てしまうと、即座に能力が解除され、空中に放り投げられてしまう。"),
+                Component.text("§fまた、フィールドの維持には「浮遊チャージ」を必要とする。"),
+                Component.text("§f「浮遊チャージ」は地面に接している間、徐々に貯まっていく。"),
+                Component.text("§fフィールドを利用できるのは自分と味方だけ。"),
+                Component.text("§7操作"),
+                Component.text("§7[SHIFT(1秒間)] - 反重力フィールドを生成")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_FLOAT = itemStack;
+    }
+
     public static final ItemStack ABILITY_ICON_BOMB;
     static {
         ItemStack itemStack = new ItemStack(Material.TNT);

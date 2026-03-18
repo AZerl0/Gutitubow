@@ -36,6 +36,12 @@ public class AbilityListener implements Listener {
     }
 
     @EventHandler
+    public void onToggleSneaking(PlayerToggleSneakEvent event) {
+        Ability ability = abilityManager.getAbility(event.getPlayer());
+        if (ability != null) ability.onToggleSneaking(event);
+    }
+
+    @EventHandler
     public void onToggleSprint(PlayerToggleSprintEvent event) {
         Ability ability = abilityManager.getAbility(event.getPlayer());
         if (ability != null) ability.onToggleSprint(event);

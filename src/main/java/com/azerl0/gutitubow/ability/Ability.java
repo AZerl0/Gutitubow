@@ -41,13 +41,15 @@ public abstract class Ability {
 
     public void onMove(PlayerMoveEvent event) {}
 
+    public void onToggleSneaking(PlayerToggleSneakEvent event) {}
+
     public void onToggleSprint(PlayerToggleSprintEvent event) {}
+
+    public void onToggleFlight(PlayerToggleFlightEvent event) {}
 
     public void onJump(PlayerJumpEvent event) {}
 
     public void onPressJumpKey(PlayerInputEvent event) {}
-
-    public void onToggleFlight(PlayerToggleFlightEvent event) {}
 
     public void onInteract(PlayerInteractEvent event) {}
 

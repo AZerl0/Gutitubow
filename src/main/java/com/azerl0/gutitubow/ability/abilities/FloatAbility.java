@@ -1,0 +1,269 @@
+package com.azerl0.gutitubow.ability.abilities;
+
+import com.azerl0.gutitubow.ability.Ability;
+import com.azerl0.gutitubow.ability.AbilityContext;
+import com.azerl0.gutitubow.ability.AbilityType;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
+import org.bukkit.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Random;
+
+public class FloatAbility extends Ability {
+    private final double floatAreaRadius = 3;
+    private final double maxFloatHeight = 12;
+    private final int floatMaxCharge = 20 * 20;
+
+    private int floatCharge;
+    private BukkitTask sneakingTask;
+    private BukkitTask updateTask;
+    private BukkitTask floatingTask;
+    private int areaPlacingCharge;
+    private Location floatAreaCenter;
+    private boolean isPlacing;
+
+    public FloatAbility(AbilityContext context) {
+        super(context);
+    }
+
+    @Override
+    public @NotNull AbilityType getType() {
+        return AbilityType.FLOAT;
+    }
+
+    @Override
+    public void init(Player player) {
+        this.playerUUID = player.getUniqueId();
+        this.floatCharge = floatMaxCharge;
+        this.floatAreaCenter = null;
+        this.isPlacing = false;
+
+        if (updateTask != null && !updateTask.isCancelled()) return;
+
+        updateTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                update();
+            }
+        }.runTaskTimer(context.plugin(), 0L, 1L);
+    }
+
+    @Override
+    public void reset() {
+        if (updateTask != null) updateTask.cancel();
+        updateTask = null;
+        if (sneakingTask != null) sneakingTask.cancel();
+        sneakingTask = null;
+        stopFloating();
+        getPlayer().setCooldown(Material.COMPASS, 0);
+    }
+
+    private double getCooldown() {
+        return getPlayer().getCooldown(Material.COMPASS);
+    }
+
+    private boolean isOnGround() {
+        return ((Entity) getPlayer()).isOnGround();
+    }
+
+    private boolean isNowCooldown() {
+        return getCooldown() > 0.0;
+    }
+
+    private boolean isFloating() {
+        return floatingTask != null;
+    }
+
+    @Override
+    public void onToggleSneaking(PlayerToggleSneakEvent event) {
+        if (event.isSneaking()) {
+            if (isFloating()) {
+                stopFloating();
+            }
+
+            areaPlacingCharge = 0;
+            if (!(getCooldown() > 0.0)) isPlacing = true;
+
+            if (sneakingTask != null && !sneakingTask.isCancelled()) return;
+
+            sneakingTask = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (!getPlayer().isSneaking()) {
+                        this.cancel();
+                        return;
+                    }
+                    onSneaking();
+                }
+            }.runTaskTimer(context.plugin(), 0L, 1L);
+        }
+    }
+
+    private void update() {
+        Component message;
+        double cooldown = getCooldown();
+        if (cooldown > 0.0) {
+            double cooldownSec = Math.floor((cooldown / 20) * 10) / 10;
+            message = Component.text(" - 能力クールタイム中 " + cooldownSec + "秒 - ").color(NamedTextColor.RED);
+        } else {
+            double chargeSecondsText = Math.floor(((double) floatCharge / 20) * 10) / 10;
+            message = Component.text("浮遊チャージ: " + chargeSecondsText + "秒");
+        }
+
+        getPlayer().sendActionBar(message);
+
+        if (isOnGround()) {
+            floatCharge++;
+            if (floatCharge > floatMaxCharge) floatCharge = floatMaxCharge;
+        } else {
+            areaPlacingCharge = 0;
+        }
+    }
+
+    private void onSneaking() {
+        if (isOnGround()) {
+            placingFloatArea();
+        }
+    }
+
+    private void placingFloatArea() {
+        if (isNowCooldown()) return;
+
+        areaPlacingCharge++;
+        if (areaPlacingCharge < 20) {
+            if (isPlacing) {
+                StringBuilder placingChargeText = new StringBuilder();
+                for (int i = 0; i < 10; i++) {
+                    placingChargeText.append(areaPlacingCharge > i * 2 ? "§b" : "§7").append("■");
+                }
+                Title title = Title.title(
+                        Component.empty(),
+                        Component.text("§7設置中... [" + placingChargeText + "§7]").color(NamedTextColor.LIGHT_PURPLE),
+                        Title.Times.times(
+                                java.time.Duration.ofMillis(0),
+                                java.time.Duration.ofSeconds(1),
+                                java.time.Duration.ofMillis(0)
+                        )
+                );
+                getPlayer().showTitle(title);
+            }
+        } else {
+            if (floatAreaCenter == null && floatingTask == null) startFloating();
+        }
+    }
+
+    private void stopFloating() {
+        floatAreaCenter = null;
+        if (floatingTask != null) floatingTask.cancel();
+        floatingTask = null;
+        getPlayer().setCooldown(Material.COMPASS, 10 * 20);
+    }
+
+    private void startFloating() {
+        isPlacing = false;
+        floatAreaCenter = getPlayer().getLocation();
+        floatAreaCenter.getWorld().playSound(floatAreaCenter, Sound.BLOCK_BEACON_ACTIVATE, 1.0f, 1.0f);
+        if (floatingTask != null && !floatingTask.isCancelled()) return;
+
+        floatingTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                updateFloat();
+            }
+        }.runTaskTimer(context.plugin(), 0L, 1L);
+    }
+
+    private void updateFloat() {
+        floatCharge--;
+        if (floatCharge <= 0) {
+            stopFloating();
+            return;
+        }
+        Player player = getPlayer();
+        Location playerLocation = player.getLocation();
+        Location floatingAreaHorizonLocation = floatAreaCenter.clone();
+        floatingAreaHorizonLocation.setY(playerLocation.getY());
+
+        if (playerLocation.clone().distance(floatingAreaHorizonLocation) > floatAreaRadius) {
+            stopFloating();
+            player.setVelocity(player.getVelocity().add(new Vector(0.0, 0.5, 0.0)));
+            player.playSound(player, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 1.0f, 1.0f);
+            return;
+        }
+
+        circleParticle(floatAreaCenter, floatAreaRadius, (double) floatCharge / 2);
+        if (floatCharge % 6 == 0) {
+            Random random = new Random();
+            double rad = Math.toRadians(random.nextDouble(0.0, 360.0));
+            double radius = random.nextDouble(0.0, floatAreaRadius);
+            double x = radius * Math.cos(rad);
+            double z = radius * Math.sin(rad);
+
+            Location location = floatAreaCenter.clone().add(x, random.nextDouble(0.0, maxFloatHeight - 2), z);
+
+
+            floatAreaCenter.getWorld().spawnParticle(
+                    Particle.CAMPFIRE_COSY_SMOKE,
+                    location,
+                    1,
+                    0, 0, 0,
+                    0
+            );
+        }
+        playerAppleFloatEffect(player, floatAreaCenter);
+    }
+
+    private void playerAppleFloatEffect(Player player, Location floatAreaCenter) {
+        Location playerLocation = player.getLocation();
+        double playerFloatingHeight = playerLocation.getY() - floatAreaCenter.getY();
+        if (playerFloatingHeight < -1) return;
+
+        PotionEffect effect;
+        if (playerFloatingHeight < maxFloatHeight) {
+            effect = new PotionEffect(PotionEffectType.LEVITATION, 2, 5, true, false, true);
+        } else {
+            effect = new PotionEffect(PotionEffectType.SLOW_FALLING, 2, 1, true, false, false);
+        }
+        player.addPotionEffect(effect);
+    }
+
+    private void circleParticle(Location center, double radius, double radOffset) {
+        World world = center.getWorld();
+        if (world == null) return;
+
+        double spacing = 30;
+
+        for (double angle = 0; angle < 360; angle += spacing) {
+            double rad = Math.toRadians(angle);
+
+            double x = radius * Math.cos(rad + radOffset);
+            double z = radius * Math.sin(rad + radOffset);
+
+            Location location = center.clone().add(x, 0, z);
+
+            Particle.DustOptions dust = new Particle.DustOptions(
+                    Color.fromRGB(30, 240, 255),
+                    1.0f
+            );
+
+            world.spawnParticle(
+                    Particle.DUST,
+                    location,
+                    1,
+                    0, 0, 0,
+                    0,
+                    dust
+            );
+        }
+    }
+}
