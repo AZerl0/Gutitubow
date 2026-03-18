@@ -7,10 +7,7 @@ import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.EntityUtil;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Particle;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -54,6 +51,8 @@ public class RicochetAbility extends Ability {
         int ricochetCount = getRicochetCount(arrow);
         if (ricochetCount > 0) {
             ArrowUtil.RicochetEvent(context.plugin(), event, 0.75);
+            world.playSound(arrow.getLocation(), Sound.ENTITY_SLIME_JUMP, 1.0f, 1.0f);
+
             setRicochetCount(arrow, ricochetCount - 1);
             world.spawnParticle(
                     Particle.EXPLOSION,
