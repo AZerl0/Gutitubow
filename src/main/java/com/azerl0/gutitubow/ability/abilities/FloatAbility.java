@@ -201,7 +201,7 @@ public class FloatAbility extends Ability {
             return;
         }
 
-        circleParticle(floatAreaCenter, floatAreaRadius, (double) floatCharge / 2);
+        circleParticle(floatAreaCenter, floatAreaRadius, 30, (double) floatCharge / 2);
         if (floatCharge % 6 == 0) {
             Random random = new Random();
             double rad = Math.toRadians(random.nextDouble(0.0, 360.0));
@@ -237,11 +237,9 @@ public class FloatAbility extends Ability {
         player.addPotionEffect(effect);
     }
 
-    private void circleParticle(Location center, double radius, double radOffset) {
+    private void circleParticle(Location center, double radius, double spacing, double radOffset) {
         World world = center.getWorld();
         if (world == null) return;
-
-        double spacing = 30;
 
         for (double angle = 0; angle < 360; angle += spacing) {
             double rad = Math.toRadians(angle);
