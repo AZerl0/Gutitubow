@@ -178,6 +178,26 @@ public class GutitubowItem {
         ABILITY_ICON_SHRINK = itemStack;
     }
 
+    public static final ItemStack ABILITY_ICON_TOUGH;
+    static {
+        ItemStack itemStack = new ItemStack(Material.GOLDEN_APPLE);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「強靭」は、圧倒的持久力で持続可能な戦いを実現する能力。"),
+                Component.text("§f黄色の追加体力が♡1個分付与される。"),
+                Component.text("§fこの追加体力を失っても、しばらくダメージを受けないでいると再生する。"),
+                Component.text("§f肉体が再生するまでの時間は、戦闘を多く行うほど短くなっていく。"),
+                Component.empty(),
+                Component.text("§fまた、その強靭な肉体で「♥0.5分のダメージを与える攻撃」を無効化する。"),
+                Component.text("§7操作"),
+                Component.text("§7 なし")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_TOUGH = itemStack;
+    }
+
     public static final ItemStack ABILITY_ICON_BOMB;
     static {
         ItemStack itemStack = new ItemStack(Material.TNT);
