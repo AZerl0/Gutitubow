@@ -69,7 +69,9 @@ public class FloatAbility extends Ability {
     }
 
     private double getCooldown() {
-        return getPlayer().getCooldown(Material.COMPASS);
+        Player player = getPlayer();
+        if (player == null) return 0.0;
+        return player.getCooldown(Material.COMPASS);
     }
 
     private boolean isOnGround() {
@@ -110,6 +112,9 @@ public class FloatAbility extends Ability {
     }
 
     private void update() {
+        Player player = getPlayer();
+        if (player == null) return;
+
         Component message;
         double cooldown = getCooldown();
         if (cooldown > 0.0) {
@@ -120,7 +125,7 @@ public class FloatAbility extends Ability {
             message = Component.text("浮遊チャージ: " + chargeSecondsText + "秒");
         }
 
-        getPlayer().sendActionBar(message);
+        player.sendActionBar(message);
 
         if (isOnGround()) {
             floatCharge++;
@@ -166,7 +171,9 @@ public class FloatAbility extends Ability {
         floatAreaCenter = null;
         if (floatingTask != null) floatingTask.cancel();
         floatingTask = null;
-        getPlayer().setCooldown(Material.COMPASS, 10 * 20);
+        Player player = getPlayer();
+        if (player == null) return;
+        player.setCooldown(Material.COMPASS, 10 * 20);
     }
 
     private void startFloating() {
@@ -190,6 +197,10 @@ public class FloatAbility extends Ability {
             return;
         }
         Player player = getPlayer();
+        if (player == null) {
+            stopFloating();
+            return;
+        }
         Location playerLocation = player.getLocation();
         Location floatingAreaHorizonLocation = floatAreaCenter.clone();
         floatingAreaHorizonLocation.setY(playerLocation.getY());
