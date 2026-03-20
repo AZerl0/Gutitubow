@@ -94,7 +94,7 @@ public class TeleportAbility extends Ability {
     }
 
     private void compassCooldownTask(Player player, int cooldownTick) {
-        player.setCooldown(Material.COMPASS, cooldownTick);
+        setCompassCooldown(cooldownTick);
         if (cooldownTask != null && !cooldownTask.isCancelled()) return;
 
         cooldownTask = new BukkitRunnable() {
@@ -112,9 +112,6 @@ public class TeleportAbility extends Ability {
     }
 
     private void compassCooldownTaskUpdate(Player player) {
-        double cooldown = player.getCooldown(Material.COMPASS);
-        double cooldownSec = Math.floor((cooldown / 20) * 10) / 10;
-        Component message = Component.text(" - 能力クールタイム中 " + cooldownSec + "秒 - ").color(NamedTextColor.RED);
-        player.sendActionBar(message);
+        sendActionBarCompassCooldown();
     }
 }

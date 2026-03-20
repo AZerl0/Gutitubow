@@ -3,7 +3,10 @@ package com.azerl0.gutitubow.ability;
 
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -30,6 +33,21 @@ public abstract class Ability {
     public void init(Player player) {}
 
     public void reset() {}
+
+    public int getCompassCooldown() {
+        return getPlayer().getCooldown(Material.COMPASS);
+    }
+
+    public void setCompassCooldown(int tick) {
+        getPlayer().setCooldown(Material.COMPASS, tick);
+    }
+
+    public void sendActionBarCompassCooldown() {
+        double cooldown = getCompassCooldown();
+        double cooldownSec = Math.floor((cooldown / 20) * 10) / 10;
+        Component message = Component.text(" - 能力クールタイム中 " + cooldownSec + "秒 - ").color(NamedTextColor.RED);
+        getPlayer().sendActionBar(message);
+    }
 
     public void onArrowLaunch(EntityShootBowEvent event) {}
 

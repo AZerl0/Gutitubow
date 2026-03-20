@@ -115,17 +115,15 @@ public class FloatAbility extends Ability {
         Player player = getPlayer();
         if (player == null) return;
 
-        Component message;
         double cooldown = getCooldown();
         if (cooldown > 0.0) {
-            double cooldownSec = Math.floor((cooldown / 20) * 10) / 10;
-            message = Component.text(" - 能力クールタイム中 " + cooldownSec + "秒 - ").color(NamedTextColor.RED);
+            sendActionBarCompassCooldown();
         } else {
             double chargeSecondsText = Math.floor(((double) floatCharge / 20) * 10) / 10;
-            message = Component.text("浮遊チャージ: " + chargeSecondsText + "秒");
+            Component message = Component.text("浮遊チャージ: " + chargeSecondsText + "秒");
+            player.sendActionBar(message);
         }
 
-        player.sendActionBar(message);
 
         if (isOnGround()) {
             if (getPlayer().getWorld().getGameTime() % 5 == 0) floatCharge++;
@@ -173,7 +171,7 @@ public class FloatAbility extends Ability {
         floatingTask = null;
         Player player = getPlayer();
         if (player == null) return;
-        player.setCooldown(Material.COMPASS, 10 * 20);
+        setCompassCooldown(10 * 20);
     }
 
     private void startFloating() {
