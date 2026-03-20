@@ -44,7 +44,7 @@ public class FloatAbility extends Ability {
     @Override
     public void init(Player player) {
         this.playerUUID = player.getUniqueId();
-        this.floatCharge = floatMaxCharge;
+        this.floatCharge = 15 * 20;
         this.floatAreaCenter = null;
         this.isPlacing = false;
 
@@ -128,7 +128,7 @@ public class FloatAbility extends Ability {
         player.sendActionBar(message);
 
         if (isOnGround()) {
-            floatCharge++;
+            if (getPlayer().getWorld().getGameTime() % 5 == 0) floatCharge++;
             if (floatCharge > floatMaxCharge) floatCharge = floatMaxCharge;
         } else {
             areaPlacingCharge = 0;
