@@ -7,8 +7,11 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -17,6 +20,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class GutitubowItem {
 
@@ -196,6 +200,25 @@ public class GutitubowItem {
 
         itemStack.setItemMeta(meta);
         ABILITY_ICON_TOUGH = itemStack;
+    }
+
+    public static final ItemStack ABILITY_ICON_INVISIBLE;
+    static {
+        ItemStack itemStack = new ItemStack(Material.LEATHER_HELMET);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「隠密」は、透明化状態で自由に行動できる能力。"),
+                Component.text("§f5秒間スニークし続けるか、相手に矢を当てると透明化が発動。"),
+                Component.text("§f透明化中は移動速度が上昇する。"),
+                Component.text("§f相手から矢を当てられるか、弓を引き絞ると透明化は解除されてしまう。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 [SHIFT(5秒間)] - 透明化")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_INVISIBLE = itemStack;
     }
 
     public static final ItemStack ABILITY_ICON_BOMB;

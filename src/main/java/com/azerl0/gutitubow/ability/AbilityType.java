@@ -20,7 +20,8 @@ public enum AbilityType {
     ESCAPE(Component.text("脱出"), GutitubowItem.ABILITY_ICON_ESCAPE),
     FLOAT(Component.text("浮遊"), GutitubowItem.ABILITY_ICON_FLOAT),
     SHRINK(Component.text("縮身"), GutitubowItem.ABILITY_ICON_SHRINK),
-    TOUGH(Component.text("強靭"), GutitubowItem.ABILITY_ICON_TOUGH);
+    TOUGH(Component.text("強靭"), GutitubowItem.ABILITY_ICON_TOUGH),
+    INVISIBLE(Component.text("隠密"), GutitubowItem.ABILITY_ICON_INVISIBLE);
 
     private final Component name;
     private final ItemStack displayItem;
