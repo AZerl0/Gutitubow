@@ -204,7 +204,6 @@ public class Game {
             gamePlayer.resetArrowReloadTick();
             gamePlayer.resetTotalHit();
             gamePlayer.setTotalKill(0);
-            gamePlayer.updatePlayerBoard();
 
             int randomIndex = random.nextInt(0, abilityTypeList.size());
             AbilityType ability = abilityTypeList.get(randomIndex);
@@ -214,6 +213,7 @@ public class Game {
                 abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
 
             abilityManager.setAbility(player, ability);
+            gamePlayer.updatePlayerBoard();
 
             Component abilityMessage = Component.text("あなたの能力は「").color(NamedTextColor.GOLD).append(ability.getName()).append(Component.text("」です"));
             Title title = Title.title(
