@@ -24,6 +24,10 @@ public class AbilityRegistry {
         return abilities.keySet();
     }
 
+    public static int getSize() {
+        return abilities.size();
+    }
+
     @Nullable
     public static AbilityType getType(String type) {
         AbilityType abilityType = AbilityType.valueOf(type.toUpperCase());

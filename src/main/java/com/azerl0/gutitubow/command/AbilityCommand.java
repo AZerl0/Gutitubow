@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.command;
 
 import com.azerl0.gutitubow.ability.*;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -52,10 +53,10 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
 
 
             case ("list"):
-                player.sendMessage("Abilities:");
+                player.sendMessage(Component.text("Abilities (" + AbilityRegistry.getSize() + "): ").color(NamedTextColor.AQUA));
 
                 for (AbilityType type : AbilityRegistry.getTypes()) {
-                    player.sendMessage(Component.text("- " + type.toString().toLowerCase() + " ").append(type.getName()));
+                    player.sendMessage(Component.text(" - ").append(type.getName()).append(Component.text(" " + type.toString().toLowerCase())));
                 }
 
                 return true;
