@@ -30,7 +30,6 @@ public class ShieldAbility extends Ability {
     private final int shieldHeight = 5;
     private final int shieldWidth = 11;
     private int shieldHealth;
-    private boolean brokeShield;
     private final Map<UUID, Integer> shieldEntities = new HashMap<>();
     Map<UUID, Long> blockedPlayers = new HashMap<>();
     private boolean isBlocking;
@@ -52,7 +51,6 @@ public class ShieldAbility extends Ability {
         shieldHealth = 5;
         shieldRegProgressTimer = shieldRegTImer;
         isBlocking = false;
-        brokeShield = false;
         createShield();
         if (updateTask != null && !updateTask.isCancelled()) return;
 
@@ -72,7 +70,7 @@ public class ShieldAbility extends Ability {
     @Override
     public void onToggleSneaking(PlayerToggleSneakEvent event) {
         if (event.isSneaking()) {
-            if (!isBlocking && shieldHealth > 0 && !brokeShield) raiseShield();
+            if (!isBlocking && shieldHealth > 0) raiseShield();
         } else {
             if (isBlocking) lowerShield();
         }
@@ -135,7 +133,6 @@ public class ShieldAbility extends Ability {
 
     private void breakShield() {
         isBlocking = false;
-        brokeShield = true;
         shieldRegProgressTimer = 20 * 20;
         shieldHealth = 0;
         World world = getPlayer().getWorld();
@@ -174,7 +171,6 @@ public class ShieldAbility extends Ability {
             shieldRecoveryUpdate();
             if (shieldHealth > maxShieldHealth) {
                 shieldHealth = maxShieldHealth;
-                brokeShield = false;
             }
             for (UUID uuid : shieldEntities.keySet()) {
                 Entity entity = Bukkit.getEntity(uuid);
