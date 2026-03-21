@@ -183,7 +183,7 @@ public class ShieldAbility extends Ability {
         for (int i = 0; i < 5; i++) {
             healthComponent = healthComponent.append(Component.text(i < shieldHealth ? "♥" : "-").color(NamedTextColor.RED));
         }
-        player.sendActionBar(Component.text("SHIELD: ").append(healthComponent).append(Component.text(", regProgress: " + shieldRegProgressTimer)));
+        player.sendActionBar(Component.text("SHIELD: ").append(healthComponent));
     }
 
     private void shieldRecoveryUpdate() {
