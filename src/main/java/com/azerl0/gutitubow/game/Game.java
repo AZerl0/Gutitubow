@@ -401,6 +401,9 @@ public class Game {
                     player.sendMessage(Component.empty());
                     player.sendMessage(Component.text("[!] ケアパッケージが投下されました！").color(NamedTextColor.RED));
                     player.sendMessage(Component.empty());
+                    NamespacedKey recipeKey = new NamespacedKey("minecraft", "chest");
+                    player.undiscoverRecipe(recipeKey);
+                    player.discoverRecipe(recipeKey);
                 }
             }
         }
