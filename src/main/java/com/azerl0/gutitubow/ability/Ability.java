@@ -53,6 +53,8 @@ public abstract class Ability {
 
     public void onArrowHit(ProjectileHitEvent event) {}
 
+    public void onAnyArrowHit(ProjectileHitEvent event) {}
+
     public void onPlayerRightClickBow(PlayerInteractEvent event) {}
 
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {}

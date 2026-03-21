@@ -221,6 +221,28 @@ public class GutitubowItem {
         ABILITY_ICON_INVISIBLE = itemStack;
     }
 
+    public static final ItemStack ABILITY_ICON_SHIELD;
+    static {
+        ItemStack itemStack = new ItemStack(Material.SHIELD);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「大盾」は、敵の攻撃から自分と見方を守り切る能力。"),
+                Component.text("§fスニーク中、自分の向いてる方向に大きな盾を構える。"),
+                Component.text("§f盾は最大で5発の矢を防ぐことができ、盾を使用していない間"),
+                Component.text("§f少しずつ耐久値が回復する。"),
+                Component.text("§f盾を完全に破壊されてしまった場合は再生までの時間が増加する。"),
+                Component.empty(),
+                Component.text("§f味方の放つ矢は盾の影響を受けない。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 [SHIFT] - 大盾を構える")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_SHIELD = itemStack;
+    }
+
     public static final ItemStack ABILITY_ICON_BOMB;
     static {
         ItemStack itemStack = new ItemStack(Material.TNT);

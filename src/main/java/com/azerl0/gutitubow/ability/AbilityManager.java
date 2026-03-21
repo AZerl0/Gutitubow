@@ -6,9 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class AbilityManager {
 
@@ -22,6 +20,14 @@ public class AbilityManager {
     @Nullable
     public Ability getAbility(Player player) {
         return abilities.get(player.getUniqueId());
+    }
+
+    public Set<UUID> getKeySet() {
+        return abilities.keySet();
+    }
+
+    public Collection<Ability> getValues() {
+        return abilities.values();
     }
 
     public void setAbility(Player player, AbilityType type) {
@@ -48,5 +54,11 @@ public class AbilityManager {
         Ability ability = abilities.remove(player.getUniqueId());
         if (ability != null) ability.reset();
         player.getInventory().setItem(13, ItemStack.of(Material.AIR));
+    }
+
+    public void allResetAbilities() {
+        for (Ability ability : abilities.values()) {
+            ability.reset();
+        }
     }
 }

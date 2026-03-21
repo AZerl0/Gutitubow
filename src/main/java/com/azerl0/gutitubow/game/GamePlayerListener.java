@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.game;
 import com.azerl0.gutitubow.util.EntityUtil;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.AbstractArrow;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -43,7 +44,7 @@ public class GamePlayerListener implements Listener {
         if (EntityUtil.isInvalidHitEntity(tar)) return;
 
         if (!(tar instanceof Player tarPlayer)) {
-            event.setCancelled(true);
+            if (!(tar instanceof ArmorStand armorStand && armorStand.isInvulnerable())) event.setCancelled(true);
             return;
         }
         if (!(shooter instanceof Player shooterPlayer)) return;

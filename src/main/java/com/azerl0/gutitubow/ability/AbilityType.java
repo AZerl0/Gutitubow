@@ -6,6 +6,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 public enum AbilityType {
     BARRIER(Component.text("障壁"), GutitubowItem.ABILITY_ICON_BARRIER),
@@ -21,20 +22,22 @@ public enum AbilityType {
     FLOAT(Component.text("浮遊"), GutitubowItem.ABILITY_ICON_FLOAT),
     SHRINK(Component.text("縮身"), GutitubowItem.ABILITY_ICON_SHRINK),
     TOUGH(Component.text("強靭"), GutitubowItem.ABILITY_ICON_TOUGH),
-    INVISIBLE(Component.text("隠密"), GutitubowItem.ABILITY_ICON_INVISIBLE);
+    INVISIBLE(Component.text("隠密"), GutitubowItem.ABILITY_ICON_INVISIBLE),
+    SHIELD(Component.text("大盾"), GutitubowItem.ABILITY_ICON_SHIELD);
 
     private final Component name;
     private final ItemStack displayItem;
 
-    AbilityType(Component name, ItemStack displayItem) {
+    AbilityType(@NotNull Component name, @NotNull ItemStack displayItem) {
             this.name = name;
             this.displayItem = displayItem;
     }
-
+    @NotNull
     public Component getName() {
         return name;
     }
 
+    @NotNull
     public ItemStack getDisplayItem() {
         ItemStack itemStack = displayItem;
         ItemMeta meta = itemStack.getItemMeta();

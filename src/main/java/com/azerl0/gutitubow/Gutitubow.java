@@ -67,6 +67,7 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.SHRINK, ShrinkAbility::new);
         AbilityRegistry.register(AbilityType.TOUGH, ToughAbility::new);
         AbilityRegistry.register(AbilityType.INVISIBLE, InvisibleAbility::new);
+        AbilityRegistry.register(AbilityType.SHIELD, ShieldAbility::new);
 
         //GUI
         GameGUI gameGUI = new GameGUI(gameManager, game);
@@ -117,5 +118,6 @@ public final class Gutitubow extends JavaPlugin {
         EntityUtil.removeAllGlowTeam();
 
         game.reset();
+        game.getAbilityManager().allResetAbilities();
     }
 }
