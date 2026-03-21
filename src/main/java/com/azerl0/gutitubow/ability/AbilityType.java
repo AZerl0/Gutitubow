@@ -23,7 +23,8 @@ public enum AbilityType {
     SHRINK(Component.text("縮身"), GutitubowItem.ABILITY_ICON_SHRINK),
     TOUGH(Component.text("強靭"), GutitubowItem.ABILITY_ICON_TOUGH),
     INVISIBLE(Component.text("隠密"), GutitubowItem.ABILITY_ICON_INVISIBLE),
-    SHIELD(Component.text("大盾"), GutitubowItem.ABILITY_ICON_SHIELD);
+    SHIELD(Component.text("大盾"), GutitubowItem.ABILITY_ICON_SHIELD),
+    FLASH(Component.text("閃光"), GutitubowItem.ABILITY_ICON_FLASH);
 
     private final Component name;
     private final ItemStack displayItem;

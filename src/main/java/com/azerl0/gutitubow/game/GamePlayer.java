@@ -38,6 +38,7 @@ public class GamePlayer {
     private final NamespacedKey gutitubowArrowItemKey;
     private final PlayerBoard playerBoard;
     private BukkitTask flashParticleTask = null;
+    private int remainedFlashTick;
 
 
 
@@ -52,6 +53,7 @@ public class GamePlayer {
         this.playerBorderOutsideTick = 0;
         gutitubowArrowItemKey = new NamespacedKey(this.plugin, "gutitubow.arrow");
         this.playerBoard = game.getPlayerBoard(this);
+        this.remainedFlashTick = 0;
     }
 
     @Nullable
@@ -321,18 +323,32 @@ public class GamePlayer {
         this.playerBoard.update();
     }
 
+    public void setFlashParticle(int duration) {
+        remainedFlashTick = duration;
+        setFlashParticleTask();
+    }
+
     public void setFlashParticleTask() {
         if (flashParticleTask != null && !flashParticleTask.isCancelled()) return;
 
         flashParticleTask = new BukkitRunnable() {
             @Override
             public void run() {
-                if (!getPlayer().isOnline() || !getPlayer().hasPotionEffect(PotionEffectType.BLINDNESS)) {
+                Player player = getPlayer();
+                if (player == null) return;
+                if (!player.isOnline() || (!player.hasPotionEffect(PotionEffectType.BLINDNESS) && remainedFlashTick <= 0)) {
                     this.cancel();
                     flashParticleTask = null;
                     return;
                 }
-                getPlayer().getWorld().spawnParticle(Particle.INSTANT_EFFECT, getPlayer().getEyeLocation(),3, 0.15, 0.15, 0.15, new Particle.Spell(Color.fromRGB(255, 255, 255), 1));
+                if (remainedFlashTick > 0) remainedFlashTick--;
+                player.getWorld().spawnParticle(
+                        Particle.INSTANT_EFFECT,
+                        player.getEyeLocation(),
+                        3,
+                        0.15, 0.15, 0.15,
+                        new Particle.Spell(Color.fromRGB(255, 255, 255), 1)
+                );
             }
         }.runTaskTimer(plugin, 0L, 1L);
     }

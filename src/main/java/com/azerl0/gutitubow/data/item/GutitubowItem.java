@@ -243,6 +243,27 @@ public class GutitubowItem {
         ABILITY_ICON_SHIELD = itemStack;
     }
 
+    public static final ItemStack ABILITY_ICON_FLASH;
+    static {
+        ItemStack itemStack = new ItemStack(Material.GLOWSTONE_DUST);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「閃光」は、眩い光で相手の目をくらます能力。"),
+                Component.text("§f弓を左クリックすると、即座に光の矢が発射される。"),
+                Component.text("§f光の矢はダメージはないが、着弾すると炸裂し、視界に入ると相手の視界が真っ白になる。"),
+                Component.text("§f使用後は12秒のクールタイムがある。"),
+                Component.text("§f発射直後に左クリックすることで、着弾する前にフラッシュを起動することができる。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 [左クリック(弓)] - 光の矢を発射"),
+                Component.text("§7 [左クリック(弓)] - フラッシュを起動")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_FLASH = itemStack;
+    }
+
     public static final ItemStack ABILITY_ICON_BOMB;
     static {
         ItemStack itemStack = new ItemStack(Material.TNT);

@@ -32,7 +32,14 @@ public abstract class Ability {
 
     public void init(Player player) {}
 
-    public void reset() {}
+    public void reset() {
+        getPlayer().sendActionBar(Component.empty());
+        setCompassCooldown(0);
+    }
+
+    public boolean hasCompassCooldown() {
+        return getPlayer().hasCooldown(Material.COMPASS);
+    }
 
     public int getCompassCooldown() {
         return getPlayer().getCooldown(Material.COMPASS);
