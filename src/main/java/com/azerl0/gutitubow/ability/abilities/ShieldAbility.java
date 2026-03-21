@@ -70,7 +70,7 @@ public class ShieldAbility extends Ability {
     @Override
     public void onToggleSneaking(PlayerToggleSneakEvent event) {
         if (event.isSneaking()) {
-            if (!isBlocking && shieldHealth > 0) raiseShield();
+            if (!isBlocking && shieldHealth > 0 && getPlayer().getGameMode() != GameMode.SPECTATOR) raiseShield();
         } else {
             if (isBlocking) lowerShield();
         }
