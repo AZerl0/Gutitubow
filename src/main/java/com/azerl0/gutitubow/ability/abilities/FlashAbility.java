@@ -156,6 +156,8 @@ public class FlashAbility extends Ability {
 
     public static int getFlashTicks(double distance, boolean isInView, boolean isBlocking) {
 
+        if (isBlocking && distance > 25) return 0;
+
         // 距離減衰
         double distanceFactor = 1.0 / (1.0 + distance / 20);
 
