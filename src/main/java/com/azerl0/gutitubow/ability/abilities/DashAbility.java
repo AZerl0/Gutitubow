@@ -45,11 +45,6 @@ public class DashAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        this.playerUUID = player.getUniqueId();
-    }
-
-    @Override
     public void reset() {
         stopSprinting();
     }
