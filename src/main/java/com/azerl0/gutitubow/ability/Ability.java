@@ -30,7 +30,9 @@ public abstract class Ability {
         return Bukkit.getPlayer(playerUUID);
     }
 
-    public void init(Player player) {}
+    public void init(Player player) {
+        this.playerUUID = player.getUniqueId();
+    }
 
     public void reset() {
         getPlayer().sendActionBar(Component.empty());
