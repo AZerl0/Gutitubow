@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.gui;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -44,6 +45,18 @@ public abstract class AbstractGUI implements InventoryHolder {
     @Override
     public @NotNull Inventory getInventory() {
         return inventory;
+    }
+
+    public int getEmptySlot() {
+        for (int i = 0; i< inventory.getSize(); i++) {
+            ItemStack item = inventory.getItem(i);
+            if (item == null || item.getType() == Material.AIR) return i;
+        }
+        return -1;
+    }
+
+    public boolean hasEmptySlot() {
+        return getEmptySlot() != -1;
     }
 
 }

@@ -7,6 +7,7 @@ import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.game.*;
 import com.azerl0.gutitubow.gui.AllGUI;
 import com.azerl0.gutitubow.gui.GUIListener;
+import com.azerl0.gutitubow.gui.guis.AbilitySelectorGUI;
 import com.azerl0.gutitubow.gui.guis.GameGUI;
 import com.azerl0.gutitubow.map.MapManager;
 import com.azerl0.gutitubow.item.ItemListener;
@@ -72,8 +73,9 @@ public final class Gutitubow extends JavaPlugin {
 
         //GUI
         GameGUI gameGUI = new GameGUI(gameManager, game);
+        AbilitySelectorGUI abilitySelectorGUI = new AbilitySelectorGUI(game.getAbilityManager());
 
-        AllGUI allGUI = new AllGUI(gameGUI);
+        AllGUI allGUI = new AllGUI(gameGUI, abilitySelectorGUI);
 
 
         // Listener登録
@@ -87,7 +89,7 @@ public final class Gutitubow extends JavaPlugin {
         pm.registerEvents(new PacketListener(flagManager), this);
 
         // Command登録
-        getCommand("ability").setExecutor(new AbilityCommand(game.getAbilityManager()));
+        getCommand("ability").setExecutor(new AbilityCommand(game.getAbilityManager(), abilitySelectorGUI));
         getCommand("carepackage").setExecutor(new CarePackageCommand(carePackageManager));
         getCommand("game").setExecutor(new GameCommand(gameManager, game));
         getCommand("gameplayer").setExecutor(new GamePlayerCommand(this, game));

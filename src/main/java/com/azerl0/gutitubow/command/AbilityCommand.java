@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.command;
 
 import com.azerl0.gutitubow.ability.*;
+import com.azerl0.gutitubow.gui.guis.AbilitySelectorGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -14,9 +15,11 @@ import java.util.List;
 
 public class AbilityCommand implements CommandExecutor, TabExecutor {
     AbilityManager abilityManager;
+    AbilitySelectorGUI abilitySelectorGUI;
 
-    public AbilityCommand(AbilityManager abilityManager) {
+    public AbilityCommand(AbilityManager abilityManager, AbilitySelectorGUI abilitySelectorGUI) {
         this.abilityManager = abilityManager;
+        this.abilitySelectorGUI = abilitySelectorGUI;
     }
 
     @Override
@@ -59,6 +62,10 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                     player.sendMessage(Component.text(" - ").append(type.getName()).append(Component.text(" " + type.toString().toLowerCase())));
                 }
 
+                return true;
+
+            case ("gui"):
+                abilitySelectorGUI.open(player);
                 return true;
 
             case ("set"):
@@ -122,7 +129,7 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
             String[] args
     ) {
         if (args.length == 1) {
-            return List.of("list", "get", "set", "reset");
+            return List.of("list", "get", "set", "reset", "gui");
         }
 
 
