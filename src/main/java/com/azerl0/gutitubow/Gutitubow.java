@@ -13,9 +13,13 @@ import com.azerl0.gutitubow.map.MapManager;
 import com.azerl0.gutitubow.item.ItemListener;
 import com.azerl0.gutitubow.packet.EntityFlagManager;
 import com.azerl0.gutitubow.packet.EntityGlowManager;
+import com.azerl0.gutitubow.packet.PacketEventListener;
 import com.azerl0.gutitubow.packet.PacketListener;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.EventManager;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRules;
 import org.bukkit.World;
@@ -79,14 +83,19 @@ public final class Gutitubow extends JavaPlugin {
 
 
         // Listener登録
-        PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new AbilityListener(game.getAbilityManager()), this);
-        pm.registerEvents(new GamePlayerListener(game), this);
-        pm.registerEvents(new CarePackageListener(carePackageManager), this);
-        pm.registerEvents(new ItemListener(), this);
-        pm.registerEvents(new GameListener(this, game), this);
-        pm.registerEvents(new GUIListener(allGUI), this);
-        pm.registerEvents(new PacketListener(flagManager), this);
+        PluginManager pluginManager = getServer().getPluginManager();
+        pluginManager.registerEvents(new AbilityListener(game.getAbilityManager()), this);
+        pluginManager.registerEvents(new GamePlayerListener(game), this);
+        pluginManager.registerEvents(new CarePackageListener(carePackageManager), this);
+        pluginManager.registerEvents(new ItemListener(), this);
+        pluginManager.registerEvents(new GameListener(this, game), this);
+        pluginManager.registerEvents(new GUIListener(allGUI), this);
+        pluginManager.registerEvents(new PacketListener(flagManager), this);
+
+        // packetListener登録
+        EventManager eventManager = PacketEvents.getAPI().getEventManager();
+
+        eventManager.registerListener(new PacketEventListener(this, flagManager), PacketListenerPriority.NORMAL);
 
         // Command登録
         getCommand("ability").setExecutor(new AbilityCommand(game.getAbilityManager(), abilitySelectorGUI));

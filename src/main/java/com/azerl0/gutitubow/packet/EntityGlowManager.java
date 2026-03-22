@@ -13,6 +13,7 @@ public class EntityGlowManager {
     public void addGlow(Player viewer, Entity target) {
         flagManager.addFlag(viewer, target, (byte) 0x40);
     }
+
     public void removeGlow(Player viewer, Entity target) {
         flagManager.removeFlag(viewer, target, (byte) 0x40);
     }
