@@ -128,6 +128,7 @@ public class FlashAbility extends Ability {
         world.spawnParticle(Particle.FLASH, location, 2, Color.WHITE);
 
         for (Player nearPlayer : location.getWorld().getNearbyPlayers(location, 50)) {
+            world.playSound(nearPlayer, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.0f, 1.0f);
             if (nearPlayer.getGameMode() == GameMode.SPECTATOR) continue;
 
             Location eye = nearPlayer.getEyeLocation();
@@ -144,7 +145,6 @@ public class FlashAbility extends Ability {
             );
 
             boolean isBlocking = blockHit != null;
-            world.playSound(nearPlayer, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.0f, 1.0f);
 
             boolean isInView = MathUtil.isInView(getPlayer(), location, 160, 110);
             int duration = getFlashTicks(distance, isInView, isBlocking);
