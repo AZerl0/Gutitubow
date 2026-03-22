@@ -177,6 +177,8 @@ public class FlashAbility extends Ability {
     }
 
     private void applyFlashEffect(Player player, long tick) {
+        if (tick <= 0) return;
+
         Title title = Title.title(
                 Component.text("\uE000"),
                 Component.empty(),
