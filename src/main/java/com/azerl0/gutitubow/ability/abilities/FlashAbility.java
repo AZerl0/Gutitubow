@@ -35,11 +35,6 @@ public class FlashAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        this.playerUUID = player.getUniqueId();
-    }
-
-    @Override
     public void reset() {
         super.reset();
         if (cooldownTask != null) cooldownTask.cancel();
@@ -128,13 +123,19 @@ public class FlashAbility extends Ability {
         world.spawnParticle(Particle.FLASH, location, 2, Color.WHITE);
 
         for (Player nearPlayer : location.getWorld().getNearbyPlayers(location, 50)) {
-            world.playSound(nearPlayer, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.0f, 1.0f);
+            Location eye = nearPlayer.getEyeLocation();
+            double distance = eye.distance(location);
+            float soundVolume;
+            if (distance <= 20) {
+                soundVolume = 1.0f;
+            } else {
+                soundVolume = (float) MathUtil.getLerp(distance, 20, 50, 1.0, 0.05);
+            }
+            world.playSound(nearPlayer, Sound.ENTITY_FIREWORK_ROCKET_BLAST, soundVolume, 1.0f);
             if (nearPlayer.getGameMode() == GameMode.SPECTATOR) continue;
 
-            Location eye = nearPlayer.getEyeLocation();
             Vector direction = location.toVector().subtract(eye.toVector()).normalize();
 
-            double distance = eye.distance(location);
 
             RayTraceResult blockHit = world.rayTraceBlocks(
                     eye,
