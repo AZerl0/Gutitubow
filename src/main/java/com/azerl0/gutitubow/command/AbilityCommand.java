@@ -95,7 +95,8 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                 } else {
 
                     abilityManager.setAbility(player, type);
-                    player.sendMessage(Component.text(setPlayer.getName() + "の能力を ").append(type.getName()).append(Component.text(" に設定しました！")));
+                    Component abilityTypeMessage = type.getName().color(NamedTextColor.GOLD).hoverEvent(type.getDisplayItem().asHoverEvent());
+                    player.sendMessage(Component.text(setPlayer.getName() + "の能力を ").append(abilityTypeMessage).append(Component.text(" に設定しました！").color(NamedTextColor.WHITE)));
                 }
                 return true;
 

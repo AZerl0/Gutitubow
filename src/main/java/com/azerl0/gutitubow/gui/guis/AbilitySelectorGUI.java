@@ -5,6 +5,7 @@ import com.azerl0.gutitubow.ability.AbilityManager;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.gui.AbstractAbilitiesGUI;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -28,7 +29,8 @@ public class AbilitySelectorGUI extends AbstractAbilitiesGUI {
                 player.sendMessage(Component.text("既にその能力を選んでいます").color(NamedTextColor.RED));
             } else {
                 abilityManager.setAbility(player, abilityType);
-                player.sendMessage(Component.text("能力を ").append(abilityType.getName()).append(Component.text(" に設定しました！")));
+                Component abilityTypeMessage = abilityType.getName().color(NamedTextColor.GOLD).hoverEvent(abilityType.getDisplayItem().asHoverEvent());
+                player.sendMessage(Component.text("能力を ").append(abilityTypeMessage).append(Component.text(" に設定しました！").color(NamedTextColor.WHITE)));
             }
             player.closeInventory();
         });
