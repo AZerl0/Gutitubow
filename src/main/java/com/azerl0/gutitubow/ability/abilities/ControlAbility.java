@@ -22,8 +22,6 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import net.kyori.adventure.text.Component;
 
-import java.awt.*;
-
 public class ControlAbility extends Ability {
     private final NamespacedKey controllingKey;
     private final NamespacedKey collectingKey;
@@ -86,10 +84,10 @@ public class ControlAbility extends Ability {
     }
 
     private void startControl(EntityShootBowEvent event) {
-
         Arrow arrow = (Arrow) event.getProjectile();
 
         arrow.getPersistentDataContainer().set(controllingKey, PersistentDataType.BOOLEAN, true);
+        getPlayer().playSound(getPlayer(), Sound.ENTITY_EVOKER_CAST_SPELL, 0.5f, 1.0f);
 
         new BukkitRunnable() {
 
