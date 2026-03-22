@@ -6,9 +6,7 @@ import com.azerl0.gutitubow.ability.AbilityType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -65,31 +63,42 @@ public class TeleportAbility extends Ability {
             compassCooldownTask(player, 3 * 20);
         } else {
             if (savedLocation.getWorld().getWorldBorder().isInside(savedLocation)) {
-                player.teleport(savedLocation);
-                savedLocation = null;
-                player.playSound(player, Sound.BLOCK_RESPAWN_ANCHOR_DEPLETE, 1.0f, 1.0f);
-                compassCooldownTask(player, 10 * 20);
-
-                PotionEffect effect = new PotionEffect(PotionEffectType.BLINDNESS, 3 * 20, 0, true, false, true);
-                Title title = Title.title(
-                        Component.empty(),
-                        Component.text("付近の空間に歪みができた！").color(NamedTextColor.LIGHT_PURPLE),
-                        Title.Times.times(
-                                java.time.Duration.ofMillis(100),
-                                java.time.Duration.ofSeconds(3),
-                                java.time.Duration.ofMillis(500)
-                        )
-                );
-                for (Player nearPlayer : player.getWorld().getNearbyPlayers(player.getLocation(), 5)) {
-                    if (nearPlayer.getUniqueId() == player.getUniqueId()) continue;
-                    nearPlayer.addPotionEffect(effect);
-                    nearPlayer.showTitle(title);
-                }
+                teleport(savedLocation);
             } else {
                 savedLocation = null;
                 player.sendMessage(Component.text("設定先がエリア外のためテレポートをキャンセルしました").color(NamedTextColor.RED));
                 compassCooldownTask(player, 3 * 20);
             }
+        }
+    }
+
+    private void teleport(Location location) {
+        Player player = getPlayer();
+        Location oldPlayerLocation = player.getEyeLocation().clone();
+        World world = player.getWorld();
+
+
+        player.teleport(location);
+        savedLocation = null;
+        world.playSound(oldPlayerLocation, Sound.ENTITY_PLAYER_TELEPORT, 0.5f, 1.0f);
+        world.spawnParticle(Particle.ENCHANT, oldPlayerLocation, 7, 0.2, 0.2, 0.2);
+        world.playSound(player.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_DEPLETE, 1.0f, 1.0f);
+        compassCooldownTask(player, 10 * 20);
+
+        PotionEffect effect = new PotionEffect(PotionEffectType.BLINDNESS, 3 * 20, 0, true, false, true);
+        Title title = Title.title(
+                Component.empty(),
+                Component.text("付近の空間に歪みができた！").color(NamedTextColor.LIGHT_PURPLE),
+                Title.Times.times(
+                        java.time.Duration.ofMillis(100),
+                        java.time.Duration.ofSeconds(3),
+                        java.time.Duration.ofMillis(500)
+                )
+        );
+        for (Player nearPlayer : player.getWorld().getNearbyPlayers(player.getLocation(), 5)) {
+            if (nearPlayer.getUniqueId() == player.getUniqueId()) continue;
+            nearPlayer.addPotionEffect(effect);
+            nearPlayer.showTitle(title);
         }
     }
 
