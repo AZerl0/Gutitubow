@@ -110,6 +110,7 @@ public class FlashAbility extends Ability {
 
     @Override
     public void onArrowHit(ProjectileHitEvent event) {
+        if (!(event.getEntity() instanceof SpectralArrow)) return;
         Bukkit.getScheduler().runTaskLater(context.plugin(), () -> {
             if (!event.getEntity().isValid()) return;
             flash(event.getEntity().getLocation());
