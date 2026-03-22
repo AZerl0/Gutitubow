@@ -37,7 +37,7 @@ public class RicochetAbility extends Ability {
 
         EntityUtil.setGlow(arrow, NamedTextColor.AQUA);
         arrow.setGlowing(true);
-        setRicochetCount(arrow, event.getEntity().isSneaking() ? 5 : 1);
+        setRicochetCount(arrow, 6);
         setRicochetDamageCount(arrow, 0);
     }
 
@@ -51,7 +51,7 @@ public class RicochetAbility extends Ability {
         int ricochetCount = getRicochetCount(arrow);
         if (ricochetCount > 0) {
             arrow.setHitSound(Sound.ENTITY_SLIME_JUMP);
-            ArrowUtil.RicochetEvent(context.plugin(), event, 0.75);
+            ArrowUtil.RicochetEvent(context.plugin(), event, 0.8);
 
             setRicochetCount(arrow, ricochetCount - 1);
             world.spawnParticle(
@@ -83,7 +83,6 @@ public class RicochetAbility extends Ability {
             }
         } else {
             arrow.setLifetimeTicks(1000);
-            arrow.setGlowing(false);
         }
 
     }
