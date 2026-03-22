@@ -31,7 +31,7 @@ public class ToughAbility extends Ability {
 
     @Override
     public @NotNull AbilityType getType() {
-        return null;
+        return AbilityType.TOUGH;
     }
 
     @Override
