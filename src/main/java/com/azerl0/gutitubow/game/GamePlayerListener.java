@@ -2,10 +2,7 @@ package com.azerl0.gutitubow.game;
 
 import com.azerl0.gutitubow.util.EntityUtil;
 import org.bukkit.damage.DamageType;
-import org.bukkit.entity.AbstractArrow;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
@@ -35,6 +32,7 @@ public class GamePlayerListener implements Listener {
         Entity tar = event.getHitEntity();
 
         if (!(event.getEntity() instanceof AbstractArrow)) return;
+        if (event.getEntity() instanceof SpectralArrow) return;
         if (shooter == null || tar == null) return;
 
         if (shooter.getUniqueId().equals(tar.getUniqueId())) {
