@@ -42,6 +42,5 @@ public class GUIListener implements Listener {
         if (clickItem!= null && clickItem.getItemMeta().getPersistentDataContainer().getOrDefault(gamemasterKey, PersistentDataType.BOOLEAN, false) && player.isOp()) {
             allGUI.gameGUI().open(player);
         }
-
     }
 }

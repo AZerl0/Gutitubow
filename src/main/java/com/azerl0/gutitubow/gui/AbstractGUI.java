@@ -25,7 +25,7 @@ public abstract class AbstractGUI implements InventoryHolder {
     }
 
     public void addButton(int slot, ItemStack itemStack, Consumer<InventoryClickEvent> action) {
-        if (slot + 1  > inventory.getSize()) return;
+        if (slot + 1 > inventory.getSize()) return;
         GUIButton button = new GUIButton(itemStack, action);
 
         buttons.put(slot, button);
@@ -57,7 +57,7 @@ public abstract class AbstractGUI implements InventoryHolder {
     }
 
     public int getEmptySlot() {
-        for (int i = 0; i< inventory.getSize(); i++) {
+        for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack item = inventory.getItem(i);
             if (item == null || item.getType() == Material.AIR) return i;
         }

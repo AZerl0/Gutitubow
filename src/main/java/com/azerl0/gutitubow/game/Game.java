@@ -41,7 +41,7 @@ public class Game {
     private int phase;
     private boolean isShrinking;
     private Set<UUID> players;
-    private final Set<UUID> alivePlayers = new java.util.HashSet<>();
+    private final Set<UUID> alivePlayers = new HashSet<>();
     private final List<UUID> deathOrder = new ArrayList<>();
     private final BossBar bossBar = BossBar.bossBar(Component.text(""), 0.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
     private final Map map;
@@ -770,7 +770,6 @@ public class Game {
         double z = loc.getZ();
         return x <= nextSafeAreaMaxX && x >= nextSafeAreaMinX && z <= nextSafeAreaMaxZ && z >= nextSafeAreaMinZ;
     }
-
 
     public PlayerBoard getPlayerBoard(GamePlayer gamePlayer) {
         return scoreboardManager.getPlayerBoard(gamePlayer);

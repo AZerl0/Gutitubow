@@ -121,9 +121,6 @@ public final class Gutitubow extends JavaPlugin {
                 arrow.remove();
             }
         }
-
-
-
     }
 
     @Override
@@ -132,5 +129,6 @@ public final class Gutitubow extends JavaPlugin {
 
         game.reset();
         game.getAbilityManager().allResetAbilities();
+        game.getTeamManager().removeAllTeam();
     }
 }

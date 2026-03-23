@@ -1,6 +1,6 @@
 package com.azerl0.gutitubow.command;
 
-import com.azerl0.gutitubow.team.Team;
+import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.team.TeamManager;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -47,11 +46,11 @@ public class GameTeamCommand implements CommandExecutor, TabExecutor {
                 if (target == null) {
                     message = Component.text("ターゲットの取得中にエラーが発生しました。");
                 } else {
-                    Team team = teamManager.getPlayerTeam(target);
-                    if (team == null) {
+                    GameTeam gameTeam = teamManager.getPlayerTeam(target);
+                    if (gameTeam == null) {
                         message = Component.text(target.getName() + "はチームに属していません");
                     } else {
-                        message = Component.text(target.getName() + "が属するチームは").append(team.getTeamName()).append(Component.text("です"));
+                        message = Component.text(target.getName() + "が属するチームは").append(gameTeam.getTeamName()).append(Component.text("です"));
                     }
                 }
                 player.sendMessage(message);
@@ -66,12 +65,16 @@ public class GameTeamCommand implements CommandExecutor, TabExecutor {
                     player.sendMessage(Component.text("引数が不足しています"));
                     return true;
                 }
-                Team team = teamManager.getTeam(args[2]);
-                if (team == null) {
+                GameTeam gameTeam = teamManager.getTeam(args[2]);
+                if (gameTeam == null) {
                     player.sendMessage(Component.text("チームの取得中にエラーが発生しました。"));
                 } else {
-                    teamManager.joinTeam(target, team);
-                    player.sendMessage(Component.text(target.getName() + "をチーム: ").append(team.getTeamName().color(team.getTeamColor())).append(Component.text("に追加しました")));
+                    if (gameTeam.isFull(teamManager.getGame().getGameMode())) {
+                        player.sendMessage(Component.text("チーム: ").append(gameTeam.getTeamName().color(gameTeam.getTeamColor())).append(Component.text("は満員です")));
+                    } else {
+                        teamManager.joinTeam(target, gameTeam);
+                        player.sendMessage(Component.text(target.getName() + "をチーム: ").append(gameTeam.getTeamName().color(gameTeam.getTeamColor())).append(Component.text("に追加しました")));
+                    }
                 }
                 return true;
             }
@@ -86,8 +89,8 @@ public class GameTeamCommand implements CommandExecutor, TabExecutor {
             }
             case "list" -> {
                 player.sendMessage(Component.text(teamManager.getTeams().size() + "のチームが存在しています" ));
-                for (Team team : teamManager.getTeams()) {
-                    player.sendMessage(Component.text(" - ").append(team.getTeamName().color(team.getTeamColor())));
+                for (GameTeam gameTeam : teamManager.getTeams()) {
+                    player.sendMessage(Component.text(" - ").append(gameTeam.getTeamName().color(gameTeam.getTeamColor())));
                 }
                 return true;
             }
@@ -96,17 +99,17 @@ public class GameTeamCommand implements CommandExecutor, TabExecutor {
                     player.sendMessage(Component.text("チームIDが不足しています"));
                     return true;
                 }
-                Team team = teamManager.getTeam(args[1]);
-                if (team == null) {
+                GameTeam gameTeam = teamManager.getTeam(args[1]);
+                if (gameTeam == null) {
                     player.sendMessage(Component.text("チームの取得中にエラーが発生しました。"));
                 } else {
-                    player.sendMessage(team.getTeamName().color(team.getTeamColor()).append(Component.text( "の詳細")));
-                    player.sendMessage(Component.text(team.getPlayers().size() + "人のプレイヤーが属しています"));
-                    for (UUID uuid : team.getPlayers()) {
+                    player.sendMessage(gameTeam.getTeamName().color(gameTeam.getTeamColor()).append(Component.text( "の詳細")));
+                    player.sendMessage(Component.text(gameTeam.getPlayers().size() + "人のプレイヤーが属しています"));
+                    for (UUID uuid : gameTeam.getPlayers()) {
                         Player teamPlayer = Bukkit.getPlayer(uuid);
                         if (teamPlayer == null) continue;
                         String suffix = "";
-                        if (team.getJumpMaster() != null && uuid == team.getJumpMaster().getUniqueId()) suffix = " (ジャンプマスター)";
+                        if (gameTeam.getJumpMaster() != null && uuid == gameTeam.getJumpMaster().getUniqueId()) suffix = " (ジャンプマスター)";
                         player.sendMessage(Component.text(" - " + teamPlayer.getName() + suffix));
                     }
                 }

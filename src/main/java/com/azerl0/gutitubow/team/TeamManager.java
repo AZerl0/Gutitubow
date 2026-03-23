@@ -5,18 +5,20 @@ import com.azerl0.gutitubow.gui.guis.TeamGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class TeamManager {
     private final Game game;
-    private final Map<String, Team> teams = new LinkedHashMap<>();
-    private final Map<UUID, Team> playerTeams = new HashMap<>();
+    private final Map<String, GameTeam> teams = new LinkedHashMap<>();
+    private final Map<UUID, GameTeam> playerTeams = new HashMap<>();
     private final TeamGUI teamGUI;
 
     public TeamManager(Game game) {
@@ -77,17 +79,17 @@ public class TeamManager {
         return teams.keySet();
     }
 
-    public Collection<Team> getTeams() {
+    public Collection<GameTeam> getTeams() {
         return teams.values();
     }
 
     @Nullable
-    public Team getPlayerTeam(Player player) {
+    public GameTeam getPlayerTeam(@NotNull Player player) {
         return playerTeams.get(player.getUniqueId());
     }
 
     @Nullable
-    public Team getTeam(String teamId) {
+    public GameTeam getTeam(String teamId) {
         return teams.get(teamId);
     }
 
@@ -99,7 +101,7 @@ public class TeamManager {
             meta.displayName(teamName.color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
         }
         itemStack.setItemMeta(meta);
-        teams.put(teamId.toLowerCase(), new Team(teamName, itemStack, teamColor));
+        teams.put(teamId.toLowerCase(), new GameTeam(teamName, itemStack, teamColor, game));
     }
 
     public void removeTeam(String teamId) {
@@ -107,50 +109,63 @@ public class TeamManager {
     }
 
     public void joinTeam(Player player, String teamId) {
-        Team team = teams.get(teamId);
-        if (team != null) {
-            joinTeam(player, team);
+        GameTeam gameTeam = teams.get(teamId);
+        if (gameTeam != null) {
+            joinTeam(player, gameTeam);
         }
     }
 
-    public void joinTeam(Player player, Team team) {
+    public void joinTeam(@NotNull Player player, @NotNull GameTeam gameTeam) {
         leaveTeam(player);
-        if (!teams.containsValue(team)) return;
+        if (!teams.containsValue(gameTeam)) return;
+        if (gameTeam.isFull(game.getGameMode())) return;
 
-        playerTeams.put(player.getUniqueId(), team);
-        team.addPlayer(player);
+        playerTeams.put(player.getUniqueId(), gameTeam);
+        gameTeam.addPlayer(player);
         teamGUI.updateGUI();
     }
 
-    public void leaveTeam(Player player) {
-        Team team = getPlayerTeam(player);
-        if (team != null) team.removePlayer(player);
+    public void leaveTeam(@NotNull Player player) {
+        GameTeam gameTeam = getPlayerTeam(player);
+        if (gameTeam != null) gameTeam.removePlayer(player);
         playerTeams.remove(player.getUniqueId());
         teamGUI.updateGUI();
     }
 
     public boolean isTeammate(Player player, Player otherPlayer) {
-        Team team = getPlayerTeam(player);
-        Team otherTeam = getPlayerTeam(otherPlayer);
+        GameTeam gameTeam = getPlayerTeam(player);
+        GameTeam otherGameTeam = getPlayerTeam(otherPlayer);
 
-        if (team == null) return false;
-        return team == otherTeam;
+        if (gameTeam == null) return false;
+        return gameTeam == otherGameTeam;
+    }
+
+    public Set<GameTeam> getAliveTeams() {
+        Set<GameTeam> aliveGameTeams = new HashSet<>(teams.values());
+        for (GameTeam gameTeam : teams.values()) if (gameTeam.isEliminated()) aliveGameTeams.remove(gameTeam);
+        return aliveGameTeams;
     }
 
     public void resetTeams() {
-        for (Team team : teams.values()) resetTeam(team);
+        for (GameTeam gameTeam : teams.values()) resetTeam(gameTeam);
     }
 
-    public void resetTeam(Team team) {
-        for (UUID uuid : team.getPlayers()) {
+    public void resetTeam(GameTeam gameTeam) {
+        for (UUID uuid : gameTeam.getPlayers()) {
             playerTeams.remove(uuid);
         }
-        team.clear();
+        gameTeam.reset();
         teamGUI.updateGUI();
     }
 
-    public void setRandomTeam() {
-        resetTeams();
+    public void randomTeam() {
 
+    }
+
+    public void removeAllTeam() {
+        for (GameTeam gameTeam : teams.values()) gameTeam.remove();
+        teams.clear();
+        playerTeams.clear();
+        teamGUI.updateGUI();
     }
 }

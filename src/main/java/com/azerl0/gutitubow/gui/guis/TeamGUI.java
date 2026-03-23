@@ -4,12 +4,13 @@ import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.gui.AbstractGUI;
-import com.azerl0.gutitubow.team.Team;
+import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.team.TeamManager;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.Nullable;
@@ -36,8 +37,8 @@ public class TeamGUI extends AbstractGUI {
                 inventory.setItem(9, getJumpMasterButtonItem());
                 inventory.setItem(36, getJumpMasterButtonItem());
                 int i = 0;
-                for (Team team : teamManager.getTeams()) {
-                    setTeamComponent(i, team);
+                for (GameTeam gameTeam : teamManager.getTeams()) {
+                    setTeamComponent(i, gameTeam);
                     i++;
                 }
             }
@@ -48,15 +49,15 @@ public class TeamGUI extends AbstractGUI {
                 }
                 inventory.setItem(18, getJumpMasterButtonItem());
                 int i = 0;
-                for (Team team : teamManager.getTeams()) {
-                    setTeamComponent(i, team);
+                for (GameTeam gameTeam : teamManager.getTeams()) {
+                    setTeamComponent(i, gameTeam);
                     i++;
                 }
             }
         }
     }
 
-    private void setTeamComponent(int index, Team team) {
+    private void setTeamComponent(int index, GameTeam gameTeam) {
         GutitubowGameMode gameMode = game.getGameMode();
         if (gameMode == GutitubowGameMode.DUO && index >= 16) return;
         if (gameMode == GutitubowGameMode.TRIO && index >= 9) return;
@@ -68,7 +69,7 @@ public class TeamGUI extends AbstractGUI {
             currentSlot = index + 10;
         }
         if (currentSlot == -1) return;
-        inventory.setItem(currentSlot, team.getTeamIconItem());
+        inventory.setItem(currentSlot, gameTeam.getTeamIconItem());
 
         int counter = 2;
         if (gameMode == GutitubowGameMode.TRIO) counter = 3;
@@ -76,16 +77,22 @@ public class TeamGUI extends AbstractGUI {
             currentSlot += 9;
 
             @Nullable UUID uuid = null;
-            if (team.getPlayers().size() > i) uuid = team.getPlayers().get(i);
+            if (gameTeam.getPlayers().size() > i) uuid = gameTeam.getPlayers().get(i);
             @Nullable Player player = null;
             if (uuid != null) player = Bukkit.getPlayer(uuid);
-            setTeamPlayerButton(currentSlot, player);
+            setTeamPlayerButton(currentSlot, player, gameTeam);
         }
     }
 
-    private void setTeamPlayerButton(int slot, @Nullable Player player) {
+    private void setTeamPlayerButton(int slot, @Nullable Player player, GameTeam team) {
         if (player == null) {
             addButton(slot, getEmptyPlayerButtonItem(), event -> {
+                if (!(event.getWhoClicked() instanceof Player clicker)) return;
+                TeamPlayerSelectorGUI teamPlayerSelectorGUI = new TeamPlayerSelectorGUI(select  -> {
+                    teamManager.joinTeam(select, team);
+                    this.open(clicker);
+                });
+                teamPlayerSelectorGUI.open(clicker);
             });
         } else {
             ItemStack itemStack = ItemStack.of(Material.PLAYER_HEAD);
@@ -96,6 +103,11 @@ public class TeamGUI extends AbstractGUI {
 
             itemStack.setItemMeta(meta);
             addButton(slot, itemStack, event -> {
+                if (event.getClick() == ClickType.SHIFT_LEFT) {
+                    team.setJumpMaster(player);
+                } else {
+                    teamManager.leaveTeam(player);
+                }
             });
         }
     }

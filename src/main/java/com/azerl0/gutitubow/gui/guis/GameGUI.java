@@ -36,7 +36,7 @@ public class GameGUI extends AbstractGUI {
     private void updateToggleGameModeButton() {
         addButton(2, getToggleGameModeButtonItem(), event -> toggleGameMode());
         if (game.getGameMode() == GutitubowGameMode.DUO || game.getGameMode() == GutitubowGameMode.TRIO) {
-            addButton(3, getAbstractSimpleButtonItem(Material.BOW, Component.text("チームセレクター")), event -> {
+            addButton(3, getAbstractSimpleButtonItem(Material.BOW, Component.text("チーム選択")), event -> {
                 TeamGUI teamGUI = game.getTeamManager().getTeamGUI();
                 if (event.getWhoClicked() instanceof Player player) {
                     teamGUI.open(player);
