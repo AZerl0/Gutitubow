@@ -126,7 +126,7 @@ public class FloatAbility extends Ability {
 
 
         if (isOnGround()) {
-            if (getPlayer().getWorld().getGameTime() % 5 == 0) floatCharge++;
+            if (getPlayer().getWorld().getGameTime() % 3 == 0) floatCharge++;
             if (floatCharge > floatMaxCharge) floatCharge = floatMaxCharge;
         } else {
             areaPlacingCharge = 0;
