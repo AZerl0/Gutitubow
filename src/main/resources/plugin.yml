@@ -38,3 +38,9 @@ commands:
     usage: /gutitubowitem
     permission: gutitubow.gutitubowitem
     aliases: [gitem, gi]
+
+  gameteam:
+    description: Game team command
+    usage: /gameteam
+    permission: gutitubow.gameteam
+    aliases: [gt, gteam]

@@ -15,6 +15,7 @@ import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.manager.LogManager;
 import com.azerl0.gutitubow.map.Map;
 import com.azerl0.gutitubow.map.MapRepairManager;
+import com.azerl0.gutitubow.team.TeamManager;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -33,6 +34,7 @@ import java.util.*;
 
 public class Game {
     private final JavaPlugin plugin;
+    private GutitubowGameMode gutitubowGameMode;
     private boolean started;
     private int nextTick;
     private int currentTicks;
@@ -56,6 +58,7 @@ public class Game {
     private final MapRepairManager mapRepairManager = new MapRepairManager();
     private final GlassBreakManager glassBreakManager = new GlassBreakManager(mapRepairManager);
     private final ScoreboardManager scoreboardManager;
+    private final TeamManager teamManager;
 
     public Game(
             JavaPlugin plugin,
@@ -66,12 +69,14 @@ public class Game {
         this.plugin = plugin;
         this.map = map;
         this.carePackageManager = carePackageManager;
+        gutitubowGameMode = GutitubowGameMode.SOLO;
         AbilityContext abilityContext = new AbilityContext(plugin, this);
         this.abilityManager = new AbilityManager(abilityContext);
         this.debugManager = debugManager;
         this.gamePlayerManager = new GamePlayerManager(plugin, this);
         reset();
         this.scoreboardManager = new ScoreboardManager(this);
+        this.teamManager = new TeamManager(this);
     }
 
     public GamePlayer getGamePlayer(Player player) {
@@ -126,6 +131,21 @@ public class Game {
 
     public Set<UUID> getAlivePlayers() {
         return this.alivePlayers;
+    }
+
+    public GutitubowGameMode getGameMode() {
+        return gutitubowGameMode;
+    }
+
+    public void setGameMode(GutitubowGameMode gameMode) {
+        if (this.gutitubowGameMode != gameMode) {
+            this.gutitubowGameMode = gameMode;
+            if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
+                teamManager.resetTeams();
+            }
+            teamManager.initTeams();
+
+        }
     }
 
     public void reset() {
@@ -736,6 +756,10 @@ public class Game {
 
     public @NotNull AbilityManager getAbilityManager() {
         return this.abilityManager;
+    }
+
+    public TeamManager getTeamManager() {
+        return teamManager;
     }
 
     public boolean isInsideNextSafeArea(Location loc) {

@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.gui;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -8,6 +9,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -23,10 +25,17 @@ public abstract class AbstractGUI implements InventoryHolder {
     }
 
     public void addButton(int slot, ItemStack itemStack, Consumer<InventoryClickEvent> action) {
+        if (slot + 1  > inventory.getSize()) return;
         GUIButton button = new GUIButton(itemStack, action);
 
         buttons.put(slot, button);
         inventory.setItem(slot, itemStack);
+    }
+
+
+    public void removeButton(int slot) {
+        buttons.remove(slot);
+        inventory.setItem(slot, ItemStack.of(Material.AIR));
     }
 
     public void click(InventoryClickEvent event) {
@@ -59,4 +68,14 @@ public abstract class AbstractGUI implements InventoryHolder {
         return getEmptySlot() != -1;
     }
 
+    public ItemStack getAbstractSimpleButtonItem(Material material, Component displayName) {
+        ItemStack itemStack = new ItemStack(material);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta != null) {
+            meta.displayName(displayName.decoration(TextDecoration.ITALIC, false));
+        }
+        itemStack.setItemMeta(meta);
+        return itemStack;
+    }
 }

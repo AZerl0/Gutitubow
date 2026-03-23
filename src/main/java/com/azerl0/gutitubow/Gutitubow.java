@@ -104,6 +104,7 @@ public final class Gutitubow extends JavaPlugin {
         getCommand("gameplayer").setExecutor(new GamePlayerCommand(this, game));
         getCommand("gutitubowdebug").setExecutor(new DebugCommand(debugManager));
         getCommand("gutitubowitem").setExecutor(new ItemCommand());
+        getCommand("gameteam").setExecutor(new GameTeamCommand(game.getTeamManager()));
 
         for (World world : Bukkit.getWorlds()) {
             world.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, false);

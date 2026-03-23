@@ -1,10 +1,10 @@
 package com.azerl0.gutitubow.gui;
 
-import com.azerl0.gutitubow.data.item.GutitubowItem;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
@@ -22,6 +22,10 @@ public class GUIListener implements Listener {
     @EventHandler
     public void onClick(InventoryClickEvent event) {
         if (event.isCancelled()) return;
+        if (event.getClickedInventory() == event.getView().getBottomInventory() && event.getClick() == ClickType.SHIFT_LEFT) {
+            event.setCancelled(true);
+            return;
+        }
         if (event.getClickedInventory() != event.getView().getTopInventory()) return;
 
         InventoryHolder holder = event.getInventory().getHolder();
