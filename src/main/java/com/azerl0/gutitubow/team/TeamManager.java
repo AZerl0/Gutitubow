@@ -159,7 +159,26 @@ public class TeamManager {
     }
 
     public void randomTeam() {
+        List<Player> skipPlayers = List.of();
+        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        players.removeAll(skipPlayers);
+        Collections.shuffle(players);
 
+        for (Player player : players) {
+            if (getPlayerTeam(player) != null) continue;
+            GameTeam near = getNearCanJoinTeam();
+            if (near == null) return;
+            joinTeam(player, near);
+
+        }
+    }
+
+    @Nullable
+    public GameTeam getNearCanJoinTeam() {
+        for (GameTeam team : teams.values()) {
+            if (!team.isFull(game.getGameMode())) return team;
+        }
+        return null;
     }
 
     public void removeAllTeam() {

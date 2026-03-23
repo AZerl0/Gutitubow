@@ -24,6 +24,11 @@ public abstract class AbstractGUI implements InventoryHolder {
         this.inventory = Bukkit.createInventory(this, size, title);
     }
 
+    public void clear() {
+        inventory.clear();
+        buttons.clear();
+    }
+
     public void addButton(int slot, ItemStack itemStack, Consumer<InventoryClickEvent> action) {
         if (slot + 1 > inventory.getSize()) return;
         GUIButton button = new GUIButton(itemStack, action);

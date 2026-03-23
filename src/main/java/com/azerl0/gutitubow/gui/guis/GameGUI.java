@@ -42,9 +42,16 @@ public class GameGUI extends AbstractGUI {
                     teamGUI.open(player);
                 }
             });
+            addButton(4, getAbstractSimpleButtonItem(Material.BOW, Component.text("ランダムチーム")), event -> {
+                game.getTeamManager().randomTeam();
+            });
+            addButton(5, getAbstractSimpleButtonItem(Material.BOW, Component.text("チームリセット")), event -> {
+                game.getTeamManager().resetTeams();
+            });
         } else {
             removeButton(3);
             removeButton(4);
+            removeButton(5);
         }
     }
 

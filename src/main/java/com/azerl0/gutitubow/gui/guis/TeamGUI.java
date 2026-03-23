@@ -31,7 +31,7 @@ public class TeamGUI extends AbstractGUI {
     }
 
     public void updateGUI() {
-        inventory.clear();
+        clear();
         switch (game.getGameMode()) {
             case DUO -> {
                 inventory.setItem(9, getJumpMasterButtonItem());
