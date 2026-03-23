@@ -111,6 +111,12 @@ public class FlashAbility extends Ability {
     @Override
     public void onArrowHit(ProjectileHitEvent event) {
         if (!(event.getEntity() instanceof SpectralArrow)) return;
+
+        Bukkit.getScheduler().runTaskLater(context.plugin(), () -> {
+            if (!event.getEntity().isValid()) return;
+            event.getEntity().getWorld().spawnParticle(Particle.FLASH, event.getEntity().getLocation(), 2, Color.WHITE);
+        }, 15L);
+
         Bukkit.getScheduler().runTaskLater(context.plugin(), () -> {
             if (!event.getEntity().isValid()) return;
             flash(event.getEntity().getLocation());
@@ -121,7 +127,6 @@ public class FlashAbility extends Ability {
 
     private void flash(Location location) {
         World world = location.getWorld();
-        world.spawnParticle(Particle.FLASH, location, 2, Color.WHITE);
 
         for (Player nearPlayer : location.getWorld().getNearbyPlayers(location, 50)) {
             Location eye = nearPlayer.getEyeLocation();
@@ -170,7 +175,7 @@ public class FlashAbility extends Ability {
         double viewFactor = isInView ? 1.0 : 0.15;
 
         // 障害物補正
-        double blockingFactor = isBlocking ? 0.05 : 1.0;
+        double blockingFactor = isBlocking ? 0.025 : 1.0;
 
         double baseTime = 4.5 * 20;
 
