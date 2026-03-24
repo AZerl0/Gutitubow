@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.carepackage;
 
+import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.packet.EntityGlowManager;
 import com.azerl0.gutitubow.util.EntityUtil;
 import net.kyori.adventure.text.Component;
@@ -16,15 +17,17 @@ import java.util.*;
 
 public class CarePackageManager {
     private final JavaPlugin plugin;
-    private final Map<UUID, CarePackage> carePackages = new HashMap<>();
+    private final Game game;
     private final EntityGlowManager glowManager;
+    private final Map<UUID, CarePackage> carePackages = new HashMap<>();
     private final NamespacedKey isFallingKey;
     private final NamespacedKey fallingTickKey;
     private final NamespacedKey remainedPotionKey;
 
 
-    public CarePackageManager(JavaPlugin plugin, EntityGlowManager glowManager) {
+    public CarePackageManager(JavaPlugin plugin, Game game, EntityGlowManager glowManager) {
         this.plugin = plugin;
+        this.game = game;
         this.glowManager = glowManager;
         isFallingKey = new NamespacedKey(plugin, "carePackage.isFalling");
         fallingTickKey = new NamespacedKey(plugin, "carePackage.fallingTick");
@@ -90,7 +93,7 @@ public class CarePackageManager {
 
             });
         }
-        CarePackage carePackage = new CarePackage(coreEntity.getUniqueId(), blockDisplay.getUniqueId(), glowManager, isFallingKey, fallingTickKey, remainedPotionKey);
+        CarePackage carePackage = new CarePackage(coreEntity.getUniqueId(), blockDisplay.getUniqueId(), game, glowManager, isFallingKey, fallingTickKey, remainedPotionKey);
         carePackage.setRemainedPotion(3);
         carePackages.put(coreEntity.getUniqueId(), carePackage);
         Bukkit.getScheduler().runTaskLater(plugin, carePackage::onMove, 3L);

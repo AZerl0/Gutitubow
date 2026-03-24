@@ -1,7 +1,10 @@
 package com.azerl0.gutitubow.carepackage;
 
 import com.azerl0.gutitubow.data.item.GutitubowItem;
+import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.packet.EntityGlowManager;
+import com.azerl0.gutitubow.team.GameTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
@@ -17,15 +20,18 @@ import java.util.Set;
 import java.util.UUID;
 
 public class CarePackage {
+    private final Game game;
     private final EntityGlowManager glowManager;
     private final UUID uuid;
     private final UUID displayEntityUUID;
     private final Set<UUID> used_players = new HashSet<>();
+    private final Set<GameTeam> used_teams = new HashSet<>();
     private final NamespacedKey isFallingKey;
     private final NamespacedKey fallingTickKey;
     private final NamespacedKey remainedPotionKey;
 
-    public CarePackage(UUID uniqueId, UUID displayEntityUUID, EntityGlowManager glowManager, NamespacedKey isFallingKey, NamespacedKey fallingTickKey, NamespacedKey remainedPotionKey) {
+    public CarePackage(UUID uniqueId, UUID displayEntityUUID, Game game, EntityGlowManager glowManager, NamespacedKey isFallingKey, NamespacedKey fallingTickKey, NamespacedKey remainedPotionKey) {
+        this.game = game;
         this.glowManager = glowManager;
         this.uuid = uniqueId;
         this.displayEntityUUID = displayEntityUUID;
@@ -148,7 +154,7 @@ public class CarePackage {
         Location center = coreEntity.getLocation();
         int speed = 1;
 
-        for (int i = 0  ; i < 15; i++) {
+        for (int i = 0; i < 15; i++) {
             double x = Math.random() * 2 - 1;
             double y = Math.random();
             double z = Math.random() * 2 - 1;
@@ -179,28 +185,42 @@ public class CarePackage {
 
     public void onInteract(Player player) {
         if (player.getGameMode() == GameMode.SPECTATOR) return;
-        if (this.used_players.contains(player.getUniqueId())) return;
-        player.sendMessage(Component.empty());
-        player.sendMessage(
-                Component.text("[!] ").color(NamedTextColor.RED)
-                        .append(Component.text("ケアパッケージから[").color(NamedTextColor.WHITE)
-                                .append(Component.text("回復ポーション").color(NamedTextColor.LIGHT_PURPLE))
-                                .append(Component.text("]を入手した!").color(NamedTextColor.WHITE))
-                        ));
-        player.sendMessage(Component.empty());
-        this.used_players.add(player.getUniqueId());
-        glowManager.removeGlow(player, getDisplayEntity());
-        player.give(GutitubowItem.RECOVERY_POTION);
+        GutitubowGameMode gameMode = game.getGameMode();
+        if (gameMode == GutitubowGameMode.SOLO) {
+            if (used_players.contains(player.getUniqueId())) return;
+            givePotion(player);
+            used_players.add(player.getUniqueId());
 
+        } else if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
+            GameTeam team = game.getTeamManager().getPlayerTeam(player);
+            if (team == null || used_teams.contains(team)) return;
+            for (UUID uuid : team.getPlayers()) {
+                Player teamPlayer = Bukkit.getPlayer(uuid);
+                if (teamPlayer == null || !teamPlayer.isOnline()) return;
+                givePotion(teamPlayer);
+            }
+            used_teams.add(team);
+        }
+
+        this.setRemainedPotion(getRemainedPotion() - 1);
         if (this.getRemainedPotion() <= 1) {
             this.remove();
             return;
         }
-
-        this.setRemainedPotion(getRemainedPotion() - 1);
         setDisplayName(this.getRemainedPotionDisplay());
     }
 
+    private void givePotion(Player player) {
+        player.give(GutitubowItem.RECOVERY_POTION);
+        player.sendMessage(
+                Component.text("\n[!] ").color(NamedTextColor.RED)
+                        .append(Component.text("ケアパッケージから[").color(NamedTextColor.WHITE)
+                                .append(Component.text("回復ポーション").color(NamedTextColor.LIGHT_PURPLE))
+                                .append(Component.text("]を入手した!\n").color(NamedTextColor.WHITE))
+                        ));
+        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+        glowManager.removeGlow(player, getDisplayEntity());
+    }
 
 
     public void removeBalloonEntities() {

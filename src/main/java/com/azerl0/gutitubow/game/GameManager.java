@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.map.MapManager;
 
+import com.azerl0.gutitubow.packet.EntityGlowManager;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,23 +15,23 @@ public class GameManager {
     private final JavaPlugin plugin;
     private final MapManager mapManager;
     private final DebugManager debugManager;
-    private final CarePackageManager carePackageManager;
+    private final EntityGlowManager glowManager;
     private BukkitTask gameTask;
 
     public GameManager(
             JavaPlugin plugin,
             MapManager mapManager,
             DebugManager debugManager,
-            CarePackageManager carePackageManager
+            EntityGlowManager glowManager
     ) {
         this.plugin = plugin;
         this.mapManager = mapManager;
         this.debugManager = debugManager;
-        this.carePackageManager = carePackageManager;
+        this.glowManager = glowManager;
     }
 
     public Game newGame() {
-        return new Game(plugin, mapManager.getTestMap(), carePackageManager, debugManager);
+        return new Game(plugin, mapManager.getTestMap(), glowManager, debugManager);
     }
 
     public void resetGame(Game game) {

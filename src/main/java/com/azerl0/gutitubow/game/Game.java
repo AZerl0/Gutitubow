@@ -16,6 +16,7 @@ import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.manager.LogManager;
 import com.azerl0.gutitubow.map.Map;
 import com.azerl0.gutitubow.map.MapRepairManager;
+import com.azerl0.gutitubow.packet.EntityGlowManager;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.team.TeamManager;
 import net.kyori.adventure.bossbar.BossBar;
@@ -66,13 +67,13 @@ public class Game {
     public Game(
             JavaPlugin plugin,
             Map map,
-            CarePackageManager carePackageManager,
+            EntityGlowManager glowManager,
             DebugManager debugManager
     ) {
         this.plugin = plugin;
         this.map = map;
-        this.carePackageManager = carePackageManager;
         gutitubowGameMode = GutitubowGameMode.SOLO;
+        this.carePackageManager = new CarePackageManager(plugin, this, glowManager);
         AbilityContext abilityContext = new AbilityContext(plugin, this);
         this.abilityManager = new AbilityManager(abilityContext);
         this.debugManager = debugManager;
@@ -862,6 +863,10 @@ public class Game {
         return teamManager;
     }
 
+    public CarePackageManager getCarePackageManager() {
+        return carePackageManager;
+    }
+
     public boolean isInsideNextSafeArea(Location loc) {
 
         if (!loc.getWorld().equals(safeArea.getWorld())) return false;
@@ -873,6 +878,12 @@ public class Game {
 
     public PlayerBoard getPlayerBoard(GamePlayer gamePlayer) {
         return scoreboardManager.getPlayerBoard(gamePlayer);
+    }
+
+    public void onDisablePlugin() {
+        reset();
+        abilityManager.allResetAbilities();
+        teamManager.removeAllTeam();
     }
 
 }

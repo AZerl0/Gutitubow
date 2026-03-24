@@ -32,7 +32,6 @@ import com.azerl0.gutitubow.ability.abilities.*;
 
 public final class Gutitubow extends JavaPlugin {
     private DebugManager debugManager;
-    private CarePackageManager carePackageManager;
     private MapManager mapManager;
     private GameManager gameManager;
     private EntityFlagManager flagManager;
@@ -50,9 +49,8 @@ public final class Gutitubow extends JavaPlugin {
         this.flagManager = new EntityFlagManager();
         this.glowManager = new EntityGlowManager(flagManager);
         this.debugManager = new DebugManager(this);
-        this.carePackageManager = new CarePackageManager(this, glowManager);
         this.mapManager = new MapManager(this);
-        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.carePackageManager);
+        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.glowManager);
         // MainGame
         this.game = gameManager.newGame();
 
@@ -86,7 +84,7 @@ public final class Gutitubow extends JavaPlugin {
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(new AbilityListener(game.getAbilityManager()), this);
         pluginManager.registerEvents(new GamePlayerListener(game), this);
-        pluginManager.registerEvents(new CarePackageListener(carePackageManager), this);
+        pluginManager.registerEvents(new CarePackageListener(game.getCarePackageManager()), this);
         pluginManager.registerEvents(new ItemListener(), this);
         pluginManager.registerEvents(new GameListener(this, game), this);
         pluginManager.registerEvents(new GUIListener(allGUI), this);
@@ -99,7 +97,7 @@ public final class Gutitubow extends JavaPlugin {
 
         // Command登録
         getCommand("ability").setExecutor(new AbilityCommand(game.getAbilityManager(), abilitySelectorGUI));
-        getCommand("carepackage").setExecutor(new CarePackageCommand(carePackageManager));
+        getCommand("carepackage").setExecutor(new CarePackageCommand(game.getCarePackageManager()));
         getCommand("game").setExecutor(new GameCommand(gameManager, game));
         getCommand("gameplayer").setExecutor(new GamePlayerCommand(this, game));
         getCommand("gutitubowdebug").setExecutor(new DebugCommand(debugManager));
@@ -127,8 +125,6 @@ public final class Gutitubow extends JavaPlugin {
     public void onDisable() {
         EntityUtil.removeAllGlowTeam();
 
-        game.reset();
-        game.getAbilityManager().allResetAbilities();
-        game.getTeamManager().removeAllTeam();
+        game.onDisablePlugin();
     }
 }
