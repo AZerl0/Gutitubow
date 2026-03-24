@@ -708,7 +708,7 @@ public class Game {
         Component playerComponent =
                 Component.text(player.getName() + " [")
                         .append(abilityTypeName)
-                        .append(Component.text("]"))
+                        .append(Component.text("] - " + gamePlayer.getTotalKill() + "Kill, " + gamePlayer.getTotalHit() + "Hit"))
                         .color((rank == 1) ? NamedTextColor.YELLOW : teamColor)
                         .decoration(TextDecoration.BOLD, false);
         Component rankComponent =
