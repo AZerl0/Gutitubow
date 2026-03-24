@@ -9,6 +9,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
@@ -294,21 +295,16 @@ public class GamePlayer {
         meta.setUnbreakable(true);
         elytra.setItemMeta(meta);
         getPlayer().getInventory().setChestplate(elytra);
+        getPlayer().setGliding(true);
 
         if (firstElytraTask != null && !firstElytraTask.isCancelled()) return;
         firstElytraTask = new BukkitRunnable() {
-            private boolean startedGliding = false;
 
             @Override
             public void run() {
-                if (getPlayer().isGliding()) {
-                    startedGliding = true;
-                    return;
-                }
-                if (startedGliding) {
+                if (((Entity) getPlayer()).isOnGround()) {
                     resetFirstElytra();
                 }
-                getPlayer().setGliding(true);
             }
         }.runTaskTimer(plugin, 1L, 1L);
     }

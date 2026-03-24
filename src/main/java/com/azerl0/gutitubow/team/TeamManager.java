@@ -147,6 +147,12 @@ public class TeamManager {
         return gameTeam == otherGameTeam;
     }
 
+    public boolean isJumpMaster(Player player) {
+        GameTeam team = getPlayerTeam(player);
+        if (team == null) return false;
+        return team.isThisTeamJumpMaster(player);
+    }
+
     public Set<GameTeam> getAliveTeams() {
         Set<GameTeam> aliveGameTeams = new HashSet<>(teams.values());
         for (GameTeam gameTeam : teams.values()) if (gameTeam.isEliminated()) aliveGameTeams.remove(gameTeam);

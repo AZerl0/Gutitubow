@@ -261,6 +261,20 @@ public class Game {
             player.setCompassTarget(safeArea);
 
             if (!debugManager.isNoStartTeleport()) gamePlayer.firstElytra();
+            if (getGameMode() == GutitubowGameMode.DUO || getGameMode() == GutitubowGameMode.TRIO) {
+                GameTeam team = teamManager.getPlayerTeam(player);
+                if (team == null) continue;
+                if (teamManager.isJumpMaster(player)) {
+                    Player topPlayer = player;
+                    for (UUID teamPlayerUUID : team.getPlayers()) {
+                        if (teamPlayerUUID == player.getUniqueId()) continue;
+                        Player teammate = Bukkit.getPlayer(teamPlayerUUID);
+                        if (teammate == null || !teammate.isOnline()) continue;
+                        topPlayer.addPassenger(teammate);
+                        topPlayer = teammate;
+                    }
+                }
+            }
             gamePlayer.setArrowAmount(0);
 
             for (int i = 9; i <= 26; i++) {

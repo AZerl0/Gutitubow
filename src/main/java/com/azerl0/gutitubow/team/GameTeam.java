@@ -79,6 +79,12 @@ public class GameTeam {
         players.addFirst(player.getUniqueId());
     }
 
+    public boolean isThisTeamJumpMaster(Player player) {
+        Player jumpMaster = getJumpMaster();
+        if (jumpMaster == null) return false;
+        return jumpMaster.getUniqueId() == player.getUniqueId();
+    }
+
     public boolean isEliminated() {
         for (UUID uuid : players) {
             Player player = Bukkit.getPlayer(uuid);
