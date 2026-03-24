@@ -190,7 +190,7 @@ public class InvisibleAbility extends Ability {
         player.showTitle(title);
 
         PotionEffect invisibleEffect = new PotionEffect(PotionEffectType.INVISIBILITY, 2, 0, true, false, true);
-        PotionEffect speedEffect = new PotionEffect(PotionEffectType.SPEED, 2, 0, true, false, true);
+        PotionEffect speedEffect = new PotionEffect(PotionEffectType.SPEED, 5, 0, true, false, true);
         player.addPotionEffect(invisibleEffect);
         player.addPotionEffect(speedEffect);
 
