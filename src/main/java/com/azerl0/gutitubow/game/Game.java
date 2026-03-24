@@ -56,6 +56,7 @@ public class Game {
     private double nextSafeAreaMinZ;
     private double nextSafeAreaMaxZ;
     private final CarePackageManager carePackageManager;
+    private final EntityGlowManager glowManager;
     private final GamePlayerManager gamePlayerManager;
     private final AbilityManager abilityManager;
     private final DebugManager debugManager;
@@ -74,6 +75,7 @@ public class Game {
         this.map = map;
         gutitubowGameMode = GutitubowGameMode.SOLO;
         this.carePackageManager = new CarePackageManager(plugin, this, glowManager);
+        this.glowManager = glowManager;
         AbilityContext abilityContext = new AbilityContext(plugin, this);
         this.abilityManager = new AbilityManager(abilityContext);
         this.debugManager = debugManager;
@@ -271,8 +273,9 @@ public class Game {
                         if (teamPlayerUUID == player.getUniqueId()) continue;
                         Player teammate = Bukkit.getPlayer(teamPlayerUUID);
                         if (teammate == null || !teammate.isOnline()) continue;
-                        topPlayer.addPassenger(teammate);
+                        if (!debugManager.isNoStartTeleport()) topPlayer.addPassenger(teammate);
                         topPlayer = teammate;
+                        glowManager.addGlow(player, teammate);
                     }
                 }
             }
