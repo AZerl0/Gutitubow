@@ -46,6 +46,10 @@ public class GamePlayerListener implements Listener {
             return;
         }
         if (!(shooter instanceof Player shooterPlayer)) return;
+        if (game.getTeamManager().isTeammate(shooterPlayer, tarPlayer)) {
+            event.setCancelled(true);
+            return;
+        }
 
         double distance = shooter.getLocation().distance(tar.getLocation());
 

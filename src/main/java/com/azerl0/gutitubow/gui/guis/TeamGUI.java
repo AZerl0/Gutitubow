@@ -105,6 +105,7 @@ public class TeamGUI extends AbstractGUI {
             addButton(slot, itemStack, event -> {
                 if (event.getClick() == ClickType.SHIFT_LEFT) {
                     team.setJumpMaster(player);
+                    this.updateGUI();
                 } else {
                     teamManager.leaveTeam(player);
                 }

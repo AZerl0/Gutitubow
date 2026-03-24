@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.game;
 
+import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityManager;
 import com.azerl0.gutitubow.ability.AbilityType;
@@ -15,10 +16,12 @@ import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.manager.LogManager;
 import com.azerl0.gutitubow.map.Map;
 import com.azerl0.gutitubow.map.MapRepairManager;
+import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.team.TeamManager;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -266,7 +269,7 @@ public class Game {
 
             for (UUID otherPlayerUUID : players) {
                 Player target = Bukkit.getPlayer(otherPlayerUUID);
-                if (target != null && player.getUniqueId() != target.getUniqueId()) {
+                if (target != null && player.getUniqueId() != target.getUniqueId() && !teamManager.isTeammate(player, target)) {
                     player.hidePlayer(plugin, target);
                 }
             }
@@ -342,7 +345,7 @@ public class Game {
             if (phase == 0 && (currentTicks + 10) % 20 == 0) {
                 for (UUID uuid : alivePlayers) {
                     Player target = Bukkit.getPlayer(uuid);
-                    if (target != null && uuid != player.getUniqueId()) {
+                    if (target != null && uuid != player.getUniqueId() && !teamManager.isTeammate(player, target)) {
                         Location base = target.getLocation();
                         player.spawnParticle(
                                 Particle.SMOKE,
@@ -563,8 +566,15 @@ public class Game {
     private void checkGameOver() {
         if (alivePlayers.isEmpty()) {
             gameOver();
-        } else if (alivePlayers.size() == 1) {
-            gameOver(Bukkit.getPlayer(alivePlayers.iterator().next()));
+        } else {
+            if (getGameMode() == GutitubowGameMode.SOLO) {
+                if (alivePlayers.size() == 1) gameOver(Bukkit.getPlayer(alivePlayers.iterator().next()));
+            } else if (getGameMode() == GutitubowGameMode.DUO || getGameMode() == GutitubowGameMode.TRIO) {
+                if (teamManager.getAliveTeams().size() == 1) {
+                    GameTeam winTeam = teamManager.getAliveTeams().stream().toList().getFirst();
+                    gameOver(winTeam);
+                }
+            }
         }
     }
 
@@ -592,6 +602,17 @@ public class Game {
                 )
         );
 
+        Component rankingComponent = getRankingComponent(winner);
+
+        Bukkit.getServer().broadcast(Component.text("\n§lGame Set!\n").color(NamedTextColor.LIGHT_PURPLE));
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            player.showTitle(title);
+            player.sendMessage(rankingComponent);
+        }
+        reset();
+    }
+
+    private Component getRankingComponent(Player winner) {
         deathOrder.add(winner.getUniqueId());
 
         Component rankingComponent = Component.text("");
@@ -601,18 +622,55 @@ public class Game {
             boolean isLast = i == deathOrder.size() - 1;
 
             if (player != null) {
-                gamePlayer = getGamePlayer(player);
-                Component abilityType = gamePlayer.getAbility().getType().getName();
-                Component playerRank = Component.text((i + 1) + "st. " + player.getName() + " [").append(abilityType).append(Component.text("]"));
-                Component playerRankingComponent = playerRank.append(Component.text(
-                        " - " + gamePlayer.getTotalKill() + "Kill, " + gamePlayer.getTotalHit() + "Hit"
-                ));
-                rankingComponent = rankingComponent.append(playerRankingComponent
-                        .color(i == 0 ? NamedTextColor.YELLOW : NamedTextColor.RED));
-
+                rankingComponent = rankingComponent.append(getRankingPlayerComponent(player, i + 1));
                 if (!isLast) rankingComponent = rankingComponent.append(Component.text("\n"));
-
             }
+        }
+        return rankingComponent;
+    }
+
+    private void gameOver(GameTeam team) {
+        gameOver();
+        Component playersName = Component.empty();
+
+        Iterator<UUID> teamPlayers = team.getPlayers().iterator();
+        while (teamPlayers.hasNext()) {
+            UUID uuid = teamPlayers.next();
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) {
+                playersName = playersName.append(Component.text(player.getName()));
+                if (teamPlayers.hasNext()) playersName = playersName.append(Component.text(" & "));
+            }
+        }
+
+        Title title = Title.title(
+                Component.text("FLAWLESS!").color(NamedTextColor.GOLD),
+                playersName.color(NamedTextColor.WHITE),
+                Title.Times.times(
+                        java.time.Duration.ofMillis(100),
+                        java.time.Duration.ofSeconds(3),
+                        java.time.Duration.ofMillis(500)
+                )
+        );
+
+        Component rankingComponent = Component.empty();
+
+        for (UUID uuid : team.getPlayers()) {
+            Player teamPlayer = Bukkit.getPlayer(uuid);
+            boolean isLast = uuid == team.getPlayers().getLast();
+            rankingComponent = rankingComponent.append(getRankingPlayerComponent(teamPlayer, 1, team.getTeamColor()));
+            if (!isLast) rankingComponent = rankingComponent.append(Component.text("\n"));
+        }
+
+        int rank = 2;
+        List<UUID> otherPlayers = new ArrayList<>(deathOrder.reversed());
+        otherPlayers.removeAll(team.getPlayers());
+        for (UUID uuid : otherPlayers) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null) continue;
+            rankingComponent = rankingComponent.append(Component.text("\n"));
+            rankingComponent = rankingComponent.append(getRankingPlayerComponent(player, rank, team.getTeamColor()));
+            rank++;
         }
 
         Bukkit.getServer().broadcast(Component.text("\n§lGame Set!\n").color(NamedTextColor.LIGHT_PURPLE));
@@ -621,7 +679,35 @@ public class Game {
             player.sendMessage(rankingComponent);
         }
         reset();
+    }
 
+    private Component getRankingPlayerComponent(Player player, int rank, NamedTextColor teamColor) {
+        GamePlayer gamePlayer = getGamePlayer(player);
+        Ability ability = gamePlayer.getAbility();
+        Component abilityTypeName = (ability != null) ? ability.getType().getName() : Component.text("なし");
+        Component rankComponentSuffix = switch (rank) {
+            case (1) -> Component.text("st");
+            case (2) -> Component.text("nd");
+            case (3) -> Component.text("rd");
+            default -> Component.text("th");
+        };
+        Component playerComponent =
+                Component.text(player.getName() + " [")
+                        .append(abilityTypeName)
+                        .append(Component.text("]"))
+                        .color((rank == 1) ? NamedTextColor.YELLOW : teamColor)
+                        .decoration(TextDecoration.BOLD, false);
+        Component rankComponent =
+                Component.text(rank)
+                        .append(rankComponentSuffix)
+                        .append(Component.text(". "))
+                        .color((rank == 1) ? NamedTextColor.YELLOW : NamedTextColor.RED)
+                        .decoration(TextDecoration.BOLD, true);
+        return rankComponent.append(playerComponent);
+    }
+
+    private Component getRankingPlayerComponent(Player player, int rank) {
+        return getRankingPlayerComponent(player, rank, NamedTextColor.RED);
     }
 
     private void showSubtitle(Player player, Component subtitle) {

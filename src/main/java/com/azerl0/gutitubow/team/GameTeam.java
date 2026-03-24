@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.team;
 
 import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -28,6 +29,7 @@ public class GameTeam {
         team.color(NamedTextColor.GREEN);
         team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
         team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
+        team.setAllowFriendlyFire(false);
     }
 
     public Component getTeamName() {
@@ -80,7 +82,7 @@ public class GameTeam {
     public boolean isEliminated() {
         for (UUID uuid : players) {
             Player player = Bukkit.getPlayer(uuid);
-            if (player != null || game.getAlivePlayers().contains(uuid)) return false;
+            if (player != null && game.getAlivePlayers().contains(uuid)) return false;
         }
         return true;
     }

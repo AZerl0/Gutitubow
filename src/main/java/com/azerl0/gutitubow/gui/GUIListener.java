@@ -22,11 +22,11 @@ public class GUIListener implements Listener {
     @EventHandler
     public void onClick(InventoryClickEvent event) {
         if (event.isCancelled()) return;
+        if (event.getClickedInventory() != event.getView().getTopInventory()) return;
         if (event.getClickedInventory() == event.getView().getBottomInventory() && event.getClick() == ClickType.SHIFT_LEFT) {
             event.setCancelled(true);
             return;
         }
-        if (event.getClickedInventory() != event.getView().getTopInventory()) return;
 
         InventoryHolder holder = event.getInventory().getHolder();
         if (holder instanceof AbstractGUI gui) {

@@ -23,12 +23,12 @@ public class TeamManager {
 
     public TeamManager(Game game) {
         this.game = game;
-        initTeams();
         teamGUI = new TeamGUI(this);
+        initTeams();
     }
 
     public void initTeams() {
-        removeAllTeams();
+        removeAllTeam();
         switch (game.getGameMode()) {
             case DUO -> {
                 addTeam("team-a", Component.text("Aチーム"), Material.RED_STAINED_GLASS_PANE, NamedTextColor.RED);
@@ -70,9 +70,20 @@ public class TeamManager {
         return teamGUI;
     }
 
-    public void removeAllTeams() {
-        teams.clear();
+    public void removeAllTeam() {
+        for (String id : new ArrayList<>(teams.keySet())) {
+            removeTeam(id);
+        }
+
         playerTeams.clear();
+        if (teamGUI != null) teamGUI.updateGUI();
+    }
+
+    public void removeTeam(String teamId) {
+        GameTeam team = getTeam(teamId);
+        if (team == null) return;
+        team.remove();
+        teams.remove(teamId);
     }
 
     public Set<String> getTeamIds() {
@@ -102,10 +113,6 @@ public class TeamManager {
         }
         itemStack.setItemMeta(meta);
         teams.put(teamId.toLowerCase(), new GameTeam(teamName, itemStack, teamColor, game));
-    }
-
-    public void removeTeam(String teamId) {
-        teams.remove(teamId);
     }
 
     public void joinTeam(Player player, String teamId) {
@@ -179,12 +186,5 @@ public class TeamManager {
             if (!team.isFull(game.getGameMode())) return team;
         }
         return null;
-    }
-
-    public void removeAllTeam() {
-        for (GameTeam gameTeam : teams.values()) gameTeam.remove();
-        teams.clear();
-        playerTeams.clear();
-        teamGUI.updateGUI();
     }
 }
