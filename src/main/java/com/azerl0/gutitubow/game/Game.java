@@ -593,7 +593,14 @@ public class Game {
         nextSafeAreaMinZ = centerZ - half;
     }
 
-    private void checkGameOver() {
+    protected void addDeadPlayer(Player player) {
+        UUID uuid = player.getUniqueId();
+        alivePlayers.remove(uuid);
+        deathOrder.remove(uuid);
+        deathOrder.add(uuid);
+    }
+
+    public void checkGameOver() {
         if (alivePlayers.isEmpty()) {
             gameOver();
         } else {
@@ -753,114 +760,6 @@ public class Game {
         player.showTitle(title);
     }
 
-    public void damage(Player player, double amount, Player attacker, double distance, boolean canUpgrade) {
-
-        GamePlayerDamageEvent event = new GamePlayerDamageEvent(player, amount, attacker, GutitubowDamageType.ARROW_SHOT);
-        Bukkit.getPluginManager().callEvent(event);
-        double newAmount = event.getAmount();
-        if (event.isCancelled()) return;
-
-        if (player.getHealth() <= newAmount) {
-            this.kill(player, attacker, distance);
-
-        } else {
-            player.damage(newAmount);
-            if (canUpgrade) {
-                GamePlayer gamePlayer = getGamePlayer(attacker);
-                gamePlayer.setTotalHit(gamePlayer.getTotalHit() + 1);
-                if (gamePlayer.getTotalHit() % 2 == 0) {
-                    Random random = new Random();
-                    if (random.nextBoolean()) {
-                        if (!gamePlayer.upgradeArrowReloadTick()) {
-                            gamePlayer.upgradeMaxArrowStackSize();
-                        }
-                    } else {
-                        if (!gamePlayer.upgradeMaxArrowStackSize()) {
-                            gamePlayer.upgradeArrowReloadTick();
-                        }
-                    }
-                }
-            }
-            attacker.playSound(attacker, Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 1.0f);
-            Title title = Title.title(
-                    Component.empty(),
-                    Component.text("§cHIT §6§bᐅ §f" + player.getName() + "§r§6 (" + Math.floor(distance * 10) / 10 + "m)").color(NamedTextColor.LIGHT_PURPLE),
-                    Title.Times.times(
-                            java.time.Duration.ofMillis(100),
-                            java.time.Duration.ofMillis(1250),
-                            java.time.Duration.ofMillis(500)
-                    )
-            );
-            attacker.showTitle(title);
-            LogManager.broadcastHitLog(attacker, player, distance);
-        }
-    }
-
-    public void damage(Player player, double amount, GutitubowDamageType damageType) {
-
-        GamePlayerDamageEvent event = new GamePlayerDamageEvent(player, amount, damageType);
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) return;
-
-        if (player.getHealth() <= amount) {
-            this.death(player, damageType, false);
-
-        } else {
-            player.damage(amount);
-        }
-    }
-
-    public void damage(Player player, double amount, Player attacker, boolean canUpgrade) {
-        double distance = player.getLocation().distance(attacker.getLocation());
-        damage(player, amount, attacker, distance, canUpgrade);
-
-    }
-
-    public void kill(Player player, Player attacker, double distance) {
-        GamePlayer gamePlayer = getGamePlayer(attacker);
-        gamePlayer.setTotalKill(gamePlayer.getTotalKill() + 1);
-        LogManager.broadcastKillLog(attacker, player, distance);
-        this.death(player, GutitubowDamageType.ARROW_SHOT, true);
-    }
-
-    public void death(Player player, GutitubowDamageType damageType, boolean hideLog) {
-        World world = player.getWorld();
-        Location location = player.getLocation();
-        world.spawnParticle(Particle.EXPLOSION_EMITTER, location, 3);
-        world.strikeLightningEffect(location);
-        Title title = Title.title(
-                Component.text("You Died!").color(NamedTextColor.RED),
-                Component.empty(),
-                Title.Times.times(
-                        java.time.Duration.ofMillis(500),
-                        java.time.Duration.ofSeconds(3),
-                        java.time.Duration.ofMillis(500)
-                )
-        );
-        player.showTitle(title);
-
-        UUID uuid = player.getUniqueId();
-        if (isStarted()) {
-            player.setGameMode(GameMode.SPECTATOR);
-            alivePlayers.remove(uuid);
-            deathOrder.remove(uuid);
-            deathOrder.add(uuid);
-
-        } else {
-            double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getBaseValue();
-            player.setHealth(maxHealth);
-        }
-        if (!hideLog) {
-            if (damageType == GutitubowDamageType.OUTSIDE_BORDER) {
-                LogManager.broadcastDeathLog(player);
-            }
-        }
-        if (isStarted()) checkGameOver();
-    }
-
-    public void death(Player player, GutitubowDamageType damageType) {
-        this.death(player, damageType, false);
-    }
 
     public @NotNull MapRepairManager getMapRepairManager() {
         return this.mapRepairManager;

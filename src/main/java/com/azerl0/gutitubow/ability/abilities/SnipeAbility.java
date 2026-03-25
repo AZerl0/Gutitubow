@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -83,7 +84,8 @@ public class SnipeAbility extends Ability {
 
                 if (distance > 36.0) {
                     Game game = context.game();
-                    game.damage(hitPlayer, 2, player, distance, true);
+                    GamePlayer gamePlayer = context.game().getGamePlayer(hitPlayer);
+                    gamePlayer.damage(hitPlayer, 2, player, distance, true);
 
                 } else {
                     Component message =

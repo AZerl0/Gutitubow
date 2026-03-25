@@ -188,7 +188,7 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
 
                 Player finalTarget = target;
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                    game.damage(finalTarget, damageAmount, damageType);
+                    game.getGamePlayer(finalTarget).damage(finalTarget, damageAmount, damageType);
                 }, delay * 20);
                 return true;
 

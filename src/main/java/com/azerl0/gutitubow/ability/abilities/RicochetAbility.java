@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.EntityUtil;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -68,12 +69,12 @@ public class RicochetAbility extends Ability {
             Location loc = arrow.getLocation();
             double damageRadius = 2.0;
             for (Entity entity : world.getNearbyEntities(loc, damageRadius, damageRadius, damageRadius)) {
-                if (entity instanceof Player damageEntity) {
+                if (entity instanceof Player damagePlayer) {
 
-                    Game game = context.game();
+                    GamePlayer gamePlayer = context.game().getGamePlayer(damagePlayer);
 
-                    if (!damageEntity.getUniqueId().equals(shooterPlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damageEntity)) {
-                        game.damage(damageEntity, 0.5, shooterPlayer, true);
+                    if (!damagePlayer.getUniqueId().equals(shooterPlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damagePlayer)) {
+                        gamePlayer.damage(damagePlayer, 0.5, shooterPlayer, true);
                         setRicochetDamageCount(arrow, ricochetDamageCount + 1);
                     }
                 }

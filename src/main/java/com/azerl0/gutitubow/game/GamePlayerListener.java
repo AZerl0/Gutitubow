@@ -54,7 +54,7 @@ public class GamePlayerListener implements Listener {
 
         double distance = shooter.getLocation().distance(tar.getLocation());
 
-        this.game.damage(tarPlayer, 2, shooterPlayer, distance, true);
+        this.game.getGamePlayer(tarPlayer).damage(tarPlayer, 2, shooterPlayer, distance, true);
 
         event.setCancelled(true);
         event.getEntity().remove();

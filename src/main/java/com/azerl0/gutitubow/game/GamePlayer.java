@@ -2,13 +2,17 @@ package com.azerl0.gutitubow.game;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.data.GutitubowDamageType;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
+import com.azerl0.gutitubow.manager.LogManager;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.util.ItemUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.title.Title;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -25,6 +29,8 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 import java.util.UUID;
 
 public class GamePlayer {
@@ -106,7 +112,7 @@ public class GamePlayer {
                 int borderOutsideDamageTick = 30;
                 if (borderOutsideTick % borderOutsideDamageTick == 0) {
                     if (borderOutsideTick % (10 * borderOutsideDamageTick) == 0) {
-                        game.damage(getPlayer(), 1, GutitubowDamageType.OUTSIDE_BORDER);
+                        damage(getPlayer(), 1, GutitubowDamageType.OUTSIDE_BORDER);
                     } else {
                         getPlayer().playHurtAnimation(0.0f);
                         world.playSound(getPlayer().getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0f, 1.0f);
@@ -432,5 +438,112 @@ public class GamePlayer {
         } else {
             if (showSenderMessage && getPlayer() != null) getPlayer().sendMessage(Component.text("チームメイトのインベントリに空きがありません！！").color(NamedTextColor.RED));
         }
+    }
+
+
+    public void damage(Player player, double amount, Player attacker, double distance, boolean canUpgrade) {
+
+        GamePlayerDamageEvent event = new GamePlayerDamageEvent(player, amount, attacker, GutitubowDamageType.ARROW_SHOT);
+        Bukkit.getPluginManager().callEvent(event);
+        double newAmount = event.getAmount();
+        if (event.isCancelled()) return;
+
+        if (player.getHealth() <= newAmount) {
+            this.kill(player, attacker, distance);
+
+        } else {
+            player.damage(newAmount);
+            if (canUpgrade) {
+                GamePlayer gamePlayer = game.getGamePlayer(attacker);
+                gamePlayer.setTotalHit(gamePlayer.getTotalHit() + 1);
+                if (gamePlayer.getTotalHit() % 2 == 0) {
+                    Random random = new Random();
+                    if (random.nextBoolean()) {
+                        if (!gamePlayer.upgradeArrowReloadTick()) {
+                            gamePlayer.upgradeMaxArrowStackSize();
+                        }
+                    } else {
+                        if (!gamePlayer.upgradeMaxArrowStackSize()) {
+                            gamePlayer.upgradeArrowReloadTick();
+                        }
+                    }
+                }
+            }
+            attacker.playSound(attacker, Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 1.0f);
+            Title title = Title.title(
+                    Component.empty(),
+                    Component.text("§cHIT §6§bᐅ §f" + player.getName() + "§r§6 (" + Math.floor(distance * 10) / 10 + "m)").color(NamedTextColor.LIGHT_PURPLE),
+                    Title.Times.times(
+                            java.time.Duration.ofMillis(100),
+                            java.time.Duration.ofMillis(1250),
+                            java.time.Duration.ofMillis(500)
+                    )
+            );
+            attacker.showTitle(title);
+            LogManager.broadcastHitLog(attacker, player, distance);
+        }
+    }
+
+    public void damage(Player player, double amount, GutitubowDamageType damageType) {
+
+        GamePlayerDamageEvent event = new GamePlayerDamageEvent(player, amount, damageType);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
+
+        if (player.getHealth() <= amount) {
+            this.death(player, damageType, false);
+
+        } else {
+            player.damage(amount);
+        }
+    }
+
+    public void damage(Player player, double amount, Player attacker, boolean canUpgrade) {
+        double distance = player.getLocation().distance(attacker.getLocation());
+        damage(player, amount, attacker, distance, canUpgrade);
+
+    }
+
+    public void kill(Player player, Player attacker, double distance) {
+        GamePlayer gamePlayer = game.getGamePlayer(attacker);
+        gamePlayer.setTotalKill(gamePlayer.getTotalKill() + 1);
+        LogManager.broadcastKillLog(attacker, player, distance);
+        this.death(player, GutitubowDamageType.ARROW_SHOT, true);
+    }
+
+    public void death(Player player, GutitubowDamageType damageType, boolean hideLog) {
+        World world = player.getWorld();
+        Location location = player.getLocation();
+        world.spawnParticle(Particle.EXPLOSION_EMITTER, location, 3);
+        world.strikeLightningEffect(location);
+        Title title = Title.title(
+                Component.text("You Died!").color(NamedTextColor.RED),
+                Component.empty(),
+                Title.Times.times(
+                        java.time.Duration.ofMillis(500),
+                        java.time.Duration.ofSeconds(3),
+                        java.time.Duration.ofMillis(500)
+                )
+        );
+        player.showTitle(title);
+
+        if (game.isStarted()) {
+            player.setGameMode(GameMode.SPECTATOR);
+            game.addDeadPlayer(player);
+
+        } else {
+            double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getBaseValue();
+            player.setHealth(maxHealth);
+        }
+        if (!hideLog) {
+            if (damageType == GutitubowDamageType.OUTSIDE_BORDER) {
+                LogManager.broadcastDeathLog(player);
+            }
+        }
+        if (game.isStarted()) game.checkGameOver();
+    }
+
+    public void death(Player player, GutitubowDamageType damageType) {
+        this.death(player, damageType, false);
     }
 }

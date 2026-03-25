@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.util.EntityUtil;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
@@ -70,10 +71,10 @@ public class BombAbility extends Ability {
         for (Entity entity : world.getNearbyEntities(loc, damageRadius, damageRadius, damageRadius)) {
             if (entity instanceof Player damagePlayer) {
 
-                Game game = context.game();
+                GamePlayer gamePlayer = context.game().getGamePlayer(damagePlayer);
 
                 if (!shooter.getUniqueId().equals(damagePlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damagePlayer)) {
-                    game.damage(damagePlayer, 0.5, shooter, true);
+                    gamePlayer.damage(damagePlayer, 0.5, shooter, true);
                 }
             }
         }
