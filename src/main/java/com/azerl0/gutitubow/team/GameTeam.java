@@ -1,7 +1,6 @@
 package com.azerl0.gutitubow.team;
 
 import com.azerl0.gutitubow.game.Game;
-import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -9,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -19,7 +19,7 @@ public class GameTeam {
     private final NamedTextColor teamColor;
     private final Team team = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(this.toString());
     private final Game game;
-    private final List<UUID> players = new ArrayList<>();
+    private @NotNull final List<UUID> players = new ArrayList<>();
 
     public GameTeam(Component teamName, ItemStack teamIconItem, NamedTextColor teamColor, Game game) {
         this.teamName = teamName;
@@ -44,14 +44,26 @@ public class GameTeam {
         return teamColor;
     }
 
-    public List<UUID> getPlayers() {
+    public @NotNull List<UUID> getPlayers() {
         return players;
     }
 
-    public List<UUID> getPlayersWithout(UUID uuid) {
+    public @NotNull List<UUID> getPlayersWithout(UUID uuid) {
         List<UUID> withoutPlayers = new ArrayList<>(players);
         withoutPlayers.remove(uuid);
         return withoutPlayers;
+    }
+
+    public @NotNull List<UUID> getAlivePlayers() {
+        List<UUID> alivePlayers = new ArrayList<>(players);
+        alivePlayers.retainAll(game.getAlivePlayers());
+        return alivePlayers;
+    }
+
+    public @NotNull List<UUID> getAlivePlayersWithout(UUID uuid) {
+        List<UUID> alivePlayers = new ArrayList<>(getAlivePlayers());
+        alivePlayers.remove(uuid);
+        return alivePlayers;
     }
 
     public void reset() {
@@ -92,11 +104,7 @@ public class GameTeam {
     }
 
     public boolean isEliminated() {
-        for (UUID uuid : players) {
-            Player player = Bukkit.getPlayer(uuid);
-            if (player != null && game.getAlivePlayers().contains(uuid)) return false;
-        }
-        return true;
+        return getAlivePlayers().isEmpty();
     }
 
     public void remove() {

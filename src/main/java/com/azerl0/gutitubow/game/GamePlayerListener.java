@@ -6,6 +6,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.potion.PotionEffectType;
 
 public class GamePlayerListener implements Listener {
@@ -92,5 +93,11 @@ public class GamePlayerListener implements Listener {
         GamePlayer gamePlayer = game.getGamePlayer(player);
 
         if (event.getModifiedType() == PotionEffectType.BLINDNESS) gamePlayer.setFlashParticleTask();
+    }
+
+    @EventHandler
+    public void onDrop(PlayerDropItemEvent event) {
+        GamePlayer gamePlayer = game.getGamePlayer(event.getPlayer());
+        gamePlayer.onDropPotion(event);
     }
 }

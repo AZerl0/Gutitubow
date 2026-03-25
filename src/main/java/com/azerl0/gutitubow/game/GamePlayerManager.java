@@ -4,6 +4,7 @@ package com.azerl0.gutitubow.game;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class GamePlayerManager {
         this.game = game;
     }
 
-    public GamePlayer getGamePlayer(Player player) {
+    public @NotNull GamePlayer getGamePlayer(Player player) {
         if (!gamePlayers.containsKey(player.getUniqueId())) {
             gamePlayers.put(player.getUniqueId(), new GamePlayer(this.plugin, player, game));
         }

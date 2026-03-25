@@ -12,6 +12,7 @@ import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
@@ -192,6 +193,23 @@ public class GamePlayer {
         }
     }
 
+    public int getNearEmptySlot() {
+        Player player = getPlayer();
+        if (player == null) return -1;
+        List<Integer> slots = List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 27, 28, 29, 30, 31, 32, 33, 34, 35);
+        for (Integer slot : slots) {
+            ItemStack item = player.getInventory().getItem(slot);
+            if (item == null || item.getType() == Material.AIR) {
+                return slot;
+            }
+        }
+        return -1;
+    }
+
+    public boolean hasEmptySlot() {
+        return getNearEmptySlot() != -1;
+    }
+
     public int getArrowAmount() {
         if (!(getPlayer() instanceof Player _player)) return 0;
         int slot = getArrowItemSlot();
@@ -243,11 +261,12 @@ public class GamePlayer {
     }
 
     private int getArrowItemSlot() {
-        if (getPlayer() == null) return -1;
+        Player player = getPlayer();
+        if (player == null) return -1;
         List<Integer> slots = List.of(8, 7, 6, 5, 4, 3, 2, 1, 0, 35, 34, 33, 32, 31, 30, 29, 28, 27);
 
         for (Integer slot : slots) {
-            ItemStack item = getPlayer().getInventory().getItem(slot);
+            ItemStack item = player.getInventory().getItem(slot);
             if (item != null && item.getItemMeta().getPersistentDataContainer().has(gutitubowArrowItemKey)) {
                 return slot;
             }
@@ -280,7 +299,6 @@ public class GamePlayer {
                     arrowReloadTask = null;
                     return;
                 }
-
 
                 if (getArrowAmount() >= getMaxArrowStackSize()) {
                     cancel();
@@ -365,5 +383,53 @@ public class GamePlayer {
                 );
             }
         }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    public void onDropPotion(PlayerDropItemEvent event) {
+        if (game.isStarted() && event.getItemDrop().getItemStack().getType() == Material.POTION) {
+            Player player = event.getPlayer();
+            GutitubowGameMode gameMode = game.getGameMode();
+            if (!game.getPlayers().contains(player.getUniqueId())) return;
+
+            if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
+                GameTeam team = game.getGameTeam(player);
+                if (team == null) {
+                    event.setCancelled(true);
+                    return;
+                }
+                List<UUID> aliveTeammates = team.getAlivePlayersWithout(playerUUID);
+                if (aliveTeammates.isEmpty()) {
+                    if (!team.getPlayersWithout(playerUUID).isEmpty())
+                        player.sendMessage(Component.text("チームメイトが全員ダウンしています！！\nダウンしているチームメイトにアイテムを渡すことはできません").color(NamedTextColor.RED));
+                    event.setCancelled(true);
+                    return;
+                }
+                for (UUID uuid : aliveTeammates) {
+                    Player teammate = Bukkit.getPlayer(uuid);
+                    if (teammate == null) continue;
+                    GamePlayer gameTeammate = getGame().getGamePlayer(teammate);
+                    if (!gameTeammate.hasEmptySlot()) continue;
+                    giveItem(teammate, event.getItemDrop().getItemStack(), true, true);
+                    return;
+                }
+                player.sendMessage(Component.text("チームメイトのインベントリに空きがありません！！").color(NamedTextColor.RED));
+
+            } else if (gameMode == GutitubowGameMode.SOLO) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    private void giveItem(Player receiver, ItemStack itemStack, boolean showReceiverMessage, boolean showSenderMessage) {
+        GamePlayer receiverGameplayer = game.getGamePlayer(receiver);
+        if (receiverGameplayer.hasEmptySlot()) {
+            double distance = 0;
+            if (getPlayer() != null) distance = Math.floor(getPlayer().getLocation().distance(receiver.getLocation()) * 10) / 10;
+            if (showSenderMessage && getPlayer() != null) getPlayer().sendMessage(Component.text("§6[!] §a" + receiver.getName() + "にアイテムを渡した! (" + distance + "m)"));
+            if (showReceiverMessage && getPlayer() != null) receiver.sendMessage(Component.text("§6[!] §a" + getPlayer().getName() + "からアイテムを受け取った! (" + distance + "m)"));
+            receiver.give(itemStack);
+        } else {
+            if (showSenderMessage && getPlayer() != null) getPlayer().sendMessage(Component.text("チームメイトのインベントリに空きがありません！！").color(NamedTextColor.RED));
+        }
     }
 }

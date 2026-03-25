@@ -33,6 +33,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -85,8 +86,12 @@ public class Game {
         this.teamManager = new TeamManager(this);
     }
 
-    public GamePlayer getGamePlayer(Player player) {
+    public @NotNull GamePlayer getGamePlayer(Player player) {
         return gamePlayerManager.getGamePlayer(player);
+    }
+
+    public @Nullable GameTeam getGameTeam(Player player) {
+        return teamManager.getPlayerTeam(player);
     }
 
     public boolean isStarted() {
@@ -170,6 +175,13 @@ public class Game {
             GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(player);
             gamePlayer.resetFirstElytra();
             gamePlayer.updatePlayerBoard();
+            GameTeam gameTeam = gamePlayer.getTeam();
+            if (gameTeam != null) {
+                for (UUID uuid : gameTeam.getPlayersWithout(player.getUniqueId())) {
+                    Player teammate = Bukkit.getPlayer(uuid);
+                    if (teammate != null) glowManager.removeGlow(player, teammate);
+                }
+            }
         }
         map.getBorder().setCenter(0.0, 0.0);
         map.getBorder().setSize(59999968);

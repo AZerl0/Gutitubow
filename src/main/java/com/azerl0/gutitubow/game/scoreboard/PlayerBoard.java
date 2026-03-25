@@ -119,10 +119,12 @@ public class PlayerBoard {
         if (gameMode == GutitubowGameMode.DUO) {
             if (team == null) return;
             List<UUID> teammates = team.getPlayersWithout(gamePlayer.getPlayer().getUniqueId());
-            Player teammate1 = Bukkit.getPlayer(teammates.getFirst());
-            if (teammate1 != null) {
-                updateTeammate1(teammate1);
-                setHideTeammate1(false);
+            if (!teammates.isEmpty()) {
+                Player teammate1 = Bukkit.getPlayer(teammates.getFirst());
+                if (teammate1 != null) {
+                    updateTeammate1(teammate1);
+                    setHideTeammate1(false);
+                }
             }
 
             setHideTeammate2(true);
@@ -131,10 +133,12 @@ public class PlayerBoard {
             if (team == null) return;
             List<UUID> teammates = team.getPlayersWithout(gamePlayer.getPlayer().getUniqueId());
 
-            Player teammate1 = Bukkit.getPlayer(teammates.getFirst());
-            if (teammate1 != null) {
-                updateTeammate1(teammate1);
-                setHideTeammate1(false);
+            if (!teammates.isEmpty()) {
+                Player teammate1 = Bukkit.getPlayer(teammates.getFirst());
+                if (teammate1 != null) {
+                    updateTeammate1(teammate1);
+                    setHideTeammate1(false);
+                }
             }
 
             if (teammates.size() >= 2) {
