@@ -410,6 +410,7 @@ public class GamePlayer {
                     GamePlayer gameTeammate = getGame().getGamePlayer(teammate);
                     if (!gameTeammate.hasEmptySlot()) continue;
                     giveItem(teammate, event.getItemDrop().getItemStack(), true, true);
+                    event.getItemDrop().remove();
                     return;
                 }
                 player.sendMessage(Component.text("チームメイトのインベントリに空きがありません！！").color(NamedTextColor.RED));
