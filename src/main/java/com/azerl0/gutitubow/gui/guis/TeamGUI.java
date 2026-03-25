@@ -102,10 +102,10 @@ public class TeamGUI extends AbstractGUI {
                 meta.setOwningPlayer(player);
                 meta.displayName(Component.text(player.getName()).color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
                 List<Component> lore = new ArrayList<>(List.of(
-                        Component.text("[左クリック] このプレイヤーをチームから削除").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
+                        Component.text("[クリック] このプレイヤーをチームから削除").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
                 ));
                 if (!isJumpMaster) lore.add(
-                        Component.text("[SHIFT + 左クリック] このプレイヤーをジャンプマスターに設定").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
+                        Component.text("[SHIFT + クリック] このプレイヤーをジャンプマスターに設定").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
                 );
                 meta.lore(lore);
             }
