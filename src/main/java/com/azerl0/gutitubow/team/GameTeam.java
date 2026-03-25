@@ -44,6 +44,11 @@ public class GameTeam {
         return teamColor;
     }
 
+    public void reset() {
+        players.clear();
+    }
+
+
     public @NotNull List<UUID> getPlayers() {
         return players;
     }
@@ -66,8 +71,10 @@ public class GameTeam {
         return alivePlayers;
     }
 
-    public void reset() {
-        players.clear();
+    public List<UUID> getDeadPlayers() {
+        List<UUID> deadPlayers = new ArrayList<>(getPlayers());
+        deadPlayers.removeAll(game.getAlivePlayers());
+        return deadPlayers;
     }
 
     public void addPlayer(Player player) {
@@ -81,7 +88,7 @@ public class GameTeam {
         team.removePlayer(player);
     }
 
-    public boolean hasPlayer(Player player) {
+    public boolean containsPlayer(Player player) {
         return players.contains(player.getUniqueId());
     }
 
@@ -92,7 +99,7 @@ public class GameTeam {
     }
 
     public void setJumpMaster(Player player) {
-        if (!hasPlayer(player)) return;
+        if (!containsPlayer(player)) return;
         players.remove(player.getUniqueId());
         players.addFirst(player.getUniqueId());
     }

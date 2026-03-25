@@ -6,14 +6,11 @@ import com.azerl0.gutitubow.ability.AbilityManager;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.carepackage.CarePackage;
 import com.azerl0.gutitubow.carepackage.CarePackageManager;
-import com.azerl0.gutitubow.data.GutitubowDamageType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.debug.DebugManager;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
 import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
-import com.azerl0.gutitubow.manager.LogManager;
 import com.azerl0.gutitubow.map.Map;
 import com.azerl0.gutitubow.map.MapRepairManager;
 import com.azerl0.gutitubow.packet.EntityGlowManager;
@@ -601,6 +598,7 @@ public class Game {
     }
 
     public void checkGameOver() {
+        if (debugManager.isDisableCheckGameOver()) return;
         if (alivePlayers.isEmpty()) {
             gameOver();
         } else {

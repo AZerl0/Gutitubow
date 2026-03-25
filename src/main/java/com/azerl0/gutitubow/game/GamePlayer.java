@@ -3,29 +3,37 @@ package com.azerl0.gutitubow.game;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.data.GutitubowDamageType;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
 import com.azerl0.gutitubow.manager.LogManager;
 import com.azerl0.gutitubow.team.GameTeam;
+import com.azerl0.gutitubow.util.ComponentUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
+import net.kyori.adventure.title.TitlePart;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -48,6 +56,9 @@ public class GamePlayer {
     private final NamespacedKey gutitubowArrowItemKey;
     private final PlayerBoard playerBoard;
     private BukkitTask flashParticleTask = null;
+    private BukkitTask sneakingTask = null;
+    private int sneakingTick = 0;
+    private int revivingTick = 0;
     private int remainedFlashTick;
 
 
@@ -247,7 +258,7 @@ public class GamePlayer {
         this.setArrowAmount(getArrowAmount() - amount);
     }
 
-    private ItemStack getArrowItem(int amount) {
+    private @NotNull ItemStack getArrowItem(int amount) {
         ItemStack item;
         if (amount <= 0) {
             item = new ItemStack(Material.BARRIER);
@@ -361,6 +372,10 @@ public class GamePlayer {
         this.playerBoard.update();
     }
 
+    public boolean isFlashing() {
+        return remainedFlashTick > 0;
+    }
+
     public void setFlashParticle(int duration) {
         remainedFlashTick = duration;
         setFlashParticleTask();
@@ -424,6 +439,102 @@ public class GamePlayer {
             } else if (gameMode == GutitubowGameMode.SOLO) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    public boolean isReviving() {
+        return revivingTick != 0;
+    }
+
+    public void onToggleSneak(PlayerToggleSneakEvent event) {
+        Player player = event.getPlayer();
+        if (event.isSneaking()) {
+            if (sneakingTask != null && !sneakingTask.isCancelled()) return;
+
+            sneakingTask = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    sneakingTick++;
+                    GamePlayerSneakingEvent event = new GamePlayerSneakingEvent(player, sneakingTick);
+                    Bukkit.getPluginManager().callEvent(event);
+                }
+            }.runTaskTimer(plugin, 0L, 1L);
+        } else {
+            if (sneakingTask != null) sneakingTask.cancel();
+            sneakingTask = null;
+            sneakingTick = 0;
+            if (isReviving()) {
+                revivingTick = 0;
+                player.removePotionEffect(PotionEffectType.GLOWING);
+            }
+        }
+    }
+
+    public void onSneaking(@NotNull GamePlayerSneakingEvent event) {
+        Player player = event.getPlayer();
+        ItemStack mainHandItem = player.getInventory().getItemInMainHand();
+        if (mainHandItem.getType() == Material.BEACON) {
+            updateOnUseRespawnBeacon();
+        }
+    }
+
+    private void updateOnUseRespawnBeacon() {
+        Player player = getPlayer();
+        if (player == null) return;
+
+        GameTeam team = getTeam();
+        if (team == null || team.getDeadPlayers().isEmpty()) return;
+
+        revivingTick++;
+        if (revivingTick == 1) {
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                if (onlinePlayer.getUniqueId() == playerUUID) continue;
+                Title title = Title.title(
+                        Component.empty(),
+                        Component.text("[!] " + player.getName() + "が味方の蘇生を開始した！").color(NamedTextColor.GREEN),
+                        Title.Times.times(
+                                java.time.Duration.ofMillis(500),
+                                java.time.Duration.ofSeconds(3),
+                                java.time.Duration.ofMillis(500)
+                        )
+                );
+                onlinePlayer.showTitle(title);
+                PotionEffect effect = new PotionEffect(PotionEffectType.GLOWING, 15 * 20, 0, true, false, false);
+                player.addPotionEffect(effect);
+                player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.0f, 1.0f);
+            }
+        }
+        if (revivingTick >= 15 * 20) {
+            for (UUID uuid : team.getDeadPlayers()) {
+                Player deadTeammate = Bukkit.getPlayer(uuid);
+                if (deadTeammate == null || !deadTeammate.isOnline()) continue;
+                GamePlayer deadTeammateGameplayer = getGame().getGamePlayer(deadTeammate);
+                deadTeammateGameplayer.revive(player);
+            }
+            player.getInventory().remove(Material.BEACON);
+            revivingTick = 0;
+            return;
+        }
+        Component gauge = ComponentUtil.getGaugeComponent(
+                revivingTick,
+                15 * 20,
+                NamedTextColor.GREEN,
+                NamedTextColor.GRAY
+        );
+        player.sendActionBar(Component.text("味方復活中... ").color(NamedTextColor.GREEN).append(gauge));
+        for (UUID uuid : team.getDeadPlayers()) {
+            Player deadTeammate = Bukkit.getPlayer(uuid);
+            if (deadTeammate == null || !deadTeammate.isOnline()) continue;
+            Title title = Title.title(
+                    Component.empty(),
+                    Component.text("蘇生されています... ").color(NamedTextColor.GREEN).append(gauge),
+                    Title.Times.times(
+                            java.time.Duration.ofMillis(0),
+                            java.time.Duration.ofSeconds(1),
+                            java.time.Duration.ofMillis(0)
+                    )
+            );
+            deadTeammate.showTitle(title);
         }
     }
 
@@ -501,7 +612,6 @@ public class GamePlayer {
     public void damage(Player player, double amount, Player attacker, boolean canUpgrade) {
         double distance = player.getLocation().distance(attacker.getLocation());
         damage(player, amount, attacker, distance, canUpgrade);
-
     }
 
     public void kill(Player player, Player attacker, double distance) {
@@ -531,6 +641,30 @@ public class GamePlayer {
             player.setGameMode(GameMode.SPECTATOR);
             game.addDeadPlayer(player);
 
+            if (game.getGameMode() == GutitubowGameMode.DUO || game.getGameMode() == GutitubowGameMode.TRIO) {
+                GameTeam team = getTeam();
+                if (team != null) {
+
+                    boolean isEliminated = team.isEliminated();
+                    for (UUID uuid : team.getPlayersWithout(playerUUID)) {
+                        Player teammate = Bukkit.getPlayer(uuid);
+                        if (teammate != null) {
+                            teammate.sendTitlePart(TitlePart.TIMES, Title.Times.times(
+                                    java.time.Duration.ofMillis(500),
+                                    java.time.Duration.ofSeconds(3),
+                                    java.time.Duration.ofMillis(500)
+                            ));
+                            if (isEliminated) {
+                                teammate.sendTitlePart(TitlePart.TITLE, Component.text("Team Eliminated!").color(NamedTextColor.RED));
+                            } else {
+                                teammate.sendTitlePart(TitlePart.SUBTITLE, Component.text("仲間がダウンした！").color(NamedTextColor.DARK_RED).decoration(TextDecoration.BOLD, true));
+                                teammate.sendMessage(Component.text("\n[!] ケアパッケージを獲得して味方を蘇生せよ！\n").color(NamedTextColor.AQUA));
+                            }
+                        }
+                    }
+                }
+            }
+
         } else {
             double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getBaseValue();
             player.setHealth(maxHealth);
@@ -543,7 +677,20 @@ public class GamePlayer {
         if (game.isStarted()) game.checkGameOver();
     }
 
-    public void death(Player player, GutitubowDamageType damageType) {
-        this.death(player, damageType, false);
+    public void revive(Player reviver) {
+        Player player = getPlayer();
+        if (player == null || !player.isOnline()) return;
+        World world = player.getWorld();
+
+        player.setGameMode(GameMode.ADVENTURE);
+        if (player.getUniqueId() != reviver.getUniqueId()) player.teleport(reviver);
+        LogManager.broadcastReviveLog(player, reviver);
+        player.getWorld().playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1.0f, 1.0f);
+
+        Firework firework = world.spawn(player.getLocation().add(0.0, 1.5, 0.0), Firework.class);
+        FireworkMeta meta = firework.getFireworkMeta();
+        meta.addEffect(FireworkEffect.builder().withColor(Color.AQUA).with(FireworkEffect.Type.BALL).build());
+        meta.setPower(0);
+        firework.setFireworkMeta(meta);
     }
 }

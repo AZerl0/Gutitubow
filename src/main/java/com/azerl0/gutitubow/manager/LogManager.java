@@ -4,12 +4,11 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 
 public class LogManager {
-    public static void broadcastHitLog(Entity shooter, Entity target, double distance) {
+    public static void broadcastHitLog(Player shooter, Player target, double distance) {
 
         Component message =
                 Component.text("")
@@ -23,13 +22,13 @@ public class LogManager {
                                         Component.text("] ")
                                                 .color(NamedTextColor.WHITE)
                                 ).append(
-                                        Component.text(getDisplayName(shooter))
+                                        Component.text(shooter.getName())
                                                 .color(NamedTextColor.WHITE)
                                                 .decoration(TextDecoration.BOLD, false)
                                 ).append(
                                         Component.text(" ➽ ")
                                 ).append(
-                                        Component.text(getDisplayName(target))
+                                        Component.text(target.getName())
                                                 .decoration(TextDecoration.BOLD, false)
                                 ).append(
                                         Component.text(" (" + Math.floor(distance * 10) / 10 + "m)")
@@ -43,19 +42,7 @@ public class LogManager {
 
     }
 
-    public static void broadcastHitLog(Player shooter, Player target, double distance) {
-        broadcastHitLog(((Entity) shooter), ((Entity) target), distance);
-    }
-
-    public static void broadcastHitLog(Player shooter, Entity target, double distance) {
-        broadcastHitLog(((Entity) shooter), target, distance);
-    }
-
-    public static void broadcastHitLog(Entity shooter, Player target, double distance) {
-        broadcastHitLog(shooter, ((Entity) target), distance);
-    }
-
-    public static void broadcastKillLog(Entity shooter, Entity target, double distance) {
+    public static void broadcastKillLog(Player shooter, Player target, double distance) {
 
         Component message =
                 Component.text("")
@@ -69,13 +56,13 @@ public class LogManager {
                                         Component.text("] ")
                                                 .color(NamedTextColor.WHITE)
                                 ).append(
-                                        Component.text(getDisplayName(shooter))
+                                        Component.text(shooter.getName())
                                                 .color(NamedTextColor.WHITE)
                                                 .decoration(TextDecoration.BOLD, false)
                                 ).append(
                                         Component.text(" ➽ ")
                                 ).append(
-                                        Component.text(getDisplayName(target)).color(NamedTextColor.DARK_RED)
+                                        Component.text(target.getName()).color(NamedTextColor.DARK_RED)
                                                 .decoration(TextDecoration.BOLD, false)
                                 ).append(
                                         Component.text(" (" + Math.floor(distance * 10) / 10 + "m)")
@@ -87,17 +74,6 @@ public class LogManager {
             player.sendMessage(message);
         }
 
-    }
-    public static void broadcastKillLog(Player shooter, Player target, double distance) {
-        broadcastKillLog(((Entity) shooter), ((Entity) target), distance);
-    }
-
-    public static void broadcastKillLog(Player shooter, Entity target, double distance) {
-        broadcastKillLog(((Entity) shooter), target, distance);
-    }
-
-    public static void broadcastKillLog(Entity shooter, Player target, double distance) {
-        broadcastKillLog(shooter, ((Entity) target), distance);
     }
 
     public static void broadcastDeathLog(Player player) {
@@ -114,7 +90,7 @@ public class LogManager {
                                         Component.text("] ")
                                                 .color(NamedTextColor.WHITE)
                                 ).append(
-                                        Component.text(getDisplayName(player))
+                                        Component.text(player.getName())
                                                 .color(NamedTextColor.WHITE)
                                                 .decoration(TextDecoration.BOLD, false)
                                 ).append(
@@ -125,16 +101,14 @@ public class LogManager {
         for (Player toPlayer : Bukkit.getOnlinePlayers()) {
             toPlayer.sendMessage(message);
         }
-
     }
 
-
-    private static String getDisplayName(Player player) {
-        return player.getName();
-    }
-
-    private static String getDisplayName(Entity entity) {
-        return entity.getName();
+    public static void broadcastReviveLog(Player player, Player reviver) {
+        Component message =
+                Component.text("§f[§aREVIVE§f] " + reviver.getName() + " §2≫≫≫≫ §a" + player.getName());
+        for (Player toPlayer : Bukkit.getOnlinePlayers()) {
+            toPlayer.sendMessage(message);
+        }
     }
 }
 

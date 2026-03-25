@@ -5,6 +5,7 @@ import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.GutitubowDamageType;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
+import com.azerl0.gutitubow.util.ComponentUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -86,14 +87,13 @@ public class ToughAbility extends Ability {
             stopRegeneration();
             return;
         }
-
-        Component regenerationPerMessage = Component.text("");
-        for (int i = 0; i < 10; i++) {
-            NamedTextColor color = i < regeneratingProgressTick / (regenerationTick / 10) ? NamedTextColor.LIGHT_PURPLE : NamedTextColor.GRAY;
-            regenerationPerMessage =  regenerationPerMessage.append(Component.text("■").color(color));
-        }
-        Component message = Component.text("§d肉体再生中... §f[").append(regenerationPerMessage).append(Component.text("§f]"));
-        player.sendActionBar(message);
+        player.sendActionBar(ComponentUtil.getGaugeComponent(
+                Component.text("§d肉体再生中... "),
+                regeneratingProgressTick,
+                regenerationTick,
+                NamedTextColor.LIGHT_PURPLE,
+                NamedTextColor.WHITE
+        ));
     }
 
     private void regeneration() {

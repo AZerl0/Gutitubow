@@ -3,6 +3,8 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.game.GamePlayer;
+import com.azerl0.gutitubow.util.ComponentUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -145,20 +147,25 @@ public class FloatAbility extends Ability {
         areaPlacingCharge++;
         if (areaPlacingCharge < 20) {
             if (isPlacing) {
-                StringBuilder placingChargeText = new StringBuilder();
-                for (int i = 0; i < 10; i++) {
-                    placingChargeText.append(areaPlacingCharge > i * 2 ? "§b" : "§7").append("■");
-                }
+                Component subtitle = ComponentUtil.getGaugeComponent(
+                        Component.text("§7設置中... "),
+                        areaPlacingCharge,
+                        20,
+                        NamedTextColor.AQUA,
+                        NamedTextColor.GRAY
+                );
+
                 Title title = Title.title(
                         Component.empty(),
-                        Component.text("§7設置中... [" + placingChargeText + "§7]").color(NamedTextColor.LIGHT_PURPLE),
+                        subtitle,
                         Title.Times.times(
                                 java.time.Duration.ofMillis(0),
                                 java.time.Duration.ofSeconds(1),
                                 java.time.Duration.ofMillis(0)
                         )
                 );
-                getPlayer().showTitle(title);
+                GamePlayer gamePlayer = context.game().getGamePlayer(getPlayer());
+                if (!gamePlayer.isFlashing()) getPlayer().showTitle(title);
             }
         } else {
             if (floatAreaCenter == null && floatingTask == null) startFloating();

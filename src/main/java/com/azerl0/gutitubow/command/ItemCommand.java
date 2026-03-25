@@ -19,8 +19,16 @@ public class ItemCommand implements CommandExecutor {
         switch (args[0]) {
             case ("gutitubow"):
                 player.give(GutitubowItem.GUTITUBOW);
+                break;
             case ("gamemaster"):
                 player.give(GutitubowItem.GAME_MASTER);
+                break;
+            case ("recovery_potion"):
+                player.give(GutitubowItem.RECOVERY_POTION);
+                break;
+            case ("respawn_beacon"):
+                player.give(GutitubowItem.RESPAWN_BEACON);
+                break;
         }
 
         return true;

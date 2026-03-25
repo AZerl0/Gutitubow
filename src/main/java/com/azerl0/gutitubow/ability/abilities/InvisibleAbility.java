@@ -6,6 +6,7 @@ import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.GutitubowDamageType;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
 import com.azerl0.gutitubow.game.GamePlayer;
+import com.azerl0.gutitubow.util.ComponentUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -91,22 +92,20 @@ public class InvisibleAbility extends Ability {
             return;
         }
 
-        Component progress = Component.empty();
-        for (int i = 0; i < 10; i++) {
-            progress = progress.append(Component.text("■").color(i < toInvisibleProgressTick / 10 ? NamedTextColor.BLACK : NamedTextColor.GRAY));
-        }
-
-        Title title = Title.title(
-                Component.empty(),
-                Component.text("隠密中... [").color(NamedTextColor.GRAY)
-                        .append(progress)
-                        .append(Component.text("]").color(NamedTextColor.GRAY)),
+        Component subtitle = ComponentUtil.getGaugeComponent(
+                Component.text("§7隠密中... "),
+                toInvisibleProgressTick,
+                toInvisibleTick,
+                NamedTextColor.BLACK,
+                NamedTextColor.GRAY
+        );
+        Title title = Title.title(Component.empty(),
+                subtitle,
                 Title.Times.times(
                         java.time.Duration.ofMillis(0),
                         java.time.Duration.ofSeconds(1),
                         java.time.Duration.ofMillis(500)
-                )
-        );
+                ));
         player.showTitle(title);
 
     }

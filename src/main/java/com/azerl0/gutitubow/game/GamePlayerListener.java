@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.game;
 
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.util.EntityUtil;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.*;
@@ -7,6 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.potion.PotionEffectType;
 
 public class GamePlayerListener implements Listener {
@@ -14,6 +17,11 @@ public class GamePlayerListener implements Listener {
 
     public GamePlayerListener(Game game) {
         this.game = game;
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        game.getGamePlayer(event.getPlayer());
     }
 
     @EventHandler
@@ -74,6 +82,18 @@ public class GamePlayerListener implements Listener {
         }
         if (type == DamageType.GENERIC) return;
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onToggleSneak(PlayerToggleSneakEvent event) {
+        GamePlayer gamePlayer = game.getGamePlayer(event.getPlayer());
+        gamePlayer.onToggleSneak(event);
+    }
+
+    @EventHandler
+    public void onSneaking(GamePlayerSneakingEvent event) {
+        GamePlayer gamePlayer = game.getGamePlayer(event.getPlayer());
+        gamePlayer.onSneaking(event);
     }
 
     @EventHandler

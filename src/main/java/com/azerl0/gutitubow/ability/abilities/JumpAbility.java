@@ -3,10 +3,10 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.util.ComponentUtil;
 import com.azerl0.gutitubow.util.MathUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -19,12 +19,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class JumpAbility extends Ability {
     private BukkitTask task = null;
-    private int charge;
-    private final int gaugeCount = 40;
+    private int chargeTick;
+    private final int maxChargeTick = (2 * 20) * 10; // 一つのゲージのチャージに2秒かかりそのゲージが10個ある
 
     public JumpAbility(AbilityContext context) {
         super(context);
-        this.charge = 0;
+        this.chargeTick = 0;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class JumpAbility extends Ability {
     public void init(Player player) {
         this.playerUUID = player.getUniqueId();
         player.setAllowFlight(true);
-        charge = 0;
+        chargeTick = 0;
         if (task != null && !task.isCancelled()) return;
 
         task = new BukkitRunnable() {
@@ -48,16 +48,17 @@ public class JumpAbility extends Ability {
     }
 
     public void update(Player player) {
-        charge++;
-        if (charge > gaugeCount * 10) charge = gaugeCount * 10;
-        if (((Entity) player).isOnGround() && charge >= gaugeCount) player.setAllowFlight(true);
+        chargeTick++;
+        if (chargeTick > maxChargeTick) chargeTick = maxChargeTick;
+        if (((Entity) player).isOnGround() && chargeTick >= maxChargeTick / 10) player.setAllowFlight(true);
 
-        Component chargeText = Component.text("");
-        for (int i = 0; i < 10; i ++) {
-            TextColor color = charge - gaugeCount * i >= gaugeCount ? NamedTextColor.GREEN : NamedTextColor.GRAY;
-            chargeText =  chargeText.append(Component.text("■").color(color));
-        }
-        Component message = Component.text("跳躍チャージ: [").append(chargeText).append(Component.text("]").color(NamedTextColor.WHITE));
+        Component message = ComponentUtil.getGaugeComponent(
+                Component.text("§f跳躍チャージ: "),
+                chargeTick,
+                maxChargeTick,
+                NamedTextColor.GREEN,
+                NamedTextColor.WHITE
+        );
         player.sendActionBar(message);
     }
 
@@ -74,14 +75,14 @@ public class JumpAbility extends Ability {
         Player player = event.getPlayer();
         if (player.getGameMode() == GameMode.CREATIVE) return;
         if (!event.isFlying()) return;
-        if (charge < gaugeCount) {
+        if (chargeTick < maxChargeTick / 10) {
             event.setCancelled(true);
             return;
         }
 
         Vector velocity = player.getLocation().clone().getDirection();
         if (velocity.getY() < 0.4) velocity.setY(0.4);
-        player.setVelocity(velocity.multiply(MathUtil.getLerp(charge, 0, gaugeCount * 10, 0.0, 2.25)));
+        player.setVelocity(velocity.multiply(MathUtil.getLerp(chargeTick, 0, maxChargeTick, 0.0, 2.25)));
         World world = player.getWorld();
         Location location = player.getLocation();
         player.playSound(location, Sound.ENTITY_BAT_TAKEOFF, 1.0f, 1.0f);
@@ -90,6 +91,6 @@ public class JumpAbility extends Ability {
         player.setFlying(false);
         player.setAllowFlight(false);
         event.setCancelled(true);
-        charge = 0;
+        chargeTick = 0;
     }
 }

@@ -37,6 +37,26 @@ public class GutitubowItem {
         RECOVERY_POTION = item;
     }
 
+    public static final ItemStack RESPAWN_BEACON;
+    static {
+        ItemStack item = new ItemStack(Material.BEACON);
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.displayName(Component.text("リスポーンビーコン").decoration(TextDecoration.ITALIC, false));
+            meta.lore(List.of(
+                    Component.text("§fダウンした味方を蘇生することができるビーコン。"),
+                    Component.text("§fただし、蘇生中は付近の敵に通知が届き、"),
+                    Component.text("§f自身は発光してしまう。"),
+                    Component.empty(),
+                    Component.text("§7操作"),
+                    Component.text("§7 手に持って[SHIFT(15秒間)] - 味方をリスポーン")
+            ));
+            item.setItemMeta(meta);
+        }
+        RESPAWN_BEACON = item;
+    }
+
     public static final ItemStack GUTITUBOW;
     static {
         ItemStack item = new ItemStack(Material.BOW);

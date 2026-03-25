@@ -63,6 +63,22 @@ public class DebugCommand implements CommandExecutor, TabExecutor {
                     player.sendMessage(Component.text(args[0] + "が" + args[1] + "に設定されました"));
                 }
                 return true;
+            case ("disable_check_game_over"):
+                if (args.length <= 1) {
+                    player.sendMessage(Component.text(args[0] + "は" + this.debugManager.isDisableCheckGameOver() + "に設定されています"));
+
+                } else {
+                    boolean value;
+                    try {
+                        value = Boolean.parseBoolean(args[1]);
+                    } catch (Error error) {
+                        player.sendMessage(error.toString());
+                        return true;
+                    }
+                    this.debugManager.setDisableCheckGameOver(value);
+                    player.sendMessage(Component.text(args[0] + "が" + args[1] + "に設定されました"));
+                }
+                return true;
         }
         return false;
     }
@@ -74,7 +90,7 @@ public class DebugCommand implements CommandExecutor, TabExecutor {
             @NotNull String label,
             @NotNull String @NotNull [] args
     ) {
-        if (args.length == 1) return List.of("quick_phase", "no_start_teleport");
+        if (args.length == 1) return List.of("quick_phase", "no_start_teleport", "disable_check_game_over");
         if (args.length == 2) return List.of("true", "false");
         return List.of();
     }
