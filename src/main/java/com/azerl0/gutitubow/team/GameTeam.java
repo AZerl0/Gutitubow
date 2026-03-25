@@ -48,6 +48,12 @@ public class GameTeam {
         return players;
     }
 
+    public List<UUID> getPlayersWithout(UUID uuid) {
+        List<UUID> withoutPlayers = new ArrayList<>(players);
+        withoutPlayers.remove(uuid);
+        return withoutPlayers;
+    }
+
     public void reset() {
         players.clear();
     }

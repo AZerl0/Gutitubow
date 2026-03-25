@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.game;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.data.GutitubowDamageType;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
+import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.util.ItemUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -11,6 +12,7 @@ import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -59,15 +61,21 @@ public class GamePlayer {
 
     @Nullable
     public Ability getAbility() {
+        if (getPlayer() == null) return null;
         return game.getAbilityManager().getAbility(getPlayer());
     }
 
-    public Player getPlayer() {
+    @Nullable public Player getPlayer() {
         return Bukkit.getPlayer(playerUUID);
     }
 
     public Game getGame() {
         return this.game;
+    }
+
+    @Nullable public GameTeam getTeam() {
+        if (getPlayer() == null) return null;
+        return game.getTeamManager().getPlayerTeam(getPlayer());
     }
 
     private int getBorderOutsideTicks() {
@@ -158,13 +166,11 @@ public class GamePlayer {
         int reload = this.getArrowReloadTick();
         if (reload > 3 * 20) {
             this.setArrowReloadTick(reload - 20);
-            Component message = Component.text("[!]").color(NamedTextColor.GOLD)
+            Component message = Component.text("\n[!]").color(NamedTextColor.GOLD)
                     .append(Component.text(" リロード時間短縮").color(NamedTextColor.AQUA)
-                            .append(Component.text(" の強化を得た！").color(NamedTextColor.WHITE))
+                            .append(Component.text(" の強化を得た！\n").color(NamedTextColor.WHITE))
                     );
-            getPlayer().sendMessage(Component.empty());
-            getPlayer().sendMessage(message);
-            getPlayer().sendMessage(Component.empty());
+            if (getPlayer() != null) getPlayer().sendMessage(message);
             return true;
         } else {
             return false;
@@ -175,13 +181,11 @@ public class GamePlayer {
         int size = this.getMaxArrowStackSize();
         if (size < 3) {
             this.setMaxArrowStackSize(size + 1);
-            Component message = Component.text("[!]").color(NamedTextColor.GOLD)
+            Component message = Component.text("\n[!]").color(NamedTextColor.GOLD)
                     .append(Component.text(" 矢所持数増加").color(NamedTextColor.AQUA)
-                            .append(Component.text(" の強化を得た！").color(NamedTextColor.WHITE))
+                            .append(Component.text(" の強化を得た！\n").color(NamedTextColor.WHITE))
                     );
-            getPlayer().sendMessage(Component.empty());
-            getPlayer().sendMessage(message);
-            getPlayer().sendMessage(Component.empty());
+            if (getPlayer() != null) getPlayer().sendMessage(message);
             return true;
         } else {
             return false;
@@ -204,11 +208,11 @@ public class GamePlayer {
     }
 
     public void setArrowAmount(int amount) {
+        if (getPlayer() == null) return;
         int slot = this.getArrowItemSlot();
         if (slot == -1) slot = this.getCanAddArrowSlot();
         if (slot != -1) getPlayer().getInventory().setItem(slot, getArrowItem(amount));
         this.updateArrow();
-
     }
 
     public void addArrow(int amount) {
@@ -239,6 +243,7 @@ public class GamePlayer {
     }
 
     private int getArrowItemSlot() {
+        if (getPlayer() == null) return -1;
         List<Integer> slots = List.of(8, 7, 6, 5, 4, 3, 2, 1, 0, 35, 34, 33, 32, 31, 30, 29, 28, 27);
 
         for (Integer slot : slots) {
@@ -251,6 +256,7 @@ public class GamePlayer {
     }
 
     private int getCanAddArrowSlot() {
+        if (getPlayer() == null) return -1;
         List<Integer> slots = List.of(8, 7, 6, 5, 4, 3, 2, 1, 0, 35, 34, 33, 32, 31, 30, 29, 28, 27);
 
         for (Integer slot : slots) {
@@ -269,7 +275,7 @@ public class GamePlayer {
         arrowReloadTask = new BukkitRunnable() {
             @Override
             public void run() {
-                if (!getPlayer().isOnline()) {
+                if (getPlayer() == null || !getPlayer().isOnline()) {
                     cancel();
                     arrowReloadTask = null;
                     return;
@@ -288,7 +294,7 @@ public class GamePlayer {
     }
 
     public void firstElytra() {
-
+        if (getPlayer() == null) return;
         ItemStack elytra = ItemStack.of(Material.ELYTRA);
         ItemMeta meta = elytra.getItemMeta();
         meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
@@ -310,9 +316,21 @@ public class GamePlayer {
     }
 
     public void resetFirstElytra() {
-        if (this.firstElytraTask == null) return;
+        if (this.firstElytraTask == null || getPlayer() == null) return;
         getPlayer().getInventory().setChestplate(new ItemStack(Material.AIR));
         this.firstElytraTask.cancel();
+    }
+
+    public int getPotionAmount() {
+        Player player = getPlayer();
+        if (player == null) return 0;
+        Inventory inventory = player.getInventory();
+        int amount = 0;
+        for (ItemStack itemStack : inventory.getContents()) {
+            if (itemStack == null) continue;
+            if (itemStack.getType() == Material.POTION) amount++;
+        }
+        return amount;
     }
 
     public void updatePlayerBoard() {
