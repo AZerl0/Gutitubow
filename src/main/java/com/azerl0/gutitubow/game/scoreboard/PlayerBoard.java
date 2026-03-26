@@ -12,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
-import org.bukkit.scoreboard.ScoreboardManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -22,8 +21,7 @@ import java.util.UUID;
 public class PlayerBoard {
     private final GamePlayer gamePlayer;
     private final Game game;
-    private final ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
-    private final Scoreboard scoreboard = scoreboardManager.getNewScoreboard();
+    private final Scoreboard scoreboard;
     private final Objective obj;
     private final List<String> entrys = List.of("§0", "§1", "§2", "§3", "§4", "§5", "§6", "§7", "§8", "§9", "§a", "§b", "§c", "§d", "§e", "§f", "§g", "§k", "§l", "§m", "§n", "§o", "§r");
 
@@ -40,9 +38,10 @@ public class PlayerBoard {
     private final scoreboardComponent _teammate2health;
     private final scoreboardComponent _teammate2potion;
 
-    public PlayerBoard(GamePlayer gamePlayer) {
+    public PlayerBoard(GamePlayer gamePlayer, Scoreboard scoreboard) {
         this.gamePlayer = gamePlayer;
         this.game = gamePlayer.getGame();
+        this.scoreboard = scoreboard;
         Component scoreboardName = Component.text("ぐちつボウ").color(NamedTextColor.GREEN);
         obj = scoreboard.registerNewObjective("gutitubow.info", Criteria.DUMMY, scoreboardName);
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -190,7 +189,6 @@ public class PlayerBoard {
 
     private Component getAbilityName(@NotNull Player player) {
         GamePlayer gamePlayer = game.getGamePlayer(player);
-        if (gamePlayer == null) return Component.text("None");
         Ability ability = gamePlayer.getAbility();
         if (ability == null) return Component.text("None");
         return ability.getType().getName();

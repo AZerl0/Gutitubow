@@ -27,6 +27,8 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -99,6 +101,7 @@ public class Game {
     }
 
     public boolean isTeammate(Player player, Player target) {
+        if (player.getUniqueId() == target.getUniqueId()) return true;
         GameTeam gameTeam = getGameTeam(player);
         if (gameTeam == null) return false;
         return  gameTeam.isTeammate(target);
@@ -201,6 +204,7 @@ public class Game {
                 }
             }
         }
+        resetSoloPlayerTeams();
         map.getBorder().setCenter(0.0, 0.0);
         map.getBorder().setSize(59999968);
         map.getBorder().setDamageBuffer(0.0);
@@ -230,6 +234,7 @@ public class Game {
         alivePlayers.clear();
         Random random = new Random();
         List<AbilityType> abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
+        resetSoloPlayerTeams();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.showBossBar(this.bossBar);
@@ -241,6 +246,22 @@ public class Game {
             alivePlayers.add(uuid);
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(6);
             player.setHealth(6);
+            if (getGameMode() == GutitubowGameMode.SOLO) {
+                Scoreboard board = scoreboardManager.getScoreboard(player);
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    if (onlinePlayer.getUniqueId() == player.getUniqueId()) {
+                        Team selfTeam = board.registerNewTeam("Self-" + player.getName());
+                        selfTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+                        selfTeam.setCanSeeFriendlyInvisibles(true);
+                        selfTeam.setAllowFriendlyFire(false);
+                        selfTeam.addPlayer(onlinePlayer);
+                    } else {
+                        Team enemyTeam = board.registerNewTeam("Enemy-" + onlinePlayer.getName());
+                        enemyTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+                        enemyTeam.addPlayer(onlinePlayer);
+                    }
+                }
+            }
             if (!debugManager.isNoStartTeleport()) {
                 Location location = this.map.getRandomXZPosition(30);
                 location.setY(200.0);
@@ -289,11 +310,11 @@ public class Game {
 
             if (!debugManager.isNoStartTeleport()) gamePlayer.firstElytra();
             if (getGameMode() == GutitubowGameMode.DUO || getGameMode() == GutitubowGameMode.TRIO) {
-                GameTeam team = teamManager.getPlayerTeam(player);
-                if (team == null) continue;
+                GameTeam gameTeam = teamManager.getPlayerTeam(player);
+                if (gameTeam == null) continue;
                 if (teamManager.isJumpMaster(player)) {
                     Player topPlayer = player;
-                    for (UUID teamPlayerUUID : team.getPlayers()) {
+                    for (UUID teamPlayerUUID : gameTeam.getPlayers()) {
                         if (teamPlayerUUID == player.getUniqueId()) continue;
                         Player teammate = Bukkit.getPlayer(teamPlayerUUID);
                         if (teammate == null || !teammate.isOnline()) continue;
@@ -322,6 +343,16 @@ public class Game {
         this.update();
     }
 
+    private void resetSoloPlayerTeams() {
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            Scoreboard board = scoreboardManager.getScoreboard(onlinePlayer);
+            for (Team team : board.getTeams()) {
+                if (team.getName().startsWith("Self-") || team.getName().startsWith("Enemy-")) {
+                    team.unregister();
+                }
+            }
+        }
+    }
 
     private void update() {
         this.currentTicks++;
