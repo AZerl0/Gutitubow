@@ -1,8 +1,10 @@
 package com.azerl0.gutitubow.command;
 
+import com.azerl0.gutitubow.game.SpectatorManager;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.team.TeamManager;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,9 +21,11 @@ import java.util.stream.Collectors;
 
 public class GameTeamCommand implements CommandExecutor, TabExecutor {
     private final TeamManager teamManager;
+    private final SpectatorManager spectatorManager;
 
-    public GameTeamCommand(TeamManager teamManager) {
+    public GameTeamCommand(TeamManager teamManager, SpectatorManager spectatorManager) {
         this.teamManager = teamManager;
+        this.spectatorManager = spectatorManager;
     }
 
     @Override
@@ -65,9 +69,13 @@ public class GameTeamCommand implements CommandExecutor, TabExecutor {
                     player.sendMessage(Component.text("引数が不足しています"));
                     return true;
                 }
+                if (spectatorManager.isSpectator(target)) {
+                    player.sendMessage(Component.text("そのプレイヤーは観戦者に設定されています。\n追加するには対象のプレイヤーを観戦者から削除してください。").color(NamedTextColor.RED));
+                    return true;
+                }
                 GameTeam gameTeam = teamManager.getTeam(args[2]);
                 if (gameTeam == null) {
-                    player.sendMessage(Component.text("チームの取得中にエラーが発生しました。"));
+                    player.sendMessage(Component.text("チームの取得中にエラーが発生しました。").color(NamedTextColor.RED));
                 } else {
                     if (gameTeam.isFull(teamManager.getGame().getGameMode())) {
                         player.sendMessage(Component.text("チーム: ").append(gameTeam.getTeamName().color(gameTeam.getTeamColor())).append(Component.text("は満員です")));

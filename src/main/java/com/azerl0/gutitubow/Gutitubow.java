@@ -1,6 +1,5 @@
 package com.azerl0.gutitubow;
 
-import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.carepackage.CarePackageListener;
 import com.azerl0.gutitubow.command.*;
 import com.azerl0.gutitubow.debug.DebugManager;
@@ -102,7 +101,7 @@ public final class Gutitubow extends JavaPlugin {
         getCommand("gameplayer").setExecutor(new GamePlayerCommand(this, game));
         getCommand("gutitubowdebug").setExecutor(new DebugCommand(debugManager));
         getCommand("gutitubowitem").setExecutor(new ItemCommand());
-        getCommand("gameteam").setExecutor(new GameTeamCommand(game.getTeamManager()));
+        getCommand("gameteam").setExecutor(new GameTeamCommand(game.getTeamManager(), game.getSpectatorManager()));
 
         for (World world : Bukkit.getWorlds()) {
             world.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, false);

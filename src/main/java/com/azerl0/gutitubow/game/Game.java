@@ -62,6 +62,7 @@ public class Game {
     private final GlassBreakManager glassBreakManager = new GlassBreakManager(mapRepairManager);
     private final ScoreboardManager scoreboardManager;
     private final TeamManager teamManager;
+    private final SpectatorManager spectatorManager = new SpectatorManager();
 
     public Game(
             JavaPlugin plugin,
@@ -111,6 +112,7 @@ public class Game {
         this.started = true;
         this.players.clear();
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            if (getSpectatorManager().isSpectator(player)) continue;
             this.players.add(player.getUniqueId());
         }
     }
@@ -191,11 +193,6 @@ public class Game {
                     if (teammate != null) glowManager.removeGlow(player, teammate);
                 }
             }
-        }
-        map.getBorder().setCenter(0.0, 0.0);
-        map.getBorder().setSize(59999968);
-        map.getBorder().setDamageBuffer(0.0);
-        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(20);
             player.setHealth(20.0);
             for (Player otherPlayer : Bukkit.getServer().getOnlinePlayers()) {
@@ -204,6 +201,9 @@ public class Game {
                 }
             }
         }
+        map.getBorder().setCenter(0.0, 0.0);
+        map.getBorder().setSize(59999968);
+        map.getBorder().setDamageBuffer(0.0);
 
         this.safeArea = map.getCenter();
         carePackageManager.removeAllCarePackage();
@@ -231,11 +231,14 @@ public class Game {
         Random random = new Random();
         List<AbilityType> abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
 
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.showBossBar(this.bossBar);
+        }
+
         for (UUID uuid : this.players) {
             Player player = Bukkit.getPlayer(uuid);
             if (player == null || !player.isOnline()) continue;
             alivePlayers.add(uuid);
-            player.showBossBar(this.bossBar);
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(6);
             player.setHealth(6);
             if (!debugManager.isNoStartTeleport()) {
@@ -795,6 +798,10 @@ public class Game {
 
     public CarePackageManager getCarePackageManager() {
         return carePackageManager;
+    }
+
+    public SpectatorManager getSpectatorManager() {
+        return spectatorManager;
     }
 
     public boolean isInsideNextSafeArea(Location loc) {

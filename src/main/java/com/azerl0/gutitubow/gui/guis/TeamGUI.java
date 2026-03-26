@@ -31,6 +31,7 @@ public class TeamGUI extends AbstractGUI {
         this.game = teamManager.getGame();
     }
 
+    @Override
     public void updateGUI() {
         clear();
         switch (game.getGameMode()) {
@@ -89,7 +90,7 @@ public class TeamGUI extends AbstractGUI {
         if (player == null) {
             addButton(slot, getEmptyPlayerButtonItem(), event -> {
                 if (!(event.getWhoClicked() instanceof Player clicker)) return;
-                TeamPlayerSelectorGUI teamPlayerSelectorGUI = new TeamPlayerSelectorGUI(select  -> {
+                PlayerSelectorGUI teamPlayerSelectorGUI = new PlayerSelectorGUI(select  -> {
                     teamManager.joinTeam(select, team);
                     this.open(clicker);
                 });

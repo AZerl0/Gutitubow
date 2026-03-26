@@ -29,6 +29,8 @@ public abstract class AbstractGUI implements InventoryHolder {
         buttons.clear();
     }
 
+    public void updateGUI() {}
+
     public void addButton(int slot, ItemStack itemStack, Consumer<InventoryClickEvent> action) {
         if (slot + 1 > inventory.getSize()) return;
         GUIButton button = new GUIButton(itemStack, action);

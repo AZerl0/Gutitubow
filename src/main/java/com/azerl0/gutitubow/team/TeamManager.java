@@ -124,6 +124,7 @@ public class TeamManager {
 
     public void joinTeam(@NotNull Player player, @NotNull GameTeam gameTeam) {
         leaveTeam(player);
+        if (game.getSpectatorManager().isSpectator(player)) return;
         if (!teams.containsValue(gameTeam)) return;
         if (gameTeam.isFull(game.getGameMode())) return;
 

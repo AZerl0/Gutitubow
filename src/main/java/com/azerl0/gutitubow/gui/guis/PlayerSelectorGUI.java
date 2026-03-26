@@ -13,15 +13,16 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class TeamPlayerSelectorGUI extends AbstractGUI {
+public class PlayerSelectorGUI extends AbstractGUI {
     private Consumer<Player> onSelect;
 
-    public TeamPlayerSelectorGUI(Consumer<Player> onSelect) {
+    public PlayerSelectorGUI(Consumer<Player> onSelect) {
         super(54, Component.text("プレイヤーを選択"));
         this.onSelect = onSelect;
     }
 
-    public void update() {
+    @Override
+    public void updateGUI() {
         inventory.clear();
         for (Player player : Bukkit.getOnlinePlayers()) {
             ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD);
@@ -42,7 +43,7 @@ public class TeamPlayerSelectorGUI extends AbstractGUI {
 
     @Override
     public void open(Player player) {
-        update();
+        updateGUI();
         super.open(player);
     }
 

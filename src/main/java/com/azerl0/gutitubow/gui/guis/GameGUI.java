@@ -29,6 +29,12 @@ public class GameGUI extends AbstractGUI {
                 getAbstractSimpleButtonItem(Material.BOW, Component.text("リセット")), event -> {
                     gameManager.resetGame(game);
                 });
+        addButton(25,
+                getAbstractSimpleButtonItem(Material.ENDER_EYE, Component.text("観戦者設定")),
+                event -> {
+                    if (!(event.getWhoClicked() instanceof Player clicker)) return;
+                    game.getSpectatorManager().getSpectatorsGUI().open(clicker);
+                });
         updateToggleGameModeButton();
     }
 
