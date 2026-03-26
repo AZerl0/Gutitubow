@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
 import com.azerl0.gutitubow.map.MapRepairManager;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Item;
 
 public class GlassBreakManager {
     MapRepairManager mapRepairManager;
@@ -19,6 +20,9 @@ public class GlassBreakManager {
 
         mapRepairManager.savedBrokeBlock(block);
         block.breakNaturally(true);
+        for (Item item : block.getLocation().getNearbyEntitiesByType(Item.class, 2)) {
+            if (item.getTicksLived() == 0) item.remove();
+        }
 
         if (limit <= 0) return true;
         this.breakConnectedGlass(block.getRelative(1, 0, 0), limit - 1);
