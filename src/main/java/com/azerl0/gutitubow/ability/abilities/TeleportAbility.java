@@ -3,6 +3,8 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.game.GutitubowGameMode;
+import com.azerl0.gutitubow.team.GameTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -16,6 +18,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.UUID;
 
 public class TeleportAbility extends Ability {
     private Location savedLocation;
@@ -45,16 +50,20 @@ public class TeleportAbility extends Ability {
 
     @Override
     public void onInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
         ItemStack item = event.getItem();
         Action action = event.getAction();
 
-        if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-            if (item != null && item.getType() == Material.COMPASS) onRightClickCompass(player);
+        if (item != null && item.getType() == Material.COMPASS) {
+            if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+                onRightClickCompass();
+            } else if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+                onLeftClickCompass();
+            }
         }
     }
 
-    private void onRightClickCompass(Player player) {
+    private void onRightClickCompass() {
+        Player player = getPlayer();
         if (player.getCooldown(Material.COMPASS) != 0) return;
 
         if (savedLocation == null) {
@@ -68,6 +77,30 @@ public class TeleportAbility extends Ability {
                 savedLocation = null;
                 player.sendMessage(Component.text("設定先がエリア外のためテレポートをキャンセルしました").color(NamedTextColor.RED));
                 compassCooldownTask(player, 3 * 20);
+            }
+        }
+    }
+
+    private void onLeftClickCompass() {
+        Player player = getPlayer();
+        GutitubowGameMode gameMode = context.game().getGameMode();
+        if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
+            GameTeam team = context.game().getGameTeam(player);
+            if (team == null) return;
+            List<UUID> otherAlivePlayers = team.getAlivePlayersWithout(player.getUniqueId());
+            if (!team.getPlayersWithout(player.getUniqueId()).isEmpty() && otherAlivePlayers.isEmpty()) {
+                player.sendMessage(Component.text("チームメイトが全員ダウンしています！").color(NamedTextColor.RED));
+                return;
+            } else {
+                for (UUID otherAlivePlayerUUID : otherAlivePlayers) {
+                    Player otherAlivePlayer = Bukkit.getPlayer(otherAlivePlayerUUID);
+                    if (otherAlivePlayer == null || !otherAlivePlayer.isOnline()) continue;
+                    teleport(otherAlivePlayer.getLocation());
+                    return;
+                }
+                // 空じゃないのにここまで通った場合は
+                // チームメイトがオフラインになっている
+                player.sendMessage(Component.text("チームメイトがオフラインです！").color(NamedTextColor.RED));
             }
         }
     }
@@ -97,6 +130,7 @@ public class TeleportAbility extends Ability {
         );
         for (Player nearPlayer : player.getWorld().getNearbyPlayers(player.getLocation(), 5)) {
             if (nearPlayer.getUniqueId() == player.getUniqueId()) continue;
+            if (context.game().isTeammate(player, nearPlayer)) continue;
             nearPlayer.addPotionEffect(effect);
             nearPlayer.showTitle(title);
         }
