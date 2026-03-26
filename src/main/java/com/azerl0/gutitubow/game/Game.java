@@ -83,8 +83,14 @@ public class Game {
         this.teamManager = new TeamManager(this);
     }
 
-    public @NotNull GamePlayer getGamePlayer(Player player) {
+    public @NotNull GamePlayer getGamePlayer(@NotNull Player player) {
         return gamePlayerManager.getGamePlayer(player);
+    }
+
+    public @Nullable GamePlayer getGamePlayer(UUID uuid) {
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null) return null;
+        return getGamePlayer(player);
     }
 
     public @Nullable GameTeam getGameTeam(Player player) {

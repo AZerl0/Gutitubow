@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.game;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.data.GutitubowDamageType;
+import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
@@ -477,6 +478,31 @@ public class GamePlayer {
             updateOnUseRespawnBeacon();
         }
     }
+
+    public void giveRespawnBeacon() {
+        Player player = getPlayer();
+        if (player == null) return;
+        Inventory inventory = player.getInventory();
+        if (inventory.contains(Material.BEACON)) return;
+        List<Integer> slots = List.of(8, 7, 6, 5, 4, 3, 2, 1, 0, 35, 34, 33, 32, 31, 30, 29, 28, 27);
+        for (Integer slot : slots) {
+            ItemStack itemStack = inventory.getItem(slot);
+            if (itemStack == null || itemStack.getType() == Material.AIR) {
+                inventory.setItem(slot, GutitubowItem.RESPAWN_BEACON);
+                return;
+            }
+        }
+
+        for (Integer slot : slots) {
+            ItemStack itemStack = inventory.getItem(slot);
+            if (itemStack != null && itemStack.getType() == Material.POTION) {
+                player.dropItem(slot);
+                inventory.setItem(slot, GutitubowItem.RESPAWN_BEACON);
+            }
+        }
+
+    }
+
 
     private void updateOnUseRespawnBeacon() {
         Player player = getPlayer();
