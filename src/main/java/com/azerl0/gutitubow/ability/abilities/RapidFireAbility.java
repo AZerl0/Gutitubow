@@ -35,7 +35,7 @@ public class RapidFireAbility extends Ability {
     @Override
     public void onArrowHit(ProjectileHitEvent event) {
         Player player = (Player) event.getEntity().getShooter();
-        if (player != null && event.getHitEntity() != null) player.setCooldown(Material.BOW, 0);
+        if (player != null && event.getHitEntity() != null && event.getHitEntity() instanceof Player) player.setCooldown(Material.BOW, 0);
     }
 
     @Override
