@@ -58,8 +58,11 @@ public class GamePlayer {
     private final PlayerBoard playerBoard;
     private BukkitTask flashParticleTask = null;
     private BukkitTask sneakingTask = null;
+    private final int REVIVE_TICK = 15 * 20;
+    private final int COMPASS_TELEPORT_TICK = 10 * 20;
     private int sneakingTick = 0;
     private int revivingTick = 0;
+    private int compassTeleportingTick = 0;
     private int remainedFlashTick;
 
 
@@ -464,6 +467,7 @@ public class GamePlayer {
             if (sneakingTask != null) sneakingTask.cancel();
             sneakingTask = null;
             sneakingTick = 0;
+            compassTeleportingTick = 0;
             if (isReviving()) {
                 revivingTick = 0;
                 player.removePotionEffect(PotionEffectType.GLOWING);
@@ -478,8 +482,11 @@ public class GamePlayer {
     public void onSneaking(@NotNull GamePlayerSneakingEvent event) {
         Player player = event.getPlayer();
         ItemStack mainHandItem = player.getInventory().getItemInMainHand();
-        if (mainHandItem.getType() == Material.BEACON) {
+        Material mainHandType = mainHandItem.getType();
+        if (mainHandType == Material.BEACON) {
             updateOnUseRespawnBeacon();
+        } else if (mainHandType == Material.COMPASS) {
+            updateOnUseCompassTeleport();
         }
     }
 
@@ -533,7 +540,7 @@ public class GamePlayer {
                 player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.0f, 1.0f);
             }
         }
-        if (revivingTick >= 15 * 20) {
+        if (revivingTick >= REVIVE_TICK) {
             for (UUID uuid : team.getDeadPlayers()) {
                 Player deadTeammate = Bukkit.getPlayer(uuid);
                 if (deadTeammate == null || !deadTeammate.isOnline()) continue;
@@ -546,7 +553,7 @@ public class GamePlayer {
         }
         Component gauge = ComponentUtil.getGaugeComponent(
                 revivingTick,
-                15 * 20,
+                REVIVE_TICK,
                 NamedTextColor.GREEN,
                 NamedTextColor.GRAY
         );
@@ -565,6 +572,59 @@ public class GamePlayer {
             );
             deadTeammate.showTitle(title);
         }
+    }
+
+    private void updateOnUseCompassTeleport() {
+        GutitubowGameMode gameMode = getGame().getGameMode();
+        if (!(gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO)) return;
+        Player player = getPlayer();
+        if (player == null) return;
+        compassTeleportingTick++;
+
+        GameTeam gameTeam = getTeam();
+        if (gameTeam == null) return;
+
+        if (compassTeleportingTick >= COMPASS_TELEPORT_TICK) {
+            compassTeleport();
+            compassTeleportingTick = 0;
+            return;
+        }
+        Component message = ComponentUtil.getGaugeComponent(
+                Component.text("味方にテレポート中...").color(NamedTextColor.GREEN),
+                compassTeleportingTick, COMPASS_TELEPORT_TICK,
+                NamedTextColor.GREEN,
+                NamedTextColor.GRAY
+        );
+        List<UUID> aliveOtherPlayers = gameTeam.getAlivePlayersWithout(playerUUID);
+        if (aliveOtherPlayers.isEmpty()) {
+            message = Component.text("テレポート可能なチームメイトがいません！").color(NamedTextColor.RED);
+        }
+        player.sendActionBar(message);
+    }
+
+    private void compassTeleport() {
+        Player player = getPlayer();
+        if (player == null) return;
+        GameTeam gameTeam = getTeam();
+        if (gameTeam == null) return;
+
+        List<UUID> aliveOtherPlayers = gameTeam.getAlivePlayersWithout(playerUUID);
+        Player teleportTeammate = null;
+        double teleportTeammateDistance = 999999999;
+        for (UUID uuid : aliveOtherPlayers) {
+            Player teammate = Bukkit.getPlayer(uuid);
+            if (teammate == null) continue;
+            double distance = player.getLocation().distance(teammate.getLocation());
+            if (distance < teleportTeammateDistance) {
+                teleportTeammate = teammate;
+                teleportTeammateDistance = distance;
+            }
+        }
+        if (teleportTeammate == null) return;
+        player.teleport(teleportTeammate);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_TELEPORT, 1.0f, 1.0f);
+        player.sendMessage(Component.text("§6[!] §a味方の位置までテレポートした！"));
+        teleportTeammate.sendMessage(Component.text("§6[!] §a味方がテレポートしてきた！"));
     }
 
     private void giveItem(Player receiver, ItemStack itemStack, boolean showReceiverMessage, boolean showSenderMessage) {

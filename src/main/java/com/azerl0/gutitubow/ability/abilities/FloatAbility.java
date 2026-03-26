@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.util.ComponentUtil;
 import net.kyori.adventure.text.Component;
@@ -12,6 +13,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -27,7 +29,6 @@ public class FloatAbility extends Ability {
     private final int floatMaxCharge = 20 * 20;
 
     private int floatCharge;
-    private BukkitTask sneakingTask;
     private BukkitTask updateTask;
     private BukkitTask floatingTask;
     private int areaPlacingCharge;
@@ -64,8 +65,6 @@ public class FloatAbility extends Ability {
     public void reset() {
         if (updateTask != null) updateTask.cancel();
         updateTask = null;
-        if (sneakingTask != null) sneakingTask.cancel();
-        sneakingTask = null;
         stopFloating();
         getPlayer().setCooldown(Material.COMPASS, 0);
     }
@@ -98,18 +97,6 @@ public class FloatAbility extends Ability {
             areaPlacingCharge = 0;
             if (!(getCooldown() > 0.0)) isPlacing = true;
 
-            if (sneakingTask != null && !sneakingTask.isCancelled()) return;
-
-            sneakingTask = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (!getPlayer().isSneaking()) {
-                        this.cancel();
-                        return;
-                    }
-                    onSneaking();
-                }
-            }.runTaskTimer(context.plugin(), 0L, 1L);
         }
     }
 
@@ -135,10 +122,12 @@ public class FloatAbility extends Ability {
         }
     }
 
-    private void onSneaking() {
-        if (isOnGround()) {
-            placingFloatArea();
-        }
+    @Override
+    public void onSneaking(GamePlayerSneakingEvent event) {
+        Player player = getPlayer();
+        if (player == null) return;
+        ItemStack mainHandItem = player.getInventory().getItemInMainHand();
+        if (mainHandItem.getType() != Material.COMPASS) placingFloatArea();
     }
 
     private void placingFloatArea() {

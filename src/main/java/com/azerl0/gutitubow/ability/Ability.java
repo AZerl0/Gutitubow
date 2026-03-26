@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.ability;
 
 
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -69,6 +70,8 @@ public abstract class Ability {
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {}
 
     public void onMove(PlayerMoveEvent event) {}
+
+    public void onSneaking(GamePlayerSneakingEvent event) {}
 
     public void onToggleSneaking(PlayerToggleSneakEvent event) {}
 
