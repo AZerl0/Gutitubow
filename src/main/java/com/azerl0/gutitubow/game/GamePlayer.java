@@ -500,7 +500,6 @@ public class GamePlayer {
                 inventory.setItem(slot, GutitubowItem.RESPAWN_BEACON);
             }
         }
-
     }
 
 
@@ -708,6 +707,7 @@ public class GamePlayer {
         if (player == null || !player.isOnline()) return;
         World world = player.getWorld();
 
+        game.addRevivePlayer(player);
         player.setGameMode(GameMode.ADVENTURE);
         if (player.getUniqueId() != reviver.getUniqueId()) player.teleport(reviver);
         LogManager.broadcastReviveLog(player, reviver);

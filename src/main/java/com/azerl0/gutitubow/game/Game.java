@@ -603,6 +603,12 @@ public class Game {
         deathOrder.add(uuid);
     }
 
+    protected void addRevivePlayer(Player player) {
+        UUID uuid = player.getUniqueId();
+        alivePlayers.add(uuid);
+        deathOrder.remove(uuid);
+    }
+
     public void checkGameOver() {
         if (debugManager.isDisableCheckGameOver()) return;
         if (alivePlayers.isEmpty()) {
