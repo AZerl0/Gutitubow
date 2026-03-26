@@ -333,14 +333,15 @@ public class GamePlayer {
     }
 
     public void firstElytra() {
-        if (getPlayer() == null) return;
+        Player player = getPlayer();
+        if (player == null) return;
         ItemStack elytra = ItemStack.of(Material.ELYTRA);
         ItemMeta meta = elytra.getItemMeta();
         meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
         meta.setUnbreakable(true);
         elytra.setItemMeta(meta);
-        getPlayer().getInventory().setChestplate(elytra);
-        getPlayer().setGliding(true);
+        player.getInventory().setChestplate(elytra);
+        player.setGliding(true);
 
         if (firstElytraTask != null && !firstElytraTask.isCancelled()) return;
         firstElytraTask = new BukkitRunnable() {
