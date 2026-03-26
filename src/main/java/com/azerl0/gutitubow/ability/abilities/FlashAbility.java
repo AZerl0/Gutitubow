@@ -140,7 +140,7 @@ public class FlashAbility extends Ability {
             world.playSound(nearPlayer, Sound.ENTITY_FIREWORK_ROCKET_BLAST, soundVolume, 1.0f);
             if (nearPlayer.getGameMode() == GameMode.SPECTATOR) continue;
 
-            Vector direction = location.toVector().subtract(eye.toVector()).normalize();
+            Vector direction = location.toVector().subtract(eye.toVector());
 
 
             RayTraceResult blockHit = world.rayTraceBlocks(
