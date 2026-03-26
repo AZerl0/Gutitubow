@@ -97,6 +97,12 @@ public class Game {
         return teamManager.getPlayerTeam(player);
     }
 
+    public boolean isTeammate(Player player, Player target) {
+        GameTeam gameTeam = getGameTeam(player);
+        if (gameTeam == null) return false;
+        return  gameTeam.isTeammate(target);
+    }
+
     public boolean isStarted() {
         return this.started;
     }

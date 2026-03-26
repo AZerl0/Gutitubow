@@ -471,6 +471,10 @@ public class GamePlayer {
         }
     }
 
+    public boolean isTeammate(Player target) {
+        return  game.isTeammate(getPlayer(), target);
+    }
+
     public void onSneaking(@NotNull GamePlayerSneakingEvent event) {
         Player player = event.getPlayer();
         ItemStack mainHandItem = player.getInventory().getItemInMainHand();
@@ -577,12 +581,19 @@ public class GamePlayer {
     }
 
 
-    public void damage(Player player, double amount, Player attacker, double distance, boolean canUpgrade) {
+    public void damage(@NotNull Player player, double amount, Player attacker, double distance, boolean canUpgrade) {
+
 
         GamePlayerDamageEvent event = new GamePlayerDamageEvent(player, amount, attacker, GutitubowDamageType.ARROW_SHOT);
         Bukkit.getPluginManager().callEvent(event);
-        double newAmount = event.getAmount();
         if (event.isCancelled()) return;
+        double newAmount = event.getAmount();
+        GamePlayer gamePlayer = game.getGamePlayer(attacker);
+        if (game.getGameMode() == GutitubowGameMode.DUO || game.getGameMode() == GutitubowGameMode.TRIO) {
+            if (game.isTeammate(player, attacker)) {
+                return;
+            }
+        }
 
         if (player.getHealth() <= newAmount) {
             this.kill(player, attacker, distance);
@@ -590,7 +601,6 @@ public class GamePlayer {
         } else {
             player.damage(newAmount);
             if (canUpgrade) {
-                GamePlayer gamePlayer = game.getGamePlayer(attacker);
                 gamePlayer.setTotalHit(gamePlayer.getTotalHit() + 1);
                 if (gamePlayer.getTotalHit() % 2 == 0) {
                     Random random = new Random();
@@ -634,7 +644,7 @@ public class GamePlayer {
         }
     }
 
-    public void damage(Player player, double amount, Player attacker, boolean canUpgrade) {
+    public void damage(@NotNull Player player, double amount, Player attacker, boolean canUpgrade) {
         double distance = player.getLocation().distance(attacker.getLocation());
         damage(player, amount, attacker, distance, canUpgrade);
     }

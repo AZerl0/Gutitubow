@@ -29,6 +29,7 @@ public class GameTeam {
         team.color(NamedTextColor.GREEN);
         team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
         team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
+        team.setCanSeeFriendlyInvisibles(true);
         team.setAllowFriendlyFire(false);
     }
 
@@ -90,6 +91,11 @@ public class GameTeam {
 
     public boolean containsPlayer(Player player) {
         return players.contains(player.getUniqueId());
+    }
+
+    public boolean isTeammate(Player target) {
+        GameTeam playerTeam = game.getGameTeam(target);
+            return playerTeam == this;
     }
 
     @Nullable

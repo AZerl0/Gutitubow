@@ -219,22 +219,22 @@ public class ShieldAbility extends Ability {
             armorStand.setHeadPose(headAngle);
 
             if (isInvalidBottomShieldEntity(uuid)) continue;
-            for (Entity nearEntity : world.getNearbyEntities(armorStand.getLocation(), 1, 1, 1)) {
-                if (nearEntity instanceof AbstractArrow) continue;
-                UUID nearEntityUUID = nearEntity.getUniqueId();
-                if (nearEntityUUID == playerUUID) continue;
-                if (blockedPlayers.containsKey(nearEntityUUID) && world.getGameTime() - blockedPlayers.get(nearEntityUUID) < 20) {
+            for (Player nearPlayer : world.getNearbyPlayers(armorStand.getLocation(), 1, 1, 1)) {
+                if (context.game().isTeammate(getPlayer(), nearPlayer)) continue;
+                UUID nearPlayerUUID = nearPlayer.getUniqueId();
+                if (nearPlayerUUID == playerUUID) continue;
+                if (blockedPlayers.containsKey(nearPlayerUUID) && world.getGameTime() - blockedPlayers.get(nearPlayerUUID) < 20) {
                     continue;
                 } else {
                     blockedPlayers.remove(uuid);
                 }
-                if (shieldEntities.containsKey(nearEntityUUID)) continue;
-                blockedPlayers.put(nearEntityUUID, world.getGameTime());
+                if (shieldEntities.containsKey(nearPlayerUUID)) continue;
+                blockedPlayers.put(nearPlayerUUID, world.getGameTime());
 
                 Vector velocity = player.getLocation().getDirection().multiply(2);
                 if (velocity.getY() < 0) velocity.setY(0.5);
-                nearEntity.setVelocity(velocity);
-                block(nearEntity.getLocation());
+                nearPlayer.setVelocity(velocity);
+                block(nearPlayer.getLocation());
             }
         }
         player.setCooldown(Material.BOW, 200);
