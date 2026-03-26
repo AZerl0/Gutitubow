@@ -60,9 +60,18 @@ public class EntityFlagManager {
 
     public byte getFlag(Player viewer, UUID targetUUID) {
         Map<UUID, Byte> map = clientSideFlags.get(viewer.getUniqueId());
-        if (map == null) return (byte) 0;
+        byte flag = 0;
 
-        return map.getOrDefault(targetUUID, (byte) 0);
+        if (map != null) {
+            flag = map.getOrDefault(targetUUID, (byte) 0);
+        }
+
+        Entity entity = Bukkit.getEntity(targetUUID);
+        if (entity != null && entity.isGlowing()) {
+            flag |= 0x40;
+        }
+
+        return flag;
     }
 
     public Byte getFlag(Player viewer, Entity target) {
