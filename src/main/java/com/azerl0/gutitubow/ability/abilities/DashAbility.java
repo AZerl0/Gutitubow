@@ -97,6 +97,12 @@ public class DashAbility extends Ability {
                 player.getWorld().spawnParticle(Particle.SWEEP_ATTACK, player.getLocation().clone().add(randomX, 0.5, randomZ), 1);
             }
 
+            PotionEffect slowness = new PotionEffect(PotionEffectType.SLOWNESS, 20, 1, true, true, true);
+            for (Player nearPlayer : player.getLocation().getNearbyPlayers(4)) {
+                if (context.game().isTeammate(player, nearPlayer)) continue;
+                nearPlayer.addPotionEffect(slowness);
+            }
+
             double replaceRange = 3;
             Location baseLoc = player.getLocation();
 

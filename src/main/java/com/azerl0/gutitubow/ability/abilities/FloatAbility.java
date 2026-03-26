@@ -201,7 +201,7 @@ public class FloatAbility extends Ability {
 
         if (playerLocation.clone().distance(floatingAreaHorizonLocation) > floatAreaRadius) {
             stopFloating();
-            player.setVelocity(player.getVelocity().add(new Vector(0.0, 0.5, 0.0)));
+            player.setVelocity(player.getVelocity().add(new Vector(0.0, 1.0, 0.0)));
             player.playSound(player, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 1.0f, 1.0f);
             return;
         }
