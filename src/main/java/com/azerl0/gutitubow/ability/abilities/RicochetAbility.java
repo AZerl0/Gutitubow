@@ -73,6 +73,7 @@ public class RicochetAbility extends Ability {
 
                     GamePlayer gamePlayer = context.game().getGamePlayer(damagePlayer);
                     if (gamePlayer.isTeammate(damagePlayer)) continue;
+                    if (context.game().getPhase() == 0) continue;
 
                     if (!damagePlayer.getUniqueId().equals(shooterPlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damagePlayer)) {
                         gamePlayer.damage(damagePlayer, 0.5, shooterPlayer, true);

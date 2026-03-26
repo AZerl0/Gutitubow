@@ -44,12 +44,13 @@ public class SnipeAbility extends Ability {
         if (!(event.getEntity() instanceof Player player)) return;
         if (!player.isSneaking()) return;
         if (event.getForce() < 1.0) return;
-        if (__Snipe((AbstractArrow) event.getProjectile())) event.setCancelled(true);
+        __Snipe((AbstractArrow) event.getProjectile());
+        event.setCancelled(true);
     }
 
-    private boolean __Snipe(AbstractArrow arrow) {
+    private void  __Snipe(AbstractArrow arrow) {
         Player player = (Player) arrow.getShooter();
-        if (player == null) return false;
+        if (player == null) return;
         Location eye = player.getEyeLocation();
         Vector dir = eye.getDirection().normalize();
         World world = player.getWorld();
@@ -84,7 +85,8 @@ public class SnipeAbility extends Ability {
 
                 if (distance > 36.0) {
                     Game game = context.game();
-                    GamePlayer gamePlayer = context.game().getGamePlayer(hitPlayer);
+                    GamePlayer gamePlayer = game.getGamePlayer(hitPlayer);
+                    if (game.getPhase() == 0) return;
                     gamePlayer.damage(hitPlayer, 2, player, distance, true);
 
                 } else {
@@ -111,7 +113,6 @@ public class SnipeAbility extends Ability {
                 0.2
 
         );
-        return true;
     }
 
     @Nullable
