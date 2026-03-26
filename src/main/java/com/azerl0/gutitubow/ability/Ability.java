@@ -41,7 +41,9 @@ public abstract class Ability {
     }
 
     public boolean hasCompassCooldown() {
-        return getPlayer().hasCooldown(Material.COMPASS);
+        Player player = getPlayer();
+        if (player == null) return false;
+        return player.hasCooldown(Material.COMPASS);
     }
 
     public int getCompassCooldown() {
