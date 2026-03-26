@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -19,6 +21,7 @@ import java.util.UUID;
 public abstract class Ability {
     protected UUID playerUUID;
     protected final AbilityContext context;
+    protected BukkitTask cooldownTask;
 
     public Ability(AbilityContext context) {
         this.context = context;
@@ -38,6 +41,8 @@ public abstract class Ability {
     public void reset() {
         getPlayer().sendActionBar(Component.empty());
         setCompassCooldown(0);
+        if (cooldownTask != null) cooldownTask.cancel();
+        cooldownTask = null;
     }
 
     public boolean hasCompassCooldown() {
@@ -75,7 +80,7 @@ public abstract class Ability {
 
     public void onSneaking(GamePlayerSneakingEvent event) {}
 
-    public void onToggleSneaking(PlayerToggleSneakEvent event) {}
+    public void onToggleSneak(PlayerToggleSneakEvent event) {}
 
     public void onToggleSprint(PlayerToggleSprintEvent event) {}
 
@@ -91,4 +96,25 @@ public abstract class Ability {
 
     public void onDealDamage(GamePlayerDamageEvent event) {}
 
+    public void startCompassCooldownTask() {
+        if (cooldownTask != null && !cooldownTask.isCancelled()) return;
+
+        cooldownTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                Player player = getPlayer();
+                if (player == null) {
+                    this.cancel();
+                    return;
+                }
+                if (player.getCooldown(Material.COMPASS) == 0) {
+                    this.cancel();
+                    player.sendActionBar(Component.text(" - 能力使用可能 - ").color(NamedTextColor.GREEN));
+                    cooldownTask = null;
+                    return;
+                }
+                sendActionBarCompassCooldown();
+            }
+        }.runTaskTimer(context.plugin(), 0L, 1L);
+    }
 }

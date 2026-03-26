@@ -284,6 +284,28 @@ public class GutitubowItem {
         ABILITY_ICON_FLASH = itemStack;
     }
 
+    public static final ItemStack ABILITY_ICON_GIANT;
+    static {
+        ItemStack itemStack = new ItemStack(Material.RAVAGER_SPAWN_EGG);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「巨体」は、巨大で頑丈な身体で全てを耐え抜く能力。"),
+                Component.text("§f少しの間スニークすることで、一定時間さらに巨大化し、頑丈になる。"),
+                Component.text("§f巨大化の際、近くにいる敵プレイヤーが多いほど、追加の体力を得る。"),
+                Component.empty(),
+                Component.text("§f巨大化は再度スニークすることで解除できる。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 [SHIFT(長押し)] - 「巨大化」発動"),
+                Component.text("§7 [SHIFT(巨大化中)] - 「巨大化」解除"),
+                Component.text("§7 [(素手で)右クリック] - 味方を背負う(チーム戦限定)")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_GIANT = itemStack;
+    }
+
     public static final ItemStack ABILITY_ICON_BOMB;
     static {
         ItemStack itemStack = new ItemStack(Material.TNT);

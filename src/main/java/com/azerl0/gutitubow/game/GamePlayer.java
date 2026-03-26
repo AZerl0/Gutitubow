@@ -697,11 +697,11 @@ public class GamePlayer {
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
 
-        if (player.getHealth() <= amount) {
+        if (player.getHealth() <= event.getAmount()) {
             this.death(player, damageType, false);
 
         } else {
-            player.damage(amount);
+            player.damage(event.getAmount());
         }
     }
 

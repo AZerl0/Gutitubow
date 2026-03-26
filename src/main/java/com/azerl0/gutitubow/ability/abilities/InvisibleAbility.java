@@ -57,7 +57,7 @@ public class InvisibleAbility extends Ability {
     }
 
     @Override
-    public void onToggleSneaking(PlayerToggleSneakEvent event) {
+    public void onToggleSneak(PlayerToggleSneakEvent event) {
         if (event.isSneaking()) {
             if (sneakingTask != null && !sneakingTask.isCancelled()) return;
 

@@ -69,14 +69,16 @@ public class TeleportAbility extends Ability {
         if (savedLocation == null) {
             savedLocation = player.getLocation();
             player.sendMessage(Component.text("設定しました！").color(NamedTextColor.RED));
-            compassCooldownTask(player, 3 * 20);
+            setCompassCooldown(3 * 20);
+            startCompassCooldownTask();
         } else {
             if (savedLocation.getWorld().getWorldBorder().isInside(savedLocation)) {
                 teleport(savedLocation);
             } else {
                 savedLocation = null;
                 player.sendMessage(Component.text("設定先がエリア外のためテレポートをキャンセルしました").color(NamedTextColor.RED));
-                compassCooldownTask(player, 3 * 20);
+                setCompassCooldown(3 * 20);
+                startCompassCooldownTask();
             }
         }
     }
@@ -116,7 +118,8 @@ public class TeleportAbility extends Ability {
         world.playSound(oldPlayerLocation, Sound.ENTITY_PLAYER_TELEPORT, 0.5f, 1.0f);
         world.spawnParticle(Particle.ENCHANT, oldPlayerLocation, 7, 0.2, 0.2, 0.2);
         world.playSound(player.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_DEPLETE, 1.0f, 1.0f);
-        compassCooldownTask(player, 10 * 20);
+        setCompassCooldown(10 * 20);
+        startCompassCooldownTask();
 
         PotionEffect effect = new PotionEffect(PotionEffectType.BLINDNESS, 3 * 20, 0, true, false, true);
         Title title = Title.title(
@@ -134,27 +137,5 @@ public class TeleportAbility extends Ability {
             nearPlayer.addPotionEffect(effect);
             nearPlayer.showTitle(title);
         }
-    }
-
-    private void compassCooldownTask(Player player, int cooldownTick) {
-        setCompassCooldown(cooldownTick);
-        if (cooldownTask != null && !cooldownTask.isCancelled()) return;
-
-        cooldownTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (player.getCooldown(Material.COMPASS) == 0) {
-                    this.cancel();
-                    player.sendActionBar(Component.text(" - 能力使用可能 - ").color(NamedTextColor.GREEN));
-                    cooldownTask = null;
-                    return;
-                }
-                compassCooldownTaskUpdate(player);
-            }
-        }.runTaskTimer(context.plugin(), 0L, 1L);
-    }
-
-    private void compassCooldownTaskUpdate(Player player) {
-        sendActionBarCompassCooldown();
     }
 }
