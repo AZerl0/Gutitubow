@@ -748,6 +748,10 @@ public class GamePlayer {
                 )
         );
         player.showTitle(title);
+        for (int i = 0; i < getPotionAmount(); i++) {
+            world.dropItem(location, GutitubowItem.RECOVERY_POTION);
+        }
+        player.getInventory().remove(Material.POTION);
 
         if (game.isStarted()) {
             player.setGameMode(GameMode.SPECTATOR);
