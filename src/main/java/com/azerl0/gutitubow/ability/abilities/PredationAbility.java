@@ -25,6 +25,15 @@ public class PredationAbility extends Ability {
     }
 
     @Override
+    public void reset() {
+        super.reset();
+        Player player = getPlayer();
+        if (player == null) return;
+        double maxHealth = context.game().isStarted() ? 6 : 20;
+        Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(maxHealth);
+    }
+
+    @Override
     public void onKill(GamePlayerKillEvent event) {
         predationPlayer(event);
     }
