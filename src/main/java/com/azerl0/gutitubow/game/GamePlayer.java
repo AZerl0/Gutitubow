@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.data.GutitubowDamageType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
 import com.azerl0.gutitubow.manager.LogManager;
@@ -711,10 +712,25 @@ public class GamePlayer {
     }
 
     public void kill(Player player, Player attacker, double distance) {
+        GamePlayerKillEvent event = new GamePlayerKillEvent(attacker, player, Component.text("You killed it!").color(NamedTextColor.DARK_RED).decoration(TextDecoration.BOLD, true));
+        Bukkit.getPluginManager().callEvent(event);
+
         GamePlayer gamePlayer = game.getGamePlayer(attacker);
         gamePlayer.setTotalKill(gamePlayer.getTotalKill() + 1);
         LogManager.broadcastKillLog(attacker, player, distance);
         this.death(player, GutitubowDamageType.ARROW_SHOT, true);
+        Component subtitle = event.getKillMessage();
+        Title title = Title.title(
+                Component.empty(),
+                subtitle,
+                Title.Times.times(
+                        java.time.Duration.ofMillis(100),
+                        java.time.Duration.ofMillis(1250),
+                        java.time.Duration.ofMillis(500)
+                )
+        );
+        attacker.showTitle(title);
+
     }
 
     public void death(Player player, GutitubowDamageType damageType, boolean hideLog) {

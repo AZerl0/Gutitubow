@@ -72,6 +72,7 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.SHIELD, ShieldAbility::new);
         AbilityRegistry.register(AbilityType.FLASH, FlashAbility::new);
         AbilityRegistry.register(AbilityType.GIANT, GiantAbility::new);
+        AbilityRegistry.register(AbilityType.PREDATION, PredationAbility::new);
 
         //GUI
         GameGUI gameGUI = new GameGUI(gameManager, game);

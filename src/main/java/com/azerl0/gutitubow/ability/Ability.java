@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.ability;
 
 
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import net.kyori.adventure.text.Component;
@@ -95,6 +96,8 @@ public abstract class Ability {
     public void onDamage(GamePlayerDamageEvent event) {}
 
     public void onDealDamage(GamePlayerDamageEvent event) {}
+
+    public void onKill(GamePlayerKillEvent event) {}
 
     public void startCompassCooldownTask() {
         if (cooldownTask != null && !cooldownTask.isCancelled()) return;

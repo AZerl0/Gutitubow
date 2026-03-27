@@ -306,6 +306,24 @@ public class GutitubowItem {
         ABILITY_ICON_GIANT = itemStack;
     }
 
+    public static final ItemStack ABILITY_ICON_PREDATION;
+    static {
+        ItemStack itemStack = new ItemStack(Material.END_CRYSTAL);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「捕食」は、返り血を浴びる度に無尽蔵の力を得る能力。"),
+                Component.text("§f相手にとどめを刺す度に、最大体力が♡1増加する。"),
+                Component.text("§fまた、相手が所持していたポーションの数分体力が回復する。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 なし")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_PREDATION = itemStack;
+    }
+
     public static final ItemStack ABILITY_ICON_BOMB;
     static {
         ItemStack itemStack = new ItemStack(Material.TNT);
