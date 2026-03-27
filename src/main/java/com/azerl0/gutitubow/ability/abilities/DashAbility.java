@@ -83,8 +83,8 @@ public class DashAbility extends Ability {
             Objects.requireNonNull(player.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0.1);
         }
 
-        if (this.dashingTick >= topSpeedTick) {
-            PotionEffect effect = new PotionEffect(PotionEffectType.SPEED, 5, 3, true, false, true);
+        if (isTopSpeed()) {
+            PotionEffect effect = new PotionEffect(PotionEffectType.SPEED, 5, 4, true, false, true);
             player.addPotionEffect(effect);
 
             Objects.requireNonNull(player.getAttribute(Attribute.STEP_HEIGHT)).setBaseValue(1.0);
@@ -115,6 +115,10 @@ public class DashAbility extends Ability {
             this.replaceableBlocks.clear();
 
         }
+    }
+
+    private boolean isTopSpeed() {
+        return dashingTick >= topSpeedTick;
     }
 
     private void stopSprinting() {

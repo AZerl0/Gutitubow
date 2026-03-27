@@ -32,7 +32,7 @@ public class ShrinkAbility extends Ability {
     @Override
     public void init(Player player) {
         this.playerUUID = player.getUniqueId();
-        Objects.requireNonNull(getPlayer().getAttribute(Attribute.SCALE)).setBaseValue(0.7);
+        Objects.requireNonNull(getPlayer().getAttribute(Attribute.SCALE)).setBaseValue(0.75);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ShrinkAbility extends Ability {
         shrinkRemainedTick = 15 * 20;
 
         player.playSound(player, Sound.ENTITY_PUFFER_FISH_BLOW_OUT, 1.0f, 1.0f);
-        Objects.requireNonNull(player.getAttribute(Attribute.SCALE)).setBaseValue(0.4);
+        Objects.requireNonNull(player.getAttribute(Attribute.SCALE)).setBaseValue(0.5);
         Objects.requireNonNull(player.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0.2);
 
 
@@ -87,13 +87,18 @@ public class ShrinkAbility extends Ability {
             stopShrink();
             return;
         }
-        getPlayer().sendActionBar(Component.text("§b縮身中: §f" + shrinkRemainedTick / 20 + "秒"));
+        Player player = getPlayer();
+        if (player == null) return;
+        if (shrinkRemainedTick == 7 * 20) {
+            Objects.requireNonNull(player.getAttribute(Attribute.SCALE)).setBaseValue(0.65);
+        }
+        player.sendActionBar(Component.text("§b縮身中: §f" + shrinkRemainedTick / 20 + "秒"));
     }
 
     private void stopShrink() {
         Player player = getPlayer();
         Objects.requireNonNull(player.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0.1);
-        Objects.requireNonNull(player.getAttribute(Attribute.SCALE)).setBaseValue(0.7);
+        Objects.requireNonNull(player.getAttribute(Attribute.SCALE)).setBaseValue(0.75);
         player.playSound(player, Sound.ENTITY_PUFFER_FISH_BLOW_UP, 1.0f, 1.0f);
         if (shrinkTask != null) shrinkTask.cancel();
         shrinkTask = null;
