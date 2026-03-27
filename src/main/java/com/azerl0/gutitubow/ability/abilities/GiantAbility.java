@@ -51,7 +51,11 @@ public class GiantAbility extends Ability {
 
     @Override
     public void onToggleSneak(PlayerToggleSneakEvent event) {
-        if (isGiant && event.isSneaking()) deactivateGiant();
+        if (event.isSneaking()) {
+            if (isGiant) deactivateGiant();
+        } else {
+            toGiantProcessTick = 0;
+        }
     }
 
     @Override
@@ -153,7 +157,7 @@ public class GiantAbility extends Ability {
     private void resetGiant() {
         isGiant = false;
         toGiantProcessTick = 0;
-        Player player =getPlayer();
+        Player player = getPlayer();
         if (player == null) return;
         Objects.requireNonNull(player.getAttribute(Attribute.SCALE)).setBaseValue(1.0);
         player.removePotionEffect(PotionEffectType.SPEED);
