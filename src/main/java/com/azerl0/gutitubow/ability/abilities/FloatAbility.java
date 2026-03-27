@@ -69,18 +69,8 @@ public class FloatAbility extends Ability {
         getPlayer().setCooldown(Material.COMPASS, 0);
     }
 
-    private double getCooldown() {
-        Player player = getPlayer();
-        if (player == null) return 0.0;
-        return player.getCooldown(Material.COMPASS);
-    }
-
     private boolean isOnGround() {
         return ((Entity) getPlayer()).isOnGround();
-    }
-
-    private boolean isNowCooldown() {
-        return getCooldown() > 0.0;
     }
 
     private boolean isFloating() {
@@ -95,7 +85,7 @@ public class FloatAbility extends Ability {
             }
 
             areaPlacingCharge = 0;
-            if (!(getCooldown() > 0.0)) isPlacing = true;
+            if (!hasCompassCooldown()) isPlacing = true;
 
         }
     }
@@ -104,7 +94,7 @@ public class FloatAbility extends Ability {
         Player player = getPlayer();
         if (player == null) return;
 
-        double cooldown = getCooldown();
+        double cooldown = getCompassCooldown();
         if (cooldown > 0.0) {
             sendActionBarCompassCooldown();
         } else {
@@ -117,8 +107,6 @@ public class FloatAbility extends Ability {
         if (isOnGround()) {
             if (getPlayer().getWorld().getGameTime() % 3 == 0) floatCharge++;
             if (floatCharge > floatMaxCharge) floatCharge = floatMaxCharge;
-        } else {
-            areaPlacingCharge = 0;
         }
     }
 
@@ -131,7 +119,7 @@ public class FloatAbility extends Ability {
     }
 
     private void placingFloatArea() {
-        if (isNowCooldown()) return;
+        if (hasCompassCooldown()) return;
 
         areaPlacingCharge++;
         if (areaPlacingCharge < 20) {
@@ -201,7 +189,7 @@ public class FloatAbility extends Ability {
 
         if (playerLocation.clone().distance(floatingAreaHorizonLocation) > floatAreaRadius) {
             stopFloating();
-            player.setVelocity(player.getVelocity().add(new Vector(0.0, 1.0, 0.0)));
+            player.setVelocity(player.getVelocity().add(new Vector(0.0, 0.75, 0.0)));
             player.playSound(player, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 1.0f, 1.0f);
             return;
         }
