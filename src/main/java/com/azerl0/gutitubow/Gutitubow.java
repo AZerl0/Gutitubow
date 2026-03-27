@@ -14,6 +14,8 @@ import com.azerl0.gutitubow.packet.EntityFlagManager;
 import com.azerl0.gutitubow.packet.EntityGlowManager;
 import com.azerl0.gutitubow.packet.PacketEventListener;
 import com.azerl0.gutitubow.packet.PacketListener;
+import com.azerl0.gutitubow.player.FixLeftClickListener;
+import com.azerl0.gutitubow.player.FixLeftClickManager;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
 import com.github.retrooper.packetevents.PacketEvents;
@@ -30,11 +32,12 @@ import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.ability.abilities.*;
 
 public final class Gutitubow extends JavaPlugin {
+    private EntityFlagManager flagManager;
+    private EntityGlowManager glowManager;
+    private FixLeftClickManager fixLeftClickManager;
     private DebugManager debugManager;
     private MapManager mapManager;
     private GameManager gameManager;
-    private EntityFlagManager flagManager;
-    private EntityGlowManager glowManager;
 
 
     private Game game;
@@ -47,6 +50,7 @@ public final class Gutitubow extends JavaPlugin {
         // Managers
         this.flagManager = new EntityFlagManager();
         this.glowManager = new EntityGlowManager(flagManager);
+        this.fixLeftClickManager = new FixLeftClickManager(this);
         this.debugManager = new DebugManager(this);
         this.mapManager = new MapManager(this);
         this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.glowManager);
@@ -73,6 +77,7 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.FLASH, FlashAbility::new);
         AbilityRegistry.register(AbilityType.GIANT, GiantAbility::new);
         AbilityRegistry.register(AbilityType.PREDATION, PredationAbility::new);
+        AbilityRegistry.register(AbilityType.BALLOON, BalloonAbility::new);
 
         //GUI
         GameGUI gameGUI = new GameGUI(gameManager, game);
@@ -90,6 +95,7 @@ public final class Gutitubow extends JavaPlugin {
         pluginManager.registerEvents(new GameListener(this, game), this);
         pluginManager.registerEvents(new GUIListener(allGUI), this);
         pluginManager.registerEvents(new PacketListener(flagManager), this);
+        pluginManager.registerEvents(new FixLeftClickListener(fixLeftClickManager), this);
 
         // packetListener登録
         EventManager eventManager = PacketEvents.getAPI().getEventManager();

@@ -29,6 +29,7 @@ public class AbstractAbilitiesGUI extends AbstractGUI {
         addAbilityButton(AbilityType.FLASH);
         addAbilityButton(AbilityType.SHRINK);
         addAbilityButton(AbilityType.GIANT);
+        addAbilityButton(AbilityType.BALLOON);
 
     }
 

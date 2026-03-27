@@ -324,6 +324,26 @@ public class GutitubowItem {
         ABILITY_ICON_PREDATION = itemStack;
     }
 
+    public static final ItemStack ABILITY_ICON_BALLOON;
+    static {
+        ItemStack itemStack = new ItemStack(Material.GHAST_TEAR);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「風船」は、ご機嫌な風船と共に空を旅する能力。"),
+                Component.text("§f十分広いスペースがあればハッピーガストを召喚できる。"),
+                Component.text("§fハッピーガストは♥10の体力を持ち、自動で再生する。"),
+                Component.text("§fハッピーガストが倒されてしまうと、完全回復するまで再召喚できない。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 [(十分広いスペースに向かって)左クリック] - 召喚"),
+                Component.text("§7 [左クリック(召喚中)] - ハッピーガストをしまう")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_BALLOON = itemStack;
+    }
+
     public static final ItemStack ABILITY_ICON_BOMB;
     static {
         ItemStack itemStack = new ItemStack(Material.TNT);

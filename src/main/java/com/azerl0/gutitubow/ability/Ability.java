@@ -4,6 +4,7 @@ package com.azerl0.gutitubow.ability;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
+import com.azerl0.gutitubow.event.gameplayer.PlayerFixLeftClickEvent;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -40,8 +41,11 @@ public abstract class Ability {
     }
 
     public void reset() {
-        getPlayer().sendActionBar(Component.empty());
-        setCompassCooldown(0);
+        Player player = getPlayer();
+        if (player != null) {
+            getPlayer().sendActionBar(Component.empty());
+            setCompassCooldown(0);
+        }
         if (cooldownTask != null) cooldownTask.cancel();
         cooldownTask = null;
     }
@@ -72,6 +76,8 @@ public abstract class Ability {
     public void onArrowHit(ProjectileHitEvent event) {}
 
     public void onAnyArrowHit(ProjectileHitEvent event) {}
+
+    public void onLeftClick(PlayerFixLeftClickEvent event) {}
 
     public void onPlayerRightClickBow(PlayerInteractEvent event) {}
 

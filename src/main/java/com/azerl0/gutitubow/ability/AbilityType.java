@@ -26,7 +26,8 @@ public enum AbilityType {
     SHIELD(Component.text("大盾"), GutitubowItem.ABILITY_ICON_SHIELD),
     FLASH(Component.text("閃光"), GutitubowItem.ABILITY_ICON_FLASH),
     GIANT(Component.text("巨体"), GutitubowItem.ABILITY_ICON_GIANT),
-    PREDATION(Component.text("捕食"), GutitubowItem.ABILITY_ICON_PREDATION);
+    PREDATION(Component.text("捕食"), GutitubowItem.ABILITY_ICON_PREDATION),
+    BALLOON(Component.text("風船"), GutitubowItem.ABILITY_ICON_BALLOON);
 
     private final Component name;
     private final ItemStack displayItem;
