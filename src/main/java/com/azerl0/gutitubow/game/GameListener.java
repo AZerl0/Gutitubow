@@ -8,18 +8,23 @@ import de.tr7zw.nbtapi.NBT;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDropItemEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class GameListener implements Listener {
     private final JavaPlugin plugin;
@@ -89,5 +94,49 @@ public class GameListener implements Listener {
         Player player = event.getPlayer();
         GamePlayer gamePlayer = game.getGamePlayer(player);
         gamePlayer.updatePlayerBoard();
+    }
+
+    @EventHandler
+    public void interactBlock(PlayerInteractEvent event) {
+        if (game.isStarted() && event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock() != null) {
+            Material block = event.getClickedBlock().getType();
+            Set<Material> cancelBlocks = new HashSet<>(Set.of(
+                    Material.CHEST,
+                    Material.ENDER_CHEST,
+                    Material.TRAPPED_CHEST,
+                    Material.BARREL,
+                    Material.FURNACE,
+                    Material.BREWING_STAND,
+                    Material.ENCHANTING_TABLE,
+                    Material.FLOWER_POT,
+                    Material.SMOKER,
+                    Material.BLAST_FURNACE,
+                    Material.ANVIL,
+                    Material.CHIPPED_ANVIL,
+                    Material.DAMAGED_ANVIL,
+                    Material.DROPPER,
+                    Material.DISPENSER,
+                    Material.FLETCHING_TABLE,
+                    Material.SMITHING_TABLE,
+                    Material.CRAFTER,
+                    Material.CRAFTING_TABLE,
+                    Material.CARTOGRAPHY_TABLE,
+                    Material.STONECUTTER,
+                    Material.BEACON,
+                    Material.DECORATED_POT,
+                    Material.CHISELED_BOOKSHELF
+
+            ));
+            if (
+                    Tag.COPPER_CHESTS.isTagged(block) ||
+                    Tag.SHULKER_BOXES.isTagged(block) ||
+                    Tag.FLOWER_POTS.isTagged(block) ||
+                    Tag.BEDS.isTagged(block) ||
+                    Tag.WOODEN_SHELVES.isTagged(block) ||
+                    cancelBlocks.contains(block)
+                    ) {
+                event.setCancelled(true);
+            }
+        }
     }
 }
