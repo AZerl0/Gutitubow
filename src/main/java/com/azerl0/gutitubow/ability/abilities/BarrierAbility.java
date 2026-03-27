@@ -47,6 +47,7 @@ public class BarrierAbility extends Ability {
 
     @Override
     public void reset() {
+        super.reset();
         if (barrierRestockTask != null) barrierRestockTask.cancel();
         barrierRestockTask = null;
     }
@@ -70,8 +71,10 @@ public class BarrierAbility extends Ability {
     @Override
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
 
-        if (barrierStack <= 0) return;
+        if (barrierStack <= 0 || hasCompassCooldown()) return;
         placeBarrier();
+        setCompassCooldown(20);
+        startCompassCooldownTask();
     }
 
     private void placeBarrier() {
