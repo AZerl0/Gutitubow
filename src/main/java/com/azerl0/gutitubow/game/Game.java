@@ -77,12 +77,12 @@ public class Game {
     ) {
         this.plugin = plugin;
         this.map = map;
+        this.debugManager = debugManager;
+        this.glowManager = glowManager;
         gutitubowGameMode = GutitubowGameMode.SOLO;
         this.carePackageManager = new CarePackageManager(plugin, this, glowManager);
-        this.glowManager = glowManager;
-        AbilityContext abilityContext = new AbilityContext(plugin, this);
+        AbilityContext abilityContext = new AbilityContext(plugin, this, glowManager);
         this.abilityManager = new AbilityManager(abilityContext);
-        this.debugManager = debugManager;
         this.gamePlayerManager = new GamePlayerManager(plugin, this);
         reset();
         this.scoreboardManager = scoreboardManager;
@@ -253,16 +253,18 @@ public class Game {
             if (getGameMode() == GutitubowGameMode.SOLO) {
                 Scoreboard board = scoreboardManager.getScoreboard(player);
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    Team team = board.getPlayerTeam(onlinePlayer);
+                    if (team == null) {
+                        team = board.registerNewTeam("@" + onlinePlayer.getName());
+                        team.addPlayer(onlinePlayer);
+                    }
                     if (onlinePlayer.getUniqueId() == player.getUniqueId()) {
-                        Team selfTeam = board.registerNewTeam("Self-" + player.getName());
-                        selfTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
-                        selfTeam.setCanSeeFriendlyInvisibles(true);
-                        selfTeam.setAllowFriendlyFire(false);
-                        selfTeam.addPlayer(onlinePlayer);
+                        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+                        team.setCanSeeFriendlyInvisibles(true);
+                        team.setAllowFriendlyFire(false);
+                        team.addPlayer(onlinePlayer);
                     } else {
-                        Team enemyTeam = board.registerNewTeam("Enemy-" + onlinePlayer.getName());
-                        enemyTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
-                        enemyTeam.addPlayer(onlinePlayer);
+                        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
                     }
                 }
             }
@@ -348,14 +350,14 @@ public class Game {
     }
 
     private void resetSoloPlayerTeams() {
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            Scoreboard board = scoreboardManager.getScoreboard(onlinePlayer);
-            for (Team team : board.getTeams()) {
-                if (team.getName().startsWith("Self-") || team.getName().startsWith("Enemy-")) {
-                    team.unregister();
-                }
-            }
-        }
+//        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+//            Scoreboard board = scoreboardManager.getScoreboard(onlinePlayer);
+//            for (Team team : board.getTeams()) {
+//                if (team.getName().startsWith("Self-") || team.getName().startsWith("Enemy-")) {
+//                    team.unregister();
+//                }
+//            }
+//        }
     }
 
     private void update() {

@@ -13,6 +13,7 @@ public class AbstractAbilitiesGUI extends AbstractGUI {
 
         addAbilityButton(AbilityType.DASH);
         addAbilityButton(AbilityType.JUMP);
+        addAbilityButton(AbilityType.TRACKING);
         addAbilityButton(AbilityType.ESCAPE);
         addAbilityButton(AbilityType.SNIPE);
         addAbilityButton(AbilityType.TOUGH);

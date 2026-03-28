@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.event.gameplayer;
 
 import com.azerl0.gutitubow.data.GutitubowDamageType;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -13,8 +14,9 @@ public class GamePlayerDamageEvent extends Event implements Cancellable {
 
     private final Player player;
     private Player attacker;
-    private final GutitubowDamageType damageType;
     private double amount;
+    private final GutitubowDamageType damageType;
+    private Component hitMessage;
     private boolean cancelled;
 
     public  GamePlayerDamageEvent(Player player, double amount, GutitubowDamageType damageType) {
@@ -23,11 +25,12 @@ public class GamePlayerDamageEvent extends Event implements Cancellable {
         this.damageType = damageType;
     }
 
-    public GamePlayerDamageEvent(Player player, double amount, Player attacker, GutitubowDamageType damageType) {
+    public GamePlayerDamageEvent(Player player, double amount, Player attacker, GutitubowDamageType damageType, Component hitMessage) {
         this.player = player;
         this.amount = amount;
         this.attacker = attacker;
         this.damageType = damageType;
+        this.hitMessage = hitMessage;
     }
 
     @NotNull
@@ -47,9 +50,16 @@ public class GamePlayerDamageEvent extends Event implements Cancellable {
         return damageType;
     }
 
-    @Nullable
-    public Player getAttacker() {
+    public @Nullable Player getAttacker() {
         return attacker;
+    }
+
+    public @Nullable Component getHitMessage() {
+        return hitMessage;
+    }
+
+    public void setHitMessage(Component hitMessage) {
+        this.hitMessage = hitMessage;
     }
 
     @Override

@@ -67,7 +67,6 @@ public class GamePlayer {
     private int remainedFlashTick;
 
 
-
     public GamePlayer(JavaPlugin plugin, Player player, Game game) {
         this.plugin = plugin;
         this.playerUUID = player.getUniqueId();
@@ -88,7 +87,8 @@ public class GamePlayer {
         return game.getAbilityManager().getAbility(getPlayer());
     }
 
-    @Nullable public Player getPlayer() {
+    @Nullable
+    public Player getPlayer() {
         return Bukkit.getPlayer(playerUUID);
     }
 
@@ -96,7 +96,8 @@ public class GamePlayer {
         return this.game;
     }
 
-    @Nullable public GameTeam getTeam() {
+    @Nullable
+    public GameTeam getTeam() {
         if (getPlayer() == null) return null;
         return game.getTeamManager().getPlayerTeam(getPlayer());
     }
@@ -311,7 +312,7 @@ public class GamePlayer {
 
     public void updateArrow() {
 
-        if (arrowReloadTask != null ) return;
+        if (arrowReloadTask != null) return;
 
         arrowReloadTask = new BukkitRunnable() {
             @Override
@@ -478,7 +479,7 @@ public class GamePlayer {
     }
 
     public boolean isTeammate(Player target) {
-        return  game.isTeammate(getPlayer(), target);
+        return game.isTeammate(getPlayer(), target);
     }
 
     public void onSneaking(@NotNull GamePlayerSneakingEvent event) {
@@ -633,22 +634,34 @@ public class GamePlayer {
         GamePlayer receiverGameplayer = game.getGamePlayer(receiver);
         if (receiverGameplayer.hasEmptySlot()) {
             double distance = 0;
-            if (getPlayer() != null) distance = Math.floor(getPlayer().getLocation().distance(receiver.getLocation()) * 10) / 10;
-            if (showSenderMessage && getPlayer() != null) getPlayer().sendMessage(Component.text("§6[!] §a" + receiver.getName() + "にアイテムを渡した! (" + distance + "m)"));
-            if (showReceiverMessage && getPlayer() != null) receiver.sendMessage(Component.text("§6[!] §a" + getPlayer().getName() + "からアイテムを受け取った! (" + distance + "m)"));
+            if (getPlayer() != null)
+                distance = Math.floor(getPlayer().getLocation().distance(receiver.getLocation()) * 10) / 10;
+            if (showSenderMessage && getPlayer() != null)
+                getPlayer().sendMessage(Component.text("§6[!] §a" + receiver.getName() + "にアイテムを渡した! (" + distance + "m)"));
+            if (showReceiverMessage && getPlayer() != null)
+                receiver.sendMessage(Component.text("§6[!] §a" + getPlayer().getName() + "からアイテムを受け取った! (" + distance + "m)"));
             receiver.give(itemStack);
         } else {
-            if (showSenderMessage && getPlayer() != null) getPlayer().sendMessage(Component.text("チームメイトのインベントリに空きがありません！！").color(NamedTextColor.RED));
+            if (showSenderMessage && getPlayer() != null)
+                getPlayer().sendMessage(Component.text("チームメイトのインベントリに空きがありません！！").color(NamedTextColor.RED));
         }
     }
 
 
     public void damage(@NotNull Player player, double amount, Player attacker, double distance, boolean canUpgrade) {
 
+        Component hitMessage = Component.text("§cHIT §6§bᐅ §f" + player.getName() + "§r§6 (" + Math.floor(distance * 10) / 10 + "m)").color(NamedTextColor.LIGHT_PURPLE);
 
-        GamePlayerDamageEvent event = new GamePlayerDamageEvent(player, amount, attacker, GutitubowDamageType.ARROW_SHOT);
+        GamePlayerDamageEvent event = new GamePlayerDamageEvent(
+                player,
+                amount,
+                attacker,
+                GutitubowDamageType.ARROW_SHOT,
+                hitMessage
+        );
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
+
         double newAmount = event.getAmount();
         GamePlayer gamePlayer = game.getGamePlayer(attacker);
         if (game.getGameMode() == GutitubowGameMode.DUO || game.getGameMode() == GutitubowGameMode.TRIO) {
@@ -678,16 +691,18 @@ public class GamePlayer {
                 }
             }
             attacker.playSound(attacker, Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 1.0f);
-            Title title = Title.title(
-                    Component.empty(),
-                    Component.text("§cHIT §6§bᐅ §f" + player.getName() + "§r§6 (" + Math.floor(distance * 10) / 10 + "m)").color(NamedTextColor.LIGHT_PURPLE),
-                    Title.Times.times(
-                            java.time.Duration.ofMillis(100),
-                            java.time.Duration.ofMillis(1250),
-                            java.time.Duration.ofMillis(500)
-                    )
-            );
-            attacker.showTitle(title);
+            if (event.getHitMessage() != null) {
+                Title title = Title.title(
+                        Component.empty(),
+                        event.getHitMessage(),
+                        Title.Times.times(
+                                java.time.Duration.ofMillis(100),
+                                java.time.Duration.ofMillis(1250),
+                                java.time.Duration.ofMillis(500)
+                        )
+                );
+                attacker.showTitle(title);
+            }
             LogManager.broadcastHitLog(attacker, player, distance);
         }
     }
