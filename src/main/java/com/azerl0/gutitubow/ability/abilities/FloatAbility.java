@@ -63,10 +63,10 @@ public class FloatAbility extends Ability {
 
     @Override
     public void reset() {
+        super.reset();
         if (updateTask != null) updateTask.cancel();
         updateTask = null;
         stopFloating();
-        getPlayer().setCooldown(Material.COMPASS, 0);
     }
 
     private boolean isOnGround() {
@@ -115,7 +115,7 @@ public class FloatAbility extends Ability {
         Player player = getPlayer();
         if (player == null) return;
         ItemStack mainHandItem = player.getInventory().getItemInMainHand();
-        if (mainHandItem.getType() != Material.COMPASS) placingFloatArea();
+        if (mainHandItem.getType() != Material.COMPASS && mainHandItem.getType() != Material.BEACON) placingFloatArea();
     }
 
     private void placingFloatArea() {
