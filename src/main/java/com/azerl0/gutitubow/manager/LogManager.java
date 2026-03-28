@@ -76,7 +76,7 @@ public class LogManager {
 
     }
 
-    public static void broadcastDeathLog(Player player) {
+    public static void broadcastDeathLog(Player player, Component suffix) {
 
         Component message =
                 Component.text("")
@@ -94,8 +94,7 @@ public class LogManager {
                                                 .color(NamedTextColor.WHITE)
                                                 .decoration(TextDecoration.BOLD, false)
                                 ).append(
-                                        Component.text(" (エリア外)")
-                                                .color(NamedTextColor.GRAY)
+                                        suffix
                                 ));
 
         for (Player toPlayer : Bukkit.getOnlinePlayers()) {

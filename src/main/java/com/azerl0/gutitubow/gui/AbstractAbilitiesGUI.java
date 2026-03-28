@@ -20,6 +20,7 @@ public class AbstractAbilitiesGUI extends AbstractGUI {
         addAbilityButton(AbilityType.RAPIDFIRE);
         addAbilityButton(AbilityType.PREDATION);
         addAbilityButton(AbilityType.INVISIBLE);
+        addAbilityButton(AbilityType.LASTSTAND);
         addAbilityButton(AbilityType.TELEPORT);
         addAbilityButton(AbilityType.CONTROL);
         addAbilityButton(AbilityType.RICOCHET);

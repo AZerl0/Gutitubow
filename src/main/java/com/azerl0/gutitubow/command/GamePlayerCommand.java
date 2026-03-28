@@ -1,6 +1,6 @@
 package com.azerl0.gutitubow.command;
 
-import com.azerl0.gutitubow.data.GutitubowDamageType;
+import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GamePlayer;
 import org.bukkit.Bukkit;

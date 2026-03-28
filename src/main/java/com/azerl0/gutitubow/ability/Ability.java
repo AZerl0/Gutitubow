@@ -1,10 +1,7 @@
 package com.azerl0.gutitubow.ability;
 
 
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
-import com.azerl0.gutitubow.event.gameplayer.PlayerFixLeftClickEvent;
+import com.azerl0.gutitubow.event.gameplayer.*;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -17,6 +14,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -32,7 +30,7 @@ public abstract class Ability {
     @NotNull
     public abstract AbilityType getType();
 
-    public Player getPlayer() {
+    public @Nullable Player getPlayer() {
         return Bukkit.getPlayer(playerUUID);
     }
 
@@ -45,6 +43,7 @@ public abstract class Ability {
         if (player != null) {
             getPlayer().sendActionBar(Component.empty());
             setCompassCooldown(0);
+            player.setAbsorptionAmount(0);
         }
         if (cooldownTask != null) cooldownTask.cancel();
         cooldownTask = null;
@@ -104,6 +103,8 @@ public abstract class Ability {
     public void onDealDamage(GamePlayerDamageEvent event) {}
 
     public void onKill(GamePlayerKillEvent event) {}
+
+    public void onDeath(GamePlayerDeathEvent event) {}
 
     public void startCompassCooldownTask() {
         if (cooldownTask != null && !cooldownTask.isCancelled()) return;

@@ -358,6 +358,27 @@ public class GutitubowItem {
         ABILITY_ICON_TRACKING = itemStack;
     }
 
+    public static final ItemStack ABILITY_ICON_LAST_STAND;
+    static {
+        ItemStack itemStack = new ItemStack(Material.BLAZE_POWDER);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「背水」は、追い込まれてから本気だす能力。"),
+                Component.text("§f死の淵に立たされた時、能力が発動する。"),
+                Component.empty(),
+                Component.text("§f死までの時間を少しだけ先延ばしにし、「背水の陣」を敷く。"),
+                Component.text("§f「背水の陣」中に誰かをキルできれば、完全な状態で復活する。"),
+                Component.text("§f誰もキルできなかった場合、そのままダウンしてしまう。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 なし (ダメージで自動で発動)")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_LAST_STAND = itemStack;
+    }
+
     public static final ItemStack ABILITY_ICON_BOMB;
     static {
         ItemStack itemStack = new ItemStack(Material.TNT);

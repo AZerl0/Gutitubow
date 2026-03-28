@@ -28,7 +28,8 @@ public enum AbilityType {
     GIANT(Component.text("巨体"), GutitubowItem.ABILITY_ICON_GIANT),
     PREDATION(Component.text("捕食"), GutitubowItem.ABILITY_ICON_PREDATION),
     BALLOON(Component.text("風船"), GutitubowItem.ABILITY_ICON_BALLOON),
-    TRACKING(Component.text("追跡"), GutitubowItem.ABILITY_ICON_TRACKING);
+    TRACKING(Component.text("追跡"), GutitubowItem.ABILITY_ICON_TRACKING),
+    LASTSTAND(Component.text("背水"), GutitubowItem.ABILITY_ICON_LAST_STAND);
 
     private final Component name;
     private final ItemStack displayItem;
