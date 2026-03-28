@@ -17,6 +17,7 @@ import org.bukkit.util.RayTraceResult;
 import org.jetbrains.annotations.NotNull;
 
 public class BarrierAbility extends Ability {
+    private final int BARRIER_RESTORE_TICK = 20 * 20;
     private int barrierRestockCharge;
     private int barrierStack;
     private BukkitTask barrierRestockTask = null;
@@ -55,7 +56,7 @@ public class BarrierAbility extends Ability {
     private void update() {
         if (barrierStack < 3) {
             barrierRestockCharge++;
-                    if (barrierRestockCharge >= 10 * 20) {
+                    if (barrierRestockCharge >= BARRIER_RESTORE_TICK) {
                         barrierStack++;
                         barrierRestockCharge = 0;
                     }
