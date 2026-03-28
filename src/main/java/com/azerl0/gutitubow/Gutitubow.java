@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.carepackage.CarePackageListener;
 import com.azerl0.gutitubow.command.*;
 import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.game.*;
+import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.gui.AllGUI;
 import com.azerl0.gutitubow.gui.GUIListener;
 import com.azerl0.gutitubow.gui.guis.AbilitySelectorGUI;
@@ -32,6 +33,7 @@ import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.ability.abilities.*;
 
 public final class Gutitubow extends JavaPlugin {
+    private ScoreboardManager scoreboardManager;
     private EntityFlagManager flagManager;
     private EntityGlowManager glowManager;
     private FixLeftClickManager fixLeftClickManager;
@@ -48,12 +50,13 @@ public final class Gutitubow extends JavaPlugin {
         ItemUtil.init(this);
 
         // Managers
+        this.scoreboardManager = new ScoreboardManager();
         this.flagManager = new EntityFlagManager();
-        this.glowManager = new EntityGlowManager(flagManager);
+        this.glowManager = new EntityGlowManager(flagManager, scoreboardManager);
         this.fixLeftClickManager = new FixLeftClickManager(this);
         this.debugManager = new DebugManager(this);
         this.mapManager = new MapManager(this);
-        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.glowManager);
+        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.glowManager, this.scoreboardManager);
         // MainGame
         this.game = gameManager.newGame();
 

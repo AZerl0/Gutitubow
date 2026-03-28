@@ -9,6 +9,7 @@ import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
+import com.azerl0.gutitubow.game.scoreboard.PlayerBoardManager;
 import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.map.Map;
@@ -63,6 +64,7 @@ public class Game {
     private final MapRepairManager mapRepairManager = new MapRepairManager();
     private final GlassBreakManager glassBreakManager = new GlassBreakManager(mapRepairManager);
     private final ScoreboardManager scoreboardManager;
+    private final PlayerBoardManager playerBoardManager;
     private final TeamManager teamManager;
     private final SpectatorManager spectatorManager = new SpectatorManager();
 
@@ -70,7 +72,8 @@ public class Game {
             JavaPlugin plugin,
             Map map,
             EntityGlowManager glowManager,
-            DebugManager debugManager
+            DebugManager debugManager,
+            ScoreboardManager scoreboardManager
     ) {
         this.plugin = plugin;
         this.map = map;
@@ -82,7 +85,8 @@ public class Game {
         this.debugManager = debugManager;
         this.gamePlayerManager = new GamePlayerManager(plugin, this);
         reset();
-        this.scoreboardManager = new ScoreboardManager(this);
+        this.scoreboardManager = scoreboardManager;
+        this.playerBoardManager = new PlayerBoardManager(scoreboardManager);
         this.teamManager = new TeamManager(this);
     }
 
@@ -845,7 +849,7 @@ public class Game {
     }
 
     public PlayerBoard getPlayerBoard(GamePlayer gamePlayer) {
-        return scoreboardManager.getPlayerBoard(gamePlayer);
+        return playerBoardManager.getPlayerBoard(gamePlayer);
     }
 
     public void onDisablePlugin() {
