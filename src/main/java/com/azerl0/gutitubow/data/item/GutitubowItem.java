@@ -379,6 +379,23 @@ public class GutitubowItem {
         ABILITY_ICON_LAST_STAND = itemStack;
     }
 
+    public static final ItemStack ABILITY_ICON_DETECTION;
+    static {
+        ItemStack itemStack = new ItemStack(Material.BEACON);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「探知」は、脅威を事前に看破する能力。"),
+                Component.text("§f自身を中心とした広範囲の敵を探知することが可能。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 [SHIFT(2秒間)] - 探知能力使用")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_DETECTION = itemStack;
+    }
+
     public static final ItemStack ABILITY_ICON_BOMB;
     static {
         ItemStack itemStack = new ItemStack(Material.TNT);

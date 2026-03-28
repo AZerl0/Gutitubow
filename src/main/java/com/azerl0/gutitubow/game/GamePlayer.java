@@ -545,15 +545,19 @@ public class GamePlayer {
                 player.addPotionEffect(effect);
                 player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.0f, 1.0f);
             }
-        }
-        if (revivingTick >= REVIVE_TICK) {
+        } else if (revivingTick >= REVIVE_TICK) {
             for (UUID uuid : team.getDeadPlayers()) {
                 Player deadTeammate = Bukkit.getPlayer(uuid);
                 if (deadTeammate == null || !deadTeammate.isOnline()) continue;
                 GamePlayer deadTeammateGameplayer = getGame().getGamePlayer(deadTeammate);
                 deadTeammateGameplayer.revive(player);
             }
-            player.getInventory().remove(Material.BEACON);
+            Inventory inventory = player.getInventory();
+            List<Integer> slots = List.of(8, 7, 6, 5, 4, 3, 2, 1, 0, 35, 34, 33, 32, 31, 30, 29, 28, 27, -106);
+            for (int slot : slots) {
+                ItemStack itemStack = inventory.getItem(slot);
+                if (itemStack != null && itemStack.getType() == Material.BEACON) inventory.setItem(slot, ItemStack.of(Material.AIR));
+            }
             revivingTick = 0;
             return;
         }
