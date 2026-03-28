@@ -113,8 +113,6 @@ public class CarePackage {
                 entity.getPersistentDataContainer().set(isFallingKey, PersistentDataType.BOOLEAN, true);
             }
         }
-
-
     }
 
     private void onFall() {
@@ -212,7 +210,7 @@ public class CarePackage {
         }
 
         this.setRemainedPotion(getRemainedPotion() - 1);
-        if (this.getRemainedPotion() <= 1) {
+        if (this.getRemainedPotion() <= 0) {
             this.remove();
             return;
         }
