@@ -64,6 +64,7 @@ public class TrackingAbility extends Ability {
     public void onKill(GamePlayerKillEvent event) {
         if (isTracking(event.getTarget())) {
             event.setKillMessage(Component.text("§6≫ §c追跡対象を排除した。"));
+            removeTrackingPlayer(event.getTarget());
         }
     }
 
