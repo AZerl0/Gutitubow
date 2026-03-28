@@ -50,6 +50,7 @@ public class ToughAbility extends Ability {
         Player player = getPlayer();
         Objects.requireNonNull(player.getAttribute(Attribute.MAX_ABSORPTION)).setBaseValue(0);
         player.removePotionEffect(PotionEffectType.ABSORPTION);
+        player.setAbsorptionAmount(0);
     }
 
     @Override
@@ -98,6 +99,7 @@ public class ToughAbility extends Ability {
 
     private void regeneration() {
         Player player = getPlayer();
+        if (player == null) return;
 
         PotionEffect effect = new PotionEffect(PotionEffectType.ABSORPTION, -1, 0, true, false, false);
         player.addPotionEffect(effect);
