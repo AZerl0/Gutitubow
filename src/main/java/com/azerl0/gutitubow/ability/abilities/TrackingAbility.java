@@ -43,11 +43,12 @@ public class TrackingAbility extends Ability {
         Player player = getPlayer();
         if (player == null) return;
 
-        for (UUID uuid : trackingPlayers) {
+        for (UUID uuid : new HashSet<>(trackingPlayers)) {
             Player trackingPlayer = Bukkit.getPlayer(uuid);
             if (trackingPlayer == null) continue;
             removeTrackingPlayer(trackingPlayer);
         }
+        trackingPlayers.clear();
     }
 
     @Override
@@ -76,6 +77,12 @@ public class TrackingAbility extends Ability {
         if (distance != null && distance <= 30) {
             PotionEffect speed = new PotionEffect(PotionEffectType.SPEED, 5, 1, true, true, true);
             player.addPotionEffect(speed);
+        }
+
+        for (UUID uuid : trackingPlayers) {
+            Player trackingPlayer = Bukkit.getPlayer(uuid);
+            if (trackingPlayer == null || !trackingPlayer.isOnline()) continue;
+            context.glowManager().addGlow(player, trackingPlayer);
         }
     }
 
