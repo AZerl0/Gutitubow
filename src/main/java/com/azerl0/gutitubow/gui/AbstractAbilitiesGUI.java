@@ -10,7 +10,11 @@ import java.util.function.Consumer;
 public class AbstractAbilitiesGUI extends AbstractGUI {
     public AbstractAbilitiesGUI(Component title) {
         super(27, title);
+    }
 
+    @Override
+    public void updateGUI() {
+        clear();
         addAbilityButton(AbilityType.DASH);
         addAbilityButton(AbilityType.JUMP);
         addAbilityButton(AbilityType.TRACKING);
@@ -34,7 +38,6 @@ public class AbstractAbilitiesGUI extends AbstractGUI {
         addAbilityButton(AbilityType.SHRINK);
         addAbilityButton(AbilityType.GIANT);
         addAbilityButton(AbilityType.BALLOON);
-
     }
 
     public void addAbilityButton(AbilityType type) {

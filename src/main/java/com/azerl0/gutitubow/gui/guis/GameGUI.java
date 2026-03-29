@@ -5,11 +5,9 @@ import com.azerl0.gutitubow.game.GameManager;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.gui.AbstractGUI;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class GameGUI extends AbstractGUI {
     private final GameManager gameManager;
@@ -29,6 +27,10 @@ public class GameGUI extends AbstractGUI {
                 getAbstractSimpleButtonItem(Material.BOW, Component.text("リセット")), event -> {
                     gameManager.resetGame(game);
                 });
+        addButton(18, getAbstractSimpleButtonItem(Material.NETHER_STAR, Component.text("能力スイッチ")), event -> {
+            if (!(event.getWhoClicked() instanceof Player clicker)) return;
+            game.getAbilitySelector().getAbilityDisableGUI().open(clicker);
+        });
         addButton(25,
                 getAbstractSimpleButtonItem(Material.ENDER_EYE, Component.text("観戦者設定")),
                 event -> {

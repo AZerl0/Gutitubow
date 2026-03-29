@@ -5,7 +5,6 @@ import com.azerl0.gutitubow.ability.AbilityManager;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.gui.AbstractAbilitiesGUI;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -16,6 +15,7 @@ public class AbilitySelectorGUI extends AbstractAbilitiesGUI {
     public AbilitySelectorGUI(AbilityManager abilityManager) {
         super(Component.text("能力選択"));
         this.abilityManager = abilityManager;
+        updateGUI();
     }
 
     @Override

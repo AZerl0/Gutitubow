@@ -1,9 +1,6 @@
 package com.azerl0.gutitubow.game;
 
-import com.azerl0.gutitubow.ability.Ability;
-import com.azerl0.gutitubow.ability.AbilityContext;
-import com.azerl0.gutitubow.ability.AbilityManager;
-import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.carepackage.CarePackage;
 import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
@@ -60,6 +57,7 @@ public class Game {
     private final EntityGlowManager glowManager;
     private final GamePlayerManager gamePlayerManager;
     private final AbilityManager abilityManager;
+    private final AbilitySelector abilitySelector = new AbilitySelector();
     private final DebugManager debugManager;
     private final MapRepairManager mapRepairManager = new MapRepairManager();
     private final GlassBreakManager glassBreakManager = new GlassBreakManager(mapRepairManager);
@@ -236,8 +234,7 @@ public class Game {
         updateNextSafeAreaSize();
         deathOrder.clear();
         alivePlayers.clear();
-        Random random = new Random();
-        List<AbilityType> abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
+        abilitySelector.resetCurrentAbilities();
         resetSoloPlayerTeams();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -282,12 +279,7 @@ public class Game {
             gamePlayer.resetTotalHit();
             gamePlayer.setTotalKill(0);
 
-            int randomIndex = random.nextInt(0, abilityTypeList.size());
-            AbilityType ability = abilityTypeList.get(randomIndex);
-
-            abilityTypeList.remove(randomIndex);
-            if (abilityTypeList.isEmpty())
-                abilityTypeList = new ArrayList<>(Arrays.stream(AbilityType.values()).toList());
+            AbilityType ability = abilitySelector.nextAbility();
 
             abilityManager.setAbility(player, ability);
             gamePlayer.updatePlayerBoard();
@@ -827,6 +819,10 @@ public class Game {
 
     public @NotNull AbilityManager getAbilityManager() {
         return this.abilityManager;
+    }
+
+    public @NotNull AbilitySelector getAbilitySelector() {
+        return this.abilitySelector;
     }
 
     public TeamManager getTeamManager() {

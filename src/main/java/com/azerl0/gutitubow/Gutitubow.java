@@ -49,18 +49,6 @@ public final class Gutitubow extends JavaPlugin {
 
         ItemUtil.init(this);
 
-        // Managers
-        this.scoreboardManager = new ScoreboardManager();
-        this.flagManager = new EntityFlagManager();
-        this.glowManager = new EntityGlowManager(flagManager, scoreboardManager);
-        this.fixLeftClickManager = new FixLeftClickManager(this);
-        this.debugManager = new DebugManager(this);
-        this.mapManager = new MapManager(this);
-        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.glowManager, this.scoreboardManager);
-        // MainGame
-        this.game = gameManager.newGame();
-
-
         // Ability登録
         AbilityRegistry.register(AbilityType.RICOCHET, RicochetAbility::new);
         AbilityRegistry.register(AbilityType.BOMB, BombAbility::new);
@@ -85,6 +73,17 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.LASTSTAND, LastStandAbility::new);
         AbilityRegistry.register(AbilityType.DETECTION, DetectionAbility::new);
         AbilityRegistry.register(AbilityType.INVINCIBLE, InvincibleAbility::new);
+
+        // Managers
+        this.scoreboardManager = new ScoreboardManager();
+        this.flagManager = new EntityFlagManager();
+        this.glowManager = new EntityGlowManager(flagManager, scoreboardManager);
+        this.fixLeftClickManager = new FixLeftClickManager(this);
+        this.debugManager = new DebugManager(this);
+        this.mapManager = new MapManager(this);
+        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.glowManager, this.scoreboardManager);
+        // MainGame
+        this.game = gameManager.newGame();
 
         //GUI
         GameGUI gameGUI = new GameGUI(gameManager, game);
