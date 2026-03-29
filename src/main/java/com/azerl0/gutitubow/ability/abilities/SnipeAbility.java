@@ -42,7 +42,7 @@ public class SnipeAbility extends Ability {
     }
 
     @Override
-    public void onArrowLaunch(EntityShootBowEvent event) {
+    public void onShoot(EntityShootBowEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
         if (!player.isSneaking()) return;
         if (event.getForce() < 1.0) return;

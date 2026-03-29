@@ -70,7 +70,7 @@ public abstract class Ability {
         getPlayer().sendActionBar(message);
     }
 
-    public void onArrowLaunch(EntityShootBowEvent event) {}
+    public void onShoot(EntityShootBowEvent event) {}
 
     public void onArrowHit(ProjectileHitEvent event) {}
 

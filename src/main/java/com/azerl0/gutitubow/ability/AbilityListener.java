@@ -15,7 +15,6 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class AbilityListener implements Listener {
@@ -32,7 +31,7 @@ public class AbilityListener implements Listener {
 
         Ability ability = abilityManager.getAbility(player);
         if (ability != null) {
-            ability.onArrowLaunch(event);
+            ability.onShoot(event);
         }
     }
 

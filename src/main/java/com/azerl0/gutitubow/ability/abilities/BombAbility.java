@@ -30,7 +30,7 @@ public class BombAbility extends Ability {
     }
 
     @Override
-    public void onArrowLaunch(EntityShootBowEvent event) {
+    public void onShoot(EntityShootBowEvent event) {
         Arrow arrow = (Arrow) event.getProjectile();
         EntityUtil.setGlow(arrow, NamedTextColor.RED);
         arrow.setGlowing(true);
