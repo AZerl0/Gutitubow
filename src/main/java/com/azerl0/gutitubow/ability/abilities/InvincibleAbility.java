@@ -84,6 +84,7 @@ public class InvincibleAbility extends Ability {
             }
         } else {
             toInvincibleTick = 0;
+            canInvincible = true;
         }
     }
 
