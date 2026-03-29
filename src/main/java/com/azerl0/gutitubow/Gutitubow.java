@@ -11,16 +11,14 @@ import com.azerl0.gutitubow.gui.guis.AbilitySelectorGUI;
 import com.azerl0.gutitubow.gui.guis.GameGUI;
 import com.azerl0.gutitubow.map.MapManager;
 import com.azerl0.gutitubow.item.ItemListener;
-import com.azerl0.gutitubow.packet.EntityFlagManager;
-import com.azerl0.gutitubow.packet.EntityGlowManager;
-import com.azerl0.gutitubow.packet.PacketEventListener;
-import com.azerl0.gutitubow.packet.PacketListener;
+import com.azerl0.gutitubow.packet.*;
 import com.azerl0.gutitubow.player.FixLeftClickListener;
 import com.azerl0.gutitubow.player.FixLeftClickManager;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.EventManager;
+import com.github.retrooper.packetevents.event.PacketListenerCommon;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRules;
@@ -34,12 +32,15 @@ import com.azerl0.gutitubow.ability.abilities.*;
 
 public final class Gutitubow extends JavaPlugin {
     private ScoreboardManager scoreboardManager;
-    private EntityFlagManager flagManager;
+    private final EntityFlagManager flagManager = new EntityFlagManager();
     private EntityGlowManager glowManager;
     private FixLeftClickManager fixLeftClickManager;
     private DebugManager debugManager;
     private MapManager mapManager;
     private GameManager gameManager;
+    private PlayerSkinChanger playerSkinChanger;
+
+    private PacketListenerCommon packetListener;
 
 
     private Game game;
@@ -76,7 +77,6 @@ public final class Gutitubow extends JavaPlugin {
 
         // Managers
         this.scoreboardManager = new ScoreboardManager();
-        this.flagManager = new EntityFlagManager();
         this.glowManager = new EntityGlowManager(flagManager, scoreboardManager);
         this.fixLeftClickManager = new FixLeftClickManager(this);
         this.debugManager = new DebugManager(this);
@@ -84,6 +84,8 @@ public final class Gutitubow extends JavaPlugin {
         this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.glowManager, this.scoreboardManager);
         // MainGame
         this.game = gameManager.newGame();
+
+        this.playerSkinChanger = new PlayerSkinChanger();
 
         //GUI
         GameGUI gameGUI = new GameGUI(gameManager, game);
@@ -105,8 +107,7 @@ public final class Gutitubow extends JavaPlugin {
 
         // packetListener登録
         EventManager eventManager = PacketEvents.getAPI().getEventManager();
-
-        eventManager.registerListener(new PacketEventListener(this, flagManager), PacketListenerPriority.NORMAL);
+        packetListener = eventManager.registerListener(new PacketEventListener(this, flagManager), PacketListenerPriority.NORMAL);
 
         // Command登録
         getCommand("ability").setExecutor(new AbilityCommand(game.getAbilityManager(), abilitySelectorGUI));
@@ -116,6 +117,7 @@ public final class Gutitubow extends JavaPlugin {
         getCommand("gutitubowdebug").setExecutor(new DebugCommand(debugManager));
         getCommand("gutitubowitem").setExecutor(new ItemCommand());
         getCommand("gameteam").setExecutor(new GameTeamCommand(game.getTeamManager(), game.getSpectatorManager()));
+        getCommand("setskin").setExecutor(new SetSkinCommand(playerSkinChanger));
 
         for (World world : Bukkit.getWorlds()) {
             world.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, false);
@@ -136,6 +138,7 @@ public final class Gutitubow extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        PacketEvents.getAPI().getEventManager().unregisterListener(packetListener);
         EntityUtil.removeAllGlowTeam();
 
         game.onDisablePlugin();

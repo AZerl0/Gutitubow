@@ -44,3 +44,8 @@ commands:
     usage: /gameteam
     permission: gutitubow.gameteam
     aliases: [gt, gteam]
+
+  setskin:
+    description: Set skin command
+    usage: /setskin <target> <skinPlayer>
+    permission: gutitubow.setskin
