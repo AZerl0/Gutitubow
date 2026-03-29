@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.gui;
 
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -39,8 +40,11 @@ public class GUIListener implements Listener {
     public void onItemClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack clickItem = event.getItem();
-        if (clickItem!= null && clickItem.getItemMeta().getPersistentDataContainer().getOrDefault(gamemasterKey, PersistentDataType.BOOLEAN, false) && player.isOp()) {
+        if (clickItem == null) return;
+        if (clickItem.getItemMeta().getPersistentDataContainer().getOrDefault(gamemasterKey, PersistentDataType.BOOLEAN, false) && player.isOp()) {
             allGUI.gameGUI().open(player);
+        } else if (clickItem.getType() == Material.HEART_OF_THE_SEA) {
+            allGUI.abilitySelectorGUI().open(player);
         }
     }
 }
