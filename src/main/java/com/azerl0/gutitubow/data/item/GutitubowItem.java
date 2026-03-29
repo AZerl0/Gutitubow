@@ -459,7 +459,7 @@ public class GutitubowItem {
         ABILITY_ICON_CONTROL = itemStack;
     }
 
-    public static final ItemStack ABILITY_ICON_RAPIDFIRE;
+    public static final ItemStack ABILITY_ICON_QUICKFIRE;
     static {
         ItemStack itemStack = new ItemStack(Material.CROSSBOW);
 
@@ -475,7 +475,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_RAPIDFIRE = itemStack;
+        ABILITY_ICON_QUICKFIRE = itemStack;
     }
 
     public static final ItemStack ABILITY_ICON_RICOCHET;

@@ -15,19 +15,20 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-public class RapidFireAbility extends Ability {
+public class QuickFireAbility extends Ability {
 
-    public RapidFireAbility(AbilityContext context) {
+    public QuickFireAbility(AbilityContext context) {
         super(context);
     }
 
     @Override
     public final @NotNull AbilityType getType() {
-        return AbilityType.RAPIDFIRE;
+        return AbilityType.QUICKFIRE;
     }
 
     @Override
     public void init(Player player) {
+        super.init(player);
         GamePlayer gamePlayer = context.game().getGamePlayer(player);
         gamePlayer.setMaxArrowStackSize(3);
     }

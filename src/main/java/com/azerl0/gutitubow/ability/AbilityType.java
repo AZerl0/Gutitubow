@@ -12,7 +12,7 @@ public enum AbilityType {
     BARRIER(Component.text("障壁"), GutitubowItem.ABILITY_ICON_BARRIER),
     BOMB(Component.text("爆弾"), GutitubowItem.ABILITY_ICON_BOMB),
     CONTROL(Component.text("操弾"), GutitubowItem.ABILITY_ICON_CONTROL),
-    RAPIDFIRE(Component.text("速射"), GutitubowItem.ABILITY_ICON_RAPIDFIRE),
+    QUICKFIRE(Component.text("速射"), GutitubowItem.ABILITY_ICON_QUICKFIRE),
     RICOCHET(Component.text("跳弾"), GutitubowItem.ABILITY_ICON_RICOCHET),
     SNIPE(Component.text("狙撃"), GutitubowItem.ABILITY_ICON_SNIPE),
     DASH(Component.text("疾走"), GutitubowItem.ABILITY_ICON_DASH),
