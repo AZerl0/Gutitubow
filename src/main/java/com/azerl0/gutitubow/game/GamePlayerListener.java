@@ -1,5 +1,7 @@
 package com.azerl0.gutitubow.game;
 
+import com.azerl0.gutitubow.data.damage.DamageSource;
+import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.util.EntityUtil;
 import org.bukkit.damage.DamageType;
@@ -67,7 +69,13 @@ public class GamePlayerListener implements Listener {
 
         double distance = shooter.getLocation().distance(tar.getLocation());
 
-        this.game.getGamePlayer(tarPlayer).damage(tarPlayer, 2, shooterPlayer, distance, true);
+        DamageSource damageSource = DamageSource.builder()
+                .damageType(GutitubowDamageType.ARROW_SHOT)
+                .directPlayer(shooterPlayer)
+                .damageLocation(event.getEntity().getLocation())
+                .distance(distance)
+                .build();
+        this.game.getGamePlayer(tarPlayer).damage(tarPlayer, 2, damageSource, true);
 
         event.setCancelled(true);
         event.getEntity().remove();

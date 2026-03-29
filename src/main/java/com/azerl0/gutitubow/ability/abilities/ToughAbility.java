@@ -56,7 +56,7 @@ public class ToughAbility extends Ability {
     @Override
     public void onDamage(GamePlayerDamageEvent event) {
         Player player = getPlayer();
-        GutitubowDamageType damageType = event.getDamageType();
+        GutitubowDamageType damageType = event.getDamageSource().getDamageType();
         Set<GutitubowDamageType> cantCancelDamage = Set.of(GutitubowDamageType.OUTSIDE_BORDER);
         if (event.getAmount() <= 1.0 && !cantCancelDamage.contains(damageType)) event.setCancelled(true);
 

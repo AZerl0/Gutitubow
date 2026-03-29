@@ -30,7 +30,8 @@ public enum AbilityType {
     BALLOON(Component.text("風船"), GutitubowItem.ABILITY_ICON_BALLOON),
     TRACKING(Component.text("追跡"), GutitubowItem.ABILITY_ICON_TRACKING),
     LASTSTAND(Component.text("背水"), GutitubowItem.ABILITY_ICON_LAST_STAND),
-    DETECTION(Component.text("探知"), GutitubowItem.ABILITY_ICON_DETECTION);
+    DETECTION(Component.text("探知"), GutitubowItem.ABILITY_ICON_DETECTION),
+    INVINCIBLE(Component.text("無敵"), GutitubowItem.ABILITY_ICON_INVINCIBLE);
 
     private final Component name;
     private final ItemStack displayItem;

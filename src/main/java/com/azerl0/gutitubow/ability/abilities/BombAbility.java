@@ -3,9 +3,11 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
-import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.data.damage.DamageSource;
+import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.util.EntityUtil;
+import com.azerl0.gutitubow.util.MathUtil;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;
@@ -73,10 +75,16 @@ public class BombAbility extends Ability {
 
                 GamePlayer gamePlayer = context.game().getGamePlayer(damagePlayer);
                 if (gamePlayer.isTeammate(damagePlayer)) continue;
-                if (context.game().getPhase() == 0) continue;
+                if (context.game().getPhase() == 0 && context.game().isStarted()) continue;
 
                 if (!shooter.getUniqueId().equals(damagePlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damagePlayer)) {
-                    gamePlayer.damage(damagePlayer, 0.5, shooter, true);
+                    DamageSource damageSource = DamageSource.builder()
+                            .damageType(GutitubowDamageType.BOMB_BLAST)
+                            .directPlayer(shooter)
+                            .damageLocation(MathUtil.rayTraceEntityHit(loc, damagePlayer))
+                            .distance(loc.distance(damagePlayer.getLocation()))
+                            .build();
+                    gamePlayer.damage(damagePlayer, 0.5, damageSource, true);
                 }
             }
         }

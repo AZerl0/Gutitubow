@@ -57,7 +57,7 @@ public class TrackingAbility extends Ability {
         if (!isTracking(hitPlayer)) {
             newTrackingPlayer(hitPlayer);
             event.setHitMessage(Component.text("§c追跡開始 §6≫ §c" + hitPlayer.getName()));
-            hitPlayer.sendMessage(Component.text("§c[!] §4" + event.getAttacker().getName() + "に追跡されている..."));
+            hitPlayer.sendMessage(Component.text("§c[!] §4" + event.getDamageSource().getDirectPlayer().getName() + "に追跡されている..."));
         }
     }
 

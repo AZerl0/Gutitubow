@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.event.gameplayer;
 
+import com.azerl0.gutitubow.data.damage.DamageSource;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
@@ -13,23 +14,21 @@ public class GamePlayerDamageEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 
     private final Player player;
-    private Player attacker;
     private double amount;
-    private final GutitubowDamageType damageType;
-    private Component hitMessage;
+    private final DamageSource damageSource;
+    private @Nullable Component hitMessage;
     private boolean cancelled;
 
-    public  GamePlayerDamageEvent(Player player, double amount, GutitubowDamageType damageType) {
+    public  GamePlayerDamageEvent(Player player, double amount, DamageSource damageSource) {
         this.player = player;
         this.amount = amount;
-        this.damageType = damageType;
+        this.damageSource = damageSource;
     }
 
-    public GamePlayerDamageEvent(Player player, double amount, Player attacker, GutitubowDamageType damageType, Component hitMessage) {
+    public GamePlayerDamageEvent(Player player, double amount, DamageSource damageSource, @Nullable Component hitMessage) {
         this.player = player;
         this.amount = amount;
-        this.attacker = attacker;
-        this.damageType = damageType;
+        this.damageSource = damageSource;
         this.hitMessage = hitMessage;
     }
 
@@ -46,19 +45,15 @@ public class GamePlayerDamageEvent extends Event implements Cancellable {
         this.amount = amount;
     }
 
-    public GutitubowDamageType getDamageType() {
-        return damageType;
-    }
-
-    public @Nullable Player getAttacker() {
-        return attacker;
+    public DamageSource getDamageSource() {
+        return damageSource;
     }
 
     public @Nullable Component getHitMessage() {
         return hitMessage;
     }
 
-    public void setHitMessage(Component hitMessage) {
+    public void setHitMessage(@Nullable Component hitMessage) {
         this.hitMessage = hitMessage;
     }
 

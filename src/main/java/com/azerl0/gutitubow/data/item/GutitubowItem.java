@@ -396,6 +396,26 @@ public class GutitubowItem {
         ABILITY_ICON_DETECTION = itemStack;
     }
 
+    public static final ItemStack ABILITY_ICON_INVINCIBLE;
+    static {
+        ItemStack itemStack = new ItemStack(Material.NETHERITE_CHESTPLATE);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「無敵」は、どんな攻撃でも無効化する能力。"),
+                Component.text("§f最大10秒間無敵化でき、無敵化中も自由に行動可能。"),
+                Component.text("§f画面下部の「無敵チャージ」の秒数だけ無敵化でき、"),
+                Component.text("§fチャージは無敵化していないときに徐々に貯まっていく。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 [SHIFT(1秒間)] - 無敵化"),
+                Component.text("§7 [SHIFT(無敵化中)] - 無敵化解除")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_INVINCIBLE = itemStack;
+    }
+
     public static final ItemStack ABILITY_ICON_BOMB;
     static {
         ItemStack itemStack = new ItemStack(Material.TNT);

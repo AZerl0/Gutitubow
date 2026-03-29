@@ -245,7 +245,6 @@ public class ShieldAbility extends Ability {
         BlockData blockData = Material.BARRIER.createBlockData();
         world.spawnParticle(Particle.BLOCK_MARKER, location, 1, blockData);
         world.playSound(location, Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.5f, 2.0f);
-
     }
 
     private Material getShieldDisplayItem(int shieldHealth) {

@@ -10,7 +10,6 @@ import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
 import com.azerl0.gutitubow.game.GamePlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -54,7 +53,7 @@ public class LastStandAbility extends Ability {
         if (!isActive() && event.getDamageSource().getDamageType() != GutitubowDamageType.FAILED_LAST_STAND) {
             event.setCancelled(true);
             double absorptionAmount = 4;
-            Entity attacker = event.getDamageSource().getDirectEntity();
+            Entity attacker = event.getDamageSource().getDirectPlayer();
             if (attacker instanceof Player attackPlayer) {
                 absorptionAmount = Objects.requireNonNull(attackPlayer.getAttribute(Attribute.MAX_HEALTH)).getValue() + attackPlayer.getAbsorptionAmount();
             }
@@ -139,7 +138,7 @@ public class LastStandAbility extends Ability {
         if (lastStandRemainedTick <= 0) {
             stopLastStand();
             GamePlayer gamePlayer = context.game().getGamePlayer(player);
-            DamageSource damageSource = new DamageSource(GutitubowDamageType.FAILED_LAST_STAND);
+            DamageSource damageSource = DamageSource.builder().damageType(GutitubowDamageType.FAILED_LAST_STAND).build();
             gamePlayer.death(player, damageSource, false);
         } else {
             World world = player.getWorld();

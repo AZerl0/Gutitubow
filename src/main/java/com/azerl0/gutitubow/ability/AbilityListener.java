@@ -116,7 +116,7 @@ public class AbilityListener implements Listener {
     public void onDamage(GamePlayerDamageEvent event) {
         Ability ability = abilityManager.getAbility(event.getPlayer());
         if (ability != null) ability.onDamage(event);
-        Player attacker = event.getAttacker();
+        Player attacker = event.getDamageSource().getDirectPlayer();
         if (attacker != null) {
             ability = abilityManager.getAbility(attacker);
             if (ability != null) ability.onDealDamage(event);

@@ -1,7 +1,9 @@
 package com.azerl0.gutitubow.util;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 public class MathUtil {
@@ -35,5 +37,18 @@ public class MathUtil {
     private static float getAngleDiff(float a, float b) {
         float diff = Math.abs(a - b) % 360;
         return diff > 180 ? 360 - diff : diff;
+    }
+
+    public static Location rayTraceEntityHit(Location location, Entity entity) {
+        Vector direction = entity.getLocation().toVector().subtract(location.toVector()).normalize();
+
+        RayTraceResult result = location.getWorld().rayTraceEntities(
+                location,
+                direction,
+                location.distance(entity.getLocation()),
+                e -> e.equals(entity)
+        );
+
+        return result != null ? result.getHitPosition().toLocation(location.getWorld()) : null;
     }
 }

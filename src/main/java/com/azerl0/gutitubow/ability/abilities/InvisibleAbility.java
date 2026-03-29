@@ -128,7 +128,7 @@ public class InvisibleAbility extends Ability {
 
     @Override
     public void onDamage(GamePlayerDamageEvent event) {
-        if (event.getAttacker() != null || event.getDamageType() == GutitubowDamageType.UNKNOWN) stopInvisible();
+        if (event.getDamageSource().getDirectPlayer() != null || event.getDamageSource().getDamageType() == GutitubowDamageType.UNKNOWN) stopInvisible();
     }
 
 

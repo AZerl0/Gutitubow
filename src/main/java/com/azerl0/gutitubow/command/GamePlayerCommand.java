@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.command;
 
+import com.azerl0.gutitubow.data.damage.DamageSource;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GamePlayer;
@@ -188,7 +189,10 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
 
                 Player finalTarget = target;
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                    game.getGamePlayer(finalTarget).damage(finalTarget, damageAmount, damageType);
+                    DamageSource damageSource = DamageSource.builder()
+                            .damageType(damageType)
+                            .build();
+                    game.getGamePlayer(finalTarget).damage(finalTarget, damageAmount, damageSource);
                 }, delay * 20);
                 return true;
 

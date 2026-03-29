@@ -3,6 +3,8 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.data.damage.DamageSource;
+import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
@@ -83,19 +85,21 @@ public class SnipeAbility extends Ability {
                 hitPos = entityHit.getHitPosition().toLocation(player.getWorld());
                 double distance = entityHit.getHitEntity().getLocation().distance(player.getLocation());
 
-                if (distance > 36.0) {
-                    Game game = context.game();
-                    GamePlayer gamePlayer = game.getGamePlayer(hitPlayer);
-                    if (game.getPhase() == 0) return;
-                    gamePlayer.damage(hitPlayer, 2, player, distance, true);
+                Game game = context.game();
+                if (!(game.isStarted() && game.getPhase() == 0)) {
+                    if (distance > 36.0) {
+                        GamePlayer gamePlayer = game.getGamePlayer(hitPlayer);
+                        DamageSource damageSource = DamageSource.builder().damageType(GutitubowDamageType.SNIPE).directPlayer(player).damageLocation(hitPos).distance(distance).build();
+                        gamePlayer.damage(hitPlayer, 2, damageSource, true);
 
-                } else {
-                    Component message =
-                            Component.text("")
-                                    .append(Component.text("[!] 狙撃失敗: " + Math.floor(distance * 10) / 10 + "m")
-                                            .color(NamedTextColor.LIGHT_PURPLE)
-                                    );
-                    player.sendMessage(message);
+                    } else {
+                        Component message =
+                                Component.text("")
+                                        .append(Component.text("[!] 狙撃失敗: " + Math.floor(distance * 10) / 10 + "m")
+                                                .color(NamedTextColor.LIGHT_PURPLE)
+                                        );
+                        player.sendMessage(message);
+                    }
                 }
             }
         }

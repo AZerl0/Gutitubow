@@ -52,7 +52,7 @@ public class ShrinkAbility extends Ability {
 
     @Override
     public void onDamage(GamePlayerDamageEvent event) {
-        GutitubowDamageType type = event.getDamageType();
+        GutitubowDamageType type = event.getDamageSource().getDamageType();
         Set<GutitubowDamageType> canShrinkDamageTypes = Set.of(
                 GutitubowDamageType.ARROW_SHOT,
                 GutitubowDamageType.BOMB_BLAST,
