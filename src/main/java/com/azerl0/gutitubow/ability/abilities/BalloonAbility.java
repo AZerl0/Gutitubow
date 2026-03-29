@@ -188,7 +188,7 @@ public class BalloonAbility extends Ability {
     }
 
     private @NotNull Location getBaseLocation(Player player) {
-        int maxDistance = 3;
+        double maxDistance = 3.5;
 
         RayTraceResult blockResult = player.getWorld().rayTraceBlocks(
                 player.getEyeLocation(),
@@ -208,7 +208,7 @@ public class BalloonAbility extends Ability {
 
         if (blockResult != null && blockResult.getHitBlock() != null) {
             double dirY = player.getLocation().getDirection().getY();
-            double offsetY = (dirY < -0.25 ? 2 : 0);
+            double offsetY = (dirY < -0.25 ? 1.5 : 0);
             return blockResult.getHitBlock().getLocation().add(0, offsetY, 0);
         }
         return player.getEyeLocation()
