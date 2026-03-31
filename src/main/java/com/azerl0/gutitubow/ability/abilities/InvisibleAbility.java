@@ -5,6 +5,7 @@ import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
 import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.util.ComponentUtil;
 import net.kyori.adventure.text.Component;
@@ -131,13 +132,15 @@ public class InvisibleAbility extends Ability {
         if (event.getDamageSource().getDirectPlayer() != null || event.getDamageSource().getDamageType() == GutitubowDamageType.UNKNOWN) stopInvisible();
     }
 
+    @Override
+    public void onDealDamage(GamePlayerDamageEvent event) {
+        if (event.isCancelled()) return;
+        startInvisible();
+    }
 
     @Override
-    public void onArrowHit(ProjectileHitEvent event) {
-        if (event.isCancelled()) return;
-        Entity hitEntity = event.getHitEntity();
-        if (hitEntity == null) return;
-        if (hitEntity instanceof Player) startInvisible();
+    public void onKill(GamePlayerKillEvent event) {
+        startInvisible();
     }
 
     @Override
