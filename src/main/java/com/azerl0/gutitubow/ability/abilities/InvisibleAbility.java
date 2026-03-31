@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 public class InvisibleAbility extends Ability {
     private BukkitTask sneakingTask;
     private BukkitTask invisibleTask;
-    private final int toInvisibleTick = 5 * 20;
+    private final int toInvisibleTick = 4 * 20;
     private int toInvisibleProgressTick;
 
     public InvisibleAbility(AbilityContext context) {
@@ -135,11 +135,6 @@ public class InvisibleAbility extends Ability {
     @Override
     public void onDealDamage(GamePlayerDamageEvent event) {
         if (event.isCancelled()) return;
-        startInvisible();
-    }
-
-    @Override
-    public void onKill(GamePlayerKillEvent event) {
         startInvisible();
     }
 
