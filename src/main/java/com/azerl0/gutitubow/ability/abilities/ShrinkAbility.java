@@ -31,14 +31,17 @@ public class ShrinkAbility extends Ability {
 
     @Override
     public void init(Player player) {
-        this.playerUUID = player.getUniqueId();
+        super.init(player);
         Objects.requireNonNull(getPlayer().getAttribute(Attribute.SCALE)).setBaseValue(0.75);
     }
 
     @Override
     public void reset() {
+        super.reset();
         Objects.requireNonNull(getPlayer().getAttribute(Attribute.SCALE)).setBaseValue(1.0);
         Objects.requireNonNull(getPlayer().getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0.1);
+        if (shrinkTask != null) shrinkTask.cancel();
+        shrinkTask = null;
     }
 
     private boolean isShrinking() {
