@@ -14,6 +14,7 @@ import com.azerl0.gutitubow.item.ItemListener;
 import com.azerl0.gutitubow.packet.*;
 import com.azerl0.gutitubow.player.FixLeftClickListener;
 import com.azerl0.gutitubow.player.FixLeftClickManager;
+import com.azerl0.gutitubow.player.PlayerSkinChanger;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
 import com.github.retrooper.packetevents.PacketEvents;
@@ -38,7 +39,7 @@ public final class Gutitubow extends JavaPlugin {
     private DebugManager debugManager;
     private MapManager mapManager;
     private GameManager gameManager;
-    private PlayerSkinChanger playerSkinChanger;
+    private final PlayerSkinChanger playerSkinChanger = new PlayerSkinChanger(this);
 
     private PacketListenerCommon packetListener;
 
@@ -74,6 +75,7 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.LASTSTAND, LastStandAbility::new);
         AbilityRegistry.register(AbilityType.DETECTION, DetectionAbility::new);
         AbilityRegistry.register(AbilityType.INVINCIBLE, InvincibleAbility::new);
+        AbilityRegistry.register(AbilityType.MEDUSA, MedusaAbility::new);
 
         // Managers
         this.scoreboardManager = new ScoreboardManager();
@@ -81,11 +83,9 @@ public final class Gutitubow extends JavaPlugin {
         this.fixLeftClickManager = new FixLeftClickManager(this);
         this.debugManager = new DebugManager(this);
         this.mapManager = new MapManager(this);
-        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.glowManager, this.scoreboardManager);
+        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.glowManager, this.scoreboardManager, playerSkinChanger);
         // MainGame
         this.game = gameManager.newGame();
-
-        this.playerSkinChanger = new PlayerSkinChanger();
 
         //GUI
         GameGUI gameGUI = new GameGUI(gameManager, game);

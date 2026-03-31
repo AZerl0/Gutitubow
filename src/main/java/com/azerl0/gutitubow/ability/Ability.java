@@ -56,18 +56,24 @@ public abstract class Ability {
     }
 
     public int getCompassCooldown() {
-        return getPlayer().getCooldown(Material.COMPASS);
+        Player player = getPlayer();
+        if (player == null) return 0;
+        return player.getCooldown(Material.COMPASS);
     }
 
     public void setCompassCooldown(int tick) {
-        getPlayer().setCooldown(Material.COMPASS, tick);
+        Player player = getPlayer();
+        if (player == null) return;
+        player.setCooldown(Material.COMPASS, tick);
     }
 
     public void sendActionBarCompassCooldown() {
+        Player player = getPlayer();
+        if (player == null) return;
         double cooldown = getCompassCooldown();
         double cooldownSec = Math.floor((cooldown / 20) * 10) / 10;
         Component message = Component.text(" - 能力クールタイム中 " + cooldownSec + "秒 - ").color(NamedTextColor.RED);
-        getPlayer().sendActionBar(message);
+        player.sendActionBar(message);
     }
 
     public void onShoot(EntityShootBowEvent event) {}
@@ -97,6 +103,8 @@ public abstract class Ability {
     public void onPressJumpKey(PlayerInputEvent event) {}
 
     public void onInteract(PlayerInteractEvent event) {}
+
+    public void onAnyPlayerDamage(GamePlayerDamageEvent event) {}
 
     public void onDamage(GamePlayerDamageEvent event) {}
 

@@ -12,6 +12,7 @@ import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.map.Map;
 import com.azerl0.gutitubow.map.MapRepairManager;
 import com.azerl0.gutitubow.packet.EntityGlowManager;
+import com.azerl0.gutitubow.player.PlayerSkinChanger;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.team.TeamManager;
 import net.kyori.adventure.bossbar.BossBar;
@@ -71,7 +72,8 @@ public class Game {
             Map map,
             EntityGlowManager glowManager,
             DebugManager debugManager,
-            ScoreboardManager scoreboardManager
+            ScoreboardManager scoreboardManager,
+            PlayerSkinChanger playerSkinChanger
     ) {
         this.plugin = plugin;
         this.map = map;
@@ -79,7 +81,7 @@ public class Game {
         this.glowManager = glowManager;
         gutitubowGameMode = GutitubowGameMode.SOLO;
         this.carePackageManager = new CarePackageManager(plugin, this, glowManager);
-        AbilityContext abilityContext = new AbilityContext(plugin, this, glowManager);
+        AbilityContext abilityContext = new AbilityContext(plugin, this, glowManager, playerSkinChanger);
         this.abilityManager = new AbilityManager(abilityContext);
         this.gamePlayerManager = new GamePlayerManager(plugin, this);
         reset();

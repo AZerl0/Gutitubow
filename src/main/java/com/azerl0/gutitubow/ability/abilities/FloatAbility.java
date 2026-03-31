@@ -153,8 +153,6 @@ public class FloatAbility extends Ability {
         floatAreaCenter = null;
         if (floatingTask != null) floatingTask.cancel();
         floatingTask = null;
-        Player player = getPlayer();
-        if (player == null) return;
         setCompassCooldown(10 * 20);
     }
 

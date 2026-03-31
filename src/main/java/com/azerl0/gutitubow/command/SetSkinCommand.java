@@ -1,6 +1,6 @@
 package com.azerl0.gutitubow.command;
 
-import com.azerl0.gutitubow.packet.PlayerSkinChanger;
+import com.azerl0.gutitubow.player.PlayerSkinChanger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -53,7 +53,7 @@ public class SetSkinCommand implements CommandExecutor, TabExecutor {
         if (target == null) return true;
 
 
-        playerSkinChanger.setSkin(senderPlayer, skinTarget);
+        playerSkinChanger.setSkin(target, skinTarget);
 
 
         return true;

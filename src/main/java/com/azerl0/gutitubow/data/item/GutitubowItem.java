@@ -30,7 +30,7 @@ public class GutitubowItem {
             meta.setColor(Color.RED);
             item.setItemMeta(meta);
         }
-        RECOVERY_POTION = item;
+        RECOVERY_POTION = item.clone();
     }
 
     public static final ItemStack RESPAWN_BEACON;
@@ -50,7 +50,7 @@ public class GutitubowItem {
             ));
             item.setItemMeta(meta);
         }
-        RESPAWN_BEACON = item;
+        RESPAWN_BEACON = item.clone();
     }
 
     public static final ItemStack GUTITUBOW;
@@ -73,7 +73,7 @@ public class GutitubowItem {
             item.setItemMeta(meta);
         }
         ItemUtil.setCantDrop(item, true);
-        GUTITUBOW = item;
+        GUTITUBOW = item.clone();
     }
 
     public static final ItemStack AREA_COMPASS;
@@ -86,7 +86,7 @@ public class GutitubowItem {
         }
         itemStack.setItemMeta(meta);
         ItemUtil.setCantDrop(itemStack, true);
-        AREA_COMPASS = itemStack;
+        AREA_COMPASS = itemStack.clone();
     }
 
     public static final ItemStack SPYGLASS;
@@ -94,7 +94,7 @@ public class GutitubowItem {
         ItemStack itemStack = new ItemStack(Material.SPYGLASS);
 
         ItemUtil.setCantDrop(itemStack, true);
-        SPYGLASS = itemStack;
+        SPYGLASS = itemStack.clone();
     }
 
     public static final ItemStack INVALID_SLOT_BLACK;
@@ -108,7 +108,7 @@ public class GutitubowItem {
         itemStack.setItemMeta(meta);
         ItemUtil.setCantDrop(itemStack, true);
         ItemUtil.setCantMove(itemStack, true);
-        INVALID_SLOT_BLACK = itemStack;
+        INVALID_SLOT_BLACK = itemStack.clone();
     }
 
 
@@ -123,7 +123,7 @@ public class GutitubowItem {
             meta.getPersistentDataContainer().set(gamemasterKey, PersistentDataType.BOOLEAN, true);
         }
         itemStack.setItemMeta(meta);
-        GAME_MASTER = itemStack;
+        GAME_MASTER = itemStack.clone();
     }
 
 
@@ -137,7 +137,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_NULL = itemStack;
+        ABILITY_ICON_NULL = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_BARRIER;
@@ -155,7 +155,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_BARRIER = itemStack;
+        ABILITY_ICON_BARRIER = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_FLOAT;
@@ -176,7 +176,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_FLOAT = itemStack;
+        ABILITY_ICON_FLOAT = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_SHRINK;
@@ -195,7 +195,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_SHRINK = itemStack;
+        ABILITY_ICON_SHRINK = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_TOUGH;
@@ -215,7 +215,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_TOUGH = itemStack;
+        ABILITY_ICON_TOUGH = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_INVISIBLE;
@@ -234,7 +234,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_INVISIBLE = itemStack;
+        ABILITY_ICON_INVISIBLE = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_SHIELD;
@@ -256,7 +256,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_SHIELD = itemStack;
+        ABILITY_ICON_SHIELD = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_FLASH;
@@ -277,7 +277,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_FLASH = itemStack;
+        ABILITY_ICON_FLASH = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_GIANT;
@@ -299,7 +299,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_GIANT = itemStack;
+        ABILITY_ICON_GIANT = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_PREDATION;
@@ -317,7 +317,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_PREDATION = itemStack;
+        ABILITY_ICON_PREDATION = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_BALLOON;
@@ -337,7 +337,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_BALLOON = itemStack;
+        ABILITY_ICON_BALLOON = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_TRACKING;
@@ -355,7 +355,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_TRACKING = itemStack;
+        ABILITY_ICON_TRACKING = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_LAST_STAND;
@@ -376,7 +376,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_LAST_STAND = itemStack;
+        ABILITY_ICON_LAST_STAND = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_DETECTION;
@@ -393,7 +393,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_DETECTION = itemStack;
+        ABILITY_ICON_DETECTION = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_INVINCIBLE;
@@ -413,7 +413,30 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_INVINCIBLE = itemStack;
+        ABILITY_ICON_INVINCIBLE = itemStack.clone();
+    }
+
+    public static final ItemStack ABILITY_ICON_MEDUSA;
+    static {
+        ItemStack itemStack = new ItemStack(Material.ENDER_EYE);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「魔眼」は、視界にとらえた相手の動きを封じる能力。"),
+                Component.text("§f自分の視界に捉えた相手の移動速度が低下する。"),
+                Component.text("§fまた、弓の左クリックで「石化」を発動すると"),
+                Component.text("§f目が合っている相手を全員石化する。(クールタイム 20秒間)"),
+                Component.text("§f石化時間は、相手を視界に捉えていた長さに比例する。"),
+                Component.empty(),
+                Component.text("§f石化能力クールタイム中は、移動速度低下の効果は発動しない"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 [左クリック(弓)] - 石化能力を発動"),
+                Component.text("§7 [SHIFT(無敵化中)] - 無敵化解除")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_MEDUSA = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_BOMB;
@@ -433,7 +456,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_BOMB = itemStack;
+        ABILITY_ICON_BOMB = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_CONTROL;
@@ -456,7 +479,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_CONTROL = itemStack;
+        ABILITY_ICON_CONTROL = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_QUICKFIRE;
@@ -475,7 +498,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_QUICKFIRE = itemStack;
+        ABILITY_ICON_QUICKFIRE = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_RICOCHET;
@@ -495,7 +518,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_RICOCHET = itemStack;
+        ABILITY_ICON_RICOCHET = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_SNIPE;
@@ -514,7 +537,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_SNIPE = itemStack;
+        ABILITY_ICON_SNIPE = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_DASH;
@@ -535,7 +558,7 @@ public class GutitubowItem {
         meta.removeAttributeModifier(EquipmentSlot.BODY);
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_DASH = itemStack;
+        ABILITY_ICON_DASH = itemStack.clone();
     }
 
 
@@ -555,7 +578,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_JUMP = itemStack;
+        ABILITY_ICON_JUMP = itemStack.clone();
     }
     public static final ItemStack ABILITY_ICON_TELEPORT;
     static {
@@ -578,7 +601,7 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_TELEPORT = itemStack;
+        ABILITY_ICON_TELEPORT = itemStack.clone();
     }
 
     public static final ItemStack ABILITY_ICON_ESCAPE;
@@ -599,6 +622,6 @@ public class GutitubowItem {
         ));
 
         itemStack.setItemMeta(meta);
-        ABILITY_ICON_ESCAPE = itemStack;
+        ABILITY_ICON_ESCAPE = itemStack.clone();
     }
 }

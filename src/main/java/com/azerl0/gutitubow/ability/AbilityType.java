@@ -31,7 +31,8 @@ public enum AbilityType {
     TRACKING(Component.text("追跡"), GutitubowItem.ABILITY_ICON_TRACKING),
     LASTSTAND(Component.text("背水"), GutitubowItem.ABILITY_ICON_LAST_STAND),
     DETECTION(Component.text("探知"), GutitubowItem.ABILITY_ICON_DETECTION),
-    INVINCIBLE(Component.text("無敵"), GutitubowItem.ABILITY_ICON_INVINCIBLE);
+    INVINCIBLE(Component.text("無敵"), GutitubowItem.ABILITY_ICON_INVINCIBLE),
+    MEDUSA(Component.text("魔眼"), GutitubowItem.ABILITY_ICON_MEDUSA);
 
     private final Component name;
     private final ItemStack displayItem;
@@ -52,6 +53,6 @@ public enum AbilityType {
         meta.displayName(name.decoration(TextDecoration.BOLD, true).decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE));
 
         itemStack.setItemMeta(meta);
-        return itemStack;
+        return itemStack.clone();
     }
 }
