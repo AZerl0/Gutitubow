@@ -98,6 +98,7 @@ public class ShieldAbility extends Ability {
                 as.setGravity(false);
                 as.setInvisible(true);
                 as.setMarker(true);
+                as.addDisabledSlots(EquipmentSlot.HEAD);
             });
             shieldEntities.put(armorStand.getUniqueId(), i);
 
