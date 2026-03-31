@@ -347,20 +347,21 @@ public class GamePlayer {
         elytra.setItemMeta(meta);
         player.getInventory().setChestplate(elytra);
         player.setGliding(true);
-        ItemStack chestplate = player.getInventory().getChestplate();
-        String chestplateName = chestplate == null ? "None" : chestplate.getType().name();
-        Bukkit.getServer().broadcast(Component.text("ElytraDebug: \nplayer - " + player.getName() + "\nchestplate - " + chestplateName + "\ngliding - " + player.isGliding()));
 
         if (firstElytraTask != null && !firstElytraTask.isCancelled()) return;
         firstElytraTask = new BukkitRunnable() {
 
             @Override
             public void run() {
-                if (((Entity) getPlayer()).isOnGround()) {
+                if (((Entity) player).isOnGround()) {
                     resetFirstElytra();
+                    return;
+                }
+                if (!player.isInsideVehicle()) {
+                    player.setGliding(true);
                 }
             }
-        }.runTaskTimer(plugin, 1L, 1L);
+        }.runTaskTimer(plugin, 5L, 1L);
     }
 
     public void resetFirstElytra() {
