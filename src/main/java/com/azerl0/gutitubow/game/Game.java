@@ -104,6 +104,10 @@ public class Game {
         return teamManager.getPlayerTeam(player);
     }
 
+    public boolean isGamePlayer(Player player) {
+        return getPlayers().contains(player.getUniqueId());
+    }
+
     public boolean isTeammate(Player player, Player target) {
         if (player.getUniqueId() == target.getUniqueId()) return true;
         GameTeam gameTeam = getGameTeam(player);

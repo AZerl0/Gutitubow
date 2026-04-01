@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.data.damage.DamageSource;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.util.EntityUtil;
+import org.bukkit.Material;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -12,6 +13,8 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
 public class GamePlayerListener implements Listener {
@@ -132,5 +135,16 @@ public class GamePlayerListener implements Listener {
     public void onDrop(PlayerDropItemEvent event) {
         GamePlayer gamePlayer = game.getGamePlayer(event.getPlayer());
         gamePlayer.onDropPotion(event);
+    }
+
+    @EventHandler
+    public void onRide(VehicleEnterEvent event) {
+        if (!(event.getEntered() instanceof Player player)) return;
+        if (game.isGamePlayer(player)) {
+            ItemStack chestplate = player.getInventory().getChestplate();
+            if (chestplate != null && chestplate.getType() == Material.ELYTRA) {
+                player.getInventory().setChestplate(ItemStack.of(Material.AIR));
+            }
+        }
     }
 }
