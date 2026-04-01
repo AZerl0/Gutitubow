@@ -7,7 +7,6 @@ import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.MathUtil;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.AbstractArrow;
@@ -16,13 +15,11 @@ import org.bukkit.entity.SpectralArrow;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 public class FlashAbility extends Ability {
-    private BukkitTask cooldownTask;
 
 
     public FlashAbility(AbilityContext context) {
@@ -37,8 +34,6 @@ public class FlashAbility extends Ability {
     @Override
     public void reset() {
         super.reset();
-        if (cooldownTask != null) cooldownTask.cancel();
-        cooldownTask = null;
     }
 
     @Override
@@ -61,19 +56,7 @@ public class FlashAbility extends Ability {
         ArrowUtil.setFixRotation(arrow, velocity);
 
         setCompassCooldown(12 * 20);
-        if (cooldownTask != null && !cooldownTask.isCancelled()) return;
-
-        cooldownTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!hasCompassCooldown()) {
-                    getPlayer().sendActionBar(Component.text(" - 能力使用可能 - ").color(NamedTextColor.GREEN));
-                    this.cancel();
-                    return;
-                }
-                sendActionBarCompassCooldown();
-            }
-        }.runTaskTimer(context.plugin(), 0L, 1L);
+        startCompassCooldownTask();
 
 
         new BukkitRunnable() {
