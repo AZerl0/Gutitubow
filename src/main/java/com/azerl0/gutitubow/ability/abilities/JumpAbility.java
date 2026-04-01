@@ -82,7 +82,7 @@ public class JumpAbility extends Ability {
 
         Vector velocity = player.getLocation().clone().getDirection();
         if (velocity.getY() < 0.4) velocity.setY(0.4);
-        player.setVelocity(velocity.multiply(MathUtil.getLerp(chargeTick, 0, maxChargeTick, 0.0, 2.25)));
+        player.setVelocity(velocity.multiply(MathUtil.getLerp(chargeTick, 0, maxChargeTick, 0.1, 2.5)));
         World world = player.getWorld();
         Location location = player.getLocation();
         player.playSound(location, Sound.ENTITY_BAT_TAKEOFF, 1.0f, 1.0f);
