@@ -49,3 +49,8 @@ commands:
     description: Set skin command
     usage: /setskin <target> <skinPlayer>
     permission: gutitubow.setskin
+
+  setname:
+    description: Set name command
+    usage: /setname <target> <name>
+    permission: gutitubow.setname
