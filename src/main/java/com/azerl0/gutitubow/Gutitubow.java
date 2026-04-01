@@ -76,6 +76,7 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.DETECTION, DetectionAbility::new);
         AbilityRegistry.register(AbilityType.INVINCIBLE, InvincibleAbility::new);
         AbilityRegistry.register(AbilityType.MEDUSA, MedusaAbility::new);
+        AbilityRegistry.register(AbilityType.RAPIDFIRE, RapidFireAbility::new);
 
         // Managers
         this.scoreboardManager = new ScoreboardManager();

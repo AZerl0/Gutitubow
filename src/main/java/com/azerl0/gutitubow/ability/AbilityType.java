@@ -32,7 +32,8 @@ public enum AbilityType {
     LASTSTAND(Component.text("背水"), GutitubowItem.ABILITY_ICON_LAST_STAND),
     DETECTION(Component.text("探知"), GutitubowItem.ABILITY_ICON_DETECTION),
     INVINCIBLE(Component.text("無敵"), GutitubowItem.ABILITY_ICON_INVINCIBLE),
-    MEDUSA(Component.text("魔眼"), GutitubowItem.ABILITY_ICON_MEDUSA);
+    MEDUSA(Component.text("魔眼"), GutitubowItem.ABILITY_ICON_MEDUSA),
+    RAPIDFIRE(Component.text("連射"), GutitubowItem.ABILITY_ICON_RAPIDFIRE);
 
     private final Component name;
     private final ItemStack displayItem;

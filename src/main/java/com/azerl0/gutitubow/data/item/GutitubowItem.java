@@ -624,4 +624,24 @@ public class GutitubowItem {
         itemStack.setItemMeta(meta);
         ABILITY_ICON_ESCAPE = itemStack.clone();
     }
+
+    public static final ItemStack ABILITY_ICON_RAPIDFIRE;
+    static {
+        ItemStack itemStack = new ItemStack(Material.FIREWORK_ROCKET);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「連射」は圧倒的弾幕で全てを蹴散らす能力。"),
+                Component.text("§fスニークで能力をチャージし、弓矢を放つと連射開始。"),
+                Component.text("§f尋常じゃない早さで矢を連射する。"),
+                Component.text("§f発動中は極端に移動力が下がるため、注意が必要。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7[SHIFT (長押し)] - 「連射」チャージ"),
+                Component.text("§7[(チャージ完了後) 矢を発射] - 「連射」開始")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_RAPIDFIRE = itemStack.clone();
+    }
 }
