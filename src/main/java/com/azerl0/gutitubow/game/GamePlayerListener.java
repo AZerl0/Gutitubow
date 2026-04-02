@@ -59,6 +59,7 @@ public class GamePlayerListener implements Listener {
             if (tar instanceof HappyGhast) {
                 event.getEntity().remove();
                 ((HappyGhast) tar).damage(2);
+                event.setCancelled(true);
                 return;
             }
             if (!(tar instanceof ArmorStand armorStand && armorStand.isInvulnerable())) event.setCancelled(true);
