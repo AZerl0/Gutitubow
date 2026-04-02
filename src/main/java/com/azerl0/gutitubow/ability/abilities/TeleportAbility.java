@@ -15,8 +15,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -24,7 +22,6 @@ import java.util.UUID;
 
 public class TeleportAbility extends Ability {
     private Location savedLocation;
-    private BukkitTask cooldownTask = null;
 
     public TeleportAbility(AbilityContext context) {
         super(context);
@@ -64,7 +61,8 @@ public class TeleportAbility extends Ability {
 
     private void onRightClickCompass() {
         Player player = getPlayer();
-        if (player.getCooldown(Material.COMPASS) != 0) return;
+        if (player == null) return;
+        if (hasCompassCooldown()) return;
 
         if (savedLocation == null) {
             savedLocation = player.getLocation();
