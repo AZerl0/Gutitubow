@@ -125,6 +125,7 @@ public class FlashAbility extends Ability {
 
             Vector direction = location.toVector().subtract(eye.toVector());
 
+            if (direction.length() <= 0) continue;
 
             RayTraceResult blockHit = world.rayTraceBlocks(
                     eye,
