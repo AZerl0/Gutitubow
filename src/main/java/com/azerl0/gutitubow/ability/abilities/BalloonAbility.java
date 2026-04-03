@@ -121,7 +121,7 @@ public class BalloonAbility extends Ability {
             happyGhastRegenerationTick++;
             if (happyGhastRegenerationTick >= HAPPY_GHAST_REGENERATION_TICK) {
                 happyGhastHealth = Math.min(happyGhastHealth + 2, HAPPY_GHAST_MAX_HEALTH);
-                happyGhast.setHealth(happyGhastHealth);
+                if (happyGhast != null) happyGhast.setHealth(happyGhastHealth);
                 happyGhastRegenerationTick = 0;
                 if (happyGhastHealth >= HAPPY_GHAST_MAX_HEALTH) canSummon = true;
             }
