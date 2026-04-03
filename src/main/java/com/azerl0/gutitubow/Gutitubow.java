@@ -3,6 +3,7 @@ package com.azerl0.gutitubow;
 import com.azerl0.gutitubow.carepackage.CarePackageListener;
 import com.azerl0.gutitubow.command.*;
 import com.azerl0.gutitubow.debug.DebugManager;
+import com.azerl0.gutitubow.fakeplayer.FakePlayerManager;
 import com.azerl0.gutitubow.game.*;
 import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.gui.AllGUI;
@@ -40,6 +41,7 @@ public final class Gutitubow extends JavaPlugin {
     private MapManager mapManager;
     private GameManager gameManager;
     private final PlayerSkinChanger playerSkinChanger = new PlayerSkinChanger(this);
+    private final FakePlayerManager fakePlayerManager = new FakePlayerManager();
 
     private PacketListenerCommon packetListener;
 
@@ -77,6 +79,7 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.INVINCIBLE, InvincibleAbility::new);
         AbilityRegistry.register(AbilityType.MEDUSA, MedusaAbility::new);
         AbilityRegistry.register(AbilityType.RAPIDFIRE, RapidFireAbility::new);
+        AbilityRegistry.register(AbilityType.ECHO, EchoAbility::new);
 
         // Managers
         this.scoreboardManager = new ScoreboardManager();
@@ -84,7 +87,7 @@ public final class Gutitubow extends JavaPlugin {
         this.fixLeftClickManager = new FixLeftClickManager(this);
         this.debugManager = new DebugManager(this);
         this.mapManager = new MapManager(this);
-        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.glowManager, this.scoreboardManager, playerSkinChanger);
+        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.glowManager, this.scoreboardManager, playerSkinChanger, fakePlayerManager);
         // MainGame
         this.game = gameManager.newGame();
 
@@ -120,6 +123,7 @@ public final class Gutitubow extends JavaPlugin {
         getCommand("gameteam").setExecutor(new GameTeamCommand(game.getTeamManager(), game.getSpectatorManager()));
         getCommand("setskin").setExecutor(new SetSkinCommand(playerSkinChanger));
         getCommand("setname").setExecutor(new SetNameCommand());
+        getCommand("fakeplayer").setExecutor(new FakePlayerCommand(fakePlayerManager));
 
         for (World world : Bukkit.getWorlds()) {
             world.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, false);

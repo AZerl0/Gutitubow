@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.data.damage.DamageSource;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.util.EntityUtil;
+import net.citizensnpcs.api.CitizensAPI;
 import org.bukkit.Material;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.*;
@@ -63,6 +64,9 @@ public class GamePlayerListener implements Listener {
                 return;
             }
             if (!(tar instanceof ArmorStand armorStand && armorStand.isInvulnerable())) event.setCancelled(true);
+            return;
+        } else if (CitizensAPI.getNPCRegistry().isNPC(tarPlayer)) {
+            event.setCancelled(true);
             return;
         }
         if (!(shooter instanceof Player shooterPlayer)) return;

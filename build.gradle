@@ -18,6 +18,11 @@ repositories {
     }
     maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
     maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
+
+    maven {
+        name = 'citizens-repo'
+        url = 'https://maven.citizensnpcs.co/repo'
+    }
 }
 
 dependencies {
@@ -25,6 +30,9 @@ dependencies {
 
     compileOnly("de.tr7zw:item-nbt-api-plugin:2.15.5")
     compileOnly("com.github.retrooper:packetevents-spigot:2.11.2")
+    compileOnly("net.citizensnpcs:citizens-main:2.0.41-SNAPSHOT") {
+        exclude group: '*', module: '*'
+    }
 }
 
 tasks {

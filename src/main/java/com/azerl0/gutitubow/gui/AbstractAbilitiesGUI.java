@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 public class AbstractAbilitiesGUI extends AbstractGUI {
     public AbstractAbilitiesGUI(Component title) {
-        super(27, title);
+        super(36, title);
     }
 
     @Override
@@ -30,6 +30,7 @@ public class AbstractAbilitiesGUI extends AbstractGUI {
         addAbilityButton(AbilityType.CONTROL);
         addAbilityButton(AbilityType.RICOCHET);
         addAbilityButton(AbilityType.BARRIER);
+        addAbilityButton(AbilityType.ECHO);
         addAbilityButton(AbilityType.INVINCIBLE);
         addAbilityButton(AbilityType.FLOAT);
         addAbilityButton(AbilityType.MEDUSA);

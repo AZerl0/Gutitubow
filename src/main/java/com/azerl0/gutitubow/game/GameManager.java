@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.game;
 
 import com.azerl0.gutitubow.debug.DebugManager;
+import com.azerl0.gutitubow.fakeplayer.FakePlayerManager;
 import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.map.MapManager;
 
@@ -19,6 +20,7 @@ public class GameManager {
     private final EntityGlowManager glowManager;
     private final ScoreboardManager scoreboardManager;
     private final PlayerSkinChanger playerSkinChanger;
+    private final FakePlayerManager fakePlayerManager;
     private BukkitTask gameTask;
 
     public GameManager(
@@ -27,7 +29,8 @@ public class GameManager {
             DebugManager debugManager,
             EntityGlowManager glowManager,
             ScoreboardManager scoreboardManager,
-            PlayerSkinChanger playerSkinChanger
+            PlayerSkinChanger playerSkinChanger,
+            FakePlayerManager fakePlayerManager
     ) {
         this.plugin = plugin;
         this.mapManager = mapManager;
@@ -35,10 +38,11 @@ public class GameManager {
         this.glowManager = glowManager;
         this.scoreboardManager = scoreboardManager;
         this.playerSkinChanger = playerSkinChanger;
+        this.fakePlayerManager = fakePlayerManager;
     }
 
     public Game newGame() {
-        return new Game(plugin, mapManager.getTestMap(), glowManager, debugManager, scoreboardManager, playerSkinChanger);
+        return new Game(plugin, mapManager.getTestMap(), glowManager, debugManager, scoreboardManager, playerSkinChanger, fakePlayerManager);
     }
 
     public void resetGame(Game game) {

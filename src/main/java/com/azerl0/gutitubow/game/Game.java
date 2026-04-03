@@ -5,6 +5,7 @@ import com.azerl0.gutitubow.carepackage.CarePackage;
 import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.debug.DebugManager;
+import com.azerl0.gutitubow.fakeplayer.FakePlayerManager;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoardManager;
 import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
@@ -73,7 +74,8 @@ public class Game {
             EntityGlowManager glowManager,
             DebugManager debugManager,
             ScoreboardManager scoreboardManager,
-            PlayerSkinChanger playerSkinChanger
+            PlayerSkinChanger playerSkinChanger,
+            FakePlayerManager fakePlayerManager
     ) {
         this.plugin = plugin;
         this.map = map;
@@ -81,7 +83,7 @@ public class Game {
         this.glowManager = glowManager;
         gutitubowGameMode = GutitubowGameMode.SOLO;
         this.carePackageManager = new CarePackageManager(plugin, this, glowManager);
-        AbilityContext abilityContext = new AbilityContext(plugin, this, glowManager, playerSkinChanger);
+        AbilityContext abilityContext = new AbilityContext(plugin, this, glowManager, playerSkinChanger, fakePlayerManager, scoreboardManager);
         this.abilityManager = new AbilityManager(abilityContext);
         this.gamePlayerManager = new GamePlayerManager(plugin, this);
         reset();
@@ -247,6 +249,7 @@ public class Game {
             player.showBossBar(this.bossBar);
         }
 
+        // ゲームプレイヤーの処理
         for (UUID uuid : this.players) {
             Player player = Bukkit.getPlayer(uuid);
             if (player == null || !player.isOnline()) continue;
@@ -254,13 +257,8 @@ public class Game {
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(6);
             player.setHealth(6);
             if (getGameMode() == GutitubowGameMode.SOLO) {
-                Scoreboard board = scoreboardManager.getScoreboard(player);
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    Team team = board.getPlayerTeam(onlinePlayer);
-                    if (team == null) {
-                        team = board.registerNewTeam("@" + onlinePlayer.getName());
-                        team.addPlayer(onlinePlayer);
-                    }
+                    Team team = scoreboardManager.getTeam(onlinePlayer);
                     if (onlinePlayer.getUniqueId() == player.getUniqueId()) {
                         team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
                         team.setCanSeeFriendlyInvisibles(true);

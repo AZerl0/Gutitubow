@@ -47,7 +47,7 @@ import java.util.UUID;
 
 public class GamePlayer {
     private final JavaPlugin plugin;
-    private final UUID playerUUID;
+    private final @NotNull UUID playerUUID;
     private final Game game;
     private BukkitTask borderOutsideTimerTask = null;
     private BukkitTask arrowReloadTask = null;
@@ -92,6 +92,10 @@ public class GamePlayer {
     @Nullable
     public Player getPlayer() {
         return Bukkit.getPlayer(playerUUID);
+    }
+
+    public @NotNull UUID getPlayerUUID() {
+        return playerUUID;
     }
 
     public Game getGame() {

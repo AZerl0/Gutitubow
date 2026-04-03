@@ -644,4 +644,24 @@ public class GutitubowItem {
         itemStack.setItemMeta(meta);
         ABILITY_ICON_RAPIDFIRE = itemStack.clone();
     }
+
+    public static final ItemStack ABILITY_ICON_ECHO;
+    static {
+        ItemStack itemStack = new ItemStack(Material.CLOCK);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「反響」は、過去の自分と共闘する能力。"),
+                Component.text("§f過去数秒前の自分の分身が常についてくる。"),
+                Component.text("§f任意のタイミングで過去の自分の位置まで戻ることができる。。"),
+                Component.text("§fまた、過去の自分が放った矢にも攻撃判定がある。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7[左クリック (弓)] - 過去の自分のところまで戻る。"),
+                Component.text("§7[右クリック (コンパス)] - 何秒前の自分を反響するか設定。")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_ECHO = itemStack.clone();
+    }
 }

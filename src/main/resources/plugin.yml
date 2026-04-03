@@ -3,7 +3,7 @@ version: '1.0.0-SNAPSHOT'
 main: com.azerl0.gutitubow.Gutitubow
 api-version: '1.21'
 authors: [ AZer0 ]
-depend: [NBTAPI]
+depend: [NBTAPI, Citizens]
 commands:
   ability:
     description: Ability command
@@ -54,3 +54,8 @@ commands:
     description: Set name command
     usage: /setname <target> <name>
     permission: gutitubow.setname
+
+  fakeplayer:
+    description: Fake player command
+    usage: /fakeplayer ...
+    permission: gutitubow.fakeplayer

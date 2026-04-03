@@ -33,7 +33,8 @@ public enum AbilityType {
     DETECTION(Component.text("探知"), GutitubowItem.ABILITY_ICON_DETECTION),
     INVINCIBLE(Component.text("無敵"), GutitubowItem.ABILITY_ICON_INVINCIBLE),
     MEDUSA(Component.text("魔眼"), GutitubowItem.ABILITY_ICON_MEDUSA),
-    RAPIDFIRE(Component.text("連射"), GutitubowItem.ABILITY_ICON_RAPIDFIRE);
+    RAPIDFIRE(Component.text("連射"), GutitubowItem.ABILITY_ICON_RAPIDFIRE),
+    ECHO(Component.text("反響"), GutitubowItem.ABILITY_ICON_ECHO);
 
     private final Component name;
     private final ItemStack displayItem;
