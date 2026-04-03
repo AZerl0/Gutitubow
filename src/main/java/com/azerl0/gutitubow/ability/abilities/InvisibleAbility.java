@@ -5,7 +5,8 @@ import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.util.ComponentUtil;
 import net.kyori.adventure.text.Component;
@@ -13,9 +14,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.potion.PotionEffect;
@@ -25,7 +24,6 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 public class InvisibleAbility extends Ability {
-    private BukkitTask sneakingTask;
     private BukkitTask invisibleTask;
     private final int toInvisibleTick = 4 * 20;
     private int toInvisibleProgressTick;
@@ -48,8 +46,6 @@ public class InvisibleAbility extends Ability {
 
     @Override
     public void reset() {
-        if (sneakingTask != null) sneakingTask.cancel();
-        sneakingTask = null;
         stopInvisible();
     }
 
@@ -59,28 +55,19 @@ public class InvisibleAbility extends Ability {
 
     @Override
     public void onToggleSneak(PlayerToggleSneakEvent event) {
-        if (event.isSneaking()) {
-            if (sneakingTask != null && !sneakingTask.isCancelled()) return;
-
-            sneakingTask = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (!getPlayer().isSneaking()) {
-                        this.cancel();
-                        return;
-                    }
-                    onSneaking();
-                }
-            }.runTaskTimer(context.plugin(), 0L, 1L);
-        } else {
-            toInvisibleProgressTick = 0;
-        }
+        if (!event.isSneaking()) toInvisibleProgressTick = 0;
     }
 
-    private void onSneaking() {
+    @Override
+    public void onSneaking(GamePlayerSneakingEvent event) {
         if (!isInvisible()) {
             toInvisible();
         }
+    }
+
+    @Override
+    public void onDeath(GamePlayerDeathEvent event) {
+        stopInvisible();
     }
 
     private void toInvisible() {
