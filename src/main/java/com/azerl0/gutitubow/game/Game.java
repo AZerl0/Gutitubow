@@ -106,6 +106,10 @@ public class Game {
         return teamManager.getPlayerTeam(player);
     }
 
+    public @Nullable GameTeam getGameTeam(UUID uuid) {
+        return teamManager.getPlayerTeam(uuid);
+    }
+
     public boolean isGamePlayer(Player player) {
         return getPlayers().contains(player.getUniqueId());
     }
@@ -115,6 +119,14 @@ public class Game {
         GameTeam gameTeam = getGameTeam(player);
         if (gameTeam == null) return false;
         return  gameTeam.isTeammate(target);
+    }
+
+    public boolean isTeammate(UUID player, UUID target) {
+        if (player == target) return true;
+        GameTeam gameTeam = getGameTeam(player);
+        if (gameTeam == null) return false;
+        return  gameTeam.isTeammate(target);
+
     }
 
     public boolean isStarted() {
@@ -437,6 +449,7 @@ public class Game {
                 setWorldBorderToSafeAreaByProgress(map.getCenter(), getShrinkProgress());
             }
 
+            // 最終フェーズ処理
             if (phase == 7) {
                 int lastPhaseCycleTick = 15 * 20;
                 int lastPhaseCycleCurrentTick = currentTicks % lastPhaseCycleTick;
@@ -483,13 +496,10 @@ public class Game {
     }
 
     private void setWorldBorderToSafeAreaByProgress(Location start, float progress) {
+        progress = Math.max(0.0f, Math.min(1.0f, progress));
         WorldBorder border = map.getBorder();
-        if (progress >= 0.0f && progress <= 1.0f) {
-            Vector offset = safeArea.toVector().subtract(start.toVector()).multiply(progress);
-            border.setCenter(start.clone().add(offset));
-        } else {
-            border.setCenter(start);
-        }
+        Vector offset = safeArea.toVector().subtract(start.toVector()).multiply(progress);
+        border.setCenter(start.clone().add(offset));
     }
 
     private void randomCarePackageSpawn(int count, boolean showLog) {

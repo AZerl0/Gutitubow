@@ -19,7 +19,8 @@ public class GameTeam {
     private final NamedTextColor teamColor;
     private final Team team = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(this.toString());
     private final Game game;
-    private @NotNull final List<UUID> players = new ArrayList<>();
+    private @NotNull
+    final List<UUID> players = new ArrayList<>();
 
     public GameTeam(Component teamName, ItemStack teamIconItem, NamedTextColor teamColor, Game game) {
         this.teamName = teamName;
@@ -95,7 +96,12 @@ public class GameTeam {
 
     public boolean isTeammate(Player target) {
         GameTeam playerTeam = game.getGameTeam(target);
-            return playerTeam == this;
+        return playerTeam == this;
+    }
+
+    public boolean isTeammate(UUID uuid) {
+        GameTeam playerTeam = game.getGameTeam(uuid);
+        return playerTeam == this;
     }
 
     @Nullable

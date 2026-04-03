@@ -25,6 +25,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.Set;
 
 public class LastStandAbility extends Ability {
     private BukkitTask lastStandTask;
@@ -92,7 +93,8 @@ public class LastStandAbility extends Ability {
         Location location = player.getLocation();
 
         PotionEffect speed = new PotionEffect(PotionEffectType.SPEED, -1, 1, true, false, true);
-        player.addPotionEffect(speed);
+        PotionEffect absorption = new PotionEffect(PotionEffectType.ABSORPTION, -1, 0, true, false, true);
+        player.addPotionEffects(Set.of(speed, absorption));
         GamePlayer gamePlayer = context.game().getGamePlayer(player);
         gamePlayer.setMaxArrowStackSize(3);
         gamePlayer.setArrowReloadTick(20);
@@ -106,6 +108,7 @@ public class LastStandAbility extends Ability {
         Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(2);
         Objects.requireNonNull(player.getAttribute(Attribute.MAX_ABSORPTION)).setBaseValue(absorptionAmount);
         player.setAbsorptionAmount(absorptionAmount);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, -1, 0, true, false, false));
 
         Title title = Title.title(
                 Component.empty(),
@@ -156,5 +159,9 @@ public class LastStandAbility extends Ability {
         if (lastStandTask != null) lastStandTask.cancel();
         lastStandTask = null;
         lastStandRemainedTick = 0;
+        Player player = getPlayer();
+        if (player == null) return;
+        player.removePotionEffect(PotionEffectType.ABSORPTION);
+        player.removePotionEffect(PotionEffectType.SPEED);
     }
 }

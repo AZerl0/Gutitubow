@@ -94,9 +94,12 @@ public class TeamManager {
         return teams.values();
     }
 
-    @Nullable
-    public GameTeam getPlayerTeam(@NotNull Player player) {
+    public @Nullable GameTeam getPlayerTeam(@NotNull Player player) {
         return playerTeams.get(player.getUniqueId());
+    }
+
+    public @Nullable GameTeam getPlayerTeam(@NotNull UUID uuid) {
+        return playerTeams.get(uuid);
     }
 
     @Nullable

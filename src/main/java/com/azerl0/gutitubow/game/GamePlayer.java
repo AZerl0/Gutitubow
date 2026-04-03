@@ -495,6 +495,10 @@ public class GamePlayer {
         return game.isTeammate(getPlayer(), target);
     }
 
+    public boolean isTeammate(UUID target) {
+        return game.isTeammate(playerUUID, target);
+    }
+
     public void onSneaking(@NotNull GamePlayerSneakingEvent event) {
         Player player = event.getPlayer();
         ItemStack mainHandItem = player.getInventory().getItemInMainHand();
@@ -720,7 +724,7 @@ public class GamePlayer {
 
         }
 
-        if (player.getHealth() <= newAmount) {
+        if (player.getHealth() + player.getAbsorptionAmount() <= newAmount) {
             this.kill(player, damageSource.getDirectPlayer(), damageSource.getDistance(), damageSource);
 
         } else {
@@ -735,7 +739,7 @@ public class GamePlayer {
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
 
-        if (player.getHealth() <= event.getAmount()) {
+        if (player.getHealth() + player.getAbsorptionAmount() <= event.getAmount()) {
             this.death(event.getPlayer(), damageSource, false);
 
         } else {

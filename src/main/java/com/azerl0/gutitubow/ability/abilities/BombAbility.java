@@ -74,7 +74,7 @@ public class BombAbility extends Ability {
             if (entity instanceof Player damagePlayer) {
 
                 GamePlayer gamePlayer = context.game().getGamePlayer(damagePlayer);
-                if (gamePlayer.isTeammate(damagePlayer)) continue;
+                if (gamePlayer.isTeammate(playerUUID)) continue;
                 if (context.game().getPhase() == 0 && context.game().isStarted()) continue;
 
                 if (!shooter.getUniqueId().equals(damagePlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damagePlayer)) {
