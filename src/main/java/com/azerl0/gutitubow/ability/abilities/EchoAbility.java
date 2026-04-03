@@ -128,7 +128,7 @@ public class EchoAbility extends Ability {
 
         }
         if (!hasCompassCooldown()) player.sendActionBar(Component.text("反響: " + echoTime + "秒前"));
-        if (fakePlayer.getNpc().getEntity() instanceof Player echoPlayer) {
+        if (fakePlayer.getNpc().getCosmeticEntity() instanceof Player echoPlayer) {
             PotionEffect invisible = new PotionEffect(PotionEffectType.INVISIBILITY, -1, 0, true, false, true);
             echoPlayer.addPotionEffect(invisible);
             context.scoreboardManager().addEchoPlayer(echoPlayer);
