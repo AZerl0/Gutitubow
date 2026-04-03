@@ -71,24 +71,23 @@ public class RicochetAbility extends Ability {
             int ricochetDamageCount = getRicochetDamageCount(arrow);
             Location loc = arrow.getLocation();
             double damageRadius = 2.0;
-            for (Entity entity : world.getNearbyEntities(loc, damageRadius, damageRadius, damageRadius)) {
-                if (entity instanceof Player damagePlayer) {
+            for (Player damagePlayer : world.getNearbyPlayers(loc, damageRadius)) {
 
-                    GamePlayer gamePlayer = context.game().getGamePlayer(damagePlayer);
-                    if (gamePlayer.isTeammate(damagePlayer)) continue;
-                    if (context.game().getPhase() == 0 && context.game().isStarted()) continue;
+                GamePlayer gamePlayer = context.game().getGamePlayer(damagePlayer);
+                if (gamePlayer.isTeammate(playerUUID)) continue;
 
-                    if (!damagePlayer.getUniqueId().equals(shooterPlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damagePlayer)) {
-                        DamageSource damageSource = DamageSource.builder()
-                                .damageType(GutitubowDamageType.RICOCHET_BLAST)
-                                .directPlayer(shooterPlayer)
-                                .damageLocation(MathUtil.rayTraceEntityHit(loc, damagePlayer))
-                                .distance(shooterPlayer.getLocation()
-                                .distance(damagePlayer.getLocation()))
-                                .build();
-                        gamePlayer.damage(damagePlayer, 0.5, damageSource, true);
-                        setRicochetDamageCount(arrow, ricochetDamageCount + 1);
-                    }
+                if (context.game().getPhase() == 0 && context.game().isStarted()) continue;
+
+                if (!damagePlayer.getUniqueId().equals(shooterPlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damagePlayer)) {
+                    DamageSource damageSource = DamageSource.builder()
+                            .damageType(GutitubowDamageType.RICOCHET_BLAST)
+                            .directPlayer(shooterPlayer)
+                            .damageLocation(MathUtil.rayTraceEntityHit(loc, damagePlayer))
+                            .distance(shooterPlayer.getLocation()
+                                    .distance(damagePlayer.getLocation()))
+                            .build();
+                    gamePlayer.damage(damagePlayer, 0.5, damageSource, true);
+                    setRicochetDamageCount(arrow, ricochetDamageCount + 1);
                 }
             }
             if (getRicochetDamageCount(arrow) >= 2) {
