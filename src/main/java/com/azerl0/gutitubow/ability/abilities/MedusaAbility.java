@@ -283,6 +283,9 @@ public class MedusaAbility extends Ability {
         target.addPotionEffect(weakness);
         Objects.requireNonNull(target.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0);
         Objects.requireNonNull(target.getAttribute(Attribute.JUMP_STRENGTH)).setBaseValue(0);
+        target.setCooldown(Material.BOW, tick);
+        target.setCooldown(Material.POTION, tick);
+        target.setCooldown(Material.COMPASS, tick);
         petrificationPlayers.add(target);
 
 
