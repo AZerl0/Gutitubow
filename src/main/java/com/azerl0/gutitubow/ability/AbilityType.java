@@ -4,8 +4,11 @@ import com.azerl0.gutitubow.data.item.GutitubowItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
 public enum AbilityType {
@@ -34,7 +37,8 @@ public enum AbilityType {
     INVINCIBLE(Component.text("無敵"), GutitubowItem.ABILITY_ICON_INVINCIBLE),
     MEDUSA(Component.text("魔眼"), GutitubowItem.ABILITY_ICON_MEDUSA),
     RAPIDFIRE(Component.text("連射"), GutitubowItem.ABILITY_ICON_RAPIDFIRE),
-    ECHO(Component.text("反響"), GutitubowItem.ABILITY_ICON_ECHO);
+    ECHO(Component.text("反響"), GutitubowItem.ABILITY_ICON_ECHO),
+    CLONE(Component.text("分身"), GutitubowItem.ABILITY_ICON_CLONE);
 
     private final Component name;
     private final ItemStack displayItem;
@@ -48,13 +52,22 @@ public enum AbilityType {
         return name;
     }
 
-    @NotNull
-    public ItemStack getDisplayItem() {
+    public  @NotNull ItemStack getDisplayItem() {
         ItemStack itemStack = displayItem;
         ItemMeta meta = itemStack.getItemMeta();
         meta.displayName(name.decoration(TextDecoration.BOLD, true).decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE));
 
         itemStack.setItemMeta(meta);
         return itemStack.clone();
+    }
+
+    public  @NotNull ItemStack getDisplayItem(Player player) {
+        ItemStack itemStack = getDisplayItem();
+        if (itemStack.getType() == Material.PLAYER_HEAD) {
+            SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+            skullMeta.setOwningPlayer(player);
+            itemStack.setItemMeta(skullMeta);
+        }
+        return itemStack;
     }
 }

@@ -49,9 +49,8 @@ public class EchoAbility extends Ability {
         super.init(player);
         fakePlayer = context.fakePlayerManager().createFakePlayer(player.getName(), player.getLocation());
         NPC npc = fakePlayer.getNpc();
-        npc.data().set(NPC.Metadata.NAMEPLATE_VISIBLE, false);
         npc.data().set(NPC.Metadata.COLLIDABLE, false);
-        npc.data().set(NPC.Metadata.SHOULD_SAVE, false);
+        npc.getEntity().setSneaking(true);
 
 
 
@@ -198,10 +197,7 @@ public class EchoAbility extends Ability {
         FakePlayer timeLeapFakePlayer = context.fakePlayerManager().createFakePlayer(player.getName(), player.getLocation());
         Entity timeLeapEntity = timeLeapFakePlayer.getNpc().getEntity();
         NPC npc = timeLeapFakePlayer.getNpc();
-        npc.data().set(NPC.Metadata.NAMEPLATE_VISIBLE, false);
         npc.data().set(NPC.Metadata.COLLIDABLE, false);
-        npc.data().set(NPC.Metadata.SHOULD_SAVE, false);
-
 
         player.setGameMode(GameMode.SPECTATOR);
         Bukkit.getScheduler().runTaskLater(context.plugin(), () -> {

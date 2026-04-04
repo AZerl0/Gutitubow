@@ -28,6 +28,7 @@ public class AbstractAbilitiesGUI extends AbstractGUI {
         addAbilityButton(AbilityType.LASTSTAND);
         addAbilityButton(AbilityType.TELEPORT);
         addAbilityButton(AbilityType.CONTROL);
+        addAbilityButton(AbilityType.CLONE);
         addAbilityButton(AbilityType.RICOCHET);
         addAbilityButton(AbilityType.BARRIER);
         addAbilityButton(AbilityType.ECHO);

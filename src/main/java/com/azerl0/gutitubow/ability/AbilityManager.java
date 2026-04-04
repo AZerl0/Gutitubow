@@ -44,7 +44,7 @@ public class AbilityManager {
     }
 
     public void setDisplayItem(Player player, AbilityType type, int index) {
-        ItemStack displayItem = type.getDisplayItem();
+        ItemStack displayItem = type.getDisplayItem(player);
         ItemUtil.setCantMove(displayItem, true);
         ItemUtil.setCantDrop(displayItem, true);
         player.getInventory().setItem(index, displayItem);

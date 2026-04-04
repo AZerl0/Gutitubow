@@ -6,7 +6,12 @@ import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -15,8 +20,23 @@ import java.util.Map;
 import java.util.UUID;
 
 public class EntityFlagManager {
-
+    private final JavaPlugin plugin;
     private final Map<UUID, Map<UUID, Byte>> clientSideFlags = new HashMap<>();
+    private final BukkitTask resendTask;
+
+    public EntityFlagManager(JavaPlugin plugin) {
+        this.plugin = plugin;
+
+
+        resendTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player onliePlayer : Bukkit.getOnlinePlayers()) {
+                    resendFlags(onliePlayer);
+                }
+            }
+        }.runTaskTimer(plugin, 15L, 1L);
+    }
 
     public void addFlag(Player viewer, Entity target, byte flag) {
         Map<UUID, Byte> map = clientSideFlags.computeIfAbsent(
@@ -25,7 +45,7 @@ public class EntityFlagManager {
         );
 
         UUID entityUUID = target.getUniqueId();
-        byte current = map.getOrDefault(entityUUID, (byte) 0);
+        byte current = map.getOrDefault(entityUUID, getCurrentFlag(target));
         byte newFlags = (byte) (current | flag);
 
         map.put(entityUUID, newFlags);
@@ -39,7 +59,7 @@ public class EntityFlagManager {
         );
 
         UUID entityUUID = target.getUniqueId();
-        byte current = map.getOrDefault(entityUUID, (byte) 0);
+        byte current = map.getOrDefault(entityUUID, getCurrentFlag(target));
         byte newFlags = (byte) (current & ~flag);
 
         if (newFlags == 0) {
@@ -54,7 +74,7 @@ public class EntityFlagManager {
         Map<UUID, Byte> map = clientSideFlags.get(viewer.getUniqueId());
         if (map == null) return false;
 
-        byte current = map.getOrDefault(target.getUniqueId(), (byte) 0);
+        byte current = map.getOrDefault(target.getUniqueId(), getCurrentFlag(target));
         return (current & flag) != 0;
     }
 
@@ -137,6 +157,23 @@ public class EntityFlagManager {
                 List.of(new EntityData<>(0, EntityDataTypes.BYTE, flags))
         );
         PacketEvents.getAPI().getPlayerManager().sendPacket(viewer, packet);
+    }
+
+    public byte getCurrentFlag(Entity entity) {
+        byte flags = (byte) 0;
+        if (entity.isSneaking()) flags = (byte) (flags | 0x02);
+
+        if (entity instanceof Player player && player.isSprinting() ) flags = (byte) (flags | 0x08);
+
+        if (entity instanceof LivingEntity livingEntity && livingEntity.isSwimming()) flags = (byte) (flags | 0x10);
+
+        if (entity instanceof LivingEntity livingEntity && livingEntity.isSwimming()) flags = (byte) (flags | 0x10);
+
+        if (entity instanceof LivingEntity livingEntity && livingEntity.hasPotionEffect(PotionEffectType.INVISIBILITY)) flags = (byte) (flags | 0x32);
+
+        if (entity instanceof LivingEntity livingEntity && livingEntity.isGliding()) flags = (byte) (flags | 0x128);
+
+        return flags;
     }
 }
 

@@ -653,7 +653,7 @@ public class GutitubowItem {
         meta.lore(List.of(
                 Component.text("§6「反響」は、過去の自分と共闘する能力。"),
                 Component.text("§f過去数秒前の自分の分身が常についてくる。"),
-                Component.text("§f任意のタイミングで過去の自分の位置まで戻ることができる。。"),
+                Component.text("§f任意のタイミングで過去の自分の位置まで戻ることができる。"),
                 Component.text("§fまた、過去の自分が放った矢にも攻撃判定がある。"),
                 Component.empty(),
                 Component.text("§7操作"),
@@ -663,5 +663,27 @@ public class GutitubowItem {
 
         itemStack.setItemMeta(meta);
         ABILITY_ICON_ECHO = itemStack.clone();
+    }
+
+    public static final ItemStack ABILITY_ICON_CLONE;
+    static {
+        ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「分身」は、自分と瓜二つの分身を召喚する能力。"),
+                Component.text("§f任意のアイテムをもって左クリックすることで、"),
+                Component.text("§fそのアイテムに対応した動作をする分身を召喚できる。"),
+                Component.text("§f分身は矢を撃たれるとその相手に反撃を行う。"),
+                Component.empty(),
+                Component.text("§f対応アイテム: 弓, 望遠鏡"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7[左クリック] - 分身召喚 (固定)"),
+                Component.text("§7[SHIFT] しながら [左クリック] - 分身召喚 (操作)")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_CLONE = itemStack.clone();
     }
 }

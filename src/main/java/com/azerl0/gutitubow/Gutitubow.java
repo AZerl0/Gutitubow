@@ -34,14 +34,14 @@ import com.azerl0.gutitubow.ability.abilities.*;
 
 public final class Gutitubow extends JavaPlugin {
     private ScoreboardManager scoreboardManager;
-    private final EntityFlagManager flagManager = new EntityFlagManager();
+    private EntityFlagManager flagManager;
     private EntityGlowManager glowManager;
     private FixLeftClickManager fixLeftClickManager;
     private DebugManager debugManager;
     private MapManager mapManager;
     private GameManager gameManager;
     private final PlayerSkinChanger playerSkinChanger = new PlayerSkinChanger(this);
-    private final FakePlayerManager fakePlayerManager = new FakePlayerManager();
+    private final FakePlayerManager fakePlayerManager = new FakePlayerManager(this);
 
     private PacketListenerCommon packetListener;
 
@@ -80,9 +80,11 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.MEDUSA, MedusaAbility::new);
         AbilityRegistry.register(AbilityType.RAPIDFIRE, RapidFireAbility::new);
         AbilityRegistry.register(AbilityType.ECHO, EchoAbility::new);
+        AbilityRegistry.register(AbilityType.CLONE, CloneAbility::new);
 
         // Managers
         this.scoreboardManager = new ScoreboardManager();
+        this.flagManager = new EntityFlagManager(this);
         this.glowManager = new EntityGlowManager(flagManager, scoreboardManager);
         this.fixLeftClickManager = new FixLeftClickManager(this);
         this.debugManager = new DebugManager(this);
