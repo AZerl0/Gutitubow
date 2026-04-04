@@ -27,6 +27,8 @@ public class ScoreboardManager {
             team = board.registerNewTeam("@" + player.getName());
             team.addPlayer(player);
             for (Player echoPlayer : echoPlayers) {
+                Team oldTeam = board.getPlayerTeam(echoPlayer);
+                if (oldTeam != null && oldTeam.hasPlayer(echoPlayer)) oldTeam.removePlayer(echoPlayer);
                 team.addPlayer(echoPlayer);
             }
 
@@ -55,6 +57,8 @@ public class ScoreboardManager {
 
             Team playerTeam = scoreboard.getTeam("@" + name);
             if (playerTeam != null) {
+                Team oldTeam = scoreboard.getPlayerTeam(echoPlayer);
+                if (oldTeam != null && oldTeam.hasPlayer(echoPlayer)) oldTeam.removePlayer(echoPlayer);
                 playerTeam.addPlayer(echoPlayer);
             }
         }
