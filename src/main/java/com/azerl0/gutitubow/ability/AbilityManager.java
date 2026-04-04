@@ -61,4 +61,8 @@ public class AbilityManager {
             ability.reset();
         }
     }
+
+    public Ability createAbility(AbilityType abilityType) {
+        return AbilityRegistry.create(abilityType, context);
+    }
 }

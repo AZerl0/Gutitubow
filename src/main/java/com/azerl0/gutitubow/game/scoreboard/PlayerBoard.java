@@ -111,7 +111,7 @@ public class PlayerBoard {
     }
 
     private void updateTeammateInfo() {
-        GutitubowGameMode gameMode = game.getGameMode();
+        GutitubowGameMode gameMode = game.getGameSetting().getGameMode();
         if (gamePlayer.getPlayer() == null) return;
         GameTeam team = gamePlayer.getTeam();
 

@@ -76,6 +76,33 @@ public abstract class Ability {
         player.sendActionBar(message);
     }
 
+    public void startCompassCooldownTask() {
+        if (cooldownTask != null && !cooldownTask.isCancelled()) return;
+
+        cooldownTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                Player player = getPlayer();
+                if (player == null) {
+                    this.cancel();
+                    return;
+                }
+                if (player.getCooldown(Material.COMPASS) == 0) {
+                    this.cancel();
+                    player.sendActionBar(Component.text(" - 能力使用可能 - ").color(NamedTextColor.GREEN));
+                    cooldownTask = null;
+                    return;
+                }
+                sendActionBarCompassCooldown();
+            }
+        }.runTaskTimer(context.plugin(), 0L, 1L);
+    }
+
+    /*
+     * 能力に関する発火を追加した際には、
+     * 「変化」、「複製」で、発火のOverrideを追加すること
+     */
+
     public void onShoot(EntityShootBowEvent event) {}
 
     public void onArrowHit(ProjectileHitEvent event) {}
@@ -113,26 +140,4 @@ public abstract class Ability {
     public void onKill(GamePlayerKillEvent event) {}
 
     public void onDeath(GamePlayerDeathEvent event) {}
-
-    public void startCompassCooldownTask() {
-        if (cooldownTask != null && !cooldownTask.isCancelled()) return;
-
-        cooldownTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                Player player = getPlayer();
-                if (player == null) {
-                    this.cancel();
-                    return;
-                }
-                if (player.getCooldown(Material.COMPASS) == 0) {
-                    this.cancel();
-                    player.sendActionBar(Component.text(" - 能力使用可能 - ").color(NamedTextColor.GREEN));
-                    cooldownTask = null;
-                    return;
-                }
-                sendActionBarCompassCooldown();
-            }
-        }.runTaskTimer(context.plugin(), 0L, 1L);
-    }
 }

@@ -29,7 +29,7 @@ public class TeamManager {
 
     public void initTeams() {
         removeAllTeam();
-        switch (game.getGameMode()) {
+        switch (game.getGameSetting().getGameMode()) {
             case DUO -> {
                 addTeam("team-a", Component.text("Aチーム"), Material.RED_STAINED_GLASS_PANE, NamedTextColor.RED);
                 addTeam("team-b", Component.text("Bチーム"), Material.ORANGE_STAINED_GLASS_PANE, NamedTextColor.GOLD);
@@ -129,7 +129,7 @@ public class TeamManager {
         leaveTeam(player);
         if (game.getSpectatorManager().isSpectator(player)) return;
         if (!teams.containsValue(gameTeam)) return;
-        if (gameTeam.isFull(game.getGameMode())) return;
+        if (gameTeam.isFull(game.getGameSetting().getGameMode())) return;
 
         playerTeams.put(player.getUniqueId(), gameTeam);
         gameTeam.addPlayer(player);
@@ -193,7 +193,7 @@ public class TeamManager {
     @Nullable
     public GameTeam getNearCanJoinTeam() {
         for (GameTeam team : teams.values()) {
-            if (!team.isFull(game.getGameMode())) return team;
+            if (!team.isFull(game.getGameSetting().getGameMode())) return team;
         }
         return null;
     }

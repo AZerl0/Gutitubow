@@ -81,6 +81,7 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.RAPIDFIRE, RapidFireAbility::new);
         AbilityRegistry.register(AbilityType.ECHO, EchoAbility::new);
         AbilityRegistry.register(AbilityType.CLONE, CloneAbility::new);
+        AbilityRegistry.register(AbilityType.CHANGE, ChangeAbility::new);
 
         // Managers
         this.scoreboardManager = new ScoreboardManager();

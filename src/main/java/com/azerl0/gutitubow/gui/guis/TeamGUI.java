@@ -34,7 +34,7 @@ public class TeamGUI extends AbstractGUI {
     @Override
     public void updateGUI() {
         clear();
-        switch (game.getGameMode()) {
+        switch (game.getGameSetting().getGameMode()) {
             case DUO -> {
                 inventory.setItem(9, getJumpMasterButtonItem());
                 inventory.setItem(36, getJumpMasterButtonItem());
@@ -60,7 +60,7 @@ public class TeamGUI extends AbstractGUI {
     }
 
     private void setTeamComponent(int index, GameTeam gameTeam) {
-        GutitubowGameMode gameMode = game.getGameMode();
+        GutitubowGameMode gameMode = game.getGameSetting().getGameMode();
         if (gameMode == GutitubowGameMode.DUO && index >= 16) return;
         if (gameMode == GutitubowGameMode.TRIO && index >= 9) return;
         int currentSlot = -1;

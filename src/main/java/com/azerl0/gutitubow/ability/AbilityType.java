@@ -38,7 +38,8 @@ public enum AbilityType {
     MEDUSA(Component.text("魔眼"), GutitubowItem.ABILITY_ICON_MEDUSA),
     RAPIDFIRE(Component.text("連射"), GutitubowItem.ABILITY_ICON_RAPIDFIRE),
     ECHO(Component.text("反響"), GutitubowItem.ABILITY_ICON_ECHO),
-    CLONE(Component.text("分身"), GutitubowItem.ABILITY_ICON_CLONE);
+    CLONE(Component.text("分身"), GutitubowItem.ABILITY_ICON_CLONE),
+    CHANGE(Component.text("変化"), GutitubowItem.ABILITY_ICON_CHANGE);
 
     private final Component name;
     private final ItemStack displayItem;

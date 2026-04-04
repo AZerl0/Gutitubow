@@ -29,7 +29,7 @@ public class GameGUI extends AbstractGUI {
                 });
         addButton(18, getAbstractSimpleButtonItem(Material.NETHER_STAR, Component.text("能力スイッチ")), event -> {
             if (!(event.getWhoClicked() instanceof Player clicker)) return;
-            game.getAbilitySelector().getAbilityDisableGUI().open(clicker);
+            game.getGameSetting().getAbilityDisableGUI().open(clicker);
         });
         addButton(25,
                 getAbstractSimpleButtonItem(Material.ENDER_EYE, Component.text("観戦者設定")),
@@ -43,7 +43,8 @@ public class GameGUI extends AbstractGUI {
 
     private void updateToggleGameModeButton() {
         addButton(2, getToggleGameModeButtonItem(), event -> toggleGameMode());
-        if (game.getGameMode() == GutitubowGameMode.DUO || game.getGameMode() == GutitubowGameMode.TRIO) {
+        GutitubowGameMode gameMode = game.getGameSetting().getGameMode();
+        if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
             addButton(3, getAbstractSimpleButtonItem(Material.BOW, Component.text("チーム選択")), event -> {
                 TeamGUI teamGUI = game.getTeamManager().getTeamGUI();
                 if (event.getWhoClicked() instanceof Player player) {
@@ -64,11 +65,11 @@ public class GameGUI extends AbstractGUI {
     }
 
     private void toggleGameMode() {
-        switch (game.getGameMode()) {
+        switch (game.getGameSetting().getGameMode()) {
             case SOLO -> game.setGameMode(GutitubowGameMode.DUO);
             case DUO -> game.setGameMode(GutitubowGameMode.TRIO);
             case TRIO -> game.setGameMode(GutitubowGameMode.SOLO);
-            case null, default -> game.setGameMode(GutitubowGameMode.SOLO);
+            default -> game.setGameMode(GutitubowGameMode.SOLO);
         }
         updateToggleGameModeButton();
     }
@@ -80,7 +81,7 @@ public class GameGUI extends AbstractGUI {
 
     private ItemStack getToggleGameModeButtonItem() {
         String displayName = "NULL";
-        switch (game.getGameMode()) {
+        switch (game.getGameSetting().getGameMode()) {
             case SOLO -> displayName = "SOLOモード";
             case DUO -> displayName = "DUOモード";
             case TRIO -> displayName = "TRIOモード";

@@ -27,7 +27,6 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -38,7 +37,7 @@ import java.util.*;
 
 public class Game {
     private final JavaPlugin plugin;
-    private GutitubowGameMode gutitubowGameMode;
+    private final GameSetting gameSetting = new GameSetting();
     private boolean started;
     private int nextTick;
     private int currentTicks;
@@ -59,7 +58,6 @@ public class Game {
     private final EntityGlowManager glowManager;
     private final GamePlayerManager gamePlayerManager;
     private final AbilityManager abilityManager;
-    private final AbilitySelector abilitySelector = new AbilitySelector();
     private final DebugManager debugManager;
     private final MapRepairManager mapRepairManager = new MapRepairManager();
     private final GlassBreakManager glassBreakManager = new GlassBreakManager(mapRepairManager);
@@ -81,7 +79,6 @@ public class Game {
         this.map = map;
         this.debugManager = debugManager;
         this.glowManager = glowManager;
-        gutitubowGameMode = GutitubowGameMode.SOLO;
         this.carePackageManager = new CarePackageManager(plugin, this, glowManager);
         AbilityContext abilityContext = new AbilityContext(plugin, this, glowManager, playerSkinChanger, fakePlayerManager, scoreboardManager);
         this.abilityManager = new AbilityManager(abilityContext);
@@ -90,6 +87,10 @@ public class Game {
         this.scoreboardManager = scoreboardManager;
         this.playerBoardManager = new PlayerBoardManager(scoreboardManager);
         this.teamManager = new TeamManager(this);
+    }
+
+    public @NotNull GameSetting getGameSetting() {
+        return gameSetting;
     }
 
     public @NotNull GamePlayer getGamePlayer(@NotNull Player player) {
@@ -118,14 +119,14 @@ public class Game {
         if (player.getUniqueId() == target.getUniqueId()) return true;
         GameTeam gameTeam = getGameTeam(player);
         if (gameTeam == null) return false;
-        return  gameTeam.isTeammate(target);
+        return gameTeam.isTeammate(target);
     }
 
     public boolean isTeammate(UUID player, UUID target) {
         if (player == target) return true;
         GameTeam gameTeam = getGameTeam(player);
         if (gameTeam == null) return false;
-        return  gameTeam.isTeammate(target);
+        return gameTeam.isTeammate(target);
 
     }
 
@@ -180,18 +181,14 @@ public class Game {
         return this.alivePlayers;
     }
 
-    public GutitubowGameMode getGameMode() {
-        return gutitubowGameMode;
-    }
 
     public void setGameMode(GutitubowGameMode gameMode) {
-        if (this.gutitubowGameMode != gameMode) {
-            this.gutitubowGameMode = gameMode;
+        if (getGameSetting().getGameMode() != gameMode) {
             if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
                 teamManager.resetTeams();
             }
+            getGameSetting().setGameMode(gameMode);
             teamManager.initTeams();
-
         }
     }
 
@@ -254,6 +251,7 @@ public class Game {
         updateNextSafeAreaSize();
         deathOrder.clear();
         alivePlayers.clear();
+        AbilitySelector abilitySelector = new AbilitySelector(getGameSetting().getDisabledAbilities());
         abilitySelector.resetCurrentAbilities();
         resetSoloPlayerTeams();
 
@@ -268,7 +266,7 @@ public class Game {
             alivePlayers.add(uuid);
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(6);
             player.setHealth(6);
-            if (getGameMode() == GutitubowGameMode.SOLO) {
+            if (gameSetting.getGameMode() == GutitubowGameMode.SOLO) {
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     Team team = scoreboardManager.getTeam(onlinePlayer);
                     if (onlinePlayer.getUniqueId() == player.getUniqueId()) {
@@ -323,7 +321,8 @@ public class Game {
             player.setCompassTarget(safeArea);
 
             if (!debugManager.isNoStartTeleport()) gamePlayer.firstElytra();
-            if (getGameMode() == GutitubowGameMode.DUO || getGameMode() == GutitubowGameMode.TRIO) {
+            GutitubowGameMode gameMode = getGameSetting().getGameMode();
+            if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
                 GameTeam gameTeam = teamManager.getPlayerTeam(player);
                 if (gameTeam == null) continue;
                 if (teamManager.isJumpMaster(player)) {
@@ -666,9 +665,10 @@ public class Game {
         if (alivePlayers.isEmpty()) {
             gameOver();
         } else {
-            if (getGameMode() == GutitubowGameMode.SOLO) {
+            GutitubowGameMode gameMode = getGameSetting().getGameMode();
+            if (gameMode == GutitubowGameMode.SOLO) {
                 if (alivePlayers.size() == 1) gameOver(Bukkit.getPlayer(alivePlayers.iterator().next()));
-            } else if (getGameMode() == GutitubowGameMode.DUO || getGameMode() == GutitubowGameMode.TRIO) {
+            } else if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
                 if (teamManager.getAliveTeams().size() == 1) {
                     GameTeam winTeam = teamManager.getAliveTeams().stream().toList().getFirst();
                     gameOver(winTeam);
@@ -833,10 +833,6 @@ public class Game {
 
     public @NotNull AbilityManager getAbilityManager() {
         return this.abilityManager;
-    }
-
-    public @NotNull AbilitySelector getAbilitySelector() {
-        return this.abilitySelector;
     }
 
     public TeamManager getTeamManager() {

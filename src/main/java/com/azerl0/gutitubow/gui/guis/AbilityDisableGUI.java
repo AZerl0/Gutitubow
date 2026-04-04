@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.gui.guis;
 
 import com.azerl0.gutitubow.ability.AbilitySelector;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.game.GameSetting;
 import com.azerl0.gutitubow.gui.AbstractAbilitiesGUI;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -10,17 +11,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class AbilityDisableGUI extends AbstractAbilitiesGUI {
-    private final AbilitySelector abilitySelector;
+    private final GameSetting gameSetting;
 
-    public AbilityDisableGUI(AbilitySelector abilitySelector) {
+    public AbilityDisableGUI(GameSetting gameSetting) {
         super(Component.text("能力スイッチ"));
-        this.abilitySelector = abilitySelector;
+        this.gameSetting = gameSetting;
     }
 
     @Override
     public void addAbilityButton(AbilityType abilityType) {
         ItemStack itemStack = abilityType.getDisplayItem();
-        if (abilitySelector.isDisabled(abilityType)) {
+        if (gameSetting.isDisabledAbility(abilityType)) {
             itemStack = new ItemStack(Material.BARRIER);
             ItemMeta meta = itemStack.getItemMeta();
             ItemMeta originMeta = abilityType.getDisplayItem().getItemMeta();
@@ -29,7 +30,7 @@ public class AbilityDisableGUI extends AbstractAbilitiesGUI {
             itemStack.setItemMeta(meta);
         }
         addAbilityButtonItem(itemStack, action -> {
-            abilitySelector.setDisabledAbility(abilityType, !abilitySelector.isDisabled(abilityType));
+            gameSetting.setDisabledAbility(abilityType, !gameSetting.isDisabledAbility(abilityType));
             updateGUI();
         });
     }

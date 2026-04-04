@@ -77,7 +77,7 @@ public class GameTeamCommand implements CommandExecutor, TabExecutor {
                 if (gameTeam == null) {
                     player.sendMessage(Component.text("チームの取得中にエラーが発生しました。").color(NamedTextColor.RED));
                 } else {
-                    if (gameTeam.isFull(teamManager.getGame().getGameMode())) {
+                    if (gameTeam.isFull(teamManager.getGame().getGameSetting().getGameMode())) {
                         player.sendMessage(Component.text("チーム: ").append(gameTeam.getTeamName().color(gameTeam.getTeamColor())).append(Component.text("は満員です")));
                     } else {
                         teamManager.joinTeam(target, gameTeam);

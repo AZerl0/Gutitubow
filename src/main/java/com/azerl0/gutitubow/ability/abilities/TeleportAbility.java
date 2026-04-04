@@ -83,7 +83,9 @@ public class TeleportAbility extends Ability {
 
     private void onLeftClickCompass() {
         Player player = getPlayer();
-        GutitubowGameMode gameMode = context.game().getGameMode();
+        if (player == null) return;
+
+        GutitubowGameMode gameMode = context.game().getGameSetting().getGameMode();
         if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
             GameTeam team = context.game().getGameTeam(player);
             if (team == null) return;

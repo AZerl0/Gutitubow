@@ -428,7 +428,7 @@ public class GamePlayer {
     public void onDropPotion(PlayerDropItemEvent event) {
         if (game.isStarted() && event.getItemDrop().getItemStack().getType() == Material.POTION) {
             Player player = event.getPlayer();
-            GutitubowGameMode gameMode = game.getGameMode();
+            GutitubowGameMode gameMode = game.getGameSetting().getGameMode();
             if (!game.getPlayers().contains(player.getUniqueId())) return;
 
             if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
@@ -600,7 +600,7 @@ public class GamePlayer {
     }
 
     private void updateOnUseCompassTeleport() {
-        GutitubowGameMode gameMode = getGame().getGameMode();
+        GutitubowGameMode gameMode = getGame().getGameSetting().getGameMode();
         if (!(gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO)) return;
         Player player = getPlayer();
         if (player == null) return;
@@ -687,7 +687,8 @@ public class GamePlayer {
         double newAmount = event.getAmount();
         if (attacker != null) {
             GamePlayer gamePlayer = game.getGamePlayer(attacker);
-            if (game.getGameMode() == GutitubowGameMode.DUO || game.getGameMode() == GutitubowGameMode.TRIO) {
+            GutitubowGameMode gameMode = game.getGameSetting().getGameMode();
+            if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
                 if (game.isTeammate(player, attacker)) {
                     return;
                 }
@@ -800,7 +801,8 @@ public class GamePlayer {
             player.setGameMode(GameMode.SPECTATOR);
             game.addDeadPlayer(player);
 
-            if (game.getGameMode() == GutitubowGameMode.DUO || game.getGameMode() == GutitubowGameMode.TRIO) {
+            GutitubowGameMode gameMode = game.getGameSetting().getGameMode();
+            if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
                 GameTeam team = getTeam();
                 if (team != null) {
 

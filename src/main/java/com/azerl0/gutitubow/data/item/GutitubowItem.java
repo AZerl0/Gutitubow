@@ -686,4 +686,21 @@ public class GutitubowItem {
         itemStack.setItemMeta(meta);
         ABILITY_ICON_CLONE = itemStack.clone();
     }
+
+    public static final ItemStack ABILITY_ICON_CHANGE;
+    static {
+        ItemStack itemStack = new ItemStack(Material.CHEST);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「変化」は、全能力を使用可能な能力。"),
+                Component.text("§f60秒ごとにランダムな能力に変化していく。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 なし")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_CHANGE = itemStack.clone();
+    }
 }

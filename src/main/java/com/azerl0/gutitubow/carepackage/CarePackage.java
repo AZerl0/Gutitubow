@@ -184,7 +184,7 @@ public class CarePackage {
 
     public void onInteract(Player player) {
         if (player.getGameMode() == GameMode.SPECTATOR) return;
-        GutitubowGameMode gameMode = game.getGameMode();
+        GutitubowGameMode gameMode = game.getGameSetting().getGameMode();
         if (gameMode == GutitubowGameMode.SOLO) {
             if (used_players.contains(player.getUniqueId())) return;
             givePotion(player);
