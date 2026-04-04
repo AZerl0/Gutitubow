@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.player;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -42,6 +43,11 @@ public class FixLeftClickListener implements Listener {
 
     @EventHandler
     public void onSuspiciousLeftClick(PlayerInteractEvent event) {
-        fixLeftClickManager.onSuspiciousLeftClick(event);
+        Action action = event.getAction();
+        if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+            fixLeftClickManager.onSuspiciousLeftClick(event);
+        } else if (action == Action.RIGHT_CLICK_BLOCK) {
+            fixLeftClickManager.addInteractFlag(event.getPlayer());
+        }
     }
 }
