@@ -123,8 +123,11 @@ public class GamePlayer {
         borderOutsideTimerTask = new BukkitRunnable() {
             @Override
             public void run() {
-                World world = getPlayer().getWorld();
-                if (world.getWorldBorder().isInside(getPlayer().getLocation()) || getPlayer().getGameMode() != GameMode.ADVENTURE) {
+                Player player = getPlayer();
+                if (player == null) return;
+
+                World world = player.getWorld();
+                if (world.getWorldBorder().isInside(player.getLocation()) || getPlayer().getGameMode() != GameMode.ADVENTURE) {
                     setBorderOutsideTicks(0);
                     this.cancel();
                     return;
