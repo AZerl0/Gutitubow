@@ -703,4 +703,24 @@ public class GutitubowItem {
         itemStack.setItemMeta(meta);
         ABILITY_ICON_CHANGE = itemStack.clone();
     }
+
+    public static final ItemStack ABILITY_ICON_COPY;
+    static {
+        ItemStack itemStack = new ItemStack(Material.CREEPER_BANNER_PATTERN);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「複製」は、能力を複製する能力。"),
+                Component.text("§f素手で殴った相手の能力を「ストック」する。"),
+                Component.text("§fストックした能力は§dインベントリ中央のアイコン§fをクリックして使用できる。"),
+                Component.text("§fただし、複製した能力は1分間しか持続しない。"),
+                Component.text("§f同じ相手から能力をコピーする場合、30秒間の間隔が必要。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 [(素手で) 左クリック] - 相手の能力をストックする。")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_COPY = itemStack.clone();
+    }
 }

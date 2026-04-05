@@ -94,7 +94,7 @@ public class AbilityCommand implements CommandExecutor, TabExecutor {
                     player.sendMessage("プレイヤーが見つかりませんでした");
                 } else {
 
-                    abilityManager.setAbility(player, type);
+                    abilityManager.setAbility(setPlayer, type);
                     Component abilityTypeMessage = type.getName().color(NamedTextColor.GOLD).hoverEvent(type.getDisplayItem().asHoverEvent());
                     player.sendMessage(Component.text(setPlayer.getName() + "の能力を ").append(abilityTypeMessage).append(Component.text(" に設定しました！").color(NamedTextColor.WHITE)));
                 }

@@ -39,7 +39,8 @@ public enum AbilityType {
     RAPIDFIRE(Component.text("連射"), GutitubowItem.ABILITY_ICON_RAPIDFIRE),
     ECHO(Component.text("反響"), GutitubowItem.ABILITY_ICON_ECHO),
     CLONE(Component.text("分身"), GutitubowItem.ABILITY_ICON_CLONE),
-    CHANGE(Component.text("変化"), GutitubowItem.ABILITY_ICON_CHANGE);
+    CHANGE(Component.text("変化"), GutitubowItem.ABILITY_ICON_CHANGE),
+    COPY(Component.text("複製"), GutitubowItem.ABILITY_ICON_COPY);
 
     private final Component name;
     private final ItemStack displayItem;

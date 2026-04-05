@@ -23,19 +23,19 @@ public class FixLeftClickManager {
     public void addDropFlag(Player player) {
         dropFlag.put(player.getUniqueId(), true);
         Bukkit.getScheduler().runTaskLater(plugin, () ->
-                dropFlag.remove(player.getUniqueId()), 1L);
+                dropFlag.remove(player.getUniqueId()), 2L);
     }
 
     public void addRideFlag(Player player) {
         rideFlag.put(player.getUniqueId(), true);
         Bukkit.getScheduler().runTaskLater(plugin, () ->
-                rideFlag.remove(player.getUniqueId()), 1L);
+                rideFlag.remove(player.getUniqueId()), 2L);
     }
 
     public void addInteractFlag(Player player) {
         interactFlag.put(player.getUniqueId(), true);
         Bukkit.getScheduler().runTaskLater(plugin, () ->
-                interactFlag.remove(player.getUniqueId()), 1L);
+                interactFlag.remove(player.getUniqueId()), 2L);
     }
 
     private boolean isValidLeftClick(Player player) {

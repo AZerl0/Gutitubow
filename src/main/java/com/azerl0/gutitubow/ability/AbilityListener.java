@@ -10,10 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
@@ -112,6 +110,17 @@ public class AbilityListener implements Listener {
     }
 
     @EventHandler
+    public void onDamage(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Player damager &&
+                event.getEntity() instanceof Player target) {
+
+            Ability ability = abilityManager.getAbility(damager);
+            if (ability != null) ability.onAttack(event);
+
+        }
+    }
+
+    @EventHandler
     public void onDamage(GamePlayerDamageEvent event) {
         Ability ability = abilityManager.getAbility(event.getPlayer());
         if (ability != null) ability.onDamage(event);
@@ -151,7 +160,7 @@ public class AbilityListener implements Listener {
         Action action = event.getEvent().getAction();
         if (!(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) return;
 
-        if(ability != null) ability.onPlayerLeftClickBow(event.getEvent());
+        if (ability != null) ability.onPlayerLeftClickBow(event.getEvent());
     }
 
     @EventHandler
@@ -169,6 +178,16 @@ public class AbilityListener implements Listener {
             if (event.getDamageSource().getDamageType() == DamageType.PLAYER_ATTACK) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        if (event.isCancelled()) return;
+
+        if (event.getWhoClicked() instanceof Player player) {
+            Ability ability = abilityManager.getAbility(player);
+            if (ability != null) ability.onClick(event);
         }
     }
 }

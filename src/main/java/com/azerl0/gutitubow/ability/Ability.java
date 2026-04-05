@@ -8,8 +8,10 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -131,6 +133,8 @@ public abstract class Ability {
 
     public void onInteract(PlayerInteractEvent event) {}
 
+    public void onAttack(EntityDamageByEntityEvent event) {}
+
     public void onAnyPlayerDamage(GamePlayerDamageEvent event) {}
 
     public void onDamage(GamePlayerDamageEvent event) {}
@@ -140,4 +144,6 @@ public abstract class Ability {
     public void onKill(GamePlayerKillEvent event) {}
 
     public void onDeath(GamePlayerDeathEvent event) {}
+
+    public void onClick(InventoryClickEvent event) {}
 }

@@ -10,8 +10,10 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -58,7 +60,7 @@ public class ChangeAbility extends Ability {
         player.getInventory().setItem(13, GutitubowItem.INVALID_SLOT_BLACK);
     }
 
-    public void changeAbility() {
+    private void changeAbility() {
         Player player = getPlayer();
         if (player == null) return;
 
@@ -67,6 +69,11 @@ public class ChangeAbility extends Ability {
         disabledAbilities.add(AbilityType.CHANGE);
         AbilitySelector abilitySelector = new AbilitySelector(disabledAbilities);
         AbilityType nextAbilityType = abilitySelector.nextAbility();
+        ItemStack displayItem = nextAbilityType.getDisplayItem(player);
+        ItemUtil.setCantMove(displayItem, true);
+        ItemUtil.setCantDrop(displayItem, true);
+        player.getInventory().setItem(22, displayItem);
+
         currentAbility = context.game().getAbilityManager().createAbility(nextAbilityType);
         currentAbility.init(player);
 
@@ -94,11 +101,6 @@ public class ChangeAbility extends Ability {
                     Color.fromRGB(random.nextInt(0, 16777216))
             );
         }
-
-        ItemStack displayItem = nextAbilityType.getDisplayItem(player);
-        ItemUtil.setCantMove(displayItem, true);
-        ItemUtil.setCantDrop(displayItem, true);
-        player.getInventory().setItem(22, displayItem);
     }
 
     @Override
@@ -172,6 +174,11 @@ public class ChangeAbility extends Ability {
     }
 
     @Override
+    public void onAttack(EntityDamageByEntityEvent event) {
+        if (currentAbility != null) currentAbility.onAttack(event);
+    }
+
+    @Override
     public void onAnyPlayerDamage(GamePlayerDamageEvent event) {
         if (currentAbility != null) currentAbility.onAnyPlayerDamage(event);
     }
@@ -194,5 +201,10 @@ public class ChangeAbility extends Ability {
     @Override
     public void onDeath(GamePlayerDeathEvent event) {
         if (currentAbility != null) currentAbility.onDeath(event);
+    }
+
+    @Override
+    public void onClick(InventoryClickEvent event) {
+        if (currentAbility != null) currentAbility.onClick(event);
     }
 }
