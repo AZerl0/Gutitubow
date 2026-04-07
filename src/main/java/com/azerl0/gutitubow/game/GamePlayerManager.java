@@ -27,5 +27,4 @@ public class GamePlayerManager {
         }
         return gamePlayers.get(player.getUniqueId());
     }
-
 }

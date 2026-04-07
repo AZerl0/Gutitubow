@@ -5,6 +5,7 @@ import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.fakeplayer.FakePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
+import com.azerl0.gutitubow.util.PlayerUtil;
 import de.tr7zw.nbtapi.NBT;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.util.PlayerAnimation;
@@ -51,7 +52,9 @@ public class EchoAbility extends Ability {
         NPC npc = fakePlayer.getNpc();
         npc.data().set(NPC.Metadata.COLLIDABLE, false);
         npc.getEntity().setSneaking(true);
-
+        if (fakePlayer.getNpc().getCosmeticEntity() instanceof Player echoPlayer) {
+            context.scoreboardManager().addEchoPlayer(echoPlayer);
+        }
 
 
         if (updateTask != null && !updateTask.isCancelled()) return;
@@ -130,7 +133,6 @@ public class EchoAbility extends Ability {
         if (fakePlayer.getNpc().getCosmeticEntity() instanceof Player echoPlayer) {
             PotionEffect invisible = new PotionEffect(PotionEffectType.INVISIBILITY, -1, 0, true, false, true);
             echoPlayer.addPotionEffect(invisible);
-            context.scoreboardManager().addEchoPlayer(echoPlayer);
         }
 
     }
@@ -199,6 +201,10 @@ public class EchoAbility extends Ability {
         NPC npc = timeLeapFakePlayer.getNpc();
         npc.data().set(NPC.Metadata.COLLIDABLE, false);
 
+        if (timeLeapEntity instanceof Player timeLeapEchoPlayer) {
+            context.scoreboardManager().addEchoPlayer(timeLeapEchoPlayer);
+        }
+
         player.setGameMode(GameMode.SPECTATOR);
         Bukkit.getScheduler().runTaskLater(context.plugin(), () -> {
             player.setGameMode(GameMode.ADVENTURE);
@@ -242,8 +248,8 @@ public class EchoAbility extends Ability {
                 int index = flames.size() - step;
                 updateFakePlayer(timeLeapFakePlayer, flames.get(index));
                 player.setSpectatorTarget(timeLeapEntity);
-                if (timeLeapEntity instanceof Player timeLeapEchoPlayer) {
-                    context.scoreboardManager().addEchoPlayer(timeLeapEchoPlayer);
+                if (PlayerUtil.isBedrock(player)) {
+                    player.teleport(timeLeapEntity);
                 }
 
             }

@@ -27,7 +27,6 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -266,19 +265,6 @@ public class Game {
             alivePlayers.add(uuid);
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(6);
             player.setHealth(6);
-            if (gameSetting.getGameMode() == GutitubowGameMode.SOLO) {
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    Team team = scoreboardManager.getTeam(onlinePlayer);
-                    if (onlinePlayer.getUniqueId() == player.getUniqueId()) {
-                        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
-                        team.setCanSeeFriendlyInvisibles(true);
-                        team.setAllowFriendlyFire(false);
-                        team.addPlayer(onlinePlayer);
-                    } else {
-                        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
-                    }
-                }
-            }
             if (!debugManager.isNoStartTeleport()) {
                 Location location = this.map.getRandomXZPosition(30);
                 location.setY(200.0);

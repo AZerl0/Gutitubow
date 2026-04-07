@@ -5,6 +5,7 @@ import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import de.tr7zw.nbtapi.NBT;
+import net.citizensnpcs.api.CitizensAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -92,6 +93,7 @@ public class GameListener implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
+        if (CitizensAPI.getNPCRegistry().isNPC(player)) return;
         GamePlayer gamePlayer = game.getGamePlayer(player);
         gamePlayer.updatePlayerBoard();
     }
