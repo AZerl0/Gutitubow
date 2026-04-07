@@ -13,6 +13,8 @@ import com.azerl0.gutitubow.gui.guis.GameGUI;
 import com.azerl0.gutitubow.map.MapManager;
 import com.azerl0.gutitubow.item.ItemListener;
 import com.azerl0.gutitubow.packet.*;
+import com.azerl0.gutitubow.pin.PinListener;
+import com.azerl0.gutitubow.pin.PinManager;
 import com.azerl0.gutitubow.player.FixLeftClickListener;
 import com.azerl0.gutitubow.player.FixLeftClickManager;
 import com.azerl0.gutitubow.player.PlayerSkinChanger;
@@ -42,6 +44,7 @@ public final class Gutitubow extends JavaPlugin {
     private GameManager gameManager;
     private final PlayerSkinChanger playerSkinChanger = new PlayerSkinChanger(this);
     private final FakePlayerManager fakePlayerManager = new FakePlayerManager(this);
+    private final PinManager pinManager = new PinManager(this);
 
     private PacketListenerCommon packetListener;
 
@@ -112,6 +115,7 @@ public final class Gutitubow extends JavaPlugin {
         pluginManager.registerEvents(new GUIListener(allGUI), this);
         pluginManager.registerEvents(new PacketListener(flagManager), this);
         pluginManager.registerEvents(new FixLeftClickListener(fixLeftClickManager), this);
+        pluginManager.registerEvents(new PinListener(pinManager), this);
 
         // packetListener登録
         EventManager eventManager = PacketEvents.getAPI().getEventManager();

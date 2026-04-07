@@ -2,10 +2,18 @@ package com.azerl0.gutitubow.game;
 
 import com.azerl0.gutitubow.data.damage.DamageSource;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerCreatePinEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreCreatePinEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
+import com.azerl0.gutitubow.pin.Pin;
+import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.util.EntityUtil;
 import net.citizensnpcs.api.CitizensAPI;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -17,6 +25,8 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.UUID;
 
 public class GamePlayerListener implements Listener {
     private final Game game;
@@ -149,6 +159,35 @@ public class GamePlayerListener implements Listener {
             ItemStack chestplate = player.getInventory().getChestplate();
             if (chestplate != null && chestplate.getType() == Material.ELYTRA) {
                 player.getInventory().setChestplate(ItemStack.of(Material.AIR));
+            }
+        }
+    }
+
+
+    @EventHandler
+    public void onPreCreatePin(GamePlayerPreCreatePinEvent event) {
+        if (game.getDebugManager().isDisableSoloModePin() && game.getGameSetting().getGameMode() == GutitubowGameMode.SOLO) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onCreatePin(GamePlayerCreatePinEvent event) {
+        GutitubowGameMode gameMode = game.getGameSetting().getGameMode();
+        if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
+            GameTeam team = game.getGameTeam(event.getPlayer());
+            if (team == null) return;
+            Pin pin = event.getPin();
+
+            for (UUID uuid : team.getPlayersWithout(event.getPlayer().getUniqueId())) {
+                Player teammate = Bukkit.getPlayer(uuid);
+                if (teammate == null) return;
+
+                double distance = event.getPin().getLocation().distance(teammate.getLocation());
+                teammate.sendMessage(Component.text("[!] ").append(event.getPlayer().displayName()).append(Component.text("が場所を指定した！ (" + Math.floor(distance * 10) / 10 + "m)")).color(NamedTextColor.GREEN));
+                teammate.playSound(teammate, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+
+                pin.addViewer(teammate);
             }
         }
     }

@@ -833,6 +833,10 @@ public class Game {
         return spectatorManager;
     }
 
+    public @NotNull DebugManager getDebugManager() {
+        return debugManager;
+    }
+
     public boolean isInsideNextSafeArea(Location loc) {
 
         if (!loc.getWorld().equals(safeArea.getWorld())) return false;
