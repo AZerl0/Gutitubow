@@ -5,9 +5,9 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -40,18 +40,11 @@ public class PlayerSkinChanger {
             finalTargetSkin = randomSkins.getFirst();
         }
 
-
         final PlayerProfile playerProfile = target.getPlayerProfile();
         playerProfile.setProperties((getTextureProperty(finalTargetSkin)));
         target.setPlayerProfile(playerProfile);
 
-        GameMode gameMode = target.getGameMode();
-        target.setGameMode(GameMode.SPECTATOR);
-
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            target.setGameMode(gameMode);
-        }, 2L);
-
+        updateSkin(target);
     }
 
     public void resetSkin(Player target) {
@@ -66,13 +59,7 @@ public class PlayerSkinChanger {
         ));
         target.setPlayerProfile(playerProfile);
 
-        GameMode gameMode = target.getGameMode();
-        target.setGameMode(GameMode.SPECTATOR);
-
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            target.setGameMode(gameMode);
-        }, 2L);
-
+        updateSkin(target);
     }
 
     public void setRandomDefaultSkin(Player target) {
@@ -111,7 +98,6 @@ public class PlayerSkinChanger {
                         "nf/CpA88PVYhBNxgd74f2qSIET1KxRaKTafi3kvT0mJqMUfAx4dsLv6nBrA3DJ7zXqbIBbsDX6Bi+NbALhCTw6vw3Xck75JwHNGF8hK++JKju9qAhgHS5ZBpvQOwvvKWtZ6qtjf4FFLQ98O3SslnzcM1wy544YAMwlAW3LG2qtD32euB3rpJ26AgIzwmOH9uw6chf1CGiWv2PZZEq/qBmRhYN1D/R4chblCV9u3k+oJmamg17WdgRz1aYLqSYHpEU4TsiNmF5T0Q5rbyEgf1VnzKUI14r+MWGMK94jQIR355GONQ91+1Z2LRnLaaTojYIMhYVMh6o52NcHj58e/1mAVAGeuUKrdG7odic5lUNJOGde56t91qY2ruOFDjQ4m4gTJ4Yw4KONwwn/VhfcP/T6U0Hq4p/Vi+c1vIi1IOajm+JJRy+mC3F2spRxAzfLFQH1hCl6r/032vYV02nCaWthW7omeGwkrAy7p3chp85eYgJbiC94OCvRMbke2i+vZwiUbjsTPCnRcNXPalC0FcX1jZ5K0n/OZYDMqgbZIWP26OB63+UhVrUsxU6hy1G4zZJR3ayv5GqM5Cd1w3tP428LtrdY1siynSewIGLcEEsfj2N4f8VIq3do8vgSBUqdREaVfKLFOvmAJUJDHcs4pkZN1OM3Na6Fx47ZqRKI65Haw="
                 )
         );
-
     }
 
 
@@ -152,5 +138,16 @@ public class PlayerSkinChanger {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void updateSkin(Player target) {
+        GameMode gameMode = target.getGameMode();
+        Location location = target.getLocation();
+        target.setGameMode(GameMode.SPECTATOR);
+
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            target.setGameMode(gameMode);
+            target.teleport(location);
+        }, 2L);
     }
 }
