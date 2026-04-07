@@ -16,7 +16,7 @@ public class GlassBreakManager {
     public boolean breakConnectedGlass(Block block, int limit) {
         Material type = block.getType();
 
-        if (!GutitubowBlockTags.BREAKABLE_BY_GUTITUBOW_ARROW.contains(type)) return false;
+        if (!GutitubowBlockTags.BREAKABLE_BY_GUTITUBOW_ARROW.isTagged(type)) return false;
 
         mapRepairManager.savedBrokeBlock(block);
         block.breakNaturally(true);

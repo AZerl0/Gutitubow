@@ -75,7 +75,7 @@ public class GameListener implements Listener {
                     ArrowUtil.RicochetEvent(plugin, event);
                 }
 
-            } else if (GutitubowBlockTags.BREAKABLE_BY_GUTITUBOW_ARROW.contains(block.getType())) {
+            } else if (GutitubowBlockTags.BREAKABLE_BY_GUTITUBOW_ARROW.isTagged(block.getType())) {
                 if (game.getGlassBreakManager().breakConnectedGlass(block, 64)) {
 
                     Bukkit.getScheduler().runTask(plugin, () -> NBT.modify(event.getEntity(), nbt -> {

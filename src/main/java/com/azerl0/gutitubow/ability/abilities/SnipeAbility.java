@@ -131,7 +131,7 @@ public class SnipeAbility extends Ability {
 
         if (blockHit == null || blockHit.getHitBlock() == null) return null;
         Block block = blockHit.getHitBlock();
-        if (GutitubowBlockTags.BREAKABLE_BY_GUTITUBOW_ARROW.contains(block.getType())) {
+        if (GutitubowBlockTags.BREAKABLE_BY_GUTITUBOW_ARROW.isTagged(block.getType())) {
             this.breakManager.breakConnectedGlass(block, 64);
             Location hitLocation = blockHit.getHitPosition().toLocation(world);
             double distance = location.distance(hitLocation);
