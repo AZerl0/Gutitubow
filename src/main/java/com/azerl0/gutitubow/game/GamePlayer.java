@@ -422,7 +422,9 @@ public class GamePlayer {
                         player.getEyeLocation(),
                         3,
                         0.15, 0.15, 0.15,
-                        new Particle.Spell(Color.fromRGB(255, 255, 255), 1)
+                        0,
+                        new Particle.Spell(Color.fromRGB(255, 255, 255), 1),
+                        true
                 );
             }
         }.runTaskTimer(plugin, 0L, 1L);
