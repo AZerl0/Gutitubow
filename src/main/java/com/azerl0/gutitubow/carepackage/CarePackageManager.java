@@ -124,6 +124,11 @@ public class CarePackageManager {
                 if (carePackage != null) carePackage.remove();
 
             }
+
+            for (Entity entity : world.getEntities()) {
+                if (entity instanceof Player) continue;
+                if (isCarePackageEntity(entity)) entity.remove();
+            }
         }
     }
 }
