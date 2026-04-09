@@ -12,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -82,23 +83,19 @@ public class EntityFlagManager {
         Map<UUID, Byte> map = clientSideFlags.get(viewer.getUniqueId());
         byte flag = 0;
 
-        if (map != null) {
-            flag = map.getOrDefault(targetUUID, (byte) 0);
-        }
-
         Entity entity = Bukkit.getEntity(targetUUID);
-        if (entity != null && entity.isGlowing()) {
-            flag |= 0x40;
+        if (map != null && entity != null) {
+            flag = map.getOrDefault(targetUUID, getCurrentFlag(entity));
         }
 
         return flag;
     }
 
-    public Byte getFlag(Player viewer, Entity target) {
+    public @NotNull Byte getFlag(Player viewer, Entity target) {
         Map<UUID, Byte> map = clientSideFlags.get(viewer.getUniqueId());
         if (map == null) return (byte) 0;
 
-        return map.getOrDefault(target.getUniqueId(), (byte) 0);
+        return map.getOrDefault(target.getUniqueId(), getCurrentFlag(target));
     }
 
     public void removeViewer(Player viewer) {
