@@ -19,7 +19,7 @@ public class BreakableByGutitubowArrow {
 
         @Override
         public boolean isTagged(@NotNull Material item) {
-            return false;
+            return getValues().contains(item);
         }
 
         @Override

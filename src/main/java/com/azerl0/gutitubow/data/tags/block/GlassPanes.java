@@ -17,7 +17,7 @@ public class GlassPanes {
 
         @Override
         public boolean isTagged(@NotNull Material item) {
-            return false;
+            return getValues().contains(item);
         }
 
         @Override
