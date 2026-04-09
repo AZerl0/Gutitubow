@@ -5,17 +5,16 @@ import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.team.GameTeam;
+import com.azerl0.gutitubow.util.EntityUtil;
 import io.papermc.paper.scoreboard.numbers.NumberFormat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class PlayerBoard {
@@ -23,7 +22,7 @@ public class PlayerBoard {
     private final Game game;
     private final Scoreboard scoreboard;
     private final Objective obj;
-    private final List<String> entrys = List.of("§0", "§1", "§2", "§3", "§4", "§5", "§6", "§7", "§8", "§9", "§a", "§b", "§c", "§d", "§e", "§f", "§g", "§k", "§l", "§m", "§n", "§o", "§r");
+    private final List<String> entries = List.of("§0", "§1", "§2", "§3", "§4", "§5", "§6", "§7", "§8", "§9", "§a", "§b", "§c", "§d", "§e", "§f", "§g", "§k", "§l", "§m", "§n", "§o", "§r");
 
     private final scoreboardComponent _playerName;
     private final scoreboardComponent _alivePlayerCount;
@@ -70,7 +69,7 @@ public class PlayerBoard {
         private scoreboardComponent(int index) {
             this.index = index;
             name = scoreboard.registerNewTeam("line" + index);
-            entry = entrys.get(index);
+            entry = entries.get(index);
             obj.getScore(entry).setScore(-index);
             setHide(false);
         }
@@ -160,7 +159,7 @@ public class PlayerBoard {
         GamePlayer gamePlayer = game.getGamePlayer(teammate);
         _teammate1name.setDisplay(Component.text("Team: " + teammate.getName()).color(NamedTextColor.GOLD));
         _teammate1ability.setDisplay(Component.text("能力: ").append(getAbilityName(teammate)).color(NamedTextColor.GOLD));
-        _teammate1health.setDisplay(Component.text("体力: ").color(NamedTextColor.GOLD).append(getHealthComponent(teammate)));
+        _teammate1health.setDisplay(Component.text("体力: ").color(NamedTextColor.GOLD).append(EntityUtil.getHealthComponent(teammate)));
         _teammate1potion.setDisplay(Component.text("ポーション所持数: ").color(NamedTextColor.GOLD).append(Component.text(gamePlayer.getPotionAmount() + "個").color(NamedTextColor.RED)));
     }
 
@@ -169,7 +168,7 @@ public class PlayerBoard {
         GamePlayer gamePlayer = game.getGamePlayer(teammate);
         _teammate2name.setDisplay(Component.text("Team: " + teammate.getName()).color(NamedTextColor.GOLD));
         _teammate2ability.setDisplay(Component.text("能力: ").append(getAbilityName(teammate)).color(NamedTextColor.GOLD));
-        _teammate2health.setDisplay(Component.text("体力: ").color(NamedTextColor.GOLD).append(getHealthComponent(teammate)));
+        _teammate2health.setDisplay(Component.text("体力: ").color(NamedTextColor.GOLD).append(EntityUtil.getHealthComponent(teammate)));
         _teammate2potion.setDisplay(Component.text("ポーション所持数: ").color(NamedTextColor.GOLD).append(Component.text(gamePlayer.getPotionAmount() + "個").color(NamedTextColor.RED)));
     }
 
@@ -193,21 +192,6 @@ public class PlayerBoard {
         if (ability == null) return Component.text("None");
         return ability.getType().getName();
     }
-
-    private Component getHealthComponent(@NotNull Player player) {
-        Component health = Component.empty();
-
-        int count = (int) Math.ceil(Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getValue() / 2);
-        for (int i = 0; i < count; i++) {
-            health = health.append(Component.text((i * 2 <= player.getHealth()) ? "♥" : "♡").color(NamedTextColor.RED));
-        }
-        count = (int) Math.ceil(Objects.requireNonNull(player.getAttribute(Attribute.MAX_ABSORPTION)).getValue() / 2);
-        for (int i = 0; i < count; i++) {
-            health = health.append(Component.text((i * 2 <= player.getAbsorptionAmount()) ? "♥" : "♡").color(NamedTextColor.YELLOW));
-        }
-        return health;
-    }
-
 
     private void hideAll() {
         _playerName.setHide(true);

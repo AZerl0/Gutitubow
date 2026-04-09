@@ -723,4 +723,21 @@ public class GutitubowItem {
         itemStack.setItemMeta(meta);
         ABILITY_ICON_COPY = itemStack.clone();
     }
+
+    public static final ItemStack ABILITY_ICON_APPRAISAL;
+    static {
+        ItemStack itemStack = new ItemStack(Material.SPYGLASS);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「鑑定」は、相対する敵の全情報を把握する能力。"),
+                Component.text("§f相手プレイヤーの頭上に各種情報が表示されるようになる。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 なし")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_APPRAISAL = itemStack.clone();
+    }
 }

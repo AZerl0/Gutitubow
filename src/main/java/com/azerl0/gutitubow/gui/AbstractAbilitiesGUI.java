@@ -23,6 +23,7 @@ public class AbstractAbilitiesGUI extends AbstractGUI {
         addAbilityButton(AbilityType.TOUGH);
         addAbilityButton(AbilityType.QUICKFIRE);
         addAbilityButton(AbilityType.DETECTION);
+        addAbilityButton(AbilityType.APPRAISAL);
         addAbilityButton(AbilityType.PREDATION);
         addAbilityButton(AbilityType.INVISIBLE);
         addAbilityButton(AbilityType.LASTSTAND);

@@ -1,13 +1,18 @@
 package com.azerl0.gutitubow.util;
 
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class EntityUtil {
     static Scoreboard glowBoard = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -18,6 +23,7 @@ public class EntityUtil {
         if (entity instanceof Player && ((Player) entity).getGameMode() == GameMode.SPECTATOR) return true;
         return false;
     }
+
     public static void setGlow(Entity entity, NamedTextColor color) {
 
         String entry = entity.getScoreboardEntryName();
@@ -39,6 +45,7 @@ public class EntityUtil {
 
         entity.setGlowing(true);
     }
+
     public static void removeAllGlowTeam() {
         for (NamedTextColor color : NamedTextColor.NAMES.values()) {
 
@@ -47,5 +54,21 @@ public class EntityUtil {
                 team.unregister();
             }
         }
+    }
+
+    public static Component getHealthComponent(@NotNull Player player) {
+        Component health = Component.empty();
+
+        int count = (int) Math.ceil(Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getValue() / 2);
+        for (int i = 0; i < count; i++) {
+            health = health.append(Component.text((i * 2 <= player.getHealth()) ? "♥" : "♡").color(NamedTextColor.RED));
+        }
+        if (player.getAbsorptionAmount() > 0) {
+            count = (int) Math.ceil(Objects.requireNonNull(player.getAttribute(Attribute.MAX_ABSORPTION)).getValue() / 2);
+            for (int i = 0; i < count; i++) {
+                health = health.append(Component.text((i * 2 <= player.getAbsorptionAmount()) ? "♥" : "♡").color(NamedTextColor.YELLOW));
+            }
+        }
+        return health;
     }
 }

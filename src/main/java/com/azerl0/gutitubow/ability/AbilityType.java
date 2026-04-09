@@ -40,7 +40,8 @@ public enum AbilityType {
     ECHO(Component.text("反響"), GutitubowItem.ABILITY_ICON_ECHO),
     CLONE(Component.text("分身"), GutitubowItem.ABILITY_ICON_CLONE),
     CHANGE(Component.text("変化"), GutitubowItem.ABILITY_ICON_CHANGE),
-    COPY(Component.text("複製"), GutitubowItem.ABILITY_ICON_COPY);
+    COPY(Component.text("複製"), GutitubowItem.ABILITY_ICON_COPY),
+    APPRAISAL(Component.text("鑑定"), GutitubowItem.ABILITY_ICON_APPRAISAL);
 
     private final Component name;
     private final ItemStack displayItem;
