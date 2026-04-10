@@ -726,8 +726,6 @@ public class GamePlayer {
                 );
                 attacker.showTitle(title);
             }
-            LogManager.broadcastHitLog(attacker, player, damageSource.getDistance());
-
         }
 
         if (player.getHealth() + player.getAbsorptionAmount() <= newAmount) {
@@ -735,7 +733,7 @@ public class GamePlayer {
 
         } else {
             player.damage(newAmount);
-
+            if (attacker != null) LogManager.broadcastHitLog(attacker, player, damageSource.getDistance());
         }
     }
 

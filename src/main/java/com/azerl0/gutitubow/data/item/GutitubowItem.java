@@ -740,4 +740,23 @@ public class GutitubowItem {
         itemStack.setItemMeta(meta);
         ABILITY_ICON_APPRAISAL = itemStack.clone();
     }
+
+    public static final ItemStack ABILITY_ICON_SMASH;
+    static {
+        ItemStack itemStack = new ItemStack(Material.NETHERITE_SWORD);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「必殺」は、弱きを挫く能力。"),
+                Component.text("§f体力が♡1のプレイヤーを視界にいれると死へのカウントが始まる。"),
+                Component.text("§fカウントが100%のプレイヤーが視界内にいる状態で矢を放つと"),
+                Component.text("§f必殺必中の一撃で相手を確殺する。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 なし")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_SMASH = itemStack.clone();
+    }
 }
