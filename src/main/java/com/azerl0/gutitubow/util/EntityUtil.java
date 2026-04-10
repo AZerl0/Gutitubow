@@ -55,20 +55,4 @@ public class EntityUtil {
             }
         }
     }
-
-    public static Component getHealthComponent(@NotNull Player player) {
-        Component health = Component.empty();
-
-        int count = (int) Math.ceil(Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getValue() / 2);
-        for (int i = 0; i < count; i++) {
-            health = health.append(Component.text((i * 2 <= player.getHealth()) ? "♥" : "♡").color(NamedTextColor.RED));
-        }
-        if (player.getAbsorptionAmount() > 0) {
-            count = (int) Math.ceil(Objects.requireNonNull(player.getAttribute(Attribute.MAX_ABSORPTION)).getValue() / 2);
-            for (int i = 0; i < count; i++) {
-                health = health.append(Component.text((i * 2 <= player.getAbsorptionAmount()) ? "♥" : "♡").color(NamedTextColor.YELLOW));
-            }
-        }
-        return health;
-    }
 }

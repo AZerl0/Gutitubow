@@ -6,6 +6,7 @@ import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.util.EntityUtil;
+import com.azerl0.gutitubow.util.PlayerUtil;
 import io.papermc.paper.scoreboard.numbers.NumberFormat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -159,7 +160,7 @@ public class PlayerBoard {
         GamePlayer gamePlayer = game.getGamePlayer(teammate);
         _teammate1name.setDisplay(Component.text("Team: " + teammate.getName()).color(NamedTextColor.GOLD));
         _teammate1ability.setDisplay(Component.text("能力: ").append(getAbilityName(teammate)).color(NamedTextColor.GOLD));
-        _teammate1health.setDisplay(Component.text("体力: ").color(NamedTextColor.GOLD).append(EntityUtil.getHealthComponent(teammate)));
+        _teammate1health.setDisplay(Component.text("体力: ").color(NamedTextColor.GOLD).append(PlayerUtil.getHealthComponent(teammate)));
         _teammate1potion.setDisplay(Component.text("ポーション所持数: ").color(NamedTextColor.GOLD).append(Component.text(gamePlayer.getPotionAmount() + "個").color(NamedTextColor.RED)));
     }
 
@@ -168,7 +169,7 @@ public class PlayerBoard {
         GamePlayer gamePlayer = game.getGamePlayer(teammate);
         _teammate2name.setDisplay(Component.text("Team: " + teammate.getName()).color(NamedTextColor.GOLD));
         _teammate2ability.setDisplay(Component.text("能力: ").append(getAbilityName(teammate)).color(NamedTextColor.GOLD));
-        _teammate2health.setDisplay(Component.text("体力: ").color(NamedTextColor.GOLD).append(EntityUtil.getHealthComponent(teammate)));
+        _teammate2health.setDisplay(Component.text("体力: ").color(NamedTextColor.GOLD).append(PlayerUtil.getHealthComponent(teammate)));
         _teammate2potion.setDisplay(Component.text("ポーション所持数: ").color(NamedTextColor.GOLD).append(Component.text(gamePlayer.getPotionAmount() + "個").color(NamedTextColor.RED)));
     }
 

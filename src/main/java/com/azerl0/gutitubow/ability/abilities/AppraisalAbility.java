@@ -4,8 +4,8 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
-import com.azerl0.gutitubow.util.EntityUtil;
 import com.azerl0.gutitubow.util.MathUtil;
+import com.azerl0.gutitubow.util.PlayerUtil;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
@@ -223,7 +223,7 @@ public class AppraisalAbility extends Ability {
             Component info = Component.text("鑑定情報").color(NamedTextColor.RED)
                     .append(Component.text("\n名前: ").color(NamedTextColor.RED).append(target.displayName().color(NamedTextColor.GOLD)))
                     .append(Component.text("\n能力: ").color(NamedTextColor.RED).append(targetAbilityName.color(NamedTextColor.GOLD)))
-                    .append(Component.text("\n体力: ").color(NamedTextColor.RED).append(EntityUtil.getHealthComponent(target)))
+                    .append(Component.text("\n体力: ").color(NamedTextColor.RED).append(PlayerUtil.getHealthComponent(target)))
                     .append(Component.text("\n距離: ").color(NamedTextColor.RED).append(distanceComponent.color(NamedTextColor.GOLD)))
                     .append(Component.text("\nポーション: ").color(NamedTextColor.RED).append(Component.text(potionCount + "個").color(NamedTextColor.GOLD)));
             float scale = (float) Math.max(distance / 7.5, 1.0f);
