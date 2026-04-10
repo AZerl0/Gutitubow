@@ -6,6 +6,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSp
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnLivingEntity;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -45,17 +46,12 @@ public class PacketEventListener implements PacketListener {
         if (entityId == -1) return;
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            flagManager.resendFlag(viewer, getEntityUUID(event));
 
             Entity entity = findEntityById(viewer, entityId);
             if (entity == null) return;
+            if (entity instanceof ArmorStand) return;
 
-            UUID targetUUID = entity.getUniqueId();
-
-            byte flags = flagManager.getFlag(viewer, targetUUID);
-            if (flags == 0) return;
-
-            flagManager.sendFlagPacket(viewer, entity, flags);
+            flagManager.resendFlag(viewer, getEntityUUID(event));
         });
     }
 

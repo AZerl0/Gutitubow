@@ -84,8 +84,11 @@ public class EntityFlagManager {
         byte flag = 0;
 
         Entity entity = Bukkit.getEntity(targetUUID);
-        if (map != null && entity != null) {
-            flag = map.getOrDefault(targetUUID, getCurrentFlag(entity));
+        if (entity != null) {
+            flag = getCurrentFlag(entity);
+        }
+        if (map != null && map.containsKey(targetUUID)) {
+            flag = map.get(targetUUID);
         }
 
         return flag;
