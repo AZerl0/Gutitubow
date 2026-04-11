@@ -70,7 +70,7 @@ public class ShieldAbility extends Ability {
         if (event.isSneaking()) {
             if (!shield.isBlocking() && shield.getHealth() > 0 && player.getGameMode() != GameMode.SPECTATOR) shield.raiseShield();
         } else {
-//            if (shield.isBlocking()) shield.lowerShield();
+            if (shield.isBlocking()) shield.lowerShield();
         }
     }
 
