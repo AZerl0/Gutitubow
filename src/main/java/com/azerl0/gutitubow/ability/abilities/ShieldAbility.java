@@ -78,11 +78,15 @@ public class ShieldAbility extends Ability {
 
     @Override
     public void onAnyArrowHit(ProjectileHitEvent event) {
+        if (event.isCancelled()) return;
         Entity hitEntity = event.getHitEntity();
         if (hitEntity == null) return;
         if (!shieldEntities.containsKey(hitEntity.getUniqueId())) return;
         Entity shooter = (Entity) event.getEntity().getShooter();
-        if (shooter != null && shooter.getUniqueId() == playerUUID) return;
+        if (shooter != null && context.game().isTeammate(playerUUID, shooter.getUniqueId())) {
+            event.setCancelled(true);
+            return;
+        }
 
         block(event.getEntity().getLocation());
         damageShield();
