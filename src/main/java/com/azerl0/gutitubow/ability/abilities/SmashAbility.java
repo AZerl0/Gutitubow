@@ -32,7 +32,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class SmashAbility extends Ability {
-    private final Set<Player> pinchPlayers = new HashSet<>();
     private final Map<UUID, CountdownDisplay> playerCountdowns = new HashMap<>();
 
 
@@ -55,11 +54,11 @@ public class SmashAbility extends Ability {
 
     @Override
     public void onAnyPlayerDamage(GamePlayerDamageEvent event) {
+        if (event.isCancelled()) return;
         Player hitPlayer = event.getPlayer();
         if (context.game().isTeammate(playerUUID, hitPlayer.getUniqueId())) return;
-        if (!isPinch(hitPlayer)) return;
+        if (!isPinch(hitPlayer, -event.getAmount())) return;
         if (!playerCountdowns.containsKey(hitPlayer.getUniqueId())) {
-            pinchPlayers.add(hitPlayer);
             CountdownDisplay countdownDisplay = new CountdownDisplay(hitPlayer);
             playerCountdowns.put(hitPlayer.getUniqueId(), countdownDisplay);
         }
@@ -101,7 +100,6 @@ public class SmashAbility extends Ability {
                 target.getEyeLocation(),
                 0.1
         );
-        pinchPlayers.remove(target);
         if (playerCountdowns.containsKey(target.getUniqueId())) {
             CountdownDisplay countdownDisplay = playerCountdowns.get(target.getUniqueId());
             countdownDisplay.remove();
@@ -139,9 +137,13 @@ public class SmashAbility extends Ability {
         }
     }
 
+    private boolean isPinch(Player target, double healthOffset) {
+        double health = target.getHealth() + target.getAbsorptionAmount() + healthOffset;
+        return  health <= 2.0;
+    }
+
     private boolean isPinch(Player target) {
-        double health = target.getHealth() + target.getAbsorptionAmount();
-        return  health <= 2;
+        return isPinch(target, 0.0);
     }
 
     private boolean isCanThrough(Material material) {
