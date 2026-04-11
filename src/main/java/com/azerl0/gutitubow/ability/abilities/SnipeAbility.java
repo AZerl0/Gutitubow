@@ -18,15 +18,14 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.AbstractArrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 public class SnipeAbility extends Ability {
     private final GlassBreakManager breakManager;
@@ -46,16 +45,17 @@ public class SnipeAbility extends Ability {
         if (!(event.getEntity() instanceof Player player)) return;
         if (!player.isSneaking()) return;
         if (event.getForce() < 1.0) return;
-        __Snipe((AbstractArrow) event.getProjectile());
+        snipe((AbstractArrow) event.getProjectile());
         event.setCancelled(true);
     }
 
-    private void  __Snipe(AbstractArrow arrow) {
+    private void snipe(AbstractArrow arrow) {
         Player player = (Player) arrow.getShooter();
         if (player == null) return;
         Location eye = player.getEyeLocation();
         Vector dir = eye.getDirection().normalize();
         World world = player.getWorld();
+        Location start = eye.clone().add(dir.clone().multiply(0.1));
 
         double maxDistance = 127;
 
@@ -70,13 +70,36 @@ public class SnipeAbility extends Ability {
                 hitPos = blockHit.getHitPosition().toLocation(player.getWorld());
             }
         }
-
+        final boolean[] failed = {false};
         RayTraceResult entityHit = world.rayTraceEntities(
-                eye.clone().add(dir.clone().multiply(0.1)),
+                start,
                 dir,
                 entityDistance,
                 0.2,
-                e -> e instanceof LivingEntity && e != player
+                entity -> {
+                    if (entity instanceof Player hitPlayer) {
+                        return !context.game().isTeammate(player, hitPlayer);
+                    } else if (entity instanceof ArmorStand armorStand && armorStand.getScoreboardTags().contains("gutitubow.shieldEntity")) {
+                        ShieldAbility.Shield shield = context.game().getAbilityManager().getShield(armorStand);
+                        if (shield != null) {
+                            UUID shieldOwnerUUID = shield.getOwnerUUID();
+                            if (context.game().isTeammate(playerUUID, shieldOwnerUUID)) return false;
+                            double distance = start.distance(armorStand.getLocation());
+                            if (distance > 36.0) {
+                                shield.breakShield();
+                                return false;
+                            } else {
+                                if (!failed[0]) {
+                                    failed[0] = true;
+                                    player.sendMessage(getSnipeMessage(true, distance));
+                                    return true;
+                                }
+                                return true;
+                            }
+                        } else return false;
+                    }
+                    return false;
+                }
         );
 
         if (entityHit != null) {
@@ -93,12 +116,7 @@ public class SnipeAbility extends Ability {
                         gamePlayer.damage(hitPlayer, 2, damageSource, true);
 
                     } else {
-                        Component message =
-                                Component.text("")
-                                        .append(Component.text("[!] 狙撃失敗: " + Math.floor(distance * 10) / 10 + "m")
-                                                .color(NamedTextColor.LIGHT_PURPLE)
-                                        );
-                        player.sendMessage(message);
+                        player.sendMessage(getSnipeMessage(true, distance));
                     }
                 }
             }
@@ -115,8 +133,18 @@ public class SnipeAbility extends Ability {
                 player.getEyeLocation(),
                 hitPos,
                 0.2
-
         );
+    }
+
+    private Component getSnipeMessage(boolean isFailed, double distance) {
+        if (isFailed) {
+            return Component.text("")
+                    .append(Component.text("[!] 狙撃失敗: " + Math.floor(distance * 10) / 10 + "m")
+                            .color(NamedTextColor.LIGHT_PURPLE)
+                    );
+        } else {
+            return Component.empty();
+        }
     }
 
     @Nullable

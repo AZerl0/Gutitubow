@@ -1,7 +1,9 @@
 package com.azerl0.gutitubow.ability;
 
+import com.azerl0.gutitubow.ability.abilities.ShieldAbility;
 import com.azerl0.gutitubow.util.ItemUtil;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -64,5 +66,17 @@ public class AbilityManager {
 
     public Ability createAbility(AbilityType abilityType) {
         return AbilityRegistry.create(abilityType, context);
+    }
+
+    public @Nullable ShieldAbility.Shield getShield(Entity entity) {
+        for (Ability ability : abilities.values()) {
+            if (ability instanceof ShieldAbility shieldAbility) {
+                ShieldAbility.Shield shield = shieldAbility.getShield();
+                if (shield.isThisShieldEntity(entity)) {
+                    return shield;
+                }
+            }
+        }
+        return null;
     }
 }
