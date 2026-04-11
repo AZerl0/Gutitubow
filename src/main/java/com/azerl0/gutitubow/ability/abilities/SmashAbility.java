@@ -140,9 +140,8 @@ public class SmashAbility extends Ability {
     }
 
     private boolean isPinch(Player target) {
-        return true;
-//        double health = target.getHealth() + target.getAbsorptionAmount();
-//        return  health <= 2;
+        double health = target.getHealth() + target.getAbsorptionAmount();
+        return  health <= 2;
     }
 
     private boolean isCanThrough(Material material) {
