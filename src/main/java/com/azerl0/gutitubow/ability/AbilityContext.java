@@ -1,5 +1,7 @@
 package com.azerl0.gutitubow.ability;
 
+import com.azerl0.gutitubow.GutitubowManagers;
+import com.azerl0.gutitubow.ability.zipline.ZiplineManager;
 import com.azerl0.gutitubow.fakeplayer.FakePlayerManager;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
@@ -10,24 +12,34 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class AbilityContext {
     private final JavaPlugin plugin;
     private final Game game;
+    private final GutitubowManagers gutitubowManagers;
     private final EntityGlowManager glowManager;
     private final PlayerSkinChanger playerSkinChanger;
     private final FakePlayerManager fakePlayerManager;
     private final ScoreboardManager scoreboardManager;
+    private final ZiplineManager ziplineManager;
 
-    public AbilityContext(JavaPlugin plugin, Game game, EntityGlowManager glowManager, PlayerSkinChanger playerSkinChanger, FakePlayerManager fakePlayerManager, ScoreboardManager scoreboardManager) {
+    public AbilityContext(
+            JavaPlugin plugin,
+            Game game,
+            GutitubowManagers gutitubowManagers
+    ) {
         this.plugin = plugin;
         this.game = game;
-        this.glowManager = glowManager;
-        this.playerSkinChanger = playerSkinChanger;
-        this.fakePlayerManager = fakePlayerManager;
-        this.scoreboardManager = scoreboardManager;
+        this.gutitubowManagers = gutitubowManagers;
+        this.glowManager = gutitubowManagers.getGlowManager();
+        this.playerSkinChanger = gutitubowManagers.getPlayerSkinChanger();
+        this.fakePlayerManager = gutitubowManagers.getFakePlayerManager();
+        this.scoreboardManager = gutitubowManagers.getScoreboardManager();
+        this.ziplineManager = gutitubowManagers.getZiplineManager();
     }
 
     public JavaPlugin plugin() { return plugin; }
     public Game game() { return game; }
+    public GutitubowManagers getGutitubowManagers() { return gutitubowManagers; }
     public EntityGlowManager glowManager() { return glowManager; }
     public PlayerSkinChanger skinChanger() { return playerSkinChanger; }
     public FakePlayerManager fakePlayerManager() { return fakePlayerManager; }
     public ScoreboardManager scoreboardManager() { return scoreboardManager; }
+    public ZiplineManager ziplineManager() { return ziplineManager; }
 }

@@ -1,5 +1,7 @@
 package com.azerl0.gutitubow;
 
+import com.azerl0.gutitubow.ability.zipline.ZiplineListener;
+import com.azerl0.gutitubow.ability.zipline.ZiplineManager;
 import com.azerl0.gutitubow.carepackage.CarePackageListener;
 import com.azerl0.gutitubow.command.*;
 import com.azerl0.gutitubow.debug.DebugManager;
@@ -45,6 +47,8 @@ public final class Gutitubow extends JavaPlugin {
     private final PlayerSkinChanger playerSkinChanger = new PlayerSkinChanger(this);
     private final FakePlayerManager fakePlayerManager = new FakePlayerManager(this);
     private final PinManager pinManager = new PinManager(this);
+    private final ZiplineManager ziplineManager = new ZiplineManager(this);
+    GutitubowManagers gutitubowManagers;
 
     private PacketListenerCommon packetListener;
 
@@ -88,6 +92,7 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.COPY, CopyAbility::new);
         AbilityRegistry.register(AbilityType.APPRAISAL, AppraisalAbility::new);
         AbilityRegistry.register(AbilityType.SMASH, SmashAbility::new);
+        AbilityRegistry.register(AbilityType.ZIPLINE, ZiplineAbility::new);
 
         // Managers
         this.scoreboardManager = new ScoreboardManager();
@@ -95,8 +100,11 @@ public final class Gutitubow extends JavaPlugin {
         this.glowManager = new EntityGlowManager(flagManager, scoreboardManager);
         this.fixLeftClickManager = new FixLeftClickManager(this);
         this.debugManager = new DebugManager(this);
+        gutitubowManagers = new GutitubowManagers(glowManager, scoreboardManager, playerSkinChanger, fakePlayerManager, ziplineManager);
+
+        // Game
         this.mapManager = new MapManager(this);
-        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, this.glowManager, this.scoreboardManager, playerSkinChanger, fakePlayerManager);
+        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, gutitubowManagers);
         // MainGame
         this.game = gameManager.newGame();
 
@@ -118,6 +126,7 @@ public final class Gutitubow extends JavaPlugin {
         pluginManager.registerEvents(new PacketListener(flagManager), this);
         pluginManager.registerEvents(new FixLeftClickListener(fixLeftClickManager), this);
         pluginManager.registerEvents(new PinListener(pinManager), this);
+        pluginManager.registerEvents(new ZiplineListener(ziplineManager), this);
 
         // packetListener登録
         EventManager eventManager = PacketEvents.getAPI().getEventManager();
@@ -158,5 +167,6 @@ public final class Gutitubow extends JavaPlugin {
         EntityUtil.removeAllGlowTeam();
 
         game.onDisablePlugin();
+        ziplineManager.removeAllZiplines();
     }
 }

@@ -759,4 +759,22 @@ public class GutitubowItem {
         itemStack.setItemMeta(meta);
         ABILITY_ICON_SMASH = itemStack.clone();
     }
+
+    public static final ItemStack ABILITY_ICON_ZIPLINE;
+    static {
+        ItemStack itemStack = new ItemStack(Material.TRIPWIRE_HOOK);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「登攀」は、どんな高所にも移動できる能力。"),
+                Component.text("§f自由に使用可能なジップラインを設置可能。"),
+                Component.text("§fジップラインは同時に1個までしか設置できない。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 [SHIFT] しながら [射撃] - ジップラインを設置")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_ZIPLINE = itemStack.clone();
+    }
 }

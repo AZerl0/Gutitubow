@@ -1,19 +1,17 @@
 package com.azerl0.gutitubow.game;
 
+import com.azerl0.gutitubow.GutitubowManagers;
 import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.carepackage.CarePackage;
 import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.debug.DebugManager;
-import com.azerl0.gutitubow.fakeplayer.FakePlayerManager;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoardManager;
 import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.map.Map;
 import com.azerl0.gutitubow.map.MapRepairManager;
-import com.azerl0.gutitubow.packet.EntityGlowManager;
-import com.azerl0.gutitubow.player.PlayerSkinChanger;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.team.TeamManager;
 import net.kyori.adventure.bossbar.BossBar;
@@ -53,8 +51,8 @@ public class Game {
     private double nextSafeAreaMaxX;
     private double nextSafeAreaMinZ;
     private double nextSafeAreaMaxZ;
+    private final GutitubowManagers gutitubowManagers;
     private final CarePackageManager carePackageManager;
-    private final EntityGlowManager glowManager;
     private final GamePlayerManager gamePlayerManager;
     private final AbilityManager abilityManager;
     private final DebugManager debugManager;
@@ -68,22 +66,19 @@ public class Game {
     public Game(
             JavaPlugin plugin,
             Map map,
-            EntityGlowManager glowManager,
             DebugManager debugManager,
-            ScoreboardManager scoreboardManager,
-            PlayerSkinChanger playerSkinChanger,
-            FakePlayerManager fakePlayerManager
+            GutitubowManagers gutitubowManagers
     ) {
         this.plugin = plugin;
         this.map = map;
+        this.gutitubowManagers = gutitubowManagers;
         this.debugManager = debugManager;
-        this.glowManager = glowManager;
-        this.carePackageManager = new CarePackageManager(plugin, this, glowManager);
-        AbilityContext abilityContext = new AbilityContext(plugin, this, glowManager, playerSkinChanger, fakePlayerManager, scoreboardManager);
+        this.carePackageManager = new CarePackageManager(plugin, this, gutitubowManagers.getGlowManager());
+        AbilityContext abilityContext = new AbilityContext(plugin, this, gutitubowManagers);
         this.abilityManager = new AbilityManager(abilityContext);
         this.gamePlayerManager = new GamePlayerManager(plugin, this);
         reset();
-        this.scoreboardManager = scoreboardManager;
+        this.scoreboardManager = gutitubowManagers.getScoreboardManager();
         this.playerBoardManager = new PlayerBoardManager(scoreboardManager);
         this.teamManager = new TeamManager(this);
     }
@@ -211,7 +206,7 @@ public class Game {
             if (gameTeam != null) {
                 for (UUID uuid : gameTeam.getPlayersWithout(player.getUniqueId())) {
                     Player teammate = Bukkit.getPlayer(uuid);
-                    if (teammate != null) glowManager.removeGlow(player, teammate);
+                    if (teammate != null) gutitubowManagers.getGlowManager().removeGlow(player, teammate);
                 }
             }
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(20);
@@ -319,7 +314,7 @@ public class Game {
                         if (teammate == null || !teammate.isOnline()) continue;
                         if (!debugManager.isNoStartTeleport()) topPlayer.addPassenger(teammate);
                         topPlayer = teammate;
-                        glowManager.addGlow(player, teammate);
+                        gutitubowManagers.getGlowManager().addGlow(player, teammate);
                     }
                 }
             }

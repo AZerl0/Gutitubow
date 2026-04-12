@@ -42,7 +42,8 @@ public enum AbilityType {
     CHANGE(Component.text("変化"), GutitubowItem.ABILITY_ICON_CHANGE),
     COPY(Component.text("複製"), GutitubowItem.ABILITY_ICON_COPY),
     APPRAISAL(Component.text("鑑定"), GutitubowItem.ABILITY_ICON_APPRAISAL),
-    SMASH(Component.text("必殺"), GutitubowItem.ABILITY_ICON_SMASH);
+    SMASH(Component.text("必殺"), GutitubowItem.ABILITY_ICON_SMASH),
+    ZIPLINE(Component.text("登攀"), GutitubowItem.ABILITY_ICON_ZIPLINE);
 
     private final Component name;
     private final ItemStack displayItem;

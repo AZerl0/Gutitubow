@@ -36,6 +36,7 @@ public class AbstractAbilitiesGUI extends AbstractGUI {
         addAbilityButton(AbilityType.BARRIER);
         addAbilityButton(AbilityType.ECHO);
         addAbilityButton(AbilityType.INVINCIBLE);
+        addAbilityButton(AbilityType.ZIPLINE);
         addAbilityButton(AbilityType.FLOAT);
         addAbilityButton(AbilityType.MEDUSA);
         addAbilityButton(AbilityType.BOMB);
