@@ -20,7 +20,6 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -68,7 +67,7 @@ public class ShieldAbility extends Ability {
         if (player == null) return;
 
         if (event.isSneaking()) {
-            if (!shield.isBlocking() && shield.getHealth() > 0 && player.getGameMode() != GameMode.SPECTATOR) shield.raiseShield();
+            if (!shield.isBlocking() && shield.getHealth() > 0 && player.getGameMode() != GameMode.SPECTATOR && !hasCompassCooldown()) shield.raiseShield();
         } else {
             if (shield.isBlocking()) shield.lowerShield();
         }
@@ -248,6 +247,8 @@ public class ShieldAbility extends Ability {
                 shieldRecoveryUpdate();
 
             }
+
+            setCompassCooldown(200);
         }
 
         private void shieldRecoveryUpdate() {
@@ -314,6 +315,8 @@ public class ShieldAbility extends Ability {
                 Objects.requireNonNull(armorStand.getAttribute(Attribute.SCALE)).setBaseValue(0.0);
             }
             player.setCooldown(Material.BOW, 20);
+            setCompassCooldown(20);
+            startCompassCooldownTask();
         }
 
         private boolean isInvalidBottomShieldEntity(UUID uuid) {
