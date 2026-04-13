@@ -288,7 +288,7 @@ public class ShieldAbility extends Ability {
             Player player = getPlayer();
             if (player == null) return;
 
-            player.getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1.0f, 2.0f);
+            player.getWorld().playSound(getPlayer().getLocation(), Sound.ENTITY_ELDER_GUARDIAN_CURSE, 0.75f, 2.0f);
             isBlocking = true;
             for (UUID uuid : shieldEntities.keySet()) {
                 Entity entity = Bukkit.getEntity(uuid);
