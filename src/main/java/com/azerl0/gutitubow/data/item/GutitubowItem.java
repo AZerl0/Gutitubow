@@ -777,4 +777,22 @@ public class GutitubowItem {
         itemStack.setItemMeta(meta);
         ABILITY_ICON_ZIPLINE = itemStack.clone();
     }
+
+    public static final ItemStack ABILITY_ICON_GRAPPLINGHOOK;
+    static {
+        ItemStack itemStack = new ItemStack(Material.FISHING_ROD);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「鍵縄」は、ワイヤーアクション自在に跳びまわる能力。"),
+                Component.text("§f弓矢から地形に向けて鍵縄を放ち、再度発動することで跳躍する。"),
+                Component.text("§fジップラインは同時に1個までしか設置できない。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 [(弓をもって) 左クリック] - 「鍵縄」の発射 / 跳躍")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_GRAPPLINGHOOK = itemStack.clone();
+    }
 }
