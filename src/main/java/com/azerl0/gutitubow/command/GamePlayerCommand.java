@@ -39,7 +39,7 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
         GamePlayer gamePlayer;
 
         switch (args[0]) {
-            case ("data"):
+            case ("data"): {
                 if (args[2].equals("@s")) {
                     target = player;
                 } else {
@@ -119,7 +119,8 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
                         return true;
                 }
                 break;
-            case ("arrow"):
+            }
+            case ("arrow"): {
                 boolean canSet = args[1].equals("set") && args.length == 4;
                 boolean canAdd = args[1].equals("add") && args.length >= 3;
                 boolean canRemove = args[1].equals("remove") && args.length >= 3;
@@ -161,8 +162,8 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
                         gamePlayer.removeArrow(value);
                         return true;
                 }
-
-            case ("damage"):
+            }
+            case ("damage"): {
                 // /gp damage @s 1 border
                 if (args.length < 3) {
                     sender.sendMessage("引数が不足しています");
@@ -195,7 +196,40 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
                     game.getGamePlayer(finalTarget).damage(finalTarget, damageAmount, damageSource);
                 }, delay * 20);
                 return true;
+            }
+            case ("revive"): {
+                if (args[1].equals("@s")) {
+                    target = player;
+                } else {
+                    target = Bukkit.getPlayer(args[1]);
+                }
 
+                if (target == null) {
+                    player.sendMessage("プレイヤーが見つかりませんでした");
+                    return true;
+                }
+                Player reviver;
+                if (args.length < 3) {
+                    reviver = player;
+                } else {
+                    if (args[1].equals("@s")) {
+                        reviver = player;
+                    } else {
+                        reviver = Bukkit.getPlayer(args[1]);
+                    }
+
+                    if (reviver == null) {
+                        player.sendMessage("プレイヤーが見つかりませんでした");
+                        return true;
+                    }
+                }
+
+                GamePlayer gamePlayerTarget = game.getGamePlayer(target);
+
+                gamePlayerTarget.revive(reviver);
+                return true;
+
+            }
         }
         return false;
     }
@@ -208,14 +242,13 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
             @NotNull String
             @NotNull [] args
     ) {
-        List<String> list = new ArrayList<String>();
-        ;
-        if (args.length == 1) {
-            return List.of("data", "arrow", "damage");
 
+        if (args.length == 1) {
+            return List.of("data", "arrow", "damage", "revive");
         }
+
         switch (args[0]) {
-            case ("data"):
+            case ("data"): {
                 if (args.length == 2) return List.of("get", "set", "reset");
                 if (args.length == 3) {
                     return getPlayerList();
@@ -225,13 +258,15 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
                         return List.of("*", "playerTotalHit", "playerArrowReloadTick", "playerMaxArrowStackSize");
                     } else return List.of("playerTotalHit", "playerArrowReloadTick", "playerMaxArrowStackSize");
                 }
-            case ("arrow"):
-                if (args.length == 2) return List.of("set","add", "remove");
+            }
+            case ("arrow"): {
+                if (args.length == 2) return List.of("set", "add", "remove");
                 if (args.length == 3) {
                     return getPlayerList();
 
                 }
-            case ("damage"):
+            }
+            case ("damage"): {
                 switch (args.length) {
                     case (2):
                         return getPlayerList();
@@ -244,7 +279,12 @@ public class GamePlayerCommand implements CommandExecutor, TabExecutor {
                         }
                         return damageTypeList;
                 }
-
+            }
+            case ("revive"): {
+                if (args.length == 2 || args.length == 3) {
+                    return getPlayerList();
+                }
+            }
         }
 
         return List.of();
