@@ -236,6 +236,7 @@ public class ShieldAbility extends Ability {
                     }
                 }
                 player.setCooldown(Material.BOW, 200);
+                setCompassCooldown(200);
 
             } else {
                 for (UUID uuid : shieldEntities.keySet()) {
@@ -247,8 +248,6 @@ public class ShieldAbility extends Ability {
                 shieldRecoveryUpdate();
 
             }
-
-            setCompassCooldown(200);
         }
 
         private void shieldRecoveryUpdate() {
