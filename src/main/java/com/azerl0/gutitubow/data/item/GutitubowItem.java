@@ -784,11 +784,11 @@ public class GutitubowItem {
 
         ItemMeta meta = itemStack.getItemMeta();
         meta.lore(List.of(
-                Component.text("§6「鍵縄」は、ワイヤーアクション自在に跳びまわる能力。"),
+                Component.text("§6「鉤縄」は、ワイヤーアクション自在に跳びまわる能力。"),
                 Component.text("§f弓矢から地形に向けて鍵縄を放ち、再度発動することで跳躍する。"),
                 Component.empty(),
                 Component.text("§7操作"),
-                Component.text("§7 [(弓をもって) 左クリック] - 「鍵縄」の発射 / 跳躍")
+                Component.text("§7 [(弓をもって) 左クリック] - 「鉤縄」の発射 / 跳躍")
         ));
 
         itemStack.setItemMeta(meta);
