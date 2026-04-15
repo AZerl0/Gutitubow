@@ -274,10 +274,23 @@ public class Game {
             gamePlayer.resetTotalHit();
             gamePlayer.setTotalKill(0);
 
-            AbilityType ability = abilitySelector.nextAbility();
+            // インベントリの初期化
+            PlayerInventory inventory = player.getInventory();
+            inventory.clear();
+            for (int i = 9; i <= 26; i++) inventory.setItem(i, GutitubowItem.INVALID_SLOT_BLACK);
+            inventory.setItem(0, GutitubowItem.GUTITUBOW);
+            inventory.setItem(6, GutitubowItem.AREA_COMPASS);
+            inventory.setItem(7, GutitubowItem.SPYGLASS);
 
+            player.setCompassTarget(safeArea);
+            gamePlayer.setArrowAmount(0);
+
+            if (!debugManager.isNoStartTeleport()) gamePlayer.firstElytra();
+
+            // 能力を割り当てる
+            AbilityType ability = abilitySelector.nextAbility();
             abilityManager.setAbility(player, ability);
-            gamePlayer.updatePlayerBoard();
+            abilityManager.setDisplayItem(player, ability, 13);
 
             Component abilityMessage = Component.text("あなたの能力は「").color(NamedTextColor.GOLD).append(ability.getName()).append(Component.text("」です"));
             Title title = Title.title(
@@ -292,16 +305,7 @@ public class Game {
             player.showTitle(title);
             player.sendMessage(abilityMessage);
 
-            PlayerInventory inventory = player.getInventory();
-            inventory.clear();
-            inventory.setItem(0, GutitubowItem.GUTITUBOW);
-            inventory.setItem(6, GutitubowItem.AREA_COMPASS);
-            inventory.setItem(7, GutitubowItem.SPYGLASS);
-            abilityManager.setDisplayItem(player, ability, 13);
 
-            player.setCompassTarget(safeArea);
-
-            if (!debugManager.isNoStartTeleport()) gamePlayer.firstElytra();
             GutitubowGameMode gameMode = getGameSetting().getGameMode();
             if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
                 GameTeam gameTeam = teamManager.getPlayerTeam(player);
@@ -318,12 +322,8 @@ public class Game {
                     }
                 }
             }
-            gamePlayer.setArrowAmount(0);
 
-            for (int i = 9; i <= 26; i++) {
-                if (i != 13) inventory.setItem(i, GutitubowItem.INVALID_SLOT_BLACK);
-            }
-
+            // 他のプレイヤーを隠す
             for (UUID otherPlayerUUID : players) {
                 Player target = Bukkit.getPlayer(otherPlayerUUID);
                 if (target != null && player.getUniqueId() != target.getUniqueId() && !teamManager.isTeammate(player, target)) {
