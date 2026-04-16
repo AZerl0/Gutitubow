@@ -238,7 +238,7 @@ public class Game {
 
 
     private void init() {
-        this.nextTick = 15 * 20;
+        this.nextTick = gameSetting.getPhase0seconds() * 20;
         this.map.getBorder().setCenter(this.map.getCenter());
         this.map.getBorder().setSize(this.map.getSize());
         safeArea = map.getRandomSafeArea();

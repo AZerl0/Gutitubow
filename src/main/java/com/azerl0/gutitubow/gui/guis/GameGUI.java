@@ -44,6 +44,7 @@ public class GameGUI extends AbstractGUI {
                 });
         updateToggleGameModeButton();
         updateSetDefaultHealthButton();
+        updatePhase0SecondsButton();
     }
 
 
@@ -97,16 +98,33 @@ public class GameGUI extends AbstractGUI {
 
     private void clickDefaultHealthButton(InventoryClickEvent event) {
         double currentHealth = game.getGameSetting().getDefaultHealth();
-        double add;
-        if (event.getClick() == ClickType.LEFT) {
-            add = 2;
-        } else {
-            add = -2;
-        }
-        double newHealth = currentHealth + add;
-        newHealth = Math.max(2, newHealth);
+        double add = event.getClick() == ClickType.LEFT ? 2 : -2;
+        double newHealth = Math.max(2, currentHealth + add);
         game.getGameSetting().setDefaultHealth(newHealth);
         updateSetDefaultHealthButton();
+    }
+
+    private void updatePhase0SecondsButton() {
+        ItemStack itemStack = getAbstractSimpleButtonItem(Material.BELL, Component.text("フェーズ0 待機時間"));
+        ItemMeta meta = itemStack.getItemMeta();
+        int currentSeconds = game.getGameSetting().getPhase0seconds();
+        meta.lore(List.of(
+                Component.text("§r§7現在の時間 - §b" + currentSeconds + "秒"),
+                Component.text("§r§7[左クリック] 時間を §b5秒§7 増やす"),
+                Component.text("§r§7[右クリック] 時間を §b5秒§7 減らす")
+        ));
+        itemStack.setAmount(currentSeconds);
+        itemStack.setItemMeta(meta);
+
+        addButton(20, itemStack, this::clickPhase0secondsButton);
+    }
+
+    private void clickPhase0secondsButton(InventoryClickEvent event) {
+        int currentSeconds = game.getGameSetting().getPhase0seconds();
+        int add = event.getClick() == ClickType.LEFT ? 5 : -5;
+        int newSeconds = Math.max(5, currentSeconds + add);
+        game.getGameSetting().setPhase0seconds(newSeconds);
+        updatePhase0SecondsButton();
     }
 
 

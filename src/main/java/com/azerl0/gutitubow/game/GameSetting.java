@@ -10,7 +10,9 @@ import java.util.Set;
 public class GameSetting {
     private GutitubowGameMode gameMode = GutitubowGameMode.SOLO;
     private double defaultHealth = 6;
+    private int phase0seconds = 15;
     private Set<AbilityType> disabledAbilities = new HashSet<>();
+
     private final AbilityDisableGUI abilityDisableGUI;
 
     public GameSetting() {
@@ -32,6 +34,14 @@ public class GameSetting {
 
     public void setDefaultHealth(double health) {
         this.defaultHealth = health;
+    }
+
+    public int getPhase0seconds() {
+        return phase0seconds;
+    }
+
+    public void setPhase0seconds(int seconds) {
+        this.phase0seconds = seconds;
     }
 
     public @NotNull Set<AbilityType> getDisabledAbilities() {
