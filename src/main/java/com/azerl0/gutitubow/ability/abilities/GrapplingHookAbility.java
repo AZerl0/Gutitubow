@@ -68,7 +68,7 @@ public class GrapplingHookAbility extends Ability {
                     state = GrapplingHoolAbilityStateType.NONE;
                     if (grapplingArrow != null) grapplingArrow.remove();
                     if (leashChicken != null) leashChicken.remove();
-                    setCompassCooldown(5);
+                    setCompassCooldown(3 * 20);
                     startCompassCooldownTask();
                 }
 
@@ -78,7 +78,7 @@ public class GrapplingHookAbility extends Ability {
                 if (gamePlayer != null && gamePlayer.getArrowAmount() > 0) {
                     shootGrapplingHookArrow();
                     gamePlayer.removeArrow(1);
-                    setCompassCooldown(5);
+                    setCompassCooldown(10);
                     startCompassCooldownTask();
                 }
             }
