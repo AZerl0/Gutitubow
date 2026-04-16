@@ -2,7 +2,6 @@ package com.azerl0.gutitubow.map;
 
 import org.bukkit.Location;
 import org.bukkit.WorldBorder;
-import org.bukkit.util.Vector;
 
 import java.util.Random;
 
