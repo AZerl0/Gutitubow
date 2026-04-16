@@ -5,7 +5,6 @@ import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GamePlayer;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.team.GameTeam;
-import com.azerl0.gutitubow.util.EntityUtil;
 import com.azerl0.gutitubow.util.PlayerUtil;
 import io.papermc.paper.scoreboard.numbers.NumberFormat;
 import net.kyori.adventure.text.Component;
