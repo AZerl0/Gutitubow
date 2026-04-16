@@ -11,7 +11,7 @@ public class MapManager {
     }
 
     public Map getTestMap() {
-        return new Map(Bukkit.getWorld("world").getBlockAt(0, 0, 0).getLocation(), 300);
+        return new Map(Bukkit.getWorld("world").getBlockAt(3599, 0, -11546).getLocation(), 300);
     }
 
 
