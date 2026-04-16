@@ -258,8 +258,8 @@ public class Game {
             Player player = Bukkit.getPlayer(uuid);
             if (player == null || !player.isOnline()) continue;
             alivePlayers.add(uuid);
-            Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(6);
-            player.setHealth(6);
+            Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(gameSetting.getDefaultHealth());
+            player.setHealth(gameSetting.getDefaultHealth());
             if (!debugManager.isNoStartTeleport()) {
                 Location location = this.map.getRandomXZPosition(30);
                 location.setY(200.0);
@@ -439,7 +439,7 @@ public class Game {
 
                     double maxDistance = 15.0;
 
-                    Vector diff = newSafeArea.toVector().subtract(safeArea.toVector());
+                    Vector diff = newSafeArea.clone().toVector().subtract(safeArea.clone().toVector());
                     double distance = diff.length();
 
                     if (distance > maxDistance) {
@@ -478,7 +478,7 @@ public class Game {
     private void setWorldBorderToSafeAreaByProgress(Location start, float progress) {
         progress = Math.max(0.0f, Math.min(1.0f, progress));
         WorldBorder border = map.getBorder();
-        Vector offset = safeArea.toVector().subtract(start.toVector()).multiply(progress);
+        Vector offset = safeArea.clone().toVector().subtract(start.clone().toVector()).multiply(progress);
         border.setCenter(start.clone().add(offset));
     }
 

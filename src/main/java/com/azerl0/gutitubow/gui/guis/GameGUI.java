@@ -7,7 +7,12 @@ import com.azerl0.gutitubow.gui.AbstractGUI;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.List;
 
 public class GameGUI extends AbstractGUI {
     private final GameManager gameManager;
@@ -19,7 +24,7 @@ public class GameGUI extends AbstractGUI {
         this.game = game;
 
 
-        addButton(0, getGameStartButtonItem(), event -> {
+        addButton(0, getAbstractSimpleButtonItem(Material.BOW, Component.text("ゲーム開始")), event -> {
             gameManager.startGame(game);
         });
         addButton(
@@ -38,6 +43,7 @@ public class GameGUI extends AbstractGUI {
                     game.getSpectatorManager().getSpectatorsGUI().open(clicker);
                 });
         updateToggleGameModeButton();
+        updateSetDefaultHealthButton();
     }
 
 
@@ -74,8 +80,33 @@ public class GameGUI extends AbstractGUI {
         updateToggleGameModeButton();
     }
 
-    private ItemStack getGameStartButtonItem() {
-        return getAbstractSimpleButtonItem(Material.BOW, Component.text("ゲーム開始"));
+    private void updateSetDefaultHealthButton() {
+        ItemStack itemStack = getAbstractSimpleButtonItem(Material.APPLE, Component.text("デフォルトの体力"));
+        double health = game.getGameSetting().getDefaultHealth();
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§r§7現在の体力 - §c♥§7x" + (int) health / 2),
+                Component.text("§r§7[左クリック] デフォルトの体力を §c♥§7x1 増やす"),
+                Component.text("§r§7[右クリック] デフォルトの体力を §c♥§7x1 減らす")
+        ));
+        itemStack.setAmount((int) health / 2);
+        itemStack.setItemMeta(meta);
+
+        addButton(19, itemStack, this::clickDefaultHealthButton);
+    }
+
+    private void clickDefaultHealthButton(InventoryClickEvent event) {
+        double currentHealth = game.getGameSetting().getDefaultHealth();
+        double add;
+        if (event.getClick() == ClickType.LEFT) {
+            add = 2;
+        } else {
+            add = -2;
+        }
+        double newHealth = currentHealth + add;
+        newHealth = Math.max(2, newHealth);
+        game.getGameSetting().setDefaultHealth(newHealth);
+        updateSetDefaultHealthButton();
     }
 
 

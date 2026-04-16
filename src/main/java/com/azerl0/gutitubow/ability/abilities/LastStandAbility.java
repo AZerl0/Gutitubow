@@ -53,7 +53,7 @@ public class LastStandAbility extends Ability {
         if (player == null) return;
         if (!isActive() && event.getDamageSource().getDamageType() != GutitubowDamageType.FAILED_LAST_STAND) {
             event.setCancelled(true);
-            double absorptionAmount = 4;
+            double absorptionAmount = context.game().getGameSetting().getDefaultHealth() - 2;
             Entity attacker = event.getDamageSource().getDirectPlayer();
             if (attacker instanceof Player attackPlayer) {
                 absorptionAmount = Objects.requireNonNull(attackPlayer.getAttribute(Attribute.MAX_HEALTH)).getValue() + attackPlayer.getAbsorptionAmount();
@@ -71,8 +71,14 @@ public class LastStandAbility extends Ability {
             Player player = getPlayer();
             if (player == null) return;
 
-            Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(6);
-            player.setHealth(6);
+            double health;
+            if (context.game().isStarted()) {
+                health = context.game().getGameSetting().getDefaultHealth();
+            } else {
+                health = 20;
+            }
+            Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(health);
+            player.setHealth(health);
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_ABSORPTION)).setBaseValue(0);
             player.removePotionEffect(PotionEffectType.ABSORPTION);
             player.setAbsorptionAmount(0);
