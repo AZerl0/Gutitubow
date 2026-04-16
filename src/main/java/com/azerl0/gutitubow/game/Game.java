@@ -251,6 +251,9 @@ public class Game {
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.showBossBar(this.bossBar);
+            if (!players.contains(player.getUniqueId())) {
+                player.setGameMode(GameMode.SPECTATOR);
+            }
         }
 
         // ゲームプレイヤーの処理
