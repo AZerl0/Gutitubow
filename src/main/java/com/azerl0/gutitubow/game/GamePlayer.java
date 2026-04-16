@@ -878,6 +878,9 @@ public class GamePlayer {
         LogManager.broadcastReviveLog(player, reviver);
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1.0f, 1.0f);
 
+        PotionEffect health = new PotionEffect(PotionEffectType.INSTANT_HEALTH, 1, 255, true, false, false);
+        player.addPotionEffect(health);
+
         Firework firework = world.spawn(player.getLocation().add(0.0, 1.5, 0.0), Firework.class);
         FireworkMeta meta = firework.getFireworkMeta();
         meta.addEffect(FireworkEffect.builder().withColor(Color.AQUA).with(FireworkEffect.Type.BALL).build());
