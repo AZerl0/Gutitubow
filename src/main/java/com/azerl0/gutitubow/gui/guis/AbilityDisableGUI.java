@@ -1,6 +1,5 @@
 package com.azerl0.gutitubow.gui.guis;
 
-import com.azerl0.gutitubow.ability.AbilitySelector;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.game.GameSetting;
 import com.azerl0.gutitubow.gui.AbstractAbilitiesGUI;

@@ -5,8 +5,6 @@ import com.azerl0.gutitubow.data.tags.block.*;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 
-import java.util.Set;
-
 public class GutitubowBlockTags {
 
     public static final Tag<Material> BREAKABLE_BY_GUTITUBOW_ARROW = BreakableByGutitubowArrow.BREAKABLE_BY_GUTITUBOW_ARROW;

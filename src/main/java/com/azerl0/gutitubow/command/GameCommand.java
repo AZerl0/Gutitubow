@@ -29,7 +29,7 @@ public class GameCommand implements CommandExecutor, TabExecutor {
             @NotNull String label,
             @NotNull String @NotNull [] args
     ) {
-        if (!(sender instanceof Player player)) return true;
+        if (!(sender instanceof Player)) return true;
 
         switch (args[0]) {
             case ("start"):

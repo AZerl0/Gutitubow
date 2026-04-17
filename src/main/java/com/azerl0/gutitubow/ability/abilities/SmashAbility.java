@@ -199,7 +199,6 @@ public class SmashAbility extends Ability {
         private int lookingTick = 0;
 
         private CountdownDisplay(Player target) {
-            Player player = getPlayer();
 
             this.target = target;
             playerCountdowns.put(target.getUniqueId(), this);

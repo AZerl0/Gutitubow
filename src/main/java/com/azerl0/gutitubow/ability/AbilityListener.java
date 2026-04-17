@@ -112,7 +112,7 @@ public class AbilityListener implements Listener {
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player damager &&
-                event.getEntity() instanceof Player target) {
+                event.getEntity() instanceof Player) {
 
             Ability ability = abilityManager.getAbility(damager);
             if (ability != null) ability.onAttack(event);

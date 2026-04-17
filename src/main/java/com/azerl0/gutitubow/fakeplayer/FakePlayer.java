@@ -1,6 +1,5 @@
 package com.azerl0.gutitubow.fakeplayer;
 
-import com.github.retrooper.packetevents.wrapper.play.server.*;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.SkinTrait;

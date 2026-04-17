@@ -1,7 +1,6 @@
 package com.azerl0.gutitubow.event.gameplayer;
 
 import com.azerl0.gutitubow.data.damage.DamageSource;
-import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
