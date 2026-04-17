@@ -135,12 +135,6 @@ public final class Gutitubow extends JavaPlugin {
         EventManager eventManager = PacketEvents.getAPI().getEventManager();
         packetListener = eventManager.registerListener(new PacketEventListener(this, flagManager), PacketListenerPriority.NORMAL);
 
-        // Command登録
-//        getCommand("gutitubowitem").setExecutor(new ItemCommand());
-//        getCommand("gameteam").setExecutor(new GameTeamCommand(game.getTeamManager(), game.getSpectatorManager()));
-//        getCommand("setskin").setExecutor(new SetSkinCommand(playerSkinChanger));
-//        getCommand("setname").setExecutor(new SetNameCommand());
-//        getCommand("fakeplayer").setExecutor(new FakePlayerCommand(fakePlayerManager));
 
         for (World world : Bukkit.getWorlds()) {
             world.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, false);
