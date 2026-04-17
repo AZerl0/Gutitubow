@@ -187,4 +187,12 @@ public final class Gutitubow extends JavaPlugin {
     public AbilitySelectorGUI getAbilitySelectorGUI() {
         return abilitySelectorGUI;
     }
+
+    public PlayerSkinChanger getPlayerSkinChanger() {
+        return playerSkinChanger;
+    }
+
+    public FakePlayerManager getFakePlayerManager() {
+        return fakePlayerManager;
+    }
 }

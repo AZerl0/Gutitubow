@@ -3,13 +3,16 @@ package com.azerl0.gutitubow;
 import com.azerl0.gutitubow.command.AbilityCommand;
 import com.azerl0.gutitubow.command.CarePackageCommand;
 import com.azerl0.gutitubow.command.DebugCommand;
+import com.azerl0.gutitubow.command.FakePlayerCommand;
 import com.azerl0.gutitubow.command.GameCommand;
 import com.azerl0.gutitubow.command.GamePlayerCommand;
+import com.azerl0.gutitubow.command.GameTeamCommand;
+import com.azerl0.gutitubow.command.ItemCommand;
+import com.azerl0.gutitubow.command.SetNameCommand;
+import com.azerl0.gutitubow.command.SetSkinCommand;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NullMarked;
 
 import java.io.IOException;
@@ -39,6 +42,11 @@ public class GutitubowBootstrap implements PluginBootstrap {
             GameCommand.register(event.registrar());
             GamePlayerCommand.register(event.registrar());
             DebugCommand.register(event.registrar());
+            ItemCommand.register(event.registrar());
+            GameTeamCommand.register(event.registrar());
+            SetSkinCommand.register(event.registrar());
+            SetNameCommand.register(event.registrar());
+            FakePlayerCommand.register(event.registrar());
         }));
     }
 }
