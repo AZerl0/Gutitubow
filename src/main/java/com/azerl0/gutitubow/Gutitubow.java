@@ -37,6 +37,7 @@ import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.ability.abilities.*;
 
 public final class Gutitubow extends JavaPlugin {
+    private static Gutitubow instance;
     private ScoreboardManager scoreboardManager;
     private EntityFlagManager flagManager;
     private EntityGlowManager glowManager;
@@ -54,10 +55,11 @@ public final class Gutitubow extends JavaPlugin {
 
 
     private Game game;
+    private AbilitySelectorGUI abilitySelectorGUI;
 
     @Override
     public void onEnable() {
-
+        instance = this;
         ItemUtil.init(this);
 
         // Ability登録
@@ -111,7 +113,7 @@ public final class Gutitubow extends JavaPlugin {
 
         //GUI
         GameGUI gameGUI = new GameGUI(gameManager, game);
-        AbilitySelectorGUI abilitySelectorGUI = new AbilitySelectorGUI(game.getAbilityManager());
+        this.abilitySelectorGUI = new AbilitySelectorGUI(game.getAbilityManager());
 
         AllGUI allGUI = new AllGUI(gameGUI, abilitySelectorGUI);
 
@@ -134,16 +136,11 @@ public final class Gutitubow extends JavaPlugin {
         packetListener = eventManager.registerListener(new PacketEventListener(this, flagManager), PacketListenerPriority.NORMAL);
 
         // Command登録
-        getCommand("ability").setExecutor(new AbilityCommand(game.getAbilityManager(), abilitySelectorGUI));
-        getCommand("carepackage").setExecutor(new CarePackageCommand(game.getCarePackageManager()));
-        getCommand("game").setExecutor(new GameCommand(gameManager, game));
-        getCommand("gameplayer").setExecutor(new GamePlayerCommand(this, game));
-        getCommand("gutitubowdebug").setExecutor(new DebugCommand(debugManager));
-        getCommand("gutitubowitem").setExecutor(new ItemCommand());
-        getCommand("gameteam").setExecutor(new GameTeamCommand(game.getTeamManager(), game.getSpectatorManager()));
-        getCommand("setskin").setExecutor(new SetSkinCommand(playerSkinChanger));
-        getCommand("setname").setExecutor(new SetNameCommand());
-        getCommand("fakeplayer").setExecutor(new FakePlayerCommand(fakePlayerManager));
+//        getCommand("gutitubowitem").setExecutor(new ItemCommand());
+//        getCommand("gameteam").setExecutor(new GameTeamCommand(game.getTeamManager(), game.getSpectatorManager()));
+//        getCommand("setskin").setExecutor(new SetSkinCommand(playerSkinChanger));
+//        getCommand("setname").setExecutor(new SetNameCommand());
+//        getCommand("fakeplayer").setExecutor(new FakePlayerCommand(fakePlayerManager));
 
         for (World world : Bukkit.getWorlds()) {
             world.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, false);
@@ -162,6 +159,10 @@ public final class Gutitubow extends JavaPlugin {
         }
     }
 
+    public static Gutitubow get() {
+        return instance;
+    }
+
     @Override
     public void onDisable() {
         PacketEvents.getAPI().getEventManager().unregisterListener(packetListener);
@@ -169,5 +170,21 @@ public final class Gutitubow extends JavaPlugin {
 
         game.onDisablePlugin();
         ziplineManager.removeAllZiplines();
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public GameManager getGameManager() {
+        return gameManager;
+    }
+
+    public DebugManager getDebugManager() {
+        return debugManager;
+    }
+
+    public AbilitySelectorGUI getAbilitySelectorGUI() {
+        return abilitySelectorGUI;
     }
 }

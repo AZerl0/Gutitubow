@@ -10,3 +10,8 @@ dependencies:
       load: BEFORE
       required: true
       join-classpath: true
+
+    Citizens:
+      load: BEFORE
+      required: true
+      join-classpath: true
