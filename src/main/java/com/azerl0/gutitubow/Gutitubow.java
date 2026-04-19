@@ -12,6 +12,7 @@ import com.azerl0.gutitubow.gui.AllGUI;
 import com.azerl0.gutitubow.gui.GUIListener;
 import com.azerl0.gutitubow.gui.guis.AbilitySelectorGUI;
 import com.azerl0.gutitubow.gui.guis.GameGUI;
+import com.azerl0.gutitubow.manager.AdvancementManager;
 import com.azerl0.gutitubow.map.MapManager;
 import com.azerl0.gutitubow.item.ItemListener;
 import com.azerl0.gutitubow.packet.*;
@@ -49,6 +50,7 @@ public final class Gutitubow extends JavaPlugin {
     private final FakePlayerManager fakePlayerManager = new FakePlayerManager(this);
     private final PinManager pinManager = new PinManager(this);
     private final ZiplineManager ziplineManager = new ZiplineManager(this);
+    private final AdvancementManager advancementManager = new AdvancementManager(this);
     GutitubowManagers gutitubowManagers;
 
     private PacketListenerCommon packetListener;
@@ -103,7 +105,7 @@ public final class Gutitubow extends JavaPlugin {
         this.glowManager = new EntityGlowManager(flagManager, scoreboardManager);
         this.fixLeftClickManager = new FixLeftClickManager(this);
         this.debugManager = new DebugManager(this);
-        gutitubowManagers = new GutitubowManagers(glowManager, scoreboardManager, playerSkinChanger, fakePlayerManager, ziplineManager);
+        gutitubowManagers = new GutitubowManagers(glowManager, scoreboardManager, playerSkinChanger, fakePlayerManager, ziplineManager, advancementManager);
 
         // Game
         this.mapManager = new MapManager(this);

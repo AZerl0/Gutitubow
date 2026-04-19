@@ -1,0 +1,29 @@
+{
+  "parent": "gutitubow:ability/root",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "text": "「巨体」の能力を持つ"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:ravager_spawn_egg"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "踏みつぶしてやる",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

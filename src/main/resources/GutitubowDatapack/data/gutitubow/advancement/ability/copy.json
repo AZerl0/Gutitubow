@@ -1,0 +1,29 @@
+{
+  "parent": "gutitubow:ability/root",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "text": "「複製」の能力を持つ"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:creeper_banner_pattern"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "君の\"力\"貰ったよ！",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
