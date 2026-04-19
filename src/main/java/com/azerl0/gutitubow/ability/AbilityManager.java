@@ -52,6 +52,10 @@ public class AbilityManager {
         setDisplayItem(player, type, 13);
 
         AdvancementManager advancementManager = context.getGutitubowManagers().getAdvancementManager();
+
+        Advancement rootAdvancement = Bukkit.getAdvancement(new NamespacedKey("gutitubow", "ability/root"));
+        if (rootAdvancement != null) advancementManager.grantAdvancement(player, rootAdvancement);
+
         Advancement advancement = advancementManager.getAbilityTypeAdvancement(type);
         if (advancement != null) advancementManager.grantAdvancement(player, advancement);
 
