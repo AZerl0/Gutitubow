@@ -35,7 +35,7 @@ public class AdvancementManager {
     }
 
     public @Nullable Advancement getAbilityTypeAdvancement(@NotNull AbilityType abilityType) {
-        NamespacedKey advancementKey = NamespacedKey.fromString("ability/" + abilityType.toString().toLowerCase(), plugin);
+        NamespacedKey advancementKey = NamespacedKey.fromString("ability/type/" + abilityType.toString().toLowerCase(), plugin);
         if (advancementKey == null) return null;
         return Bukkit.getAdvancement(advancementKey);
     }
