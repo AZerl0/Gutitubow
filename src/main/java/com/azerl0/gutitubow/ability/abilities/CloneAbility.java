@@ -80,8 +80,7 @@ public class CloneAbility extends Ability {
 
         if (player.getInventory().getItemInOffHand().getType() != Material.PAPER) cloneStock--;
         CloneAIType aiType;
-        Material handItem = player.getInventory().getItemInMainHand().getType();
-        if (handItem == Material.SPYGLASS) {
+        if (isDebugMode()) {
             aiType = CloneAIType.SPYGLASS;
         } else if (player.isSneaking()) {
             aiType = CloneAIType.CONTROL_RUN;

@@ -100,6 +100,13 @@ public abstract class Ability {
         }.runTaskTimer(context.plugin(), 0L, 1L);
     }
 
+    public boolean isDebugMode() {
+        Player player = getPlayer();
+        if (player == null) return false;
+        Material handItem = player.getInventory().getItemInMainHand().getType();
+        return handItem == Material.SPYGLASS;
+    }
+
     /*
      * 能力に関する発火を追加した際には、
      * 「変化」、「複製」で、発火のOverrideを追加すること
