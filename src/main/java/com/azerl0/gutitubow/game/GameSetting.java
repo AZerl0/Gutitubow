@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.game;
 
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.gameevent.GameEventController;
 import com.azerl0.gutitubow.gui.guis.AbilityDisableGUI;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,6 +13,7 @@ public class GameSetting {
     private double defaultHealth = 6;
     private int phase0seconds = 15;
     private Set<AbilityType> disabledAbilities = new HashSet<>();
+    private final GameEventController gameEventController = new GameEventController();
 
     private final AbilityDisableGUI abilityDisableGUI;
 
@@ -64,6 +66,10 @@ public class GameSetting {
 
     public @NotNull AbilityDisableGUI getAbilityDisableGUI() {
         return abilityDisableGUI;
+    }
+
+    public @NotNull GameEventController getGameEventController() {
+        return gameEventController;
     }
 
 }

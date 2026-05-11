@@ -8,6 +8,7 @@ import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.fakeplayer.FakePlayerManager;
 import com.azerl0.gutitubow.game.*;
 import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
+import com.azerl0.gutitubow.gameevent.GameEventListener;
 import com.azerl0.gutitubow.gui.AllGUI;
 import com.azerl0.gutitubow.gui.GUIListener;
 import com.azerl0.gutitubow.gui.guis.AbilitySelectorGUI;
@@ -127,6 +128,7 @@ public final class Gutitubow extends JavaPlugin {
         pluginManager.registerEvents(new CarePackageListener(game.getCarePackageManager()), this);
         pluginManager.registerEvents(new ItemListener(), this);
         pluginManager.registerEvents(new GameListener(this, game), this);
+        pluginManager.registerEvents(new GameEventListener(), this);
         pluginManager.registerEvents(new GUIListener(allGUI), this);
         pluginManager.registerEvents(new PacketListener(flagManager), this);
         pluginManager.registerEvents(new FixLeftClickListener(fixLeftClickManager), this);

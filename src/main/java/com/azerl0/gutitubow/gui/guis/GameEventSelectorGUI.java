@@ -1,0 +1,37 @@
+package com.azerl0.gutitubow.gui.guis;
+
+import com.azerl0.gutitubow.gameevent.GameEventType;
+import com.azerl0.gutitubow.gui.AbstractGUI;
+import net.kyori.adventure.text.Component;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.function.Consumer;
+
+public class GameEventSelectorGUI extends AbstractGUI {
+    private final Consumer<GameEventType> onSelect;
+
+    public GameEventSelectorGUI(Consumer<GameEventType> onSelect) {
+        super(9, Component.text("イベント選択"));
+        this.onSelect = onSelect;
+    }
+
+    @Override
+    public void updateGUI() {
+        clear();
+        addEventButton(GameEventType.RICOCHET);
+        addEventButton(GameEventType.PISTOL);
+    }
+
+    private void addEventButton(GameEventType eventType) {
+        if (hasEmptySlot()) {
+            ItemStack itemStack = eventType.getDisplayItem();
+            addButton(
+                    getEmptySlot(),
+                    itemStack,
+                    event -> {
+                        
+                    }
+            );
+        }
+    }
+}

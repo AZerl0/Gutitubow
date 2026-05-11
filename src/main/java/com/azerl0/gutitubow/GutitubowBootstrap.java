@@ -1,15 +1,6 @@
 package com.azerl0.gutitubow;
 
-import com.azerl0.gutitubow.command.AbilityCommand;
-import com.azerl0.gutitubow.command.CarePackageCommand;
-import com.azerl0.gutitubow.command.DebugCommand;
-import com.azerl0.gutitubow.command.FakePlayerCommand;
-import com.azerl0.gutitubow.command.GameCommand;
-import com.azerl0.gutitubow.command.GamePlayerCommand;
-import com.azerl0.gutitubow.command.GameTeamCommand;
-import com.azerl0.gutitubow.command.ItemCommand;
-import com.azerl0.gutitubow.command.SetNameCommand;
-import com.azerl0.gutitubow.command.SetSkinCommand;
+import com.azerl0.gutitubow.command.*;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -41,6 +32,7 @@ public class GutitubowBootstrap implements PluginBootstrap {
             CarePackageCommand.register(event.registrar());
             GameCommand.register(event.registrar());
             GamePlayerCommand.register(event.registrar());
+            GameEventCommand.register(event.registrar());
             DebugCommand.register(event.registrar());
             ItemCommand.register(event.registrar());
             GameTeamCommand.register(event.registrar());
