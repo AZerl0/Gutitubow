@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.gui.guis;
 import com.azerl0.gutitubow.gameevent.GameEventType;
 import com.azerl0.gutitubow.gui.AbstractGUI;
 import net.kyori.adventure.text.Component;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Consumer;
@@ -22,15 +23,19 @@ public class GameEventSelectorGUI extends AbstractGUI {
         addEventButton(GameEventType.PISTOL);
     }
 
+    @Override
+    public void open(Player player) {
+        updateGUI();
+        super.open(player);
+    }
+
     private void addEventButton(GameEventType eventType) {
         if (hasEmptySlot()) {
             ItemStack itemStack = eventType.getDisplayItem();
             addButton(
                     getEmptySlot(),
                     itemStack,
-                    event -> {
-                        
-                    }
+                    event -> onSelect.accept(eventType)
             );
         }
     }

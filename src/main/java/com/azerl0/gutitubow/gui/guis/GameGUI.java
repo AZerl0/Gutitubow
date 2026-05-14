@@ -45,6 +45,14 @@ public class GameGUI extends AbstractGUI {
         updateToggleGameModeButton();
         updateSetDefaultHealthButton();
         updatePhase0SecondsButton();
+        addButton(
+                21,
+                getAbstractSimpleButtonItem(Material.FIREWORK_ROCKET, Component.text("ゲームイベント設定")),
+                event -> {
+                    if (!(event.getWhoClicked() instanceof Player clicker)) return;
+                    game.getGameSetting().getGameEventController().openGameEventGUI(clicker);
+                }
+        );
     }
 
 

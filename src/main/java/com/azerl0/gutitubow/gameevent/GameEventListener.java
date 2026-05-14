@@ -6,24 +6,30 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
+import java.util.Collection;
+import java.util.function.Consumer;
+
 public class GameEventListener implements Listener {
 
-    private GameEvent getCurrentEvent() {
-        return Gutitubow.get().getGame().getGameSetting().getGameEventController().getCurrentEvent();
+    private Collection<GameEvent> getEvents() {
+        return Gutitubow.get().getGame().getGameSetting().getGameEventController().getEvents();
     }
 
+    private void eventAction(Consumer<GameEvent> action) {
+        getEvents().forEach( gameEvent -> {
+            if (gameEvent != null && gameEvent.isActivated()) {
+                action.accept(gameEvent);
+            }
+        });
+    }
 
     @EventHandler
     public void onArrowHit(ProjectileHitEvent event) {
-        if (getCurrentEvent() != null) {
-            getCurrentEvent().onArrowHit(event);
-        }
+        eventAction(gameEvent -> gameEvent.onArrowHit(event));
     }
 
     @EventHandler
     public void onShoot(EntityShootBowEvent event) {
-        if (getCurrentEvent() != null) {
-            getCurrentEvent().onShoot(event);
-        }
+        eventAction(gameEvent -> gameEvent.onShoot(event));
     }
 }

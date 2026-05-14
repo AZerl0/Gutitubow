@@ -3,10 +3,13 @@ package com.azerl0.gutitubow.gameevent;
 import com.azerl0.gutitubow.gameevent.events.PistolEvent;
 import com.azerl0.gutitubow.gameevent.events.RicochetEvent;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -50,11 +53,13 @@ public enum GameEventType {
     }
 
     public Component getName() {
-        return name;
+        return name.decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE);
     }
 
     public List<Component> getLore() {
-        return lore;
+        List<Component> loreList = new ArrayList<>();
+        lore.forEach(component -> loreList.add(component.decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE)));
+        return loreList;
     }
 
     public Component getAbout() {
@@ -65,11 +70,11 @@ public enum GameEventType {
         ItemStack itemStack = baseDisplayItem.clone();
         ItemMeta meta = itemStack.getItemMeta();
         if (meta != null) {
-            meta.displayName(name);
-            meta.lore(lore);
+            meta.displayName(getName());
+            meta.lore(getLore());
         }
         itemStack.setItemMeta(meta);
-        return itemStack;
+        return itemStack.clone();
 
     }
 

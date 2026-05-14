@@ -1,71 +1,106 @@
 package com.azerl0.gutitubow.gameevent;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.Sound;
+import com.azerl0.gutitubow.gui.guis.GameEventGUI;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 public class GameEventController {
-    private @Nullable GameEvent currentEvent;
-    private @Nullable GameEvent nextEvent;
+    private final @NotNull GameEventGUI gameEventGUI = new GameEventGUI(this);
+    private @Nullable GameEvent phase2Event;
+    private @Nullable GameEvent phase3Event;
+    private @Nullable GameEvent phase4Event;
+    private @Nullable GameEvent testEvent;
 
-    public @Nullable GameEvent getCurrentEvent() {
-        return currentEvent;
+    public @Nullable GameEvent getEvent(@NotNull GameEventControllerGameEventType controllerGameEventType) {
+        return switch (controllerGameEventType) {
+            case PHASE2 -> phase2Event;
+            case PHASE3 -> phase3Event;
+            case PHASE4 -> phase4Event;
+            case TEST -> testEvent;
+        };
     }
 
-    public boolean hasCurrentEvent() {
-        return currentEvent != null;
+    public Collection<GameEvent> getEvents() {
+        Collection<GameEvent> events = new HashSet<>();
+        events.add(phase2Event);
+        events.add(phase3Event);
+        events.add(phase4Event);
+        events.add(testEvent);
+        return events;
     }
 
-    public @Nullable GameEvent getNextEvent() {
-        return nextEvent;
+    public void setEvent(@NotNull GameEventControllerGameEventType controllerGameEventType, @NotNull GameEventType eventType) {
+        switch (controllerGameEventType) {
+            case PHASE2 -> phase2Event = eventType.create();
+            case PHASE3 -> phase3Event = eventType.create();
+            case PHASE4 -> phase4Event = eventType.create();
+            case TEST -> testEvent = eventType.create();
+        }
+        gameEventGUI.updateGUI();
     }
 
-    public boolean hasNextEvent() {
-        return getNextEvent() != null;
-    }
-
-    public void setNextEvent(GameEventType nextEvent) {
-        this.nextEvent = nextEvent.create();
-    }
-
-    public void activateNextEvent() {
-        deactivateCurrentEvent();
-        currentEvent = null;
-        if (getNextEvent() != null) {
-            currentEvent = getNextEvent();
-            if (currentEvent.canActivate()) {
-                currentEvent.activate();
-                GameEventType eventType = currentEvent.getEventType();
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    Title title = Title.title(
-                            Component.text("⚠　イベント発生　⚠"),
-                            eventType.getAbout(),
-                            Title.Times.times(
-                                    java.time.Duration.ofMillis(100),
-                                    java.time.Duration.ofSeconds(1),
-                                    java.time.Duration.ofMillis(500)
-                            )
-                    );
-                    player.showTitle(title);
-                    player.sendMessage(
-                            Component.text("[!] イベント発生 [!]").color(NamedTextColor.DARK_RED)
-                                    .append(eventType.getName().color(NamedTextColor.RED))
-                                    .append(eventType.getLore()).color(NamedTextColor.WHITE)
-                    );
-                    player.playSound(player, Sound.BLOCK_END_PORTAL_SPAWN, 0.7f, 1.0f);
+    public void removeEvent(GameEventControllerGameEventType eventType, boolean deactivateCheck) {
+        switch (eventType) {
+            case PHASE2 -> {
+                if (deactivateCheck && phase2Event != null && phase2Event.isActivated()) {
+                    phase2Event.deactivate();
                 }
+                phase2Event = null;
+            }
+            case PHASE3 -> {
+                if (deactivateCheck && phase3Event != null && phase3Event.isActivated()) {
+                    phase3Event.deactivate();
+                }
+                phase3Event = null;
+            }
+            case PHASE4 -> {
+                if (deactivateCheck && phase4Event != null && phase4Event.isActivated()) {
+                    phase4Event.deactivate();
+                }
+                phase4Event = null;
+            }
+            case TEST -> {
+                if (deactivateCheck && testEvent != null && testEvent.isActivated()) {
+                    testEvent.deactivate();
+                }
+                testEvent = null;
             }
         }
+        gameEventGUI.updateGUI();
     }
 
-    public void deactivateCurrentEvent() {
-        if (currentEvent != null) {
-            currentEvent.deactivate();
-            currentEvent = null;
+    public void removeEvent(GameEventControllerGameEventType controllerGameEventType) {
+        removeEvent(controllerGameEventType, true);
+    }
+
+    public void activateEvent(GameEventControllerGameEventType controllerGameEventType) {
+        GameEvent event = getEvent(controllerGameEventType);
+        if (event != null) {
+            event.activate();
+            GameEvent.playActivateEffect(event.getEventType());
         }
     }
+
+    public void deactivateEvent(GameEventControllerGameEventType controllerGameEventType) {
+        GameEvent event = getEvent(controllerGameEventType);
+        if (event != null) {
+            event.deactivate();
+            removeEvent(controllerGameEventType, false);
+        }
+        GameEvent.playDeactivateEffect();
+        gameEventGUI.updateGUI();
+    }
+
+    public @NotNull GameEventGUI getGameEventGUI() {
+        return gameEventGUI;
+    }
+
+    public void openGameEventGUI(Player player) {
+        gameEventGUI.open(player);
+    }
+
 }
