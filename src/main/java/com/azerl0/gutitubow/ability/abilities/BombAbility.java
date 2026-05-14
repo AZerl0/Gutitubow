@@ -69,30 +69,27 @@ public class BombAbility extends Ability {
             }
         }
 
-        double damageRadius = 2;
-        for (Entity entity : world.getNearbyEntities(loc, damageRadius, damageRadius, damageRadius)) {
-            if (entity instanceof Player damagePlayer) {
+        for (Player damagePlayer : loc.getNearbyPlayers(2)) {
 
-                GamePlayer gamePlayer = context.game().getGamePlayer(damagePlayer);
-                if (gamePlayer.isTeammate(playerUUID)) continue;
-                if (context.game().getPhase() == 0 && context.game().isStarted()) continue;
+            GamePlayer gamePlayer = context.game().getGamePlayer(damagePlayer);
+            if (gamePlayer.isTeammate(playerUUID)) continue;
+            if (context.game().getPhase() == 0 && context.game().isStarted()) continue;
 
-                if (!shooter.getUniqueId().equals(damagePlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damagePlayer)) {
-                    DamageSource damageSource = DamageSource.builder()
-                            .damageType(GutitubowDamageType.BOMB_BLAST)
-                            .directPlayer(shooter)
-                            .damageLocation(MathUtil.rayTraceEntityHit(loc, damagePlayer))
-                            .distance(loc.distance(damagePlayer.getLocation()))
-                            .build();
-                    gamePlayer.damage(damagePlayer, 0.5, damageSource, true);
-                }
+            if (!shooter.getUniqueId().equals(damagePlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damagePlayer)) {
+                DamageSource damageSource = DamageSource.builder()
+                        .damageType(GutitubowDamageType.BOMB_BLAST)
+                        .directPlayer(shooter)
+                        .damageLocation(MathUtil.rayTraceEntityHit(loc, damagePlayer))
+                        .distance(loc.distance(damagePlayer.getLocation()))
+                        .build();
+                gamePlayer.damage(damagePlayer, 0.5, damageSource, true);
             }
         }
         arrow.getWorld().spawnParticle(
                 Particle.EXPLOSION,
                 arrow.getLocation(),
                 1,
-                0,0,0,
+                0, 0, 0,
                 0,
                 null,
                 true);
