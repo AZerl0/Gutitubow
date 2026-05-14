@@ -1,24 +1,28 @@
 package com.azerl0.gutitubow.command;
 
 import com.azerl0.gutitubow.Gutitubow;
+import com.azerl0.gutitubow.command.argument.GameDamageTypeArgument;
 import com.azerl0.gutitubow.data.damage.DamageSource;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GamePlayer;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
-import java.util.Locale;
-import java.util.stream.Stream;
 
 import static io.papermc.paper.command.brigadier.Commands.argument;
 import static io.papermc.paper.command.brigadier.Commands.literal;
@@ -30,50 +34,35 @@ public class GamePlayerCommand {
                 literal("gameplayer")
                         .requires(source -> source.getSender().hasPermission("gutitubow.gameplayer"))
                         .then(literal("data")
-                                .then(literal("get").then(dataTargetArg().then(dataFieldArg(false)
-                                        .executes(ctx -> dataGet(ctx.getSource().getSender(), getGame(),
-                                                StringArgumentType.getString(ctx, "target"), StringArgumentType.getString(ctx, "field"))))))
-                                .then(literal("set").then(dataTargetArg().then(dataFieldArg(false)
-                                        .then(argument("value", IntegerArgumentType.integer()).executes(ctx -> dataSet(ctx.getSource().getSender(), getGame(),
-                                                StringArgumentType.getString(ctx, "target"), StringArgumentType.getString(ctx, "field"), IntegerArgumentType.getInteger(ctx, "value")))))))
-                                .then(literal("reset").then(dataTargetArg().then(dataFieldArg(true)
-                                        .executes(ctx -> dataReset(ctx.getSource().getSender(), getGame(),
-                                                StringArgumentType.getString(ctx, "target"), StringArgumentType.getString(ctx, "field")))))))
+                                .then(literal("get").then(argument("target", ArgumentTypes.player()).then(dataFieldArg(false)
+                                        .executes(GamePlayerCommand::dataGet))))
+                                .then(literal("set").then(argument("target", ArgumentTypes.player()).then(dataFieldArg(false)
+                                        .then(argument("value", IntegerArgumentType.integer()).executes(GamePlayerCommand::dataSet)))))
+                                .then(literal("reset").then(argument("target", ArgumentTypes.player()).then(dataFieldArg(true)
+                                        .executes(GamePlayerCommand::dataReset)))))
                         .then(literal("arrow")
-                                .then(literal("set").then(dataTargetArg()
-                                        .then(argument("value", IntegerArgumentType.integer()).executes(ctx -> arrowSet(ctx.getSource().getSender(), getGame(),
-                                                StringArgumentType.getString(ctx, "target"), IntegerArgumentType.getInteger(ctx, "value"))))))
-                                .then(literal("add").then(dataTargetArg()
-                                        .executes(ctx -> arrowAdd(ctx.getSource().getSender(), getGame(), StringArgumentType.getString(ctx, "target"), 1))
-                                        .then(argument("value", IntegerArgumentType.integer()).executes(ctx -> arrowAdd(ctx.getSource().getSender(), getGame(),
-                                                StringArgumentType.getString(ctx, "target"), IntegerArgumentType.getInteger(ctx, "value"))))))
-                                .then(literal("remove").then(dataTargetArg()
-                                        .executes(ctx -> arrowRemove(ctx.getSource().getSender(), getGame(), StringArgumentType.getString(ctx, "target"), 1))
-                                        .then(argument("value", IntegerArgumentType.integer()).executes(ctx -> arrowRemove(ctx.getSource().getSender(), getGame(),
-                                                StringArgumentType.getString(ctx, "target"), IntegerArgumentType.getInteger(ctx, "value")))))))
+                                .then(literal("set").then(argument("target", ArgumentTypes.player())
+                                        .then(argument("value", IntegerArgumentType.integer()).executes(GamePlayerCommand::arrowSet))))
+                                .then(literal("add").then(argument("target", ArgumentTypes.player())
+                                        .executes(GamePlayerCommand::arrowAdd)
+                                        .then(argument("value", IntegerArgumentType.integer()).executes(GamePlayerCommand::arrowAdd))))
+                                .then(literal("remove").then(argument("target", ArgumentTypes.player())
+                                        .executes(GamePlayerCommand::arrowRemove)
+                                        .then(argument("value", IntegerArgumentType.integer()).executes(GamePlayerCommand::arrowRemove)))))
                         .then(literal("damage")
-                                .then(dataTargetArg()
-                                        .then(argument("amount", DoubleArgumentType.doubleArg())
-                                                .executes(ctx -> damage(ctx.getSource().getSender(), getPlugin(), getGame(), StringArgumentType.getString(ctx, "target"),
-                                                        DoubleArgumentType.getDouble(ctx, "amount"), "unknown", 0))
-                                                .then(argument("type", StringArgumentType.word())
-                                                        .suggests((ctx, builder) -> {
-                                                            Stream.of(GutitubowDamageType.values()).map(type -> type.name().toLowerCase(Locale.ROOT)).forEach(builder::suggest);
-                                                            return builder.buildFuture();
-                                                        })
-                                                        .executes(ctx -> damage(ctx.getSource().getSender(), getPlugin(), getGame(), StringArgumentType.getString(ctx, "target"),
-                                                                DoubleArgumentType.getDouble(ctx, "amount"), StringArgumentType.getString(ctx, "type"), 0))
+                                .then(argument("target", ArgumentTypes.player())
+                                        .then(argument("amount", DoubleArgumentType.doubleArg(0))
+                                                .executes(GamePlayerCommand::damage)
+                                                .then(argument("damageType", new GameDamageTypeArgument())
+                                                        .executes(GamePlayerCommand::damage)
                                                         .then(argument("delay", LongArgumentType.longArg(0))
-                                                                .executes(ctx -> damage(ctx.getSource().getSender(), getPlugin(), getGame(), StringArgumentType.getString(ctx, "target"),
-                                                                        DoubleArgumentType.getDouble(ctx, "amount"), StringArgumentType.getString(ctx, "type"),
-                                                                        LongArgumentType.getLong(ctx, "delay"))))))))
+                                                                .executes(GamePlayerCommand::damage))))))
                         .then(literal("revive")
-                                .then(dataTargetArg()
-                                        .executes(ctx -> revive(ctx.getSource().getSender(), getGame(), StringArgumentType.getString(ctx, "target"), "@s"))
-                                        .then(argument("reviver", StringArgumentType.word())
+                                .then(argument("target", ArgumentTypes.player())
+                                        .executes(GamePlayerCommand::revive)
+                                        .then(argument("reviver", ArgumentTypes.player())
                                                 .suggests((ctx, builder) -> suggestPlayersAndSelf(builder))
-                                                .executes(ctx -> revive(ctx.getSource().getSender(), getGame(), StringArgumentType.getString(ctx, "target"),
-                                                        StringArgumentType.getString(ctx, "reviver"))))))
+                                                .executes(GamePlayerCommand::revive))))
                         .build(),
                 "Gutitubow game player command",
                 List.of("gplayer", "gp")
@@ -86,10 +75,6 @@ public class GamePlayerCommand {
 
     private static Game getGame() {
         return Gutitubow.get().getGame();
-    }
-
-    private static com.mojang.brigadier.builder.RequiredArgumentBuilder<CommandSourceStack, String> dataTargetArg() {
-        return argument("target", StringArgumentType.word()).suggests((ctx, builder) -> suggestPlayersAndSelf(builder));
     }
 
     private static com.mojang.brigadier.builder.RequiredArgumentBuilder<CommandSourceStack, String> dataFieldArg(boolean includeAll) {
@@ -117,15 +102,15 @@ public class GamePlayerCommand {
         return Bukkit.getPlayer(targetName);
     }
 
-    private static int dataGet(CommandSender sender, Game game, String targetName, String field) {
+    private static int dataGet(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSender sender = context.getSource().getSender();
+        final PlayerSelectorArgumentResolver targetResolver = context.getArgument("target", PlayerSelectorArgumentResolver.class);
+        final Player target = targetResolver.resolve(context.getSource()).getFirst();
+        String field = StringArgumentType.getString(context, "field");
+
         Player player = senderPlayer(sender);
         if (player == null) return 0;
-        Player target = resolveTarget(player, targetName);
-        if (target == null) {
-            player.sendMessage("プレイヤーが見つかりませんでした");
-            return 0;
-        }
-        GamePlayer gamePlayer = game.getGamePlayer(target);
+        GamePlayer gamePlayer = getGame().getGamePlayer(target);
         return switch (field) {
             case "playerTotalHit" -> {
                 player.sendMessage(target.getName() + "の" + field + "は" + gamePlayer.getTotalHit() + "です");
@@ -143,15 +128,16 @@ public class GamePlayerCommand {
         };
     }
 
-    private static int dataSet(CommandSender sender, Game game, String targetName, String field, int value) {
+    private static int dataSet(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSender sender = context.getSource().getSender();
+        final PlayerSelectorArgumentResolver targetResolver = context.getArgument("target", PlayerSelectorArgumentResolver.class);
+        final Player target = targetResolver.resolve(context.getSource()).getFirst();
+        String field = StringArgumentType.getString(context, "field");
+        int value = IntegerArgumentType.getInteger(context, "value");
+
         Player player = senderPlayer(sender);
         if (player == null) return 0;
-        Player target = resolveTarget(player, targetName);
-        if (target == null) {
-            player.sendMessage("プレイヤーが見つかりませんでした");
-            return 0;
-        }
-        GamePlayer gamePlayer = game.getGamePlayer(target);
+        GamePlayer gamePlayer = getGame().getGamePlayer(target);
         switch (field) {
             case "playerTotalHit" -> gamePlayer.setTotalHit(value);
             case "playerArrowReloadTick" -> gamePlayer.setArrowReloadTick(value);
@@ -164,15 +150,16 @@ public class GamePlayerCommand {
         return com.mojang.brigadier.Command.SINGLE_SUCCESS;
     }
 
-    private static int dataReset(CommandSender sender, Game game, String targetName, String field) {
+    private static int dataReset(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSender sender = context.getSource().getSender();
+        final PlayerSelectorArgumentResolver targetResolver = context.getArgument("target", PlayerSelectorArgumentResolver.class);
+        final Player target = targetResolver.resolve(context.getSource()).getFirst();
+        String field = StringArgumentType.getString(context, "field");
+
         Player player = senderPlayer(sender);
         if (player == null) return 0;
-        Player target = resolveTarget(player, targetName);
-        if (target == null) {
-            player.sendMessage("プレイヤーが見つかりませんでした");
-            return 0;
-        }
-        GamePlayer gamePlayer = game.getGamePlayer(target);
+
+        GamePlayer gamePlayer = getGame().getGamePlayer(target);
         switch (field) {
             case "*" -> {
                 gamePlayer.resetTotalHit();
@@ -196,75 +183,85 @@ public class GamePlayerCommand {
                 return 0;
             }
         }
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int arrowSet(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSender sender = context.getSource().getSender();
+        final PlayerSelectorArgumentResolver targetResolver = context.getArgument("target", PlayerSelectorArgumentResolver.class);
+        final Player target = targetResolver.resolve(context.getSource()).getFirst();
+        int value = IntegerArgumentType.getInteger(context, "value");
+
+        Player player = senderPlayer(sender);
+        if (player == null) return 0;
+        getGame().getGamePlayer(target).setArrowAmount(value);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int arrowAdd(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSender sender = context.getSource().getSender();
+        final PlayerSelectorArgumentResolver targetResolver = context.getArgument("target", PlayerSelectorArgumentResolver.class);
+        final Player target = targetResolver.resolve(context.getSource()).getFirst();
+        int value = IntegerArgumentType.getInteger(context, "value");
+
+        Player player = senderPlayer(sender);
+        if (player == null) return 0;
+        getGame().getGamePlayer(target).addArrow(value);
         return com.mojang.brigadier.Command.SINGLE_SUCCESS;
     }
 
-    private static int arrowSet(CommandSender sender, Game game, String targetName, int value) {
+    private static int arrowRemove(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSender sender = context.getSource().getSender();
+        final PlayerSelectorArgumentResolver targetResolver = context.getArgument("target", PlayerSelectorArgumentResolver.class);
+        final Player target = targetResolver.resolve(context.getSource()).getFirst();
+        int value = IntegerArgumentType.getInteger(context, "value");
+
         Player player = senderPlayer(sender);
         if (player == null) return 0;
-        Player target = resolveTarget(player, targetName);
-        if (target == null) {
-            player.sendMessage("プレイヤーが見つかりませんでした");
-            return 0;
-        }
-        game.getGamePlayer(target).setArrowAmount(value);
+
+        getGame().getGamePlayer(target).removeArrow(value);
         return com.mojang.brigadier.Command.SINGLE_SUCCESS;
     }
 
-    private static int arrowAdd(CommandSender sender, Game game, String targetName, int value) {
-        Player player = senderPlayer(sender);
-        if (player == null) return 0;
-        Player target = resolveTarget(player, targetName);
-        if (target == null) {
-            player.sendMessage("プレイヤーが見つかりませんでした");
-            return 0;
+    private static int damage(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSender sender = context.getSource().getSender();
+        double amount = DoubleArgumentType.getDouble(context, "amount");
+        final PlayerSelectorArgumentResolver targetResolver = context.getArgument("target", PlayerSelectorArgumentResolver.class);
+        final Player target = targetResolver.resolve(context.getSource()).getFirst();
+        GutitubowDamageType damageType;
+        try {
+            damageType = context.getArgument("damageType", GutitubowDamageType.class);
+        } catch (Exception e) {
+            damageType = GutitubowDamageType.UNKNOWN;
         }
-        game.getGamePlayer(target).addArrow(value);
-        return com.mojang.brigadier.Command.SINGLE_SUCCESS;
-    }
+        long delay;
+        try {
+            delay = LongArgumentType.getLong(context, "delay");
+        } catch (Exception e) {
+            delay = 0;
+        }
 
-    private static int arrowRemove(CommandSender sender, Game game, String targetName, int value) {
-        Player player = senderPlayer(sender);
-        if (player == null) return 0;
-        Player target = resolveTarget(player, targetName);
-        if (target == null) {
-            player.sendMessage("プレイヤーが見つかりませんでした");
-            return 0;
-        }
-        game.getGamePlayer(target).removeArrow(value);
-        return com.mojang.brigadier.Command.SINGLE_SUCCESS;
-    }
 
-    private static int damage(CommandSender sender, JavaPlugin plugin, Game game, String targetName, double amount, String damageTypeString, long delay) {
         Player player = senderPlayer(sender);
         if (player == null) return 0;
-        Player target = resolveTarget(player, targetName);
-        if (target == null) {
-            player.sendMessage("プレイヤーが見つかりませんでした");
-            return 0;
-        }
-        GutitubowDamageType damageType = GutitubowDamageType.valueOf(damageTypeString.toUpperCase(Locale.ROOT));
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            DamageSource damageSource = DamageSource.builder().damageType(damageType).build();
-            game.getGamePlayer(target).damage(target, amount, damageSource);
+        GutitubowDamageType finalDamageType = damageType;
+        Bukkit.getScheduler().runTaskLater(getPlugin(), () -> {
+            DamageSource damageSource = DamageSource.builder().damageType(finalDamageType).build();
+            getGame().getGamePlayer(target).damage(target, amount, damageSource);
         }, delay * 20);
         return com.mojang.brigadier.Command.SINGLE_SUCCESS;
     }
 
-    private static int revive(CommandSender sender, Game game, String targetName, String reviverName) {
+    private static int revive(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        final PlayerSelectorArgumentResolver targetResolver = context.getArgument("target", PlayerSelectorArgumentResolver.class);
+        final Player target = targetResolver.resolve(context.getSource()).getFirst();
+        final PlayerSelectorArgumentResolver reviverResolver = context.getArgument("reviver", PlayerSelectorArgumentResolver.class);
+        final Player reviver = reviverResolver.resolve(context.getSource()).getFirst();
+
+        CommandSender sender = context.getSource().getSender();
         Player player = senderPlayer(sender);
         if (player == null) return 0;
-        Player target = resolveTarget(player, targetName);
-        if (target == null) {
-            player.sendMessage("プレイヤーが見つかりませんでした");
-            return 0;
-        }
-        Player reviver = resolveTarget(player, reviverName);
-        if (reviver == null) {
-            player.sendMessage("プレイヤーが見つかりませんでした");
-            return 0;
-        }
-        game.getGamePlayer(target).revive(reviver);
+        getGame().getGamePlayer(target).revive(reviver);
         return com.mojang.brigadier.Command.SINGLE_SUCCESS;
     }
 }
