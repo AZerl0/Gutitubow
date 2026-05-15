@@ -103,8 +103,8 @@ public abstract class Ability {
     public boolean isDebugMode() {
         Player player = getPlayer();
         if (player == null) return false;
-        Material handItem = player.getInventory().getItemInMainHand().getType();
-        return handItem == Material.SPYGLASS;
+        Material handItem = player.getInventory().getItemInOffHand().getType();
+        return handItem == Material.PAPER;
     }
 
     /*
