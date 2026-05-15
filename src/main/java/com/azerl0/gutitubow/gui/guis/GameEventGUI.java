@@ -30,6 +30,7 @@ public class GameEventGUI extends AbstractGUI {
         addGameEventButton(0, GameEventControllerGameEventType.PHASE2);
         addGameEventButton(1, GameEventControllerGameEventType.PHASE3);
         addGameEventButton(2, GameEventControllerGameEventType.PHASE4);
+        addGameEventButton(3, GameEventControllerGameEventType.TEST);
     }
 
     @Override
