@@ -42,7 +42,7 @@ public class GamePlayerCommand {
                                         .executes(GamePlayerCommand::dataReset)))))
                         .then(literal("arrow")
                                 .then(literal("set").then(argument("target", ArgumentTypes.player())
-                                        .then(argument("value", IntegerArgumentType.integer()).executes(GamePlayerCommand::arrowSet))))
+                                        .then(argument("value", IntegerArgumentType.integer(0)).executes(GamePlayerCommand::arrowSet))))
                                 .then(literal("add").then(argument("target", ArgumentTypes.player())
                                         .executes(GamePlayerCommand::arrowAdd)
                                         .then(argument("value", IntegerArgumentType.integer()).executes(GamePlayerCommand::arrowAdd))))
