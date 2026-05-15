@@ -28,6 +28,6 @@ public class PistolEvent extends GameEvent {
 
     @Override
     protected void onShoot(EntityShootBowEvent event) {
-        event.getProjectile().setVelocity(event.getProjectile().getVelocity().multiply(15));
+        event.getProjectile().setVelocity(event.getProjectile().getVelocity().multiply(10));
     }
 }
