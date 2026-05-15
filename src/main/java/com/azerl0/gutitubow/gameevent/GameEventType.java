@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.gameevent;
 
+import com.azerl0.gutitubow.gameevent.events.BomboEvent;
 import com.azerl0.gutitubow.gameevent.events.PistolEvent;
 import com.azerl0.gutitubow.gameevent.events.RicochetEvent;
 import net.kyori.adventure.text.Component;
@@ -34,6 +35,16 @@ public enum GameEventType {
             Component.text("矢の弾速が超高速になった！"),
             ItemStack.of(Material.WIND_CHARGE),
             PistolEvent::new
+    ),
+    BOMB(
+            Component.text("PARTY TIME!"),
+            List.of(
+                    Component.text("支給される矢に爆薬が塗布されたようだ！"),
+                    Component.text("着弾した場所で大きな爆発を起こすぞ！")
+            ),
+            Component.text("支給の矢に爆薬が塗られた！"),
+            ItemStack.of(Material.TNT),
+            BomboEvent::new
     );
 
 

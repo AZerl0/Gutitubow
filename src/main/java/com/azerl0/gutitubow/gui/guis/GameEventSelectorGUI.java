@@ -20,6 +20,7 @@ public class GameEventSelectorGUI extends AbstractGUI {
     public void updateGUI() {
         clear();
         addEventButton(GameEventType.RICOCHET);
+        addEventButton(GameEventType.BOMB);
         addEventButton(GameEventType.PISTOL);
     }
 
