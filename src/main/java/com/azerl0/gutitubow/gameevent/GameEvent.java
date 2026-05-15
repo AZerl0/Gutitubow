@@ -69,8 +69,8 @@ public abstract class GameEvent {
     public static void playDeactivateEffect() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             Title title = Title.title(
-                    Component.text("⚠　世界の異変が収まった　⚠"),
                     Component.empty(),
+                    Component.text("⚠　世界の異変が収まった　⚠"),
                     Title.Times.times(
                             java.time.Duration.ofMillis(100),
                             java.time.Duration.ofSeconds(1),
