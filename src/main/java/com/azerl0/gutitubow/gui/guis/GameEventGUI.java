@@ -39,14 +39,6 @@ public class GameEventGUI extends AbstractGUI {
         super.open(player);
     }
 
-    private interface PhaseEventGetter {
-        GameEvent get();
-    }
-
-    private interface PhaseEventSetter {
-        void set(GameEventType eventType);
-    }
-
     private void addGameEventButton(
             int slot,
             GameEventControllerGameEventType controllerGameEventType
