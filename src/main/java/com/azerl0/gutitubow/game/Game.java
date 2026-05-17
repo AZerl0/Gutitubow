@@ -356,6 +356,7 @@ public class Game {
 
         if (this.currentTicks > this.nextTick && this.phase != 7) this.phaseUpdate();
 
+        // ケアパッケージの生成
         Random random = new Random();
         switch (phase) {
             case (1):
@@ -371,6 +372,7 @@ public class Game {
                 break;
         }
 
+        // ボスバーの表示更新
         this.bossBar.progress((float) (this.phase == 7 ? 0.0 : 1.0 - this.getProgress()));
 
         int remainedSeconds = (this.nextTick - this.currentTicks) / 20;
@@ -380,6 +382,7 @@ public class Game {
 
         }
 
+        //  最終フェーズカウントダウン表示
         Component lastPhaseRemainedText = null;
         if (this.currentTicks % 20 == 0 && this.phase == 6) {
             lastPhaseRemainedText =
