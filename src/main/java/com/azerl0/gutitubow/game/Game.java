@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.game;
 
+import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.GutitubowManagers;
 import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.carepackage.CarePackage;
@@ -9,6 +10,8 @@ import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoardManager;
 import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
+import com.azerl0.gutitubow.gameevent.GameEvent;
+import com.azerl0.gutitubow.gameevent.GameEventControllerGameEventType;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.map.Map;
 import com.azerl0.gutitubow.map.MapRepairManager;
@@ -554,6 +557,21 @@ public class Game {
             this.bossBar.name(Component.text("最終フェーズ進行中"));
         }
 
+        if (!isShrinking) {
+            GameEventControllerGameEventType oldGameEventControllerGameEventType = getPhaseEventType(phase - 1);
+            if (oldGameEventControllerGameEventType != null) {
+                GameEvent oldGameEvent = getGameSetting().getGameEventController().getEvent(oldGameEventControllerGameEventType);
+                if (oldGameEvent != null) oldGameEvent.deactivate(true);
+            }
+
+            GameEventControllerGameEventType nextGameEventControllerGameEventType = getPhaseEventType(phase);
+            if (nextGameEventControllerGameEventType != null) {
+                GameEvent nextGameEvent = getGameSetting().getGameEventController().getEvent(nextGameEventControllerGameEventType);
+                if (nextGameEvent != null) Bukkit.getScheduler().runTaskLater(Gutitubow.get(), () -> nextGameEvent.activate(true), 60L);
+            }
+
+        }
+
         // Player への処理
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             player.playSound(player, Sound.ENTITY_WITHER_SPAWN, 0.75f, 1.0f);
@@ -613,6 +631,15 @@ public class Game {
 
         this.currentTicks = 0;
         this.nextTick += 20;
+    }
+
+    private @Nullable GameEventControllerGameEventType getPhaseEventType(int phase) {
+        return switch (phase) {
+            case 2 -> GameEventControllerGameEventType.PHASE2;
+            case 3 -> GameEventControllerGameEventType.PHASE3;
+            case 4 -> GameEventControllerGameEventType.PHASE4;
+            default -> null;
+        };
     }
 
     private void updateNextSafeAreaSize() {
