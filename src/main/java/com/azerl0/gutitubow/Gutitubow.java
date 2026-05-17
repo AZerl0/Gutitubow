@@ -66,39 +66,7 @@ public final class Gutitubow extends JavaPlugin {
         ItemUtil.init(this);
 
         // Ability登録
-        AbilityRegistry.register(AbilityType.RICOCHET, RicochetAbility::new);
-        AbilityRegistry.register(AbilityType.BOMB, BombAbility::new);
-        AbilityRegistry.register(AbilityType.CONTROL, ControlAbility::new);
-        AbilityRegistry.register(AbilityType.BARRIER, BarrierAbility::new);
-        AbilityRegistry.register(AbilityType.SNIPE, SnipeAbility::new);
-        AbilityRegistry.register(AbilityType.QUICKFIRE, QuickFireAbility::new);
-        AbilityRegistry.register(AbilityType.DASH, DashAbility::new);
-        AbilityRegistry.register(AbilityType.JUMP, JumpAbility::new);
-        AbilityRegistry.register(AbilityType.TELEPORT, TeleportAbility::new);
-        AbilityRegistry.register(AbilityType.ESCAPE, EscapeAbility::new);
-        AbilityRegistry.register(AbilityType.FLOAT, FloatAbility::new);
-        AbilityRegistry.register(AbilityType.SHRINK, ShrinkAbility::new);
-        AbilityRegistry.register(AbilityType.TOUGH, ToughAbility::new);
-        AbilityRegistry.register(AbilityType.INVISIBLE, InvisibleAbility::new);
-        AbilityRegistry.register(AbilityType.SHIELD, ShieldAbility::new);
-        AbilityRegistry.register(AbilityType.FLASH, FlashAbility::new);
-        AbilityRegistry.register(AbilityType.GIANT, GiantAbility::new);
-        AbilityRegistry.register(AbilityType.PREDATION, PredationAbility::new);
-        AbilityRegistry.register(AbilityType.BALLOON, BalloonAbility::new);
-        AbilityRegistry.register(AbilityType.TRACKING, TrackingAbility::new);
-        AbilityRegistry.register(AbilityType.LASTSTAND, LastStandAbility::new);
-        AbilityRegistry.register(AbilityType.DETECTION, DetectionAbility::new);
-        AbilityRegistry.register(AbilityType.INVINCIBLE, InvincibleAbility::new);
-        AbilityRegistry.register(AbilityType.MEDUSA, MedusaAbility::new);
-        AbilityRegistry.register(AbilityType.RAPIDFIRE, RapidFireAbility::new);
-        AbilityRegistry.register(AbilityType.ECHO, EchoAbility::new);
-        AbilityRegistry.register(AbilityType.CLONE, CloneAbility::new);
-        AbilityRegistry.register(AbilityType.CHANGE, ChangeAbility::new);
-        AbilityRegistry.register(AbilityType.COPY, CopyAbility::new);
-        AbilityRegistry.register(AbilityType.APPRAISAL, AppraisalAbility::new);
-        AbilityRegistry.register(AbilityType.SMASH, SmashAbility::new);
-        AbilityRegistry.register(AbilityType.ZIPLINE, ZiplineAbility::new);
-        AbilityRegistry.register(AbilityType.GRAPPLINGHOOK, GrapplingHookAbility::new);
+        registerAbilities();
 
         // Managers
         this.scoreboardManager = new ScoreboardManager();
@@ -168,6 +136,42 @@ public final class Gutitubow extends JavaPlugin {
 
         game.onDisablePlugin();
         ziplineManager.removeAllZiplines();
+    }
+
+    private void registerAbilities() {
+        AbilityRegistry.register(AbilityType.RICOCHET, RicochetAbility::new);
+        AbilityRegistry.register(AbilityType.BOMB, BombAbility::new);
+        AbilityRegistry.register(AbilityType.CONTROL, ControlAbility::new);
+        AbilityRegistry.register(AbilityType.BARRIER, BarrierAbility::new);
+        AbilityRegistry.register(AbilityType.SNIPE, SnipeAbility::new);
+        AbilityRegistry.register(AbilityType.QUICKFIRE, QuickFireAbility::new);
+        AbilityRegistry.register(AbilityType.DASH, DashAbility::new);
+        AbilityRegistry.register(AbilityType.JUMP, JumpAbility::new);
+        AbilityRegistry.register(AbilityType.TELEPORT, TeleportAbility::new);
+        AbilityRegistry.register(AbilityType.ESCAPE, EscapeAbility::new);
+        AbilityRegistry.register(AbilityType.FLOAT, FloatAbility::new);
+        AbilityRegistry.register(AbilityType.SHRINK, ShrinkAbility::new);
+        AbilityRegistry.register(AbilityType.TOUGH, ToughAbility::new);
+        AbilityRegistry.register(AbilityType.INVISIBLE, InvisibleAbility::new);
+        AbilityRegistry.register(AbilityType.SHIELD, ShieldAbility::new);
+        AbilityRegistry.register(AbilityType.FLASH, FlashAbility::new);
+        AbilityRegistry.register(AbilityType.GIANT, GiantAbility::new);
+        AbilityRegistry.register(AbilityType.PREDATION, PredationAbility::new);
+        AbilityRegistry.register(AbilityType.BALLOON, BalloonAbility::new);
+        AbilityRegistry.register(AbilityType.TRACKING, TrackingAbility::new);
+        AbilityRegistry.register(AbilityType.LASTSTAND, LastStandAbility::new);
+        AbilityRegistry.register(AbilityType.DETECTION, DetectionAbility::new);
+        AbilityRegistry.register(AbilityType.INVINCIBLE, InvincibleAbility::new);
+        AbilityRegistry.register(AbilityType.MEDUSA, MedusaAbility::new);
+        AbilityRegistry.register(AbilityType.RAPIDFIRE, RapidFireAbility::new);
+        AbilityRegistry.register(AbilityType.ECHO, EchoAbility::new);
+        AbilityRegistry.register(AbilityType.CLONE, CloneAbility::new);
+        AbilityRegistry.register(AbilityType.CHANGE, ChangeAbility::new);
+        AbilityRegistry.register(AbilityType.COPY, CopyAbility::new);
+        AbilityRegistry.register(AbilityType.APPRAISAL, AppraisalAbility::new);
+        AbilityRegistry.register(AbilityType.SMASH, SmashAbility::new);
+        AbilityRegistry.register(AbilityType.ZIPLINE, ZiplineAbility::new);
+        AbilityRegistry.register(AbilityType.GRAPPLINGHOOK, GrapplingHookAbility::new);
     }
 
     public Game getGame() {
