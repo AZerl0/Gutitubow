@@ -5,7 +5,7 @@ import com.azerl0.gutitubow.command.argument.GameDamageTypeArgument;
 import com.azerl0.gutitubow.data.damage.DamageSource;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.game.Game;
-import com.azerl0.gutitubow.game.GamePlayer;
+import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;

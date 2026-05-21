@@ -2,7 +2,7 @@ package com.azerl0.gutitubow.game.scoreboard;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.game.Game;
-import com.azerl0.gutitubow.game.GamePlayer;
+import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.util.PlayerUtil;

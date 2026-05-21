@@ -2,7 +2,7 @@ package com.azerl0.gutitubow.carepackage;
 
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.game.Game;
-import com.azerl0.gutitubow.game.GamePlayer;
+import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.packet.EntityGlowManager;
 import com.azerl0.gutitubow.team.GameTeam;

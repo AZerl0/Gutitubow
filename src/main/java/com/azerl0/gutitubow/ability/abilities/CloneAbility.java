@@ -6,7 +6,7 @@ import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.ability.data.CloneAIType;
 import com.azerl0.gutitubow.event.gameplayer.PlayerFixLeftClickEvent;
 import com.azerl0.gutitubow.fakeplayer.FakePlayer;
-import com.azerl0.gutitubow.game.GamePlayer;
+import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.util.PlayerAnimation;

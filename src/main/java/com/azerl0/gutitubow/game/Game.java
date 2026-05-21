@@ -12,6 +12,8 @@ import com.azerl0.gutitubow.game.scoreboard.PlayerBoardManager;
 import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.gameevent.GameEvent;
 import com.azerl0.gutitubow.gameevent.GameEventControllerGameEventType;
+import com.azerl0.gutitubow.gameplayer.GamePlayer;
+import com.azerl0.gutitubow.gameplayer.GamePlayerManager;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.map.Map;
 import com.azerl0.gutitubow.map.MapRepairManager;

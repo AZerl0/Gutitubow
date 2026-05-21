@@ -1,4 +1,4 @@
-package com.azerl0.gutitubow.game;
+package com.azerl0.gutitubow.gameplayer;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.data.damage.DamageSource;
@@ -8,6 +8,8 @@ import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
+import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
 import com.azerl0.gutitubow.manager.LogManager;
 import com.azerl0.gutitubow.team.GameTeam;

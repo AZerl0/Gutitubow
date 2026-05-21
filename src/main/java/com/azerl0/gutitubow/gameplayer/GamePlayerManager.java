@@ -1,6 +1,7 @@
-package com.azerl0.gutitubow.game;
+package com.azerl0.gutitubow.gameplayer;
 
 
+import com.azerl0.gutitubow.game.Game;
 import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
