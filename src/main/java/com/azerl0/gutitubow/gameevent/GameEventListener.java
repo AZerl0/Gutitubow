@@ -1,6 +1,8 @@
 package com.azerl0.gutitubow.gameevent;
 
 import com.azerl0.gutitubow.Gutitubow;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
@@ -31,5 +33,15 @@ public class GameEventListener implements Listener {
     @EventHandler
     public void onShoot(EntityShootBowEvent event) {
         eventAction(gameEvent -> gameEvent.onShoot(event));
+    }
+
+    @EventHandler
+    public void onAnyPlayerKill(GamePlayerKillEvent event) {
+        eventAction(gameEvent -> gameEvent.onAnyPlayerKill(event));
+    }
+
+    @EventHandler
+    public void onAnyPlayerDeath(GamePlayerDeathEvent event) {
+        eventAction(gameEvent -> gameEvent.onAnyPlayerDeath(event));
     }
 }

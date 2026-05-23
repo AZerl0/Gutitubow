@@ -176,10 +176,25 @@ public class Game {
         return this.players;
     }
 
+    public Set<GamePlayer> getCurrentGamePlayers() {
+        Set<GamePlayer> gamePlayers = new HashSet<>();
+        getPlayers().forEach(uuid -> gamePlayers.add(getGamePlayer(uuid)));
+        return gamePlayers;
+    }
+
+    public Set<GamePlayer> getAllGamePlayers() {
+        return gamePlayerManager.getGamePlayers();
+    }
+
     public Set<UUID> getAlivePlayers() {
         return this.alivePlayers;
     }
 
+    public List<GamePlayer> getDeadPlayer() {
+        List<GamePlayer> deadPlayers = new ArrayList<>();
+        deathOrder.forEach(uuid -> deadPlayers.add(getGamePlayer(uuid)));
+        return deadPlayers;
+    }
 
     public void setGameMode(GutitubowGameMode gameMode) {
         if (getGameSetting().getGameMode() != gameMode) {
@@ -663,14 +678,14 @@ public class Game {
         nextSafeAreaMinZ = centerZ - half;
     }
 
-    protected void addDeadPlayer(Player player) {
+    public void addDeadPlayer(Player player) {
         UUID uuid = player.getUniqueId();
         alivePlayers.remove(uuid);
         deathOrder.remove(uuid);
         deathOrder.add(uuid);
     }
 
-    protected void addRevivePlayer(Player player) {
+    public void addRevivePlayer(Player player) {
         UUID uuid = player.getUniqueId();
         alivePlayers.add(uuid);
         deathOrder.remove(uuid);

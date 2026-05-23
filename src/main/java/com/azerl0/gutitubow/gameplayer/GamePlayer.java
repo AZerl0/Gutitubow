@@ -50,6 +50,7 @@ import java.util.UUID;
 public class GamePlayer {
     private final JavaPlugin plugin;
     private final @NotNull UUID playerUUID;
+    private @NotNull Player player;
     private final Game game;
     private BukkitTask borderOutsideTimerTask = null;
     private BukkitTask arrowReloadTask = null;
@@ -74,6 +75,7 @@ public class GamePlayer {
     public GamePlayer(JavaPlugin plugin, Player player, Game game) {
         this.plugin = plugin;
         this.playerUUID = player.getUniqueId();
+        this.player = player;
         this.game = game;
         this.playerArrowReloadTick = 100;
         this.playerArrowMaxStackSize = 1;
@@ -87,13 +89,12 @@ public class GamePlayer {
 
     @Nullable
     public Ability getAbility() {
-        if (getPlayer() == null) return null;
         return game.getAbilityManager().getAbility(getPlayer());
     }
 
-    @Nullable
+    @NotNull
     public Player getPlayer() {
-        return Bukkit.getPlayer(playerUUID);
+        return player;
     }
 
     public @NotNull UUID getPlayerUUID() {
@@ -106,8 +107,11 @@ public class GamePlayer {
 
     @Nullable
     public GameTeam getTeam() {
-        if (getPlayer() == null) return null;
         return game.getTeamManager().getPlayerTeam(getPlayer());
+    }
+
+    public boolean isDead() {
+        return game.getDeadPlayer().contains(this);
     }
 
     private int getBorderOutsideTicks() {
@@ -126,7 +130,6 @@ public class GamePlayer {
             @Override
             public void run() {
                 Player player = getPlayer();
-                if (player == null) return;
 
                 World world = player.getWorld();
                 if (world.getWorldBorder().isInside(player.getLocation()) || getPlayer().getGameMode() != GameMode.ADVENTURE) {
@@ -206,7 +209,7 @@ public class GamePlayer {
                     .append(Component.text(" リロード時間短縮").color(NamedTextColor.AQUA)
                             .append(Component.text(" の強化を得た！\n").color(NamedTextColor.WHITE))
                     );
-            if (getPlayer() != null) getPlayer().sendMessage(message);
+            if (player.isOnline()) getPlayer().sendMessage(message);
             return true;
         } else {
             return false;
@@ -221,7 +224,7 @@ public class GamePlayer {
                     .append(Component.text(" 矢所持数増加").color(NamedTextColor.AQUA)
                             .append(Component.text(" の強化を得た！\n").color(NamedTextColor.WHITE))
                     );
-            if (getPlayer() != null) getPlayer().sendMessage(message);
+            if (player.isOnline()) getPlayer().sendMessage(message);
             return true;
         } else {
             return false;
@@ -230,7 +233,7 @@ public class GamePlayer {
 
     public int getNearEmptySlot() {
         Player player = getPlayer();
-        if (player == null) return -1;
+        if (player.isOnline()) return -1;
         List<Integer> slots = List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 27, 28, 29, 30, 31, 32, 33, 34, 35);
         for (Integer slot : slots) {
             ItemStack item = player.getInventory().getItem(slot);
@@ -246,10 +249,10 @@ public class GamePlayer {
     }
 
     public int getArrowAmount() {
-        if (!(getPlayer() instanceof Player _player)) return 0;
+        if (!player.isOnline()) return 0;
         int slot = getArrowItemSlot();
         if (slot != -1) {
-            ItemStack item = _player.getInventory().getItem(slot);
+            ItemStack item = player.getInventory().getItem(slot);
             if (item == null) return 0;
             if (item.getType() == Material.ARROW) {
                 return item.getAmount();
@@ -261,7 +264,7 @@ public class GamePlayer {
     }
 
     public void setArrowAmount(int amount) {
-        if (getPlayer() == null) return;
+        if (!player.isOnline()) return;
         int slot = this.getArrowItemSlot();
         if (slot == -1) slot = this.getCanAddArrowSlot();
         if (slot != -1) getPlayer().getInventory().setItem(slot, getArrowItem(amount));
@@ -297,7 +300,7 @@ public class GamePlayer {
 
     private int getArrowItemSlot() {
         Player player = getPlayer();
-        if (player == null) return -1;
+        if (!player.isOnline()) return -1;
         List<Integer> slots = List.of(8, 7, 6, 5, 4, 3, 2, 1, 0, 35, 34, 33, 32, 31, 30, 29, 28, 27);
 
         for (Integer slot : slots) {
@@ -310,7 +313,7 @@ public class GamePlayer {
     }
 
     private int getCanAddArrowSlot() {
-        if (getPlayer() == null) return -1;
+        if (!player.isOnline()) return -1;
         List<Integer> slots = List.of(8, 7, 6, 5, 4, 3, 2, 1, 0, 35, 34, 33, 32, 31, 30, 29, 28, 27);
 
         for (Integer slot : slots) {
@@ -329,7 +332,7 @@ public class GamePlayer {
         arrowReloadTask = new BukkitRunnable() {
             @Override
             public void run() {
-                if (getPlayer() == null || !getPlayer().isOnline()) {
+                if (!player.isOnline()) {
                     cancel();
                     arrowReloadTask = null;
                     return;
@@ -347,8 +350,7 @@ public class GamePlayer {
     }
 
     public void firstElytra() {
-        Player player = getPlayer();
-        if (player == null) return;
+        if (!player.isOnline()) return;
         ItemStack elytra = ItemStack.of(Material.ELYTRA);
         ItemMeta meta = elytra.getItemMeta();
         meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
@@ -374,7 +376,7 @@ public class GamePlayer {
     }
 
     public void resetFirstElytra() {
-        if (this.firstElytraTask == null || getPlayer() == null) return;
+        if (this.firstElytraTask == null || !player.isOnline()) return;
         getPlayer().getInventory().setChestplate(new ItemStack(Material.AIR));
         this.firstElytraTask.cancel();
         firstElytraTask = null;
@@ -382,7 +384,7 @@ public class GamePlayer {
 
     public int getPotionAmount() {
         Player player = getPlayer();
-        if (player == null) return 0;
+        if (!player.isOnline()) return 0;
         Inventory inventory = player.getInventory();
         int amount = 0;
         for (ItemStack itemStack : inventory.getContents()) {
@@ -412,7 +414,7 @@ public class GamePlayer {
             @Override
             public void run() {
                 Player player = getPlayer();
-                if (player == null) return;
+                if (!player.isOnline()) return;
                 if (!player.isOnline() || (!player.hasPotionEffect(PotionEffectType.BLINDNESS) && remainedFlashTick <= 0)) {
                     this.cancel();
                     flashParticleTask = null;
@@ -498,8 +500,7 @@ public class GamePlayer {
     }
 
     public boolean isTeammate(Player target) {
-        if (getPlayer() == null) return false;
-        return game.isTeammate(getPlayer(), target);
+        return game.isTeammate(player, target);
     }
 
     public boolean isTeammate(UUID target) {
@@ -519,7 +520,7 @@ public class GamePlayer {
 
     public void giveRespawnBeacon() {
         Player player = getPlayer();
-        if (player == null) return;
+        if (!player.isOnline()) return;
         Inventory inventory = player.getInventory();
         if (inventory.contains(Material.BEACON)) return;
         List<Integer> slots = List.of(8, 7, 6, 5, 4, 3, 2, 1, 0, 35, 34, 33, 32, 31, 30, 29, 28, 27);
@@ -542,9 +543,6 @@ public class GamePlayer {
 
 
     private void updateOnUseRespawnBeacon() {
-        Player player = getPlayer();
-        if (player == null) return;
-
         GameTeam team = getTeam();
         if (team == null || team.getDeadPlayers().isEmpty()) return;
 
@@ -609,8 +607,7 @@ public class GamePlayer {
     private void updateOnUseCompassTeleport() {
         GutitubowGameMode gameMode = getGame().getGameSetting().getGameMode();
         if (!(gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO)) return;
-        Player player = getPlayer();
-        if (player == null) return;
+        if (!player.isOnline()) return;
         compassTeleportingTick++;
 
         GameTeam gameTeam = getTeam();
@@ -636,7 +633,6 @@ public class GamePlayer {
 
     private void compassTeleport() {
         Player player = getPlayer();
-        if (player == null) return;
         GameTeam gameTeam = getTeam();
         if (gameTeam == null) return;
 
@@ -663,15 +659,14 @@ public class GamePlayer {
         GamePlayer receiverGameplayer = game.getGamePlayer(receiver);
         if (receiverGameplayer.hasEmptySlot()) {
             double distance = 0;
-            if (getPlayer() != null)
-                distance = Math.floor(getPlayer().getLocation().distance(receiver.getLocation()) * 10) / 10;
-            if (showSenderMessage && getPlayer() != null)
+            distance = Math.floor(getPlayer().getLocation().distance(receiver.getLocation()) * 10) / 10;
+            if (showSenderMessage)
                 getPlayer().sendMessage(Component.text("§6[!] §a" + receiver.getName() + "にアイテムを渡した! (" + distance + "m)"));
-            if (showReceiverMessage && getPlayer() != null)
+            if (showReceiverMessage)
                 receiver.sendMessage(Component.text("§6[!] §a" + getPlayer().getName() + "からアイテムを受け取った! (" + distance + "m)"));
             receiver.give(itemStack);
         } else {
-            if (showSenderMessage && getPlayer() != null)
+            if (showSenderMessage)
                 getPlayer().sendMessage(Component.text("チームメイトのインベントリに空きがありません！！").color(NamedTextColor.RED));
         }
     }
@@ -870,8 +865,7 @@ public class GamePlayer {
     }
 
     public void revive(Player reviver) {
-        Player player = getPlayer();
-        if (player == null || !player.isOnline()) return;
+        if (!player.isOnline()) return;
         World world = player.getWorld();
 
         game.addRevivePlayer(player);
@@ -888,5 +882,9 @@ public class GamePlayer {
         meta.addEffect(FireworkEffect.builder().withColor(Color.AQUA).with(FireworkEffect.Type.BALL).build());
         meta.setPower(0);
         firework.setFireworkMeta(meta);
+    }
+
+    protected void updatePlayerInstance(Player player) {
+        this.player = player;
     }
 }

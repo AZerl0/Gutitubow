@@ -1,5 +1,7 @@
 package com.azerl0.gutitubow.gameevent;
 
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -20,7 +22,9 @@ public abstract class GameEvent {
         return activated;
     }
 
-    public abstract boolean canActivate();
+    public boolean canActivate() {
+        return true;
+    }
 
     public final void activate(boolean playEffect) {
         if (activated) return;
@@ -86,4 +90,8 @@ public abstract class GameEvent {
     protected void onArrowHit(ProjectileHitEvent event) {}
 
     protected void onShoot(EntityShootBowEvent event) {}
+
+    protected void onAnyPlayerKill(GamePlayerKillEvent event) {}
+
+    protected void onAnyPlayerDeath(GamePlayerDeathEvent event) {}
 }
