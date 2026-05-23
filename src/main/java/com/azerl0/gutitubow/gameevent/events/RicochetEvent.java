@@ -32,6 +32,6 @@ public class RicochetEvent extends GameEvent {
 
     @Override
     protected void onArrowHit(ProjectileHitEvent event) {
-        ArrowUtil.RicochetEvent(Gutitubow.get(), event);
+        ArrowUtil.RicochetEvent(Gutitubow.get(), event, 0.8);
     }
 }
