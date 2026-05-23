@@ -78,9 +78,9 @@ public class CloneAbility extends Ability {
         if (hasCompassCooldown()) return;
         if (cloneStock <= 0) return;
 
-        if (player.getInventory().getItemInOffHand().getType() != Material.PAPER) cloneStock--;
+        if (!isDebugMode()) cloneStock--;
         CloneAIType aiType;
-        if (isDebugMode()) {
+        if (player.getInventory().getItemInMainHand().getType() == Material.SPYGLASS) {
             aiType = CloneAIType.SPYGLASS;
         } else if (player.isSneaking()) {
             aiType = CloneAIType.CONTROL_RUN;
