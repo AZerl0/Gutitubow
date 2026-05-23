@@ -1,7 +1,6 @@
 package com.azerl0.gutitubow.map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class MapManager {
 
