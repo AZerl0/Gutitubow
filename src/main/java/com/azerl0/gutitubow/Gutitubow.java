@@ -77,7 +77,7 @@ public final class Gutitubow extends JavaPlugin {
         gutitubowManagers = new GutitubowManagers(glowManager, scoreboardManager, playerSkinChanger, fakePlayerManager, ziplineManager, advancementManager);
 
         // Game
-        this.mapManager = new MapManager(this);
+        this.mapManager = new MapManager();
         this.gameManager = new GameManager(this, this.mapManager, this.debugManager, gutitubowManagers);
         // MainGame
         this.game = gameManager.newGame();
