@@ -167,9 +167,9 @@ public class EntityFlagManager {
 
         if (entity instanceof LivingEntity livingEntity && livingEntity.isSwimming()) flags = (byte) (flags | 0x10);
 
-        if (entity instanceof LivingEntity livingEntity && livingEntity.isSwimming()) flags = (byte) (flags | 0x10);
-
         if (entity instanceof LivingEntity livingEntity && livingEntity.hasPotionEffect(PotionEffectType.INVISIBILITY)) flags = (byte) (flags | 0x32);
+
+        if (entity.isGlowing()) flags = (byte) (flags | 0x40);
 
         if (entity instanceof LivingEntity livingEntity && livingEntity.isGliding()) flags = (byte) (flags | 0x128);
 
