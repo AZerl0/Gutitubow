@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class PlayerBoard {
     private final GamePlayer gamePlayer;
@@ -189,8 +190,17 @@ public class PlayerBoard {
     private Component getAbilityName(@NotNull Player player) {
         GamePlayer gamePlayer = game.getGamePlayer(player);
         Ability ability = gamePlayer.getAbility();
-        if (ability == null) return Component.text("None");
-        return ability.getType().getName();
+
+        try {
+            if (ability == null) return Component.text("None");
+            return ability.getType().getName();
+        } catch (Exception e) {
+            Logger logger = Bukkit.getServer().getLogger();
+            logger.warning("failed get player ability name");
+            logger.warning("player: " + player.getName());
+            logger.warning(": " + player.getName());
+            throw new RuntimeException(e);
+        }
     }
 
     private void hideAll() {
