@@ -460,7 +460,7 @@ public class Game {
                 int lastPhaseCycleTick = 15 * 20;
                 int lastPhaseCycleCurrentTick = currentTicks % lastPhaseCycleTick;
                 if (lastPhaseCycleCurrentTick == 0) {
-                    oldSafeArea = safeArea;
+                    oldSafeArea = safeArea.clone();
                     Location newSafeArea = map.getRandomSafeArea();
 
                     double maxDistance = 15.0;
@@ -473,10 +473,12 @@ public class Game {
                         newSafeArea = safeArea.clone().add(diff);
                     }
 
-                    safeArea = newSafeArea;
-                } else {
-                    setWorldBorderToSafeAreaByProgress(oldSafeArea, (float) lastPhaseCycleCurrentTick / (float) lastPhaseCycleTick);
+                    safeArea = newSafeArea.clone();
                 }
+                if (oldSafeArea == null) {
+                    oldSafeArea = safeArea.clone();
+                }
+                setWorldBorderToSafeAreaByProgress(oldSafeArea, (float) lastPhaseCycleCurrentTick / (float) lastPhaseCycleTick);
             }
 
             if (remainedSeconds <= 10 && this.currentTicks % 20 == 0 && this.phase != 7) {
