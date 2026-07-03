@@ -63,7 +63,7 @@ public class EntityFlagManager {
         byte current = map.getOrDefault(entityUUID, getCurrentFlag(target));
         byte newFlags = (byte) (current & ~flag);
 
-        if (newFlags == 0) {
+        if (newFlags == 0 && target instanceof Player) {
             map.remove(entityUUID);
         } else {
             map.put(entityUUID, newFlags);
