@@ -50,6 +50,7 @@ public class Game {
     private final List<UUID> deathOrder = new ArrayList<>();
     private final BossBar bossBar = BossBar.bossBar(Component.text(""), 0.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
     private final Map map;
+    private final int LAST_PHASE_CYCLE_TICK = 15 * 20;
     private Location safeArea;
     private Location oldSafeArea;
     private double nextSafeAreaMinX;
@@ -455,32 +456,6 @@ public class Game {
                 setWorldBorderToSafeAreaByProgress(map.getCenter(), getShrinkProgress());
             }
 
-            // 最終フェーズ処理
-            if (phase == 7) {
-                int lastPhaseCycleTick = 15 * 20;
-                int lastPhaseCycleCurrentTick = currentTicks % lastPhaseCycleTick;
-                if (lastPhaseCycleCurrentTick == 0) {
-                    oldSafeArea = safeArea.clone();
-                    Location newSafeArea = map.getRandomSafeArea();
-
-                    double maxDistance = 15.0;
-
-                    Vector diff = newSafeArea.clone().toVector().subtract(safeArea.clone().toVector());
-                    double distance = diff.length();
-
-                    if (distance > maxDistance) {
-                        diff.normalize().multiply(maxDistance);
-                        newSafeArea = safeArea.clone().add(diff);
-                    }
-
-                    safeArea = newSafeArea.clone();
-                }
-                if (oldSafeArea == null) {
-                    oldSafeArea = safeArea.clone();
-                }
-                setWorldBorderToSafeAreaByProgress(oldSafeArea, (float) lastPhaseCycleCurrentTick / (float) lastPhaseCycleTick);
-            }
-
             if (remainedSeconds <= 10 && this.currentTicks % 20 == 0 && this.phase != 7) {
                 player.playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             }
@@ -489,6 +464,31 @@ public class Game {
                 showSubtitle(player, lastPhaseRemainedText);
             }
 
+        }
+
+        // 最終フェーズ処理
+        if (phase == 7) {
+            int lastPhaseCycleCurrentTick = currentTicks % LAST_PHASE_CYCLE_TICK;
+            if (lastPhaseCycleCurrentTick == 0) {
+                oldSafeArea = safeArea.clone();
+                Location newSafeArea = map.getRandomSafeArea();
+
+                double maxDistance = 15.0;
+
+                Vector diff = newSafeArea.clone().toVector().subtract(safeArea.clone().toVector());
+                double distance = diff.length();
+
+                if (distance > maxDistance) {
+                    diff.normalize().multiply(maxDistance);
+                    newSafeArea = safeArea.clone().add(diff);
+                }
+
+                safeArea = newSafeArea.clone();
+            }
+            if (oldSafeArea == null) {
+                oldSafeArea = safeArea.clone();
+            }
+            setWorldBorderToSafeAreaByProgress(oldSafeArea, (float) lastPhaseCycleCurrentTick / (float) LAST_PHASE_CYCLE_TICK);
         }
 
     }
