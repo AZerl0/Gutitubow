@@ -28,11 +28,11 @@ public class EntityGlowManager {
     public void setGlowColor(@NotNull Player viewer, @NotNull Entity entity, @NotNull NamedTextColor color) {
         Scoreboard scoreboard = scoreboardManager.getScoreboard(viewer);
         Team team = scoreboard.getEntityTeam(entity);
-        if (team == null) {
+        if (team != null) {
             team = scoreboard.registerNewTeam(entity.getScoreboardEntryName());
             team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
             team.addEntity(entity);
+            team.color(color);
         }
-        team.color(color);
     }
 }
