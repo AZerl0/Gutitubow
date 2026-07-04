@@ -7,9 +7,9 @@ import com.azerl0.gutitubow.carepackage.CarePackage;
 import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.debug.DebugManager;
-import com.azerl0.gutitubow.game.scoreboard.PlayerBoard;
-import com.azerl0.gutitubow.game.scoreboard.PlayerBoardManager;
-import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
+import com.azerl0.gutitubow.scoreboard.PlayerBoard;
+import com.azerl0.gutitubow.scoreboard.PlayerBoardManager;
+import com.azerl0.gutitubow.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.gameevent.GameEvent;
 import com.azerl0.gutitubow.gameevent.GameEventControllerGameEventType;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
@@ -30,6 +30,8 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -83,10 +85,10 @@ public class Game {
         AbilityContext abilityContext = new AbilityContext(plugin, this, gutitubowManagers);
         this.abilityManager = new AbilityManager(abilityContext);
         this.gamePlayerManager = new GamePlayerManager(plugin, this);
-        reset();
         this.scoreboardManager = gutitubowManagers.getScoreboardManager();
         this.playerBoardManager = new PlayerBoardManager(scoreboardManager);
         this.teamManager = new TeamManager(this);
+        reset();
     }
 
     public @NotNull GameSetting getGameSetting() {
@@ -235,6 +237,9 @@ public class Game {
             for (Player otherPlayer : Bukkit.getServer().getOnlinePlayers()) {
                 if (player.getUniqueId() != otherPlayer.getUniqueId()) {
                     player.showPlayer(plugin, otherPlayer);
+                    Scoreboard scoreboard = scoreboardManager.getScoreboard(player);
+                    Team team = scoreboardManager.getTeam(scoreboard, otherPlayer);
+                    team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
                 }
             }
         }
@@ -347,11 +352,18 @@ public class Game {
                 }
             }
 
-            // 他のプレイヤーを隠す
+            // 他のプレイヤーへの処理
             for (UUID otherPlayerUUID : players) {
-                Player target = Bukkit.getPlayer(otherPlayerUUID);
-                if (target != null && player.getUniqueId() != target.getUniqueId() && !teamManager.isTeammate(player, target)) {
-                    player.hidePlayer(plugin, target);
+                Player otherPlayer = Bukkit.getPlayer(otherPlayerUUID);
+                if (otherPlayer != null && player.getUniqueId() != otherPlayer.getUniqueId()) {
+                    if (!teamManager.isTeammate(player, otherPlayer)) {
+                        player.hidePlayer(plugin, otherPlayer);
+
+                        Scoreboard scoreboard = scoreboardManager.getScoreboard(player);
+                        Team otherPlayerTeam = scoreboardManager.getTeam(scoreboard, otherPlayer);
+                        otherPlayerTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+
+                    }
                 }
             }
         }

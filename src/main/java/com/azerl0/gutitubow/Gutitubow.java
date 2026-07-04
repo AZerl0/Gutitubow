@@ -6,7 +6,7 @@ import com.azerl0.gutitubow.carepackage.CarePackageListener;
 import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.fakeplayer.FakePlayerManager;
 import com.azerl0.gutitubow.game.*;
-import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
+import com.azerl0.gutitubow.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.gameevent.GameEventListener;
 import com.azerl0.gutitubow.gameplayer.GamePlayerListener;
 import com.azerl0.gutitubow.gui.AllGUI;

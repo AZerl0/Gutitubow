@@ -4,7 +4,7 @@ import com.azerl0.gutitubow.GutitubowManagers;
 import com.azerl0.gutitubow.ability.zipline.ZiplineManager;
 import com.azerl0.gutitubow.fakeplayer.FakePlayerManager;
 import com.azerl0.gutitubow.game.Game;
-import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
+import com.azerl0.gutitubow.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.packet.EntityGlowManager;
 import com.azerl0.gutitubow.player.PlayerSkinChanger;
 import org.bukkit.plugin.java.JavaPlugin;

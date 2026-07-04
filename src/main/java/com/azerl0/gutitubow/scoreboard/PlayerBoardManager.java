@@ -1,4 +1,4 @@
-package com.azerl0.gutitubow.game.scoreboard;
+package com.azerl0.gutitubow.scoreboard;
 
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import org.bukkit.entity.Player;

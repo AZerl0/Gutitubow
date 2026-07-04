@@ -2,7 +2,7 @@ package com.azerl0.gutitubow;
 
 import com.azerl0.gutitubow.ability.zipline.ZiplineManager;
 import com.azerl0.gutitubow.fakeplayer.FakePlayerManager;
-import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
+import com.azerl0.gutitubow.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.manager.AdvancementManager;
 import com.azerl0.gutitubow.packet.EntityGlowManager;
 import com.azerl0.gutitubow.player.PlayerSkinChanger;

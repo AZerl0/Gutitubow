@@ -1,6 +1,6 @@
 package com.azerl0.gutitubow.packet;
 
-import com.azerl0.gutitubow.game.scoreboard.ScoreboardManager;
+import com.azerl0.gutitubow.scoreboard.ScoreboardManager;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
