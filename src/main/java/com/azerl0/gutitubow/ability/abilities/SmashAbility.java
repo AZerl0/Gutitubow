@@ -58,6 +58,8 @@ public class SmashAbility extends Ability {
         Player hitPlayer = event.getPlayer();
         if (context.game().isTeammate(playerUUID, hitPlayer.getUniqueId())) return;
         if (!isPinch(hitPlayer, -event.getAmount())) return;
+        Player player = getPlayer();
+        if (player != null && player.getGameMode() != GameMode.SPECTATOR) return;
         if (!playerCountdowns.containsKey(hitPlayer.getUniqueId())) {
             CountdownDisplay countdownDisplay = new CountdownDisplay(hitPlayer);
             playerCountdowns.put(hitPlayer.getUniqueId(), countdownDisplay);
@@ -240,7 +242,7 @@ public class SmashAbility extends Ability {
                 return;
             }
 
-            if (target == null || !target.isOnline() || !isPinch(target)) {
+            if (target == null || !target.isOnline() || !isPinch(target) || player.getGameMode() == GameMode.SPECTATOR) {
                 this.remove();
                 return;
             }
