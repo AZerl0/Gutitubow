@@ -50,6 +50,7 @@ public class GameListener implements Listener {
             player.setGameMode(GameMode.SPECTATOR);
             PlayerInventory inventory = player.getInventory();
             inventory.setChestplate(ItemStack.of(Material.AIR));
+            game.showBossBar(player);
         }
         gamePlayer.updatePlayerBoard();
     }

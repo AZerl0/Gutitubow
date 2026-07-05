@@ -722,6 +722,14 @@ public class Game {
         }
     }
 
+    public void showBossBar(Player player) {
+        player.showBossBar(bossBar);
+    }
+
+    public void hideBossBar(Player player) {
+        player.hideBossBar(bossBar);
+    }
+
     private void gameOver() {
         this.started = false;
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
