@@ -100,6 +100,8 @@ public class DashAbility extends Ability {
             PotionEffect slowness = new PotionEffect(PotionEffectType.SLOWNESS, 20, 1, true, true, true);
             for (Player nearPlayer : player.getLocation().getNearbyPlayers(4)) {
                 if (context.game().isTeammate(player, nearPlayer)) continue;
+                GameMode nearPlayerGameMode = nearPlayer.getGameMode();
+                if (nearPlayerGameMode == GameMode.SPECTATOR || nearPlayerGameMode == GameMode.CREATIVE) continue;
                 nearPlayer.addPotionEffect(slowness);
             }
 
