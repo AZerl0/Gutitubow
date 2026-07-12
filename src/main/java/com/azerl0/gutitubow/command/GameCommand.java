@@ -3,6 +3,10 @@ package com.azerl0.gutitubow.command;
 import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GameManager;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
@@ -16,11 +20,24 @@ public class GameCommand {
         registrar.register(
                 literal("game")
                         .requires(source -> source.getSender().hasPermission("gutitubow.game"))
-                        .then(literal("start").executes(ctx -> start(ctx.getSource().getSender(), getGameManager(), getGame())))
-                        .then(literal("reset").executes(ctx -> reset(ctx.getSource().getSender(), getGameManager(), getGame())))
+                        .then(literal("start").executes(GameCommand::start))
+                        .then(literal("reset").executes(GameCommand::reset))
                         .build(),
                 "Gutitubow game command"
         );
+    }
+
+    private static int reset(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSender sender = context.getSource().getSender();
+        getGameManager().resetGame(getGame());
+        sender.sendMessage(Component.text("ゲームをリセットしました"));
+        return com.mojang.brigadier.Command.SINGLE_SUCCESS;
+    }
+
+    private static int start(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSender sender = context.getSource().getSender();
+        getGameManager().startGame(getGame());
+        return com.mojang.brigadier.Command.SINGLE_SUCCESS;
     }
 
     private static GameManager getGameManager() {
@@ -31,19 +48,4 @@ public class GameCommand {
         return Gutitubow.get().getGame();
     }
 
-    private static int start(CommandSender sender, GameManager gameManager, Game game) {
-        if (!(sender instanceof Player)) return 0;
-        if (!gameManager.isStarted(game)) {
-            gameManager.startGame(game);
-            return com.mojang.brigadier.Command.SINGLE_SUCCESS;
-        }
-        return 0;
-    }
-
-    private static int reset(CommandSender sender, GameManager gameManager, Game game) {
-        if (!(sender instanceof Player)) return 0;
-        gameManager.resetGame(game);
-        sender.sendMessage(Component.text("ゲームをリセットしました"));
-        return com.mojang.brigadier.Command.SINGLE_SUCCESS;
-    }
 }
