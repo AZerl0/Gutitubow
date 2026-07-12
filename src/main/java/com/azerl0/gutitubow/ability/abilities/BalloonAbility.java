@@ -6,10 +6,7 @@ import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.event.gameplayer.PlayerFixLeftClickEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.HappyGhast;
 import org.bukkit.entity.Player;
@@ -102,12 +99,10 @@ public class BalloonAbility extends Ability {
                 canSummon = false;
                 happyGhast = null;
             } else {
-                double highest = getHappyGhastLocationHighest(happyGhast.getLocation());
-                if (happyGhast.getLocation().getY() > highest + 75) {
-                    happyGhast.setVelocity(new Vector(0.0, -0.2, 0.0));
-                    Location newLoc = happyGhast.getLocation();
-                    newLoc.setY(highest);
-                    happyGhast.teleport(newLoc);
+                int highest = getHappyGhastLocationHighest(happyGhast.getLocation());
+                int max = highest + 50;
+                if (happyGhast.getLocation().getY() > max) {
+                    happyGhast.setVelocity(happyGhast.getVelocity().add(new Vector(0.0, -0.2, 0.0)));
                 }
             }
 
@@ -216,24 +211,31 @@ public class BalloonAbility extends Ability {
                 .add(player.getEyeLocation().getDirection().multiply(maxDistance));
     }
 
-    private double getHappyGhastLocationHighest(Location location) {
-        return getLocationHighest(location.clone().add(2, 0, 2), location.clone().add(-2, 0, -2));
+    private int getHappyGhastLocationHighest(Location location) {
+        return getLocationHighest(
+                location.clone().add(2, 0, 2),
+                location.clone().add(-2, 0, -2)
+        );
     }
 
-    private double getLocationHighest(Location a, Location b) {
-        double highest = -999999;
+    private int getLocationHighest(Location a, Location b) {
+        int highest = Integer.MIN_VALUE;
+
         int minX = Math.min(a.getBlockX(), b.getBlockX());
-        int minY = Math.min(a.getBlockY(), b.getBlockY());
+        int maxX = Math.max(a.getBlockX(), b.getBlockX());
+
         int minZ = Math.min(a.getBlockZ(), b.getBlockZ());
-        for (int x = 0; x <= Math.abs(a.getBlockX() - b.getBlockX()); x++) {
-            for (int y = 0; y <= Math.abs(a.getBlockY() - b.getBlockY()); y++) {
-                for (int z = 0; z <= Math.abs(a.getBlockZ() - b.getBlockZ()); z++) {
-                    Block block = a.getWorld().getBlockAt(minX + x, minY + y, minZ + z);
-                    int blockY = block.getWorld().getHighestBlockAt(block.getLocation()).getY();
-                    if (blockY > highest) highest = blockY;
-                }
+        int maxZ = Math.max(a.getBlockZ(), b.getBlockZ());
+
+        World world = a.getWorld();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                int y = world.getHighestBlockYAt(x, z);
+                highest = Math.max(highest, y);
             }
         }
+
         return highest;
     }
 
