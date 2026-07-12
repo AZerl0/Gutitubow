@@ -132,7 +132,7 @@ public class WantedEvent extends GameEvent {
         GamePlayer topGamePlayer = null;
         for (GamePlayer gamePlayer : players) {
 
-            int point = gamePlayer.getTotalKill() * 5 + gamePlayer.getTotalHit();
+            int point = gamePlayer.getTotalKill() * 10 + gamePlayer.getTotalHit();
             if (point >= topPoint) {
                 if (point == topPoint) {
                     Random random = new Random();
