@@ -22,6 +22,7 @@ public class GameCommand {
                         .requires(source -> source.getSender().hasPermission("gutitubow.game"))
                         .then(literal("start").executes(GameCommand::start))
                         .then(literal("reset").executes(GameCommand::reset))
+                        .then(literal("gui").executes(GameCommand::gui))
                         .build(),
                 "Gutitubow game command"
         );
@@ -38,6 +39,14 @@ public class GameCommand {
         CommandSender sender = context.getSource().getSender();
         getGameManager().startGame(getGame());
         return com.mojang.brigadier.Command.SINGLE_SUCCESS;
+    }
+
+    private static int gui(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSender sender = context.getSource().getSender();
+        if (sender instanceof Player senderPlayer) {
+            Gutitubow.get().getAllGUI().gameGUI().open(senderPlayer);
+        }
+        return Command.SINGLE_SUCCESS;
     }
 
     private static GameManager getGameManager() {

@@ -52,6 +52,7 @@ public final class Gutitubow extends JavaPlugin {
     private final PinManager pinManager = new PinManager(this);
     private final ZiplineManager ziplineManager = new ZiplineManager(this);
     private final AdvancementManager advancementManager = new AdvancementManager(this);
+    private AllGUI allGUI;
     GutitubowManagers gutitubowManagers;
 
     private PacketListenerCommon packetListener;
@@ -86,7 +87,7 @@ public final class Gutitubow extends JavaPlugin {
         GameGUI gameGUI = new GameGUI(gameManager, game);
         this.abilitySelectorGUI = new AbilitySelectorGUI(game.getAbilityManager());
 
-        AllGUI allGUI = new AllGUI(gameGUI, abilitySelectorGUI);
+        allGUI = new AllGUI(gameGUI, abilitySelectorGUI);
 
 
         // Listener登録
@@ -196,5 +197,9 @@ public final class Gutitubow extends JavaPlugin {
 
     public FakePlayerManager getFakePlayerManager() {
         return fakePlayerManager;
+    }
+
+    public AllGUI getAllGUI() {
+        return allGUI;
     }
 }
