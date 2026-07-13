@@ -55,11 +55,14 @@ public class SmashAbility extends Ability {
     @Override
     public void onAnyPlayerDamage(GamePlayerDamageEvent event) {
         if (event.isCancelled()) return;
+
         Player hitPlayer = event.getPlayer();
         if (context.game().isTeammate(playerUUID, hitPlayer.getUniqueId())) return;
         if (!isPinch(hitPlayer, -event.getAmount())) return;
+
         Player player = getPlayer();
-        if (player != null && player.getGameMode() != GameMode.SPECTATOR) return;
+        if (player != null && player.getGameMode() == GameMode.SPECTATOR) return;
+
         if (!playerCountdowns.containsKey(hitPlayer.getUniqueId())) {
             CountdownDisplay countdownDisplay = new CountdownDisplay(hitPlayer);
             playerCountdowns.put(hitPlayer.getUniqueId(), countdownDisplay);
@@ -87,6 +90,8 @@ public class SmashAbility extends Ability {
     private void smash(Player target) {
         Player player = getPlayer();
         if (player == null) return;
+
+        if (target.getGameMode() == GameMode.SPECTATOR) return;
 
         DamageSource damageSource = DamageSource.builder()
                 .damageType(GutitubowDamageType.ARROW_SHOT)

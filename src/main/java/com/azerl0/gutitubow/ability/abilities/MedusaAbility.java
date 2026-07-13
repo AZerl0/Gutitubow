@@ -145,7 +145,7 @@ public class MedusaAbility extends Ability {
         if (player == null) return;
 
 
-        if (hasCompassCooldown()) {
+        if (hasCompassCooldown() || player.getGameMode() == GameMode.SPECTATOR) {
             lookingPlayers.clear();
             oldLookingPlayers.clear();
         } else {
