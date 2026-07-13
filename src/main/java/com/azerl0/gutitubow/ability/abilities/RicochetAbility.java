@@ -19,6 +19,8 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
+
 public class RicochetAbility extends Ability {
     private final NamespacedKey ricochetCountKey;
     private final NamespacedKey ricochetDamageCountKey;
@@ -48,6 +50,8 @@ public class RicochetAbility extends Ability {
     public void onArrowHit(ProjectileHitEvent event) {
         Arrow arrow = (Arrow) event.getEntity();
         World world = arrow.getWorld();
+        UUID hitEntityUUID = null;
+        if (event.getHitEntity() != null) hitEntityUUID = event.getHitEntity().getUniqueId();
 
         if (!(arrow.getShooter() instanceof Player shooterPlayer)) return;
 
@@ -74,7 +78,7 @@ public class RicochetAbility extends Ability {
 
                 GamePlayer gamePlayer = context.game().getGamePlayer(damagePlayer);
                 if (gamePlayer.isTeammate(playerUUID)) continue;
-
+                if (hitEntityUUID != null && damagePlayer.getUniqueId().equals(hitEntityUUID)) continue;
                 if (context.game().getPhase() == 0 && context.game().isStarted()) continue;
 
                 if (!damagePlayer.getUniqueId().equals(shooterPlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damagePlayer)) {
