@@ -73,7 +73,7 @@ public class RicochetAbility extends Ability {
 
             int ricochetDamageCount = getRicochetDamageCount(arrow);
             Location loc = arrow.getLocation();
-            double damageRadius = 2.0;
+            double damageRadius = 0.5;
             for (Player damagePlayer : world.getNearbyPlayers(loc, damageRadius)) {
 
                 GamePlayer gamePlayer = context.game().getGamePlayer(damagePlayer);
