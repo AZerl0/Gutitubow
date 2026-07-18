@@ -7,6 +7,7 @@ import com.azerl0.gutitubow.carepackage.CarePackage;
 import com.azerl0.gutitubow.carepackage.CarePackageManager;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.debug.DebugManager;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerWinEvent;
 import com.azerl0.gutitubow.scoreboard.PlayerBoard;
 import com.azerl0.gutitubow.scoreboard.PlayerBoardManager;
 import com.azerl0.gutitubow.scoreboard.ScoreboardManager;
@@ -766,23 +767,8 @@ public class Game {
             player.sendMessage(rankingComponent);
         }
         reset();
-    }
-
-    private Component getRankingComponent(Player winner) {
-        deathOrder.add(winner.getUniqueId());
-
-        Component rankingComponent = Component.text("");
-
-        for (int i = 0; i < deathOrder.size(); i++) {
-            Player player = Bukkit.getPlayer(deathOrder.reversed().get(i));
-            boolean isLast = i == deathOrder.size() - 1;
-
-            if (player != null) {
-                rankingComponent = rankingComponent.append(getRankingPlayerComponent(player, i + 1));
-                if (!isLast) rankingComponent = rankingComponent.append(Component.text("\n"));
-            }
-        }
-        return rankingComponent;
+        GamePlayerWinEvent event = new GamePlayerWinEvent(winner);
+        Bukkit.getPluginManager().callEvent(event);
     }
 
     private void gameOver(GameTeam team) {
@@ -792,10 +778,12 @@ public class Game {
         Iterator<UUID> teamPlayers = team.getPlayers().iterator();
         while (teamPlayers.hasNext()) {
             UUID uuid = teamPlayers.next();
-            Player player = Bukkit.getPlayer(uuid);
-            if (player != null) {
-                playersName = playersName.append(Component.text(player.getName()));
+            Player winteamPlayer = Bukkit.getPlayer(uuid);
+            if (winteamPlayer != null) {
+                playersName = playersName.append(Component.text(winteamPlayer.getName()));
                 if (teamPlayers.hasNext()) playersName = playersName.append(Component.text(" & "));
+                GamePlayerWinEvent event = new GamePlayerWinEvent(winteamPlayer);
+                Bukkit.getPluginManager().callEvent(event);
             }
         }
 
@@ -835,6 +823,23 @@ public class Game {
             player.sendMessage(rankingComponent);
         }
         reset();
+    }
+
+    private Component getRankingComponent(Player winner) {
+        deathOrder.add(winner.getUniqueId());
+
+        Component rankingComponent = Component.text("");
+
+        for (int i = 0; i < deathOrder.size(); i++) {
+            Player player = Bukkit.getPlayer(deathOrder.reversed().get(i));
+            boolean isLast = i == deathOrder.size() - 1;
+
+            if (player != null) {
+                rankingComponent = rankingComponent.append(getRankingPlayerComponent(player, i + 1));
+                if (!isLast) rankingComponent = rankingComponent.append(Component.text("\n"));
+            }
+        }
+        return rankingComponent;
     }
 
     private Component getRankingPlayerComponent(Player player, int rank, NamedTextColor teamColor) {

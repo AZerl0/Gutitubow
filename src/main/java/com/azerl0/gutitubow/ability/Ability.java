@@ -153,4 +153,6 @@ public abstract class Ability {
     public void onDeath(GamePlayerDeathEvent event) {}
 
     public void onClick(InventoryClickEvent event) {}
+
+    public void onWin(GamePlayerWinEvent event) {}
 }

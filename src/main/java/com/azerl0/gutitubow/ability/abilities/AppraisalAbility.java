@@ -4,6 +4,8 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerWinEvent;
+import com.azerl0.gutitubow.manager.AdvancementManager;
 import com.azerl0.gutitubow.util.MathUtil;
 import com.azerl0.gutitubow.util.PlayerUtil;
 import com.github.retrooper.packetevents.PacketEvents;
@@ -15,6 +17,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
+import org.bukkit.advancement.Advancement;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -239,4 +242,11 @@ public class AppraisalAbility extends Ability {
         }
     }
 
+    @Override
+    public void onWin(GamePlayerWinEvent event) {
+        AdvancementManager advancementManager = context.getGutitubowManagers().getAdvancementManager();
+
+        Advancement advancement = Bukkit.getAdvancement(new NamespacedKey("gutitubow", "ability/extend/appraisal_win"));
+        if (advancement != null) advancementManager.grantAdvancement(event.getPlayer(), advancement);
+    }
 }

@@ -190,4 +190,11 @@ public class AbilityListener implements Listener {
             if (ability != null) ability.onClick(event);
         }
     }
+
+    @EventHandler
+    public void onWin(GamePlayerWinEvent event) {
+        Ability ability = abilityManager.getAbility(event.getPlayer());
+        if (ability != null) ability.onWin(event);
+
+    }
 }
