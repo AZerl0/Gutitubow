@@ -127,7 +127,7 @@ public class RapidFireAbility extends Ability {
     private void updateRapidFireShooting(Player player) {
         remainedRapidFire--;
         World world = player.getWorld();
-        if (world.getGameTime() % (6 - getShootSpeed()) == 0) {
+        if (world.getGameTime() % (9 - getShootSpeed()) == 0) {
             rapidFireShoot(player);
         }
         double chargeSecondsText = Math.floor(((double) remainedRapidFire / 20) * 10) / 10;
