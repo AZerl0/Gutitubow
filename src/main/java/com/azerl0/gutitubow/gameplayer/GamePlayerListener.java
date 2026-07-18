@@ -40,7 +40,6 @@ public class GamePlayerListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         GamePlayer gamePlayer = game.getGamePlayer(event.getPlayer());
-        gamePlayer.updatePlayerInstance(event.getPlayer());
     }
 
     @EventHandler

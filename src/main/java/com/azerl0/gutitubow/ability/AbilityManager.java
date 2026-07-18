@@ -31,6 +31,11 @@ public class AbilityManager {
         return abilities.get(player.getUniqueId());
     }
 
+    @Nullable
+    public Ability getAbility(UUID playerUUID) {
+        return abilities.get(playerUUID);
+    }
+
     public Set<UUID> getKeySet() {
         return abilities.keySet();
     }
