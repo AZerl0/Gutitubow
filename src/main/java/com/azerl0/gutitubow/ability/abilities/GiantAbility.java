@@ -92,7 +92,7 @@ public class GiantAbility extends Ability {
     public void onDamage(GamePlayerDamageEvent event) {
         if (isGiant) {
             double amount = event.getAmount();
-            if (amount > 1) {
+            if (amount >= 1) {
                 double newAmount = amount / 2;
                 if (newAmount % 1 > 0) newAmount = Math.floor(newAmount);
                 event.setAmount(newAmount);
@@ -116,7 +116,7 @@ public class GiantAbility extends Ability {
         for (Player nearPlayer : player.getLocation().getNearbyPlayers(50)) {
             if (playerUUID == nearPlayer.getUniqueId()) continue;
             if (context.game().isTeammate(player, nearPlayer)) continue;
-            absorption += 2;
+            absorption += 4;
         }
         if (absorption > -4) {
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_ABSORPTION)).setBaseValue(absorption);
