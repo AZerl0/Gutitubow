@@ -20,18 +20,12 @@ public class CarePackageManager {
     private final Game game;
     private final EntityGlowManager glowManager;
     private final Map<UUID, CarePackage> carePackages = new HashMap<>();
-    private final NamespacedKey isFallingKey;
-    private final NamespacedKey fallingTickKey;
-    private final NamespacedKey remainedPotionKey;
 
 
     public CarePackageManager(JavaPlugin plugin, Game game, EntityGlowManager glowManager) {
         this.plugin = plugin;
         this.game = game;
         this.glowManager = glowManager;
-        isFallingKey = new NamespacedKey(plugin, "carePackage.isFalling");
-        fallingTickKey = new NamespacedKey(plugin, "carePackage.fallingTick");
-        remainedPotionKey = new NamespacedKey(plugin, "carePackage.remainedPotion");
     }
 
 
@@ -93,7 +87,7 @@ public class CarePackageManager {
 
             });
         }
-        CarePackage carePackage = new CarePackage(coreEntity.getUniqueId(), blockDisplay.getUniqueId(), game, glowManager, isFallingKey, fallingTickKey, remainedPotionKey);
+        CarePackage carePackage = new CarePackage(coreEntity.getUniqueId(), blockDisplay.getUniqueId(), game, glowManager);
         carePackage.setRemainedPotion(3);
         carePackages.put(coreEntity.getUniqueId(), carePackage);
         Bukkit.getScheduler().runTaskLater(plugin, carePackage::onMove, 3L);

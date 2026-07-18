@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.carepackage;
 
+import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
@@ -27,18 +28,15 @@ public class CarePackage {
     private final UUID displayEntityUUID;
     private final Set<UUID> used_players = new HashSet<>();
     private final Set<GameTeam> used_teams = new HashSet<>();
-    private final NamespacedKey isFallingKey;
-    private final NamespacedKey fallingTickKey;
-    private final NamespacedKey remainedPotionKey;
+    private final NamespacedKey isFallingKey = new NamespacedKey(Gutitubow.get(), "carePackage.isFalling");
+    private final NamespacedKey fallingTickKey = new NamespacedKey(Gutitubow.get(), "carePackage.fallingTick");
+    private final NamespacedKey remainedPotionKey = new NamespacedKey(Gutitubow.get(), "carePackage.remainedPotion");
 
-    public CarePackage(UUID uniqueId, UUID displayEntityUUID, Game game, EntityGlowManager glowManager, NamespacedKey isFallingKey, NamespacedKey fallingTickKey, NamespacedKey remainedPotionKey) {
+    public CarePackage(UUID uniqueId, UUID displayEntityUUID, Game game, EntityGlowManager glowManager) {
         this.game = game;
         this.glowManager = glowManager;
         this.uuid = uniqueId;
         this.displayEntityUUID = displayEntityUUID;
-        this.isFallingKey = isFallingKey;
-        this.fallingTickKey = fallingTickKey;
-        this.remainedPotionKey = remainedPotionKey;
     }
 
     public UUID getUniqueId() {
