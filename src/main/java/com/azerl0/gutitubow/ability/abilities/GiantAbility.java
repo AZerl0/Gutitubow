@@ -136,7 +136,7 @@ public class GiantAbility extends Ability {
     private void deactivateGiant() {
         Player player = getPlayer();
         if (player == null) return;
-        setCompassCooldown(30 * 20 - giantRemainedTick);
+        setCompassCooldown(30 * 20);
         startCompassCooldownTask();
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_RAVAGER_DEATH, 1.0f, 1.0f);
 
