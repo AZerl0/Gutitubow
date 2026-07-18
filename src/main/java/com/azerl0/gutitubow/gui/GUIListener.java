@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.gui;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -22,17 +23,19 @@ public class GUIListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (event.isCancelled()) return;
-        if (event.getClickedInventory() != event.getView().getTopInventory()) return;
-        if (event.getClickedInventory() == event.getView().getBottomInventory() && event.getClick() == ClickType.SHIFT_LEFT) {
-            event.setCancelled(true);
-            return;
-        }
+        if (event.getWhoClicked() instanceof Player clickPlayer) {
+            if (clickPlayer.getGameMode() != GameMode.SPECTATOR && event.isCancelled()) return;
+            if (event.getClickedInventory() != event.getView().getTopInventory()) return;
+            if (event.getClickedInventory() == event.getView().getBottomInventory() && event.getClick() == ClickType.SHIFT_LEFT) {
+                event.setCancelled(true);
+                return;
+            }
 
-        InventoryHolder holder = event.getInventory().getHolder();
-        if (holder instanceof AbstractGUI gui) {
-            gui.click(event);
-            event.setCancelled(true);
+            InventoryHolder holder = event.getInventory().getHolder();
+            if (holder instanceof AbstractGUI gui) {
+                gui.click(event);
+                event.setCancelled(true);
+            }
         }
     }
 
