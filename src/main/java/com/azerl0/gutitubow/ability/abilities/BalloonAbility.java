@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
 import com.azerl0.gutitubow.event.gameplayer.PlayerFixLeftClickEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -85,8 +86,15 @@ public class BalloonAbility extends Ability {
                 player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                 player.sendMessage(Component.text("まだクールダウン中です！").color(NamedTextColor.RED));
             } else {
-                recallGhast(player);
+                recallGhast();
             }
+        }
+    }
+
+    @Override
+    public void onDeath(GamePlayerDeathEvent event) {
+        if (happyGhast != null) {
+            recallGhast();
         }
     }
 
@@ -176,10 +184,13 @@ public class BalloonAbility extends Ability {
         location.getWorld().spawnParticle(Particle.SMOKE, location, 15, 2.0, 2.0, 2.0);
     }
 
-    private void recallGhast(@NotNull Player player) {
+    private void recallGhast() {
+        Player player = getPlayer();
         happyGhast.remove();
         setCompassCooldown(20);
-        player.sendMessage(Component.text("ハッピーガストを回収しました！").color(NamedTextColor.GREEN));
+        if (player != null) {
+            player.sendMessage(Component.text("ハッピーガストを回収しました！").color(NamedTextColor.GREEN));
+        }
         happyGhast = null;
     }
 
