@@ -70,7 +70,9 @@ public class FloatAbility extends Ability {
     }
 
     private boolean isOnGround() {
-        return ((Entity) getPlayer()).isOnGround();
+        Player player = getPlayer();
+        if (player == null) return false;
+        return ((Entity) player).isOnGround();
     }
 
     private boolean isFloating() {
@@ -131,18 +133,21 @@ public class FloatAbility extends Ability {
                         NamedTextColor.AQUA,
                         NamedTextColor.GRAY
                 );
+                Player player = getPlayer();
+                if (player != null) {
+                    Title title = Title.title(
+                            Component.empty(),
+                            subtitle,
+                            Title.Times.times(
+                                    java.time.Duration.ofMillis(0),
+                                    java.time.Duration.ofSeconds(1),
+                                    java.time.Duration.ofMillis(0)
+                            )
+                    );
+                    GamePlayer gamePlayer = context.game().getGamePlayer(player);
+                    if (!gamePlayer.isFlashing()) getPlayer().showTitle(title);
+                }
 
-                Title title = Title.title(
-                        Component.empty(),
-                        subtitle,
-                        Title.Times.times(
-                                java.time.Duration.ofMillis(0),
-                                java.time.Duration.ofSeconds(1),
-                                java.time.Duration.ofMillis(0)
-                        )
-                );
-                GamePlayer gamePlayer = context.game().getGamePlayer(getPlayer());
-                if (!gamePlayer.isFlashing()) getPlayer().showTitle(title);
             }
         } else {
             if (floatAreaCenter == null && floatingTask == null) startFloating();
@@ -157,8 +162,10 @@ public class FloatAbility extends Ability {
     }
 
     private void startFloating() {
+        Player player = getPlayer();
+        if (player == null) return;
         isPlacing = false;
-        floatAreaCenter = getPlayer().getLocation();
+        floatAreaCenter = player.getLocation();
         floatAreaCenter.getWorld().playSound(floatAreaCenter, Sound.BLOCK_BEACON_ACTIVATE, 1.0f, 1.0f);
         if (floatingTask != null && !floatingTask.isCancelled()) return;
 
