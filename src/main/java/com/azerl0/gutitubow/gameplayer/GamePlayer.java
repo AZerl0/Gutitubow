@@ -128,25 +128,29 @@ public class GamePlayer {
             @Override
             public void run() {
                 Player player = getPlayer();
-
-                World world = player.getWorld();
-                if (world.getWorldBorder().isInside(player.getLocation()) || getPlayer().getGameMode() != GameMode.ADVENTURE) {
-                    setBorderOutsideTicks(0);
-                    this.cancel();
-                    return;
-                }
-
-                int borderOutsideTick = getBorderOutsideTicks() + 1;
-                setBorderOutsideTicks(borderOutsideTick);
-                int borderOutsideDamageTick = 30;
-                if (borderOutsideTick % borderOutsideDamageTick == 0) {
-                    if (borderOutsideTick % (10 * borderOutsideDamageTick) == 0) {
-                        DamageSource damageSource = DamageSource.builder().damageType(GutitubowDamageType.OUTSIDE_BORDER).build();
-                        damage(getPlayer(), 1, damageSource);
-                    } else {
-                        getPlayer().playHurtAnimation(0.0f);
-                        world.playSound(getPlayer().getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0f, 1.0f);
+                if (player != null) {
+                    World world = player.getWorld();
+                    if (world.getWorldBorder().isInside(player.getLocation()) || getPlayer().getGameMode() != GameMode.ADVENTURE) {
+                        setBorderOutsideTicks(0);
+                        this.cancel();
+                        return;
                     }
+
+                    int borderOutsideTick = getBorderOutsideTicks() + 1;
+                    setBorderOutsideTicks(borderOutsideTick);
+                    int borderOutsideDamageTick = 30;
+                    if (borderOutsideTick % borderOutsideDamageTick == 0) {
+                        int damageCount = 10;
+                        if (game.getPhase() == 7) damageCount = 2;
+                        if (borderOutsideTick % (damageCount * borderOutsideDamageTick) == 0) {
+                            DamageSource damageSource = DamageSource.builder().damageType(GutitubowDamageType.OUTSIDE_BORDER).build();
+                            damage(getPlayer(), 1, damageSource);
+                        } else {
+                            getPlayer().playHurtAnimation(0.0f);
+                            world.playSound(getPlayer().getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0f, 1.0f);
+                        }
+                    }
+
                 }
 
             }

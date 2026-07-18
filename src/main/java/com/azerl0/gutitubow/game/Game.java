@@ -167,6 +167,10 @@ public class Game {
         return this.phase;
     }
 
+    public boolean isFinalPhase() {
+        return getPhase() == 7;
+    }
+
     public boolean isShrinking() {
         return this.isShrinking;
     }
@@ -387,7 +391,7 @@ public class Game {
     private void update() {
         this.currentTicks++;
 
-        if (this.currentTicks > this.nextTick && this.phase != 7) this.phaseUpdate();
+        if (this.currentTicks > this.nextTick && !isFinalPhase()) this.phaseUpdate();
 
         // ケアパッケージの生成
         Random random = new Random();
@@ -406,11 +410,11 @@ public class Game {
         }
 
         // ボスバーの表示更新
-        this.bossBar.progress((float) (this.phase == 7 ? 0.0 : 1.0 - this.getProgress()));
+        this.bossBar.progress((float) (isFinalPhase() ? 0.0 : 1.0 - this.getProgress()));
 
         int remainedSeconds = (this.nextTick - this.currentTicks) / 20;
         String remainedText = this.phase == 0 ? "セーフエリア決定まで後 " : this.isShrinking ? "次のフェーズまで後 " : "縮小開始まで後 ";
-        if (this.phase != 6 && this.phase != 7) {
+        if (this.phase != 6 && isFinalPhase()) {
             this.bossBar.name(Component.text("現在のフェーズ " + getPhase() + ": " + remainedText + remainedSeconds + "秒"));
 
         }
@@ -468,7 +472,7 @@ public class Game {
                 setWorldBorderToSafeAreaByProgress(map.getCenter(), getShrinkProgress());
             }
 
-            if (remainedSeconds <= 10 && this.currentTicks % 20 == 0 && this.phase != 7) {
+            if (remainedSeconds <= 10 && this.currentTicks % 20 == 0 && !isFinalPhase()) {
                 player.playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             }
 
@@ -479,7 +483,7 @@ public class Game {
         }
 
         // 最終フェーズ処理
-        if (phase == 7) {
+        if (isFinalPhase()) {
             int lastPhaseCycleCurrentTick = currentTicks % LAST_PHASE_CYCLE_TICK;
             if (lastPhaseCycleCurrentTick == 0) {
                 oldSafeArea = safeArea.clone();
@@ -584,7 +588,7 @@ public class Game {
             }
         }
 
-        if (this.phase == 7) {
+        if (isFinalPhase()) {
             this.bossBar.name(Component.text("最終フェーズ進行中"));
         }
 
@@ -606,7 +610,7 @@ public class Game {
         // Player への処理
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             player.playSound(player, Sound.ENTITY_WITHER_SPAWN, 0.75f, 1.0f);
-            if (this.phase == 7) {
+            if (isFinalPhase()) {
                 showSubtitle(player,
                         Component.text("最終フェーズ").color(NamedTextColor.RED)
                                 .append(Component.text("が始まりました").color(NamedTextColor.GOLD))
