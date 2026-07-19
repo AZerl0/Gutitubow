@@ -1,5 +1,5 @@
 name: Gutitubow
-version: '1.0.0-SNAPSHOT'
+version: '1.0.0'
 main: com.azerl0.gutitubow.Gutitubow
 api-version: '1.21'
 authors: [ AZer0 ]
