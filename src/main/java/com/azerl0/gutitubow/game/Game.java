@@ -415,7 +415,7 @@ public class Game {
 
         int remainedSeconds = (this.nextTick - this.currentTicks) / 20;
         String remainedText = this.phase == 0 ? "セーフエリア決定まで後 " : this.isShrinking ? "次のフェーズまで後 " : "縮小開始まで後 ";
-        if (this.phase != 6 && isFinalPhase()) {
+        if (this.phase != 6 && !isFinalPhase()) {
             this.bossBar.name(Component.text("現在のフェーズ " + getPhase() + ": " + remainedText + remainedSeconds + "秒"));
 
         }
