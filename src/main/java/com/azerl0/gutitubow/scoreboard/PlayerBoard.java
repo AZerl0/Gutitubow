@@ -199,7 +199,7 @@ public class PlayerBoard {
             logger.warning("failed get player ability name");
             logger.warning("player: " + player.getName());
             logger.warning(": " + player.getName());
-            throw new RuntimeException(e);
+            return Component.text("NULL");
         }
     }
 
