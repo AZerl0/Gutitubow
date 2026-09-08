@@ -35,13 +35,19 @@ public class SwapAbility extends Ability {
 
     @Override
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
-        if (hasCompassCooldown()) return;
         Player player = getPlayer();
         if (player == null) return;
+        if (hasCompassCooldown()) {
+            player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            player.sendMessage(Component.text("まだクールタイム中です!").color(NamedTextColor.RED));
+            return;
+        }
         if (trySwap()) {
             setCompassCooldown(isDebugMode() ? 20 : 15 * 20);
+            startCompassCooldownTask();
         } else {
             setCompassCooldown(60);
+            startCompassCooldownTask();
         }
     }
 
