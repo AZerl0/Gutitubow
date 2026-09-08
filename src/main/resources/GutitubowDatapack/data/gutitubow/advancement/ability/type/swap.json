@@ -1,0 +1,29 @@
+{
+  "parent": "gutitubow:ability/root",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "text": "「交換」の能力を持つ"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:popped_chorus_fruit"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "拍手喝采",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

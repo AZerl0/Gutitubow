@@ -804,7 +804,8 @@ public class GutitubowItem {
                 Component.text("§6「交換」は、二つのエンティティの座標を入れ替える能力。"),
                 Component.empty(),
                 Component.text("§7操作"),
-                Component.text("§7 [(弓をもって) 左クリック] - 視点先(100ブロック以内)のエンティティと自身を交換する")
+                Component.text("§7 [(弓をもって) 左クリック] - 視点先(100ブロック以内)のエンティティと自身を交換する"),
+                Component.text("§7 エンティティはプレイヤー、矢とのみ交換可能")
         ));
 
         itemStack.setItemMeta(meta);

@@ -3,14 +3,18 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.util.EntityUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -78,21 +82,37 @@ public class SwapAbility extends Ability {
             ));
             if (!entityTypeSet.contains(entityType)) continue;
             if (player.getUniqueId() == entity.getUniqueId()) continue;
+            if (EntityUtil.isInvalidHitEntity(entity)) continue;
+            if (context.game().isStarted() && context.game().getPhase() == 0) {
+                if (entity.getType() == EntityType.PLAYER) continue;
+            }
+            if (entity instanceof Arrow arrow) {
+                if (arrow.isInBlock()) continue;
+            }
+
+
+            Location playerLocation = player.getLocation().clone();
+
+            RayTraceResult blockHit = player.getWorld().rayTraceBlocks(
+                    playerLocation,
+                    entity.getLocation().clone().toVector().subtract(playerLocation.toVector()),
+                    playerLocation.distance(entity.getLocation()),
+                    FluidCollisionMode.NEVER,
+                    true
+            );
+
+            if (blockHit != null) continue;
 
             double distance = distanceToRay(player, entity);
 
 
-            if (distance < nearestDistance) {
+            if (distance < nearestDistance && distance <= 20) {
                 nearestDistance = distance;
                 lookingEntity = Optional.of(entity);
             }
         }
 
-        if (nearestDistance > 15) {
-            return Optional.empty();
-        } else {
-            return lookingEntity;
-        }
+        return lookingEntity;
     }
 
     private double distanceToRay(Player player, Entity entity) {
