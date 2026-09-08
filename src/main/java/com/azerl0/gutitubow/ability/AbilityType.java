@@ -44,7 +44,8 @@ public enum AbilityType {
     APPRAISAL(Component.text("鑑定"), GutitubowItem.ABILITY_ICON_APPRAISAL),
     SMASH(Component.text("必殺"), GutitubowItem.ABILITY_ICON_SMASH),
     ZIPLINE(Component.text("登攀"), GutitubowItem.ABILITY_ICON_ZIPLINE),
-    GRAPPLINGHOOK(Component.text("鉤縄"), GutitubowItem.ABILITY_ICON_GRAPPLINGHOOK);
+    GRAPPLINGHOOK(Component.text("鉤縄"), GutitubowItem.ABILITY_ICON_GRAPPLINGHOOK),
+    SWAP(Component.text("交換"), GutitubowItem.ABILITY_ICON_SWAP);
 
     private final Component name;
     private final ItemStack displayItem;

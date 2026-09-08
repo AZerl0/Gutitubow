@@ -794,4 +794,20 @@ public class GutitubowItem {
         itemStack.setItemMeta(meta);
         ABILITY_ICON_GRAPPLINGHOOK = itemStack.clone();
     }
+
+    public static final ItemStack ABILITY_ICON_SWAP;
+    static {
+        ItemStack itemStack = new ItemStack(Material.POPPED_CHORUS_FRUIT);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「交換」は、二つのエンティティの座標を入れ替える能力。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 [(弓をもって) 左クリック] - 視点先(100ブロック以内)のエンティティと自身を交換する")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_SWAP = itemStack.clone();
+    }
 }
