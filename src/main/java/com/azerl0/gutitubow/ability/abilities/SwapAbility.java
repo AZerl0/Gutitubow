@@ -5,8 +5,10 @@ import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.GutitubowEntityType;
+import com.azerl0.gutitubow.entity.carepackage.CarePackage;
 import com.azerl0.gutitubow.entity.teleportable.BukkitTeleportableEntity;
 import com.azerl0.gutitubow.entity.teleportable.Teleportable;
+import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.EntityUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -67,6 +69,9 @@ public class SwapAbility extends Ability {
             lookingEntity.get().teleport(playerLocation.setDirection(entityLocation.getDirection()));
             entityLocation.getWorld().playSound(entityLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.0f);
             playerLocation.getWorld().playSound(playerLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.0f);
+            if (lookingEntity.get() instanceof CarePackage carePackage && carePackage.isFalling()) {
+                AdvancementUtil.grantAdvancement(player, "gutitubow:ability/extend/swap_carepackage");
+            }
             return true;
         } else {
             player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);

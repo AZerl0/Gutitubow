@@ -1,0 +1,34 @@
+{
+  "parent": "gutitubow:ability/type/swap",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "text": "「交換」の能力で自身と落下中のケアパッケージを交換する"
+    },
+    "icon": {
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:healing"
+        }
+      },
+      "count": 1,
+      "id": "minecraft:potion"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "親方！ 空からケアパッケージが！",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

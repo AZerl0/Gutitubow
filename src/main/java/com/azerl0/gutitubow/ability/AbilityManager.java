@@ -1,15 +1,9 @@
 package com.azerl0.gutitubow.ability;
 
 import com.azerl0.gutitubow.ability.abilities.ShieldAbility;
-import com.azerl0.gutitubow.manager.AdvancementManager;
+import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
-import io.papermc.paper.advancement.AdvancementDisplay;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.advancement.Advancement;
-import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -56,13 +50,8 @@ public class AbilityManager {
         abilities.put(player.getUniqueId(), ability);
         setDisplayItem(player, type, 13);
 
-        AdvancementManager advancementManager = context.getGutitubowManagers().getAdvancementManager();
-
-        Advancement rootAdvancement = Bukkit.getAdvancement(new NamespacedKey("gutitubow", "ability/root"));
-        if (rootAdvancement != null) advancementManager.grantAdvancement(player, rootAdvancement);
-
-        Advancement advancement = advancementManager.getAbilityTypeAdvancement(type);
-        if (advancement != null) advancementManager.grantAdvancement(player, advancement);
+        AdvancementUtil.grantAdvancement(player, "gutitubow:ability/root");
+        AdvancementUtil.grantAdvancement(player, "gutitubow:ability/type/" + type.toString().toLowerCase());
 
     }
 

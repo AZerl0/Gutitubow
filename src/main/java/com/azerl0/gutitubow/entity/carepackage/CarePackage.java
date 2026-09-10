@@ -118,6 +118,7 @@ public class CarePackage extends GutitubowEntity {
         interactionEntityUUID = interaction.getUniqueId();
         displayEntityUUID = blockDisplay.getUniqueId();
         remainedPotionCount = 3;
+        setDisplayName(this.getRemainedPotionDisplay());
         Bukkit.getScheduler().runTaskLater(Gutitubow.get(), this::onMove, 3L);
     }
 
@@ -317,5 +318,9 @@ public class CarePackage extends GutitubowEntity {
         for (Chicken chicken : chickens) {
             chicken.remove();
         }
+    }
+
+    public boolean isFalling() {
+        return isFalling;
     }
 }
