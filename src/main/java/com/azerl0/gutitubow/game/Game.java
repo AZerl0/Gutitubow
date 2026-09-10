@@ -3,8 +3,8 @@ package com.azerl0.gutitubow.game;
 import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.GutitubowManagers;
 import com.azerl0.gutitubow.ability.*;
-import com.azerl0.gutitubow.carepackage.CarePackage;
-import com.azerl0.gutitubow.carepackage.CarePackageManager;
+import com.azerl0.gutitubow.entity.GutitubowEntity;
+import com.azerl0.gutitubow.entity.carepackage.CarePackage;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerWinEvent;
@@ -28,20 +28,18 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class Game {
-    private final JavaPlugin plugin;
+    private final Gutitubow gutitubow;
     private final GameSetting gameSetting = new GameSetting();
     private boolean started;
     private int nextTick;
@@ -61,7 +59,6 @@ public class Game {
     private double nextSafeAreaMinZ;
     private double nextSafeAreaMaxZ;
     private final GutitubowManagers gutitubowManagers;
-    private final CarePackageManager carePackageManager;
     private final GamePlayerManager gamePlayerManager;
     private final AbilityManager abilityManager;
     private final DebugManager debugManager;
@@ -73,19 +70,18 @@ public class Game {
     private final SpectatorManager spectatorManager = new SpectatorManager();
 
     public Game(
-            JavaPlugin plugin,
+            Gutitubow gutitubow,
             Map map,
             DebugManager debugManager,
             GutitubowManagers gutitubowManagers
     ) {
-        this.plugin = plugin;
+        this.gutitubow = gutitubow;
         this.map = map;
         this.gutitubowManagers = gutitubowManagers;
         this.debugManager = debugManager;
-        this.carePackageManager = new CarePackageManager(plugin, this, gutitubowManagers.getGlowManager());
-        AbilityContext abilityContext = new AbilityContext(plugin, this, gutitubowManagers);
+        AbilityContext abilityContext = new AbilityContext(gutitubow, this, gutitubowManagers);
         this.abilityManager = new AbilityManager(abilityContext);
-        this.gamePlayerManager = new GamePlayerManager(plugin, this);
+        this.gamePlayerManager = new GamePlayerManager(gutitubow, this);
         this.scoreboardManager = gutitubowManagers.getScoreboardManager();
         this.playerBoardManager = new PlayerBoardManager(scoreboardManager);
         this.teamManager = new TeamManager(this);
@@ -241,7 +237,7 @@ public class Game {
             player.setHealth(20.0);
             for (Player otherPlayer : Bukkit.getServer().getOnlinePlayers()) {
                 if (player.getUniqueId() != otherPlayer.getUniqueId()) {
-                    player.showPlayer(plugin, otherPlayer);
+                    player.showPlayer(gutitubow, otherPlayer);
                     Scoreboard scoreboard = scoreboardManager.getScoreboard(player);
                     Team team = scoreboardManager.getTeam(scoreboard, otherPlayer);
                     team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
@@ -254,7 +250,11 @@ public class Game {
         map.getBorder().setDamageBuffer(0.0);
 
         this.safeArea = map.getCenter();
-        carePackageManager.removeAllCarePackage();
+        for (GutitubowEntity gutitubowEntity : gutitubow.getGutitubowEntityManager().getGutitubowEntities()) {
+            if (gutitubowEntity instanceof CarePackage carePackage) {
+                carePackage.remove();
+            }
+        }
 
         for (World world : Bukkit.getWorlds()) {
             for (Arrow arrow : world.getEntitiesByClass(Arrow.class)) {
@@ -362,7 +362,7 @@ public class Game {
                 Player otherPlayer = Bukkit.getPlayer(otherPlayerUUID);
                 if (otherPlayer != null && player.getUniqueId() != otherPlayer.getUniqueId()) {
                     if (!teamManager.isTeammate(player, otherPlayer)) {
-                        player.hidePlayer(plugin, otherPlayer);
+                        player.hidePlayer(gutitubow, otherPlayer);
 
                         Scoreboard scoreboard = scoreboardManager.getScoreboard(player);
                         Team otherPlayerTeam = scoreboardManager.getTeam(scoreboard, otherPlayer);
@@ -408,6 +408,15 @@ public class Game {
                     this.randomCarePackageSpawn(random.nextInt(2, 4), true);
                 }
                 break;
+        }
+
+        // 範囲外ケアパッケージ削除
+        if (isShrinking) {
+            for (GutitubowEntity gutitubowEntity : gutitubow.getGutitubowEntityManager().getGutitubowEntities()) {
+                if (gutitubowEntity instanceof CarePackage carePackage) {
+                    if (!map.getBorder().isInside(carePackage.getLocation())) carePackage.remove();
+                }
+            }
         }
 
         // ボスバーの表示更新
@@ -543,7 +552,10 @@ public class Game {
         for (int i = 0; i < count; i++) {
             Location location = this.map.getRandomXZPosition(50);
             location.setY(175);
-            carePackageManager.summonPackage(location);
+            Gutitubow.get().getGutitubowEntityManager().spawnGutitubowEntity(
+                    location,
+                    CarePackage.class
+            );
         }
     }
 
@@ -621,7 +633,7 @@ public class Game {
                 for (UUID uuid : players) {
                     Player target = Bukkit.getPlayer(uuid);
                     if (target != null) {
-                        player.showPlayer(plugin, target);
+                        player.showPlayer(gutitubow, target);
                     }
                 }
             }
@@ -652,15 +664,6 @@ public class Game {
                     player.sendMessage(Component.text("\n[!]").color(NamedTextColor.GOLD)
                             .append(Component.text("フェーズを生き延びたため、体力が回復しました。\n").color(NamedTextColor.GREEN))
                     );
-                }
-            }
-        }
-
-        for (CarePackage carePackage : carePackageManager.getCarePackages()) {
-            Entity coreEntity = carePackage.getCoreEntity();
-            if (coreEntity != null) {
-                if (!map.getBorder().isInside(coreEntity.getLocation())) {
-                    carePackage.remove();
                 }
             }
         }
@@ -899,10 +902,6 @@ public class Game {
 
     public TeamManager getTeamManager() {
         return teamManager;
-    }
-
-    public CarePackageManager getCarePackageManager() {
-        return carePackageManager;
     }
 
     public SpectatorManager getSpectatorManager() {

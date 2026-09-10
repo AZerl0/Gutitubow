@@ -3,6 +3,10 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.entity.GutitubowEntity;
+import com.azerl0.gutitubow.entity.GutitubowEntityType;
+import com.azerl0.gutitubow.entity.teleportable.BukkitTeleportableEntity;
+import com.azerl0.gutitubow.entity.teleportable.Teleportable;
 import com.azerl0.gutitubow.util.EntityUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -54,7 +58,7 @@ public class SwapAbility extends Ability {
     private boolean trySwap() {
         Player player = getPlayer();
         if (player == null) return false;
-        Optional<Entity> lookingEntity = getLookingEntity(player, 100);
+        Optional<Teleportable> lookingEntity = getLookingEntity(player, 100);
         if (lookingEntity.isPresent()) {
             Location playerLocation = player.getLocation().clone();
             Location entityLocation = lookingEntity.get().getLocation().clone();
@@ -71,11 +75,11 @@ public class SwapAbility extends Ability {
         }
     }
 
-    private Optional<Entity> getLookingEntity(
+    private Optional<Teleportable> getLookingEntity(
             Player player,
             double maxDistance
     ) {
-        Optional<Entity> lookingEntity = Optional.empty();
+        Optional<Teleportable> lookingEntity = Optional.empty();
         double nearestDistance = Double.MAX_VALUE;
 
 
@@ -97,12 +101,12 @@ public class SwapAbility extends Ability {
             }
 
 
-            Location playerLocation = player.getLocation().clone();
+            Location playerEyeLocation = player.getEyeLocation().clone();
 
             RayTraceResult blockHit = player.getWorld().rayTraceBlocks(
-                    playerLocation,
-                    entity.getLocation().clone().toVector().subtract(playerLocation.toVector()),
-                    playerLocation.distance(entity.getLocation()),
+                    playerEyeLocation,
+                    entity.getLocation().clone().toVector().subtract(playerEyeLocation.toVector()),
+                    playerEyeLocation.distance(entity.getLocation()),
                     FluidCollisionMode.NEVER,
                     true
             );
@@ -111,10 +115,37 @@ public class SwapAbility extends Ability {
 
             double distance = distanceToRay(player, entity);
 
+            if (distance < nearestDistance && distance <= 20) {
+                nearestDistance = distance;
+                lookingEntity = Optional.of(new BukkitTeleportableEntity(entity));
+            }
+        }
+
+        for (GutitubowEntity gutitubowEntity : context.getGutitubowManagers().getGutitubowEntityManager().getGutitubowEntities()) {
+            GutitubowEntityType gutitubowEntityType = gutitubowEntity.getType();
+            if (gutitubowEntityType != GutitubowEntityType.CAREPACKAGE) continue;
+            Location gutitubowEntityLocation = gutitubowEntity.getLocation();
+            Location playerLocation = player.getLocation().clone();
+
+            if (gutitubowEntityLocation.distance(playerLocation) > maxDistance) continue;
+
+            Location playerEyeLocation = player.getEyeLocation().clone();
+
+            RayTraceResult blockHit = player.getWorld().rayTraceBlocks(
+                    playerEyeLocation,
+                    gutitubowEntityLocation.clone().toVector().subtract(playerEyeLocation.toVector()),
+                    playerEyeLocation.distance(gutitubowEntityLocation),
+                    FluidCollisionMode.NEVER,
+                    true
+            );
+
+            if (blockHit != null) continue;
+
+            double distance = distanceToRay(player, gutitubowEntityLocation);
 
             if (distance < nearestDistance && distance <= 20) {
                 nearestDistance = distance;
-                lookingEntity = Optional.of(entity);
+                lookingEntity = Optional.of(gutitubowEntity);
             }
         }
 
@@ -122,14 +153,18 @@ public class SwapAbility extends Ability {
     }
 
     private double distanceToRay(Player player, Entity entity) {
+        return distanceToRay(player, entity.getLocation());
+    }
+
+    private double distanceToRay(Player player, Location location) {
         Location playerLocation = player.getEyeLocation();
 
         Vector origin = playerLocation.toVector();
         Vector direction = playerLocation.getDirection().normalize();
 
-        Vector entityPosition = entity.getLocation().toVector();
+        Vector targetPosition = location.toVector();
 
-        double t = entityPosition.clone()
+        double t = targetPosition.clone()
                 .subtract(origin)
                 .dot(direction);
 
@@ -139,6 +174,6 @@ public class SwapAbility extends Ability {
 
         Vector closestPoint = origin.clone().add(direction.clone().multiply(t));
 
-        return entityPosition.distance(closestPoint);
+        return targetPosition.distance(closestPoint);
     }
 }

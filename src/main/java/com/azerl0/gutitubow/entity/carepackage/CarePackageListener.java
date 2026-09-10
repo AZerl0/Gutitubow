@@ -1,5 +1,7 @@
-package com.azerl0.gutitubow.carepackage;
+package com.azerl0.gutitubow.entity.carepackage;
 
+import com.azerl0.gutitubow.entity.GutitubowEntity;
+import com.azerl0.gutitubow.entity.GutitubowEntityManager;
 import io.papermc.paper.event.entity.EntityMoveEvent;
 import org.bukkit.Material;
 import org.bukkit.entity.Chicken;
@@ -10,23 +12,25 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
+import java.util.Optional;
+
 public class CarePackageListener implements Listener {
 
-    private final CarePackageManager carePackageManager;
+    private final GutitubowEntityManager entityManager;
 
-    public CarePackageListener(CarePackageManager cpm) {
-        this.carePackageManager = cpm;
+    public CarePackageListener(GutitubowEntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @EventHandler
     public void onMove(EntityMoveEvent event) {
         Entity entity = event.getEntity();
+        if (!entity.getScoreboardTags().contains("gutitubow.carePackageCoreEntity")) return;
 
-        if (CarePackageManager.isCarePackageCoreEntity(entity)) {
-            CarePackage carePackage = carePackageManager.getCarePackage(entity.getUniqueId());
-            if (carePackage != null) carePackage.onMove();
+        Optional<GutitubowEntity> gutitubowEntity = entityManager.getGutitubowEntity(entity);
+        if (gutitubowEntity.isPresent() && gutitubowEntity.get() instanceof CarePackage carePackage) {
+            carePackage.onMove();
         }
-
     }
 
     @EventHandler
@@ -35,14 +39,12 @@ public class CarePackageListener implements Listener {
 
         if (entity instanceof Interaction) {
 
-            if (CarePackageManager.isCarePackageEntity(entity)) {
-                Entity vehicle = entity.getVehicle();
-                if (vehicle == null) return;
-                CarePackage carePackage = carePackageManager.getCarePackage(vehicle.getUniqueId());
-                if (carePackage != null) carePackage.onInteract(event.getPlayer());
+            Optional<GutitubowEntity> gutitubowEntity = entityManager.getGutitubowEntity(entity);
+
+            if (gutitubowEntity.isPresent() && gutitubowEntity.get() instanceof CarePackage carePackage) {
+                carePackage.onInteract(event.getPlayer());
             }
         }
-
     }
 
     @EventHandler

@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow;
 
 import com.azerl0.gutitubow.ability.zipline.ZiplineManager;
+import com.azerl0.gutitubow.entity.GutitubowEntityManager;
 import com.azerl0.gutitubow.fakeplayer.FakePlayerManager;
 import com.azerl0.gutitubow.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.manager.AdvancementManager;
@@ -14,6 +15,7 @@ public class GutitubowManagers {
     private final FakePlayerManager fakePlayerManager;
     private final ZiplineManager ziplineManager;
     private final AdvancementManager advancementManager;
+    private final GutitubowEntityManager gutitubowEntityManager;
 
     public GutitubowManagers(
             EntityGlowManager glowManager,
@@ -21,7 +23,8 @@ public class GutitubowManagers {
             PlayerSkinChanger playerSkinChanger,
             FakePlayerManager fakePlayerManager,
             ZiplineManager ziplineManager,
-            AdvancementManager advancementManager
+            AdvancementManager advancementManager,
+            GutitubowEntityManager gutitubowEntityManager
     ) {
         this.glowManager = glowManager;
         this.scoreboardManager = scoreboardManager;
@@ -29,6 +32,7 @@ public class GutitubowManagers {
         this.fakePlayerManager = fakePlayerManager;
         this.ziplineManager = ziplineManager;
         this.advancementManager = advancementManager;
+        this.gutitubowEntityManager = gutitubowEntityManager;
     }
 
     public EntityGlowManager getGlowManager() { return glowManager; }
@@ -37,4 +41,5 @@ public class GutitubowManagers {
     public FakePlayerManager getFakePlayerManager() { return fakePlayerManager; }
     public ZiplineManager getZiplineManager() { return ziplineManager; }
     public AdvancementManager getAdvancementManager() { return advancementManager; }
+    public GutitubowEntityManager getGutitubowEntityManager() { return gutitubowEntityManager; }
 }

@@ -1,0 +1,18 @@
+package com.azerl0.gutitubow.entity;
+
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityRemoveEvent;
+
+public class GutitubowEntityListener implements Listener {
+    private final GutitubowEntityManager gutitubowEntityManager;
+
+    public GutitubowEntityListener(GutitubowEntityManager gutitubowEntityManager) {
+        this.gutitubowEntityManager = gutitubowEntityManager;
+    }
+
+    @EventHandler
+    public void onEntityRemove(EntityRemoveEvent event) {
+        gutitubowEntityManager.onEntityRemove(event.getEntity());
+    }
+}
