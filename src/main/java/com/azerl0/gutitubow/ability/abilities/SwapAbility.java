@@ -67,8 +67,11 @@ public class SwapAbility extends Ability {
 
             player.teleport(entityLocation.setDirection(playerLocation.getDirection()));
             lookingEntity.get().teleport(playerLocation.setDirection(entityLocation.getDirection()));
-            entityLocation.getWorld().playSound(entityLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.0f);
-            playerLocation.getWorld().playSound(playerLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.0f);
+            entityLocation.getWorld().playSound(entityLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 2.0f);
+            entityLocation.getWorld().playSound(entityLocation, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.0f, 1.5f);
+
+            playerLocation.getWorld().playSound(playerLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 2.0f);
+            playerLocation.getWorld().playSound(entityLocation, Sound.ENTITY_FIREWORK_ROCKET_BLAST, 1.0f, 1.5f);
             if (lookingEntity.get() instanceof CarePackage carePackage && carePackage.isFalling()) {
                 AdvancementUtil.grantAdvancement(player, "gutitubow:ability/extend/swap_carepackage");
             }
