@@ -262,6 +262,7 @@ public class CarePackage extends GutitubowEntity {
         }
         removeBalloonEntities();
         coreEntity.remove();
+        removeGutitubowEntity();
     }
 
     public void onInteract(Player player) {

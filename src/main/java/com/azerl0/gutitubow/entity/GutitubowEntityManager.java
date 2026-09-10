@@ -79,5 +79,8 @@ public class GutitubowEntityManager {
         return gutitubowEntities.values();
     }
 
+    public void onGutitubowEntityRemove(UUID gutitubowEntityUUID) {
+        gutitubowEntities.remove(gutitubowEntityUUID);
+    }
 
 }
