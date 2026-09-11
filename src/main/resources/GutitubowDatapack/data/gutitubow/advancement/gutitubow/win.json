@@ -1,0 +1,30 @@
+{
+  "parent": "gutitubow:gutitubow/root",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "frame": "goal",
+    "announce_to_chat": true,
+    "description": {
+      "text": "ゲームで勝利する"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:spectral_arrow"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "グッドゲーム",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

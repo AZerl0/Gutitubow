@@ -3,7 +3,9 @@ package com.azerl0.gutitubow.game;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerWinEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
+import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import de.tr7zw.nbtapi.NBT;
 import net.citizensnpcs.api.CitizensAPI;
@@ -142,5 +144,10 @@ public class GameListener implements Listener {
                 event.setCancelled(true);
             }
         }
+    }
+
+    @EventHandler
+    public void onWin(GamePlayerWinEvent event) {
+        AdvancementUtil.grantAdvancement(event.getPlayer(), "gutitubow:gutitubow/win");
     }
 }
