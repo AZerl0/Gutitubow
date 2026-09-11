@@ -23,6 +23,7 @@ public class GameEventSelectorGUI extends AbstractGUI {
         addEventButton(GameEventType.BOMB);
         addEventButton(GameEventType.PISTOL);
         addEventButton(GameEventType.WANTED);
+        addEventButton(GameEventType.SKIN);
     }
 
     @Override

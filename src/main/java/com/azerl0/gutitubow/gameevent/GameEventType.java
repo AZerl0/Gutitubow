@@ -1,9 +1,6 @@
 package com.azerl0.gutitubow.gameevent;
 
-import com.azerl0.gutitubow.gameevent.events.BomboEvent;
-import com.azerl0.gutitubow.gameevent.events.PistolEvent;
-import com.azerl0.gutitubow.gameevent.events.RicochetEvent;
-import com.azerl0.gutitubow.gameevent.events.WantedEvent;
+import com.azerl0.gutitubow.gameevent.events.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -56,7 +53,16 @@ public enum GameEventType {
             Component.text("賞金首を討ち取れ！"),
             ItemStack.of(Material.GOAT_HORN),
             WantedEvent::new
-    );
+    ),
+    SKIN(
+            Component.text("かわいいお顔"),
+            List.of(
+                    Component.text("全員のスキンが同じになってしまった！")
+            ),
+                    Component.text(""),
+                    ItemStack.of(Material.PIGLIN_HEAD),
+            SkinEvent::new
+            );
 
 
     private final Component name;

@@ -80,8 +80,7 @@ public class GameEventController {
     public void activateEvent(GameEventControllerGameEventType controllerGameEventType) {
         GameEvent event = getEvent(controllerGameEventType);
         if (event != null) {
-            event.activate();
-            GameEvent.playActivateEffect(event.getEventType());
+            event.activate(true);
         }
     }
 

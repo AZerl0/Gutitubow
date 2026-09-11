@@ -95,7 +95,7 @@ public class GameEventGUI extends AbstractGUI {
                                 if (event.isActivated()) {
                                     event.deactivate(true);
                                 } else {
-                                    event.activate();
+                                    event.activate(true);
                                 }
                             } else {
                                 if (event.isActivated()) event.deactivate(false);

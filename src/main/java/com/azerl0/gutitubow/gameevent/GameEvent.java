@@ -12,6 +12,8 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public abstract class GameEvent {
     private boolean activated = false;
 
@@ -26,15 +28,15 @@ public abstract class GameEvent {
         return true;
     }
 
+    protected boolean overridePlayerEffect() {
+        return false;
+    }
+
     public final void activate(boolean playEffect) {
         if (activated) return;
         activated = true;
         onActivate();
-        if (playEffect) playActivateEffect(getEventType());
-    }
-
-    public final void activate() {
-        activate(true);
+        if (playEffect && !overridePlayerEffect()) playActivateEffect(getEventType());
     }
 
     protected abstract void onActivate();
@@ -50,10 +52,23 @@ public abstract class GameEvent {
     }
 
     public static void playActivateEffect(GameEventType eventType) {
+        playActivateEffect(
+                eventType.getAbout(),
+                eventType.getName(),
+                eventType.getLore()
+        );
+    }
+
+    public static void playActivateEffect(
+            final @NotNull Component about,
+            final @NotNull Component name,
+            final @NotNull List<Component> lore
+
+    ) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             Title title = Title.title(
                     Component.text("⚠　イベント発生　⚠"),
-                    eventType.getAbout(),
+                    about,
                     Title.Times.times(
                             java.time.Duration.ofMillis(100),
                             java.time.Duration.ofSeconds(1),
@@ -63,8 +78,8 @@ public abstract class GameEvent {
             player.showTitle(title);
             player.sendMessage(
                     Component.text("[!] イベント発生 [!]\n").color(NamedTextColor.DARK_RED)
-                            .append(eventType.getName().color(NamedTextColor.RED)).append(Component.text("\n"))
-                            .append(eventType.getLore()).color(NamedTextColor.WHITE)
+                            .append(name.color(NamedTextColor.RED)).append(Component.text("\n"))
+                            .append(lore).color(NamedTextColor.WHITE)
             );
             player.playSound(player, Sound.BLOCK_END_PORTAL_SPAWN, 0.7f, 1.0f);
         }
