@@ -31,7 +31,7 @@ public class CarePackage extends GutitubowEntity {
     private UUID displayEntityUUID;
     private final Set<UUID> used_players = new HashSet<>();
     private final Set<GameTeam> used_teams = new HashSet<>();
-    private Set<Chicken> chickens = new HashSet<>();
+    private final Set<Chicken> chickens = new HashSet<>();
     private int remainedPotionCount;
     private int fallingTick;
     private boolean isFalling;
