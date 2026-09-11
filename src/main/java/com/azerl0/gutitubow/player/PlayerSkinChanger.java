@@ -107,7 +107,11 @@ public class PlayerSkinChanger {
     }
 
     public void cacheSkin(Player player) {
-        getTextureProperty(player.getName());
+        cacheSkin(player.getName());
+    }
+
+    public void cacheSkin(String playerName) {
+        getTextureProperty(playerName);
     }
 
     private Collection<ProfileProperty> getTextureProperty(String targetSkin) {
@@ -149,5 +153,9 @@ public class PlayerSkinChanger {
             target.setGameMode(gameMode);
             target.teleport(location);
         }, 2L);
+    }
+
+    public Set<String> getCachePlayers() {
+        return cache.keySet();
     }
 }

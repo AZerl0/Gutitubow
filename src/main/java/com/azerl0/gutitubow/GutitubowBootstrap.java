@@ -36,6 +36,7 @@ public class GutitubowBootstrap implements PluginBootstrap {
             DebugCommand.register(event.registrar());
             ItemCommand.register(event.registrar());
             GameTeamCommand.register(event.registrar());
+            SkinChangerCommand.register(event.registrar());
             SetSkinCommand.register(event.registrar());
             SetNameCommand.register(event.registrar());
             FakePlayerCommand.register(event.registrar());
