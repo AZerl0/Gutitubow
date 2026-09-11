@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
+import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.MathUtil;
 import net.kyori.adventure.text.Component;
@@ -110,6 +111,8 @@ public class FlashAbility extends Ability {
 
     private void flash(Location location) {
         World world = location.getWorld();
+        Player player = getPlayer();
+        int flashPlayerCount = 0;
 
         for (Player nearPlayer : location.getWorld().getNearbyPlayers(location, 50)) {
             Location eye = nearPlayer.getEyeLocation();
@@ -137,12 +140,14 @@ public class FlashAbility extends Ability {
 
             boolean isBlocking = blockHit != null;
 
-            boolean isInView = MathUtil.isInView(getPlayer(), location, 160, 110);
+            boolean isInView = MathUtil.isInView(nearPlayer, location, 160, 110);
             int duration = getFlashTicks(distance, isInView, isBlocking);
             applyFlashEffect(nearPlayer, duration);
+            if (duration >= 30) flashPlayerCount++;
 
 //            nearPlayer.sendMessage("isBlocking: " + isBlocking + ", isInView: " + isInView);
         }
+        if (flashPlayerCount >= 4 && player != null) AdvancementUtil.grantAdvancement(player, "gutitubow:ability/extend/flash_many_player");
     }
 
     public static int getFlashTicks(double distance, boolean isInView, boolean isBlocking) {

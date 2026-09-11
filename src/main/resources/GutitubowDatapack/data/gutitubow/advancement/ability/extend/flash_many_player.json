@@ -1,0 +1,29 @@
+{
+  "parent": "gutitubow:ability/type/flash",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "text": "「閃光」の能力で4人以上の目を1.5秒以上、眩ませる"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:glowstone"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "はい、チーズ",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
