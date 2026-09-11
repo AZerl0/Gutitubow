@@ -243,7 +243,7 @@ public class GutitubowItem {
 
         ItemMeta meta = itemStack.getItemMeta();
         meta.lore(List.of(
-                Component.text("§6「大盾」は、敵の攻撃から自分と見方を守り切る能力。"),
+                Component.text("§6「大盾」は、敵の攻撃から自分と味方を守り切る能力。"),
                 Component.text("§fスニーク中、自分の向いてる方向に大きな盾を構える。"),
                 Component.text("§f盾は最大で5発の矢を防ぐことができ、盾を使用していない間"),
                 Component.text("§f少しずつ耐久値が回復する。"),
