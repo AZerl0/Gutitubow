@@ -60,7 +60,7 @@ public class SwapAbility extends Ability {
     private boolean trySwap() {
         Player player = getPlayer();
         if (player == null) return false;
-        Optional<Teleportable> lookingEntity = getLookingEntity(player, 100);
+        Optional<Teleportable> lookingEntity = getLookingEntity(player, 50);
         if (lookingEntity.isPresent()) {
             Location playerLocation = player.getLocation().clone();
             Location entityLocation = lookingEntity.get().getLocation().clone();
