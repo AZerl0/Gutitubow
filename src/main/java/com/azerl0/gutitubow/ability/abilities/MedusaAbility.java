@@ -135,7 +135,7 @@ public class MedusaAbility extends Ability {
                 }
             } else{
                 lookingTick += 4;
-                outsideSafeTick = 20;
+                outsideSafeTick = 10;
             }
         }
     }
