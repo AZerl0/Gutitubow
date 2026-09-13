@@ -25,7 +25,7 @@ public class GravityAbility extends Ability {
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
         if (!hasCompassCooldown()) {
             launchGravityHole();
-            setCompassCooldown(3 * 20);
+            setCompassCooldown(isDebugMode() ? 20 : 20 * 20);
             startCompassCooldownTask();
         } else  {
             activateGravityHole();
