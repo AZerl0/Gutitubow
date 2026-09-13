@@ -50,7 +50,7 @@ public class MedusaAbility extends Ability {
             public void run() {
                 update();
             }
-        }.runTaskTimer(context.plugin(), 5L, 1L);
+        }.runTaskTimer(context.gutitubow(), 5L, 1L);
     }
 
     @Override
@@ -289,7 +289,7 @@ public class MedusaAbility extends Ability {
         petrificationPlayers.add(target);
 
 
-        Bukkit.getScheduler().runTaskLater(context.plugin(), () -> {
+        Bukkit.getScheduler().runTaskLater(context.gutitubow(), () -> {
             petrificationPlayers.remove(target);
             resetPetrification(target);
         }, tick);

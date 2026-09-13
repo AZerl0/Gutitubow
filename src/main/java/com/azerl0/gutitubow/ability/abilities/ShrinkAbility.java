@@ -81,7 +81,7 @@ public class ShrinkAbility extends Ability {
             public void run() {
                 updateShrink();
             }
-        }.runTaskTimer(context.plugin(), 1L, 1L);
+        }.runTaskTimer(context.gutitubow(), 1L, 1L);
     }
 
     private void updateShrink() {

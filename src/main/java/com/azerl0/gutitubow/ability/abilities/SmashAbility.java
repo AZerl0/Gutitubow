@@ -222,7 +222,7 @@ public class SmashAbility extends Ability {
                 public void run() {
                     updateCountdownDisplay();
                 }
-            }.runTaskTimer(context.plugin(), 0L, 1L);
+            }.runTaskTimer(context.gutitubow(), 0L, 1L);
         }
 
         private Player getTarget() {

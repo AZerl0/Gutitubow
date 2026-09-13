@@ -59,7 +59,7 @@ public class CloneAbility extends Ability {
             public void run() {
                 update();
             }
-        }.runTaskTimer(context.plugin(), 0L, 1L);
+        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     @Override
@@ -197,7 +197,7 @@ public class CloneAbility extends Ability {
             }
             context.glowManager().addGlow(owner, clonePlayer);
 
-            Bukkit.getScheduler().runTaskLater(context.plugin(), () -> {
+            Bukkit.getScheduler().runTaskLater(context.gutitubow(), () -> {
 //                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "npc select " + npc.getId());
 //                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "npc skinlayers --cape true");
 //                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "npc skinlayers --cape false");
@@ -212,7 +212,7 @@ public class CloneAbility extends Ability {
                 public void run() {
                     update();
                 }
-            }.runTaskTimer(context.plugin(), 0L, 1L);
+            }.runTaskTimer(context.gutitubow(), 0L, 1L);
         }
 
         private UUID getEntityUUID() {

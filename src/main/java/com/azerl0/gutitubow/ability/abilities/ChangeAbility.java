@@ -47,7 +47,7 @@ public class ChangeAbility extends Ability {
             public void run() {
                 changeAbility();
             }
-        }.runTaskTimer(context.plugin(), 3 * 20L, 60 * 20L);
+        }.runTaskTimer(context.gutitubow(), 3 * 20L, 60 * 20L);
 
     }
 

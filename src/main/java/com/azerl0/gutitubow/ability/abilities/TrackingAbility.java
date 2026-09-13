@@ -104,7 +104,7 @@ public class TrackingAbility extends Ability {
             public void run() {
                 onTracking();
             }
-        }.runTaskTimer(context.plugin(), 0L, 1L);
+        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     private void removeTrackingPlayer(@NotNull Player trackingPlayer) {

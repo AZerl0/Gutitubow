@@ -102,7 +102,7 @@ public class EscapeAbility extends Ability {
                 }
                 getPlayer().setGliding(true);
             }
-        }.runTaskTimer(context.plugin(), 1L, 1L);
+        }.runTaskTimer(context.gutitubow(), 1L, 1L);
     }
 
 

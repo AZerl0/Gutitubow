@@ -12,6 +12,7 @@ public abstract class GutitubowEntity implements Teleportable {
     private final GutitubowEntityManager entityManager;
     protected UUID uuid;
     protected Location location;
+    protected boolean isRemoved = false;
 
     public GutitubowEntity(GutitubowEntityManager gutitubowEntityManager, Location location) {
         entityManager = gutitubowEntityManager;
@@ -36,5 +37,10 @@ public abstract class GutitubowEntity implements Teleportable {
 
     protected final void removeGutitubowEntity() {
         entityManager.onGutitubowEntityRemove(uuid);
+        isRemoved = true;
+    }
+
+    public final boolean isRemoved() {
+        return isRemoved;
     }
 }

@@ -28,8 +28,8 @@ public class ControlAbility extends Ability {
 
     public ControlAbility(AbilityContext context) {
         super(context);
-        this.controllingKey = new NamespacedKey(context.plugin(), "controlling");
-        this.collectingKey = new NamespacedKey(context.plugin(), "collecting");
+        this.controllingKey = new NamespacedKey(context.gutitubow(), "controlling");
+        this.collectingKey = new NamespacedKey(context.gutitubow(), "collecting");
     }
 
     @Override
@@ -119,7 +119,7 @@ public class ControlAbility extends Ability {
 
             }
 
-        }.runTaskTimer(context.plugin(), 0L, 1L);
+        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     private void Collect(Player player) {

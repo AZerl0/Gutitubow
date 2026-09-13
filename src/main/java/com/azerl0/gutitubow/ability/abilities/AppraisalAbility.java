@@ -54,7 +54,7 @@ public class AppraisalAbility extends Ability {
             public void run() {
                 update();
             }
-        }.runTaskTimer(context.plugin(), 5L, 1L);
+        }.runTaskTimer(context.gutitubow(), 5L, 1L);
     }
 
     @Override

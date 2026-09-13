@@ -200,7 +200,7 @@ public class DetectionAbility extends Ability {
                     cancel();
                 }
             }
-        }.runTaskTimer(context.plugin(), 0L, 2L);
+        }.runTaskTimer(context.gutitubow(), 0L, 2L);
     }
 
 

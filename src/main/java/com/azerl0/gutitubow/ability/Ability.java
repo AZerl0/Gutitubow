@@ -97,7 +97,7 @@ public abstract class Ability {
                 }
                 sendActionBarCompassCooldown();
             }
-        }.runTaskTimer(context.plugin(), 0L, 1L);
+        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     public boolean isDebugMode() {

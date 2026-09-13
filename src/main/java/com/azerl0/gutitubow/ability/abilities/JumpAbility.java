@@ -44,7 +44,7 @@ public class JumpAbility extends Ability {
             public void run() {
                 update(player);
             }
-        }.runTaskTimer(context.plugin(), 0L, 1L);
+        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     public void update(Player player) {

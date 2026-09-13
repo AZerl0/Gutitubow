@@ -27,8 +27,8 @@ public class RicochetAbility extends Ability {
 
     public RicochetAbility(AbilityContext context) {
         super(context);
-        this.ricochetCountKey = new NamespacedKey(context.plugin(), "ricochetCount");
-        this.ricochetDamageCountKey = new NamespacedKey(context.plugin(), "ricochetDamageCount");
+        this.ricochetCountKey = new NamespacedKey(context.gutitubow(), "ricochetCount");
+        this.ricochetDamageCountKey = new NamespacedKey(context.gutitubow(), "ricochetDamageCount");
     }
 
     @Override
@@ -58,7 +58,7 @@ public class RicochetAbility extends Ability {
         int ricochetCount = getRicochetCount(arrow);
         if (ricochetCount > 0) {
             arrow.setHitSound(Sound.ENTITY_SLIME_JUMP);
-            ArrowUtil.RicochetEvent(context.plugin(), event, 0.8);
+            ArrowUtil.RicochetEvent(context.gutitubow(), event, 0.8);
 
             setRicochetCount(arrow, ricochetCount - 1);
             world.spawnParticle(

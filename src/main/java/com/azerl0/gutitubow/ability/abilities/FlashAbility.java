@@ -77,7 +77,7 @@ public class FlashAbility extends Ability {
                         new Particle.Spell(Color.fromRGB(255, 255, 255), 1)
                 );
             }
-        }.runTaskTimer(context.plugin(), 0L, 1L);
+        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     private void activeFlash() {
@@ -96,12 +96,12 @@ public class FlashAbility extends Ability {
     public void onArrowHit(ProjectileHitEvent event) {
         if (!(event.getEntity() instanceof SpectralArrow)) return;
 
-        Bukkit.getScheduler().runTaskLater(context.plugin(), () -> {
+        Bukkit.getScheduler().runTaskLater(context.gutitubow(), () -> {
             if (!event.getEntity().isValid()) return;
             event.getEntity().getWorld().spawnParticle(Particle.FLASH, event.getEntity().getLocation(), 2, Color.WHITE);
         }, 15L);
 
-        Bukkit.getScheduler().runTaskLater(context.plugin(), () -> {
+        Bukkit.getScheduler().runTaskLater(context.gutitubow(), () -> {
             if (!event.getEntity().isValid()) return;
             flash(event.getEntity().getLocation());
             event.getEntity().remove();

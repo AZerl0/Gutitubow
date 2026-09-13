@@ -52,7 +52,7 @@ public class PredationAbility extends Ability {
                     player.getHealth() + potionAmount * 2,
                     Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getValue()
             ));
-            Bukkit.getScheduler().runTaskLater(context.plugin(), () ->
+            Bukkit.getScheduler().runTaskLater(context.gutitubow(), () ->
                     player.sendMessage(Component.text(event.getTarget().getName() + "から体力を得た。").color(NamedTextColor.RED)), 1L);
         }
     }

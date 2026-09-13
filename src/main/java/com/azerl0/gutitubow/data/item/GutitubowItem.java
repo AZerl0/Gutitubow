@@ -811,4 +811,25 @@ public class GutitubowItem {
         itemStack.setItemMeta(meta);
         ABILITY_ICON_SWAP = itemStack.clone();
     }
+
+    public static final ItemStack ABILITY_ICON_GRAVITY;
+    static {
+        ItemStack itemStack = new ItemStack(Material.BLACK_DYE);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「引力」は、時空を歪ませ引力を発生させる能力。"),
+
+                Component.text("§f弓を左クリックすると、小さな\"歪\"が発射される。"),
+                Component.text("§fブロックに当たることでブラックホールが展開され、周囲のエンティティを引き寄せる"),
+                Component.text("§f発射直後に左クリックすることで、着弾する前にブラックホールを展開することができる。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 [左クリック(弓)] - 小さな\"歪\"を発射する"),
+                Component.text("§7 [左クリック(弓)] - 発射してある小さな\"歪\"の座標でブラックホールを展開する")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_GRAVITY = itemStack.clone();
+    }
 }

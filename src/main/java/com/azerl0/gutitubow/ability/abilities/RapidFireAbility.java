@@ -121,7 +121,7 @@ public class RapidFireAbility extends Ability {
                 }
                 updateRapidFireShooting(player);
             }
-        }.runTaskTimer(context.plugin(), 0L, 1L);
+        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     private void updateRapidFireShooting(Player player) {
@@ -179,7 +179,7 @@ public class RapidFireAbility extends Ability {
                 );
             }
 
-        }.runTaskTimer(context.plugin(), 20L, 1L);
+        }.runTaskTimer(context.gutitubow(), 20L, 1L);
     }
 
     private void stopRapidFire() {

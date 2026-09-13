@@ -179,6 +179,7 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.ZIPLINE, ZiplineAbility::new);
         AbilityRegistry.register(AbilityType.GRAPPLINGHOOK, GrapplingHookAbility::new);
         AbilityRegistry.register(AbilityType.SWAP, SwapAbility::new);
+        AbilityRegistry.register(AbilityType.GRAVITY, GravityAbility::new);
     }
 
     public Game getGame() {

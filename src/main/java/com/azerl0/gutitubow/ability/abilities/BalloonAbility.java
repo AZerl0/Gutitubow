@@ -52,7 +52,7 @@ public class BalloonAbility extends Ability {
             public void run() {
                 update();
             }
-        }.runTaskTimer(context.plugin(), 0L, 1L);
+        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     @Override

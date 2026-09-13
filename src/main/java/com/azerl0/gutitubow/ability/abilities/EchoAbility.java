@@ -64,7 +64,7 @@ public class EchoAbility extends Ability {
             public void run() {
                 update();
             }
-        }.runTaskTimer(context.plugin(), 0L, 1L);
+        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     @Override
@@ -185,7 +185,7 @@ public class EchoAbility extends Ability {
                     );
                 }
 
-            }.runTaskTimer(context.plugin(), 0L, 1L);
+            }.runTaskTimer(context.gutitubow(), 0L, 1L);
 
         }
     }
@@ -206,7 +206,7 @@ public class EchoAbility extends Ability {
         }
 
         player.setGameMode(GameMode.SPECTATOR);
-        Bukkit.getScheduler().runTaskLater(context.plugin(), () -> {
+        Bukkit.getScheduler().runTaskLater(context.gutitubow(), () -> {
             player.setGameMode(GameMode.ADVENTURE);
             player.setGameMode(GameMode.SPECTATOR);
             player.setSpectatorTarget(player);
@@ -254,7 +254,7 @@ public class EchoAbility extends Ability {
                 }
 
             }
-        }.runTaskTimer(context.plugin(), 0L, 1L);
+        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     private static class Flame {
