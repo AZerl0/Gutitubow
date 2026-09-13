@@ -58,7 +58,7 @@ public class GravityHole extends GutitubowEntity {
     @Override
     protected void summon(Location location) {
         uuid = UUID.randomUUID();
-        life = 4 * 20;
+        life = 3 * 20;
         isSmall = true;
         direction = location.getDirection();
         updateTask = new BukkitRunnable() {
