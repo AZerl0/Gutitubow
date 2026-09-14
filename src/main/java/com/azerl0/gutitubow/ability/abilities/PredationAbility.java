@@ -29,7 +29,7 @@ public class PredationAbility extends Ability {
         super.reset();
         Player player = getPlayer();
         if (player == null) return;
-        double maxHealth = context.game().isStarted() ? 6 : 20;
+        double maxHealth = context.game().isStarted() ? context.game().getGameSetting().getDefaultHealth() : 20;
         Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(maxHealth);
     }
 
