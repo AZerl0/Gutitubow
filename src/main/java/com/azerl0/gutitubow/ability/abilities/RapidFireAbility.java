@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
@@ -90,6 +91,11 @@ public class RapidFireAbility extends Ability {
             event.setCancelled(true);
             startRapidFire();
         }
+    }
+
+    @Override
+    public void onDeath(GamePlayerDeathEvent event) {
+        stopRapidFire();
     }
 
     private void startRapidFire() {
