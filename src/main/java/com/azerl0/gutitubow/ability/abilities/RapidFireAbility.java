@@ -61,6 +61,7 @@ public class RapidFireAbility extends Ability {
     public void onSneaking(GamePlayerSneakingEvent event) {
         Player player = event.getPlayer();
         if (player.hasCooldown(Material.BOW)) return;
+        if (player.getGameMode() == GameMode.SPECTATOR) return;
 
         rapidFireCharge++;
         rapidFireCharge = Math.min(rapidFireCharge, getRapidFireLevel() * RAPID_FIRE_MAX_CHARGE);
