@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.GutitubowEntityManager;
 import com.azerl0.gutitubow.entity.GutitubowEntityType;
+import com.azerl0.gutitubow.util.EntityUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -122,6 +123,7 @@ public class GravityHole extends GutitubowEntity {
 
         } else {
             getNearEntity(entity -> {
+                if (EntityUtil.isInvalidHitEntity(entity)) return;
                 Vector sub = location.clone().subtract(entity.getLocation()).toVector().normalize().multiply(0.25);
                 entity.setVelocity(entity.getVelocity().add(sub));
             });
