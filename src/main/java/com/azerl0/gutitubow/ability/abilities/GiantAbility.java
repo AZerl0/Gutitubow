@@ -68,6 +68,7 @@ public class GiantAbility extends Ability {
                 activateGiant();
             } else {
                 Player player = getPlayer();
+                if (player == null) return;
                 Component subtitle = ComponentUtil.getGaugeComponent(
                         Component.text("巨体化チャージ中... ").color(NamedTextColor.GRAY),
                         toGiantProcessTick,
