@@ -163,6 +163,7 @@ public class GiantAbility extends Ability {
         player.removePotionEffect(PotionEffectType.SPEED);
         player.removePotionEffect(PotionEffectType.JUMP_BOOST);
         player.removePotionEffect(PotionEffectType.ABSORPTION);
+        player.setAbsorptionAmount(0.0);
         if (giantTask != null) giantTask.cancel();
         giantTask = null;
     }
