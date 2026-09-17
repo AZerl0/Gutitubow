@@ -2,6 +2,10 @@ package com.azerl0.gutitubow.ability;
 
 
 import com.azerl0.gutitubow.event.gameplayer.*;
+import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldBreakEvent;
+import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldLowerEvent;
+import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldRaiseEvent;
+import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldRaisingEvent;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -155,4 +159,12 @@ public abstract class Ability {
     public void onClick(InventoryClickEvent event) {}
 
     public void onWin(GamePlayerWinEvent event) {}
+
+    public void onShieldRaise(ShieldRaiseEvent event) {}
+
+    public void onShieldRaising(ShieldRaisingEvent event) {}
+
+    public void onShieldLower(ShieldLowerEvent event) {}
+
+    public void onShieldBreak(ShieldBreakEvent event) {}
 }

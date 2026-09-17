@@ -5,6 +5,8 @@ import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.damage.DamageSource;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
+import com.azerl0.gutitubow.entity.GutitubowEntity;
+import com.azerl0.gutitubow.entity.shield.Shield;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
@@ -25,7 +27,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.UUID;
+import java.util.Optional;
 
 public class SnipeAbility extends Ability {
     private final GlassBreakManager breakManager;
@@ -79,20 +81,18 @@ public class SnipeAbility extends Ability {
                 entity -> {
                     if (entity instanceof Player hitPlayer) {
                         return !context.game().isTeammate(player, hitPlayer);
-                    } else if (entity instanceof ArmorStand armorStand && armorStand.getScoreboardTags().contains("gutitubow.shieldEntity")) {
-                        ShieldAbility.Shield shield = context.game().getAbilityManager().getShield(armorStand);
-                        if (shield != null) {
-                            UUID shieldOwnerUUID = shield.getOwnerUUID();
-                            if (context.game().isTeammate(playerUUID, shieldOwnerUUID)) return false;
+                    } else if (entity instanceof ArmorStand armorStand) {
+                        Optional<GutitubowEntity> gutitubowEntity = context.gutitubow().getGutitubowEntityManager().getGutitubowEntity(armorStand);
+                        if (gutitubowEntity.isPresent() && gutitubowEntity.get() instanceof Shield shield) {
+                            if (context.game().isTeammate(playerUUID, shield.getOwnerUUID())) return false;
                             double distance = start.distance(armorStand.getLocation());
-                            if (distance > 36.0) {
-                                shield.breakShield();
+                            if (distance >= 36.0) {
+                                shield.shieldBreak();
                                 return false;
                             } else {
                                 if (!failed[0]) {
                                     failed[0] = true;
                                     player.sendMessage(getSnipeMessage(true, distance));
-                                    return true;
                                 }
                                 return true;
                             }

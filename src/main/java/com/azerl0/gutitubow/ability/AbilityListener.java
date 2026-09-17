@@ -1,6 +1,10 @@
 package com.azerl0.gutitubow.ability;
 
 import com.azerl0.gutitubow.event.gameplayer.*;
+import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldBreakEvent;
+import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldLowerEvent;
+import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldRaiseEvent;
+import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldRaisingEvent;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import org.bukkit.Material;
 import org.bukkit.damage.DamageType;
@@ -196,5 +200,41 @@ public class AbilityListener implements Listener {
         Ability ability = abilityManager.getAbility(event.getPlayer());
         if (ability != null) ability.onWin(event);
 
+    }
+
+    @EventHandler
+    public void onShieldRaise(ShieldRaiseEvent event) {
+        Player owner = event.getShield().getOwner();
+        if (owner != null) {
+            Ability ability = abilityManager.getAbility(owner);
+            if (ability != null) ability.onShieldRaise(event);
+        }
+    }
+
+    @EventHandler
+    public void onShieldRaising(ShieldRaisingEvent event) {
+        Player owner = event.getShield().getOwner();
+        if (owner != null) {
+            Ability ability = abilityManager.getAbility(owner);
+            if (ability != null) ability.onShieldRaising(event);
+        }
+    }
+
+    @EventHandler
+    public void onShieldLower(ShieldLowerEvent event) {
+        Player owner = event.getShield().getOwner();
+        if (owner != null) {
+            Ability ability = abilityManager.getAbility(owner);
+            if (ability != null) ability.onShieldLower(event);
+        }
+    }
+
+    @EventHandler
+    public void onShieldBreak(ShieldBreakEvent event) {
+        Player owner = event.getShield().getOwner();
+        if (owner != null) {
+            Ability ability = abilityManager.getAbility(owner);
+            if (ability != null) ability.onShieldBreak(event);
+        }
     }
 }
