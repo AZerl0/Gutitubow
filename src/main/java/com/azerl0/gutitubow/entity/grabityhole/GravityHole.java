@@ -124,7 +124,7 @@ public class GravityHole extends GutitubowEntity {
         } else {
             getNearEntity(entity -> {
                 if (EntityUtil.isInvalidHitEntity(entity)) return;
-                Vector sub = location.clone().subtract(entity.getLocation()).toVector().normalize().multiply(0.25);
+                Vector sub = location.clone().subtract(entity.getLocation()).toVector().normalize().multiply(0.015);
                 entity.setVelocity(entity.getVelocity().add(sub));
             });
             for (GravityEffect effect : effects) {
