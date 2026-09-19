@@ -12,6 +12,7 @@ public class GameSetting {
     private GutitubowGameMode gameMode = GutitubowGameMode.SOLO;
     private double defaultHealth = 6;
     private int phase0seconds = 15;
+    private int carePackageAmount = 3;
     private Set<AbilityType> disabledAbilities = new HashSet<>();
     private final GameEventController gameEventController = new GameEventController();
 
@@ -44,6 +45,14 @@ public class GameSetting {
 
     public void setPhase0seconds(int seconds) {
         this.phase0seconds = seconds;
+    }
+
+    public int getCarePackageAmount() {
+        return carePackageAmount;
+    }
+
+    public void setCarePackageAmount(int carePackageAmount) {
+        this.carePackageAmount = carePackageAmount;
     }
 
     public @NotNull Set<AbilityType> getDisabledAbilities() {

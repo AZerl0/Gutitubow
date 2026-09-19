@@ -399,13 +399,13 @@ public class Game {
         switch (phase) {
             case (1):
                 if (this.currentTicks == 0 || this.currentTicks == 60 * 20 || this.currentTicks == 120 * 20) {
-                    this.randomCarePackageSpawn(random.nextInt(2, 4), true);
+                    randomCarePackageSpawn(gameSetting.getCarePackageAmount(), true);
                 }
                 break;
             case (2):
             case (3):
                 if (this.currentTicks == 0 || this.currentTicks == 60 * 20) {
-                    this.randomCarePackageSpawn(random.nextInt(2, 4), true);
+                    randomCarePackageSpawn(gameSetting.getCarePackageAmount(), true);
                 }
                 break;
         }
@@ -538,15 +538,13 @@ public class Game {
 
     private void randomCarePackageSpawn(int count, boolean showLog) {
         if (showLog) {
-            for (World world : Bukkit.getWorlds()) {
-                for (Player player : world.getEntitiesByClass(Player.class)) {
-                    player.sendMessage(Component.empty());
-                    player.sendMessage(Component.text("[!] ケアパッケージが投下されました！").color(NamedTextColor.RED));
-                    player.sendMessage(Component.empty());
-                    NamespacedKey recipeKey = new NamespacedKey("minecraft", "chest");
-                    player.undiscoverRecipe(recipeKey);
-                    player.discoverRecipe(recipeKey);
-                }
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.sendMessage(Component.empty());
+                player.sendMessage(Component.text("[!] ケアパッケージが投下されました！").color(NamedTextColor.RED));
+                player.sendMessage(Component.empty());
+                NamespacedKey recipeKey = new NamespacedKey("minecraft", "chest");
+                player.undiscoverRecipe(recipeKey);
+                player.discoverRecipe(recipeKey);
             }
         }
         for (int i = 0; i < count; i++) {
