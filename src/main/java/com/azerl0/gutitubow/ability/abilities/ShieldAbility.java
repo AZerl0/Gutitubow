@@ -78,12 +78,11 @@ public class ShieldAbility extends Ability {
 
     @Override
     public void onShieldLower(ShieldLowerEvent event) {
-        if (event.getShield() == shield) {
-            Player player = getPlayer();
-            if (player != null) player.setCooldown(Material.BOW, 20);
-            setCompassCooldown(20);
-            startCompassCooldownTask();
-        }
+        Player player = getPlayer();
+        if (player == null) return;
+        player.setCooldown(Material.BOW, 20);
+        setCompassCooldown(20);
+        startCompassCooldownTask();
     }
 
     @Override
