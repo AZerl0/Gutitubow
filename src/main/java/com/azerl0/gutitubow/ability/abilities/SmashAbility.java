@@ -247,7 +247,7 @@ public class SmashAbility extends Ability {
                 return;
             }
 
-            if (target == null || !target.isOnline() || !isPinch(target) || player.getGameMode() == GameMode.SPECTATOR) {
+            if (target == null || !target.isOnline() || !isPinch(target) || player.getGameMode() == GameMode.SPECTATOR || target.getGameMode() == GameMode.SPECTATOR) {
                 this.remove();
                 return;
             }
@@ -298,7 +298,5 @@ public class SmashAbility extends Ability {
             User user = PacketEvents.getAPI().getPlayerManager().getUser(player);
             user.sendPacket(textPacket);
         }
-
     }
-
 }
