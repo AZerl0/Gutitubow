@@ -187,7 +187,7 @@ public class MedusaAbility extends Ability {
         context.glowManager().setGlowColor(player, target, NamedTextColor.DARK_PURPLE);
         context.glowManager().addGlow(player, target);
         lookingPlayers.put(target, lookingTime);
-        PotionEffect slowness = new PotionEffect(PotionEffectType.SLOWNESS, 10, 1, true, true, true);
+        PotionEffect slowness = new PotionEffect(PotionEffectType.SLOWNESS, 10, 0, true, true, true);
         target.addPotionEffect(slowness);
 
         Title title = Title.title(
