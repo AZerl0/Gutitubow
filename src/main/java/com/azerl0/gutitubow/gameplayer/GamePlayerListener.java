@@ -89,13 +89,12 @@ public class GamePlayerListener implements Listener {
 
         double distance = shooter.getLocation().distance(tar.getLocation());
 
-        DamageSource damageSource = DamageSource.builder()
-                .damageType(GutitubowDamageType.ARROW_SHOT)
+        DamageSource damageSource = DamageSource.builder(GutitubowDamageType.ARROW_SHOT)
                 .directPlayer(shooterPlayer)
                 .damageLocation(event.getEntity().getLocation())
                 .distance(distance)
                 .build();
-        this.game.getGamePlayer(tarPlayer).damage(tarPlayer, 2, damageSource, true);
+        game.getGamePlayer(tarPlayer).damage(damageSource, 2);
 
         event.setCancelled(true);
         event.getEntity().remove();

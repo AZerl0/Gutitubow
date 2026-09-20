@@ -54,7 +54,7 @@ public class LastStandAbility extends Ability {
         if (!isActive() && event.getDamageSource().getDamageType() != GutitubowDamageType.FAILED_LAST_STAND) {
             event.setCancelled(true);
             double absorptionAmount = context.game().getGameSetting().getDefaultHealth() - 2;
-            Entity attacker = event.getDamageSource().getDirectPlayer();
+            Player attacker = event.getDamageSource().getDirectPlayer();
             if (attacker instanceof Player attackPlayer) {
                 absorptionAmount = Objects.requireNonNull(attackPlayer.getAttribute(Attribute.MAX_HEALTH)).getValue() + attackPlayer.getAbsorptionAmount();
             }
@@ -147,8 +147,8 @@ public class LastStandAbility extends Ability {
         if (lastStandRemainedTick <= 0) {
             stopLastStand();
             GamePlayer gamePlayer = context.game().getGamePlayer(player);
-            DamageSource damageSource = DamageSource.builder().damageType(GutitubowDamageType.FAILED_LAST_STAND).build();
-            gamePlayer.death(player, damageSource, false);
+            DamageSource damageSource = DamageSource.builder(GutitubowDamageType.FAILED_LAST_STAND).build();
+            gamePlayer.damage(damageSource, 255);
         } else {
             World world = player.getWorld();
             Location location = player.getLocation();

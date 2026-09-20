@@ -146,11 +146,11 @@ public abstract class Ability {
 
     public void onAttack(EntityDamageByEntityEvent event) {}
 
-    public void onAnyPlayerDamage(GamePlayerDamageEvent event) {}
+    public void onAnyPlayerDamage(GamePlayerPreDamageEvent event) {}
 
-    public void onDamage(GamePlayerDamageEvent event) {}
+    public void onDamage(GamePlayerPreDamageEvent event) {}
 
-    public void onDealDamage(GamePlayerDamageEvent event) {}
+    public void onDealDamage(GamePlayerPreDamageEvent event) {}
 
     public void onKill(GamePlayerKillEvent event) {}
 

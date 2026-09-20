@@ -3,7 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreDamageEvent;
 import com.azerl0.gutitubow.util.MathUtil;
 import com.azerl0.gutitubow.util.PlayerUtil;
 import net.kyori.adventure.text.Component;
@@ -105,7 +105,7 @@ public class MedusaAbility extends Ability {
     }
 
     @Override
-    public void onAnyPlayerDamage(GamePlayerDamageEvent event) {
+    public void onAnyPlayerDamage(GamePlayerPreDamageEvent event) {
         if (petrificationPlayers.contains(event.getPlayer())) {
             Location location = event.getDamageSource().getDamageLocation();
             if (location != null) {

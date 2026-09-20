@@ -82,14 +82,13 @@ public class RicochetAbility extends Ability {
                 if (context.game().getPhase() == 0 && context.game().isStarted()) continue;
 
                 if (!damagePlayer.getUniqueId().equals(shooterPlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damagePlayer)) {
-                    DamageSource damageSource = DamageSource.builder()
-                            .damageType(GutitubowDamageType.RICOCHET_BLAST)
+                    DamageSource damageSource = DamageSource.builder(GutitubowDamageType.RICOCHET_BLAST)
                             .directPlayer(shooterPlayer)
                             .damageLocation(MathUtil.rayTraceEntityHit(loc, damagePlayer))
                             .distance(shooterPlayer.getLocation()
                                     .distance(damagePlayer.getLocation()))
                             .build();
-                    gamePlayer.damage(damagePlayer, 0.5, damageSource, true);
+                    gamePlayer.damage(damageSource, 0.5);
                     setRicochetDamageCount(arrow, ricochetDamageCount + 1);
                 }
             }

@@ -4,7 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreDamageEvent;
 import com.azerl0.gutitubow.util.ComponentUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -54,7 +54,7 @@ public class ToughAbility extends Ability {
     }
 
     @Override
-    public void onDamage(GamePlayerDamageEvent event) {
+    public void onDamage(GamePlayerPreDamageEvent event) {
         Player player = getPlayer();
         GutitubowDamageType damageType = event.getDamageSource().getDamageType();
         Set<GutitubowDamageType> cantCancelDamage = Set.of(GutitubowDamageType.OUTSIDE_BORDER);

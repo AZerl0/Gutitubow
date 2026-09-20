@@ -56,7 +56,10 @@ public class GamePlayerCommand {
                                                 .then(argument("damageType", new GameDamageTypeArgument())
                                                         .executes(GamePlayerCommand::damage)
                                                         .then(argument("delay", LongArgumentType.longArg(0))
-                                                                .executes(GamePlayerCommand::damage))))))
+                                                                .executes(GamePlayerCommand::damage)
+                                                                .then(argument("attacker", ArgumentTypes.players())
+                                                                        .executes(GamePlayerCommand::damage))
+                                                        )))))
                         .then(literal("revive")
                                 .then(argument("target", ArgumentTypes.player())
                                         .executes(GamePlayerCommand::revive)
@@ -95,11 +98,6 @@ public class GamePlayerCommand {
 
     private static Player senderPlayer(CommandSender sender) {
         return sender instanceof Player player ? player : null;
-    }
-
-    private static Player resolveTarget(Player sender, String targetName) {
-        if ("@s".equals(targetName)) return sender;
-        return Bukkit.getPlayer(targetName);
     }
 
     private static int dataGet(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -228,6 +226,7 @@ public class GamePlayerCommand {
         double amount = DoubleArgumentType.getDouble(context, "amount");
         final PlayerSelectorArgumentResolver targetResolver = context.getArgument("target", PlayerSelectorArgumentResolver.class);
         final Player target = targetResolver.resolve(context.getSource()).getFirst();
+        Player attacker;
         GutitubowDamageType damageType;
         try {
             damageType = context.getArgument("damageType", GutitubowDamageType.class);
@@ -240,14 +239,21 @@ public class GamePlayerCommand {
         } catch (Exception e) {
             delay = 0;
         }
+        try {
+            PlayerSelectorArgumentResolver attackerResolver = context.getArgument("attacker", PlayerSelectorArgumentResolver.class);
+             attacker = attackerResolver.resolve(context.getSource()).getFirst();
+        } catch (Exception e) {
+            attacker = null;
+        }
 
 
         Player player = senderPlayer(sender);
         if (player == null) return 0;
         GutitubowDamageType finalDamageType = damageType;
+        Player finalAttacker = attacker;
         Bukkit.getScheduler().runTaskLater(getPlugin(), () -> {
-            DamageSource damageSource = DamageSource.builder().damageType(finalDamageType).build();
-            getGame().getGamePlayer(target).damage(target, amount, damageSource);
+            DamageSource damageSource = DamageSource.builder(finalDamageType).directPlayer(finalAttacker).build();
+            getGame().getGamePlayer(target).damage(damageSource, amount);
         }, delay * 20);
         return com.mojang.brigadier.Command.SINGLE_SUCCESS;
     }

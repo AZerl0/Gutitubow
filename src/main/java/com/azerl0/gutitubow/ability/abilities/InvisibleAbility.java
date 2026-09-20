@@ -4,7 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreDamageEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
@@ -115,12 +115,12 @@ public class InvisibleAbility extends Ability {
     }
 
     @Override
-    public void onDamage(GamePlayerDamageEvent event) {
+    public void onDamage(GamePlayerPreDamageEvent event) {
         if (event.getDamageSource().getDirectPlayer() != null || event.getDamageSource().getDamageType() == GutitubowDamageType.UNKNOWN) stopInvisible();
     }
 
     @Override
-    public void onDealDamage(GamePlayerDamageEvent event) {
+    public void onDealDamage(GamePlayerPreDamageEvent event) {
         if (event.isCancelled()) return;
         startInvisible();
     }

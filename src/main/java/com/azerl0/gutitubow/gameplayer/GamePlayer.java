@@ -4,10 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.data.damage.DamageSource;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
+import com.azerl0.gutitubow.event.gameplayer.*;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.scoreboard.PlayerBoard;
@@ -105,7 +102,7 @@ public class GamePlayer {
 
     @Nullable
     public GameTeam getTeam() {
-        return game.getTeamManager().getPlayerTeam(getPlayer());
+        return game.getTeamManager().getPlayerTeam(playerUUID);
     }
 
     public boolean isDead() {
@@ -143,8 +140,8 @@ public class GamePlayer {
                         int damageCount = 10;
                         if (game.getPhase() == 7) damageCount = 2;
                         if (borderOutsideTick % (damageCount * borderOutsideDamageTick) == 0) {
-                            DamageSource damageSource = DamageSource.builder().damageType(GutitubowDamageType.OUTSIDE_BORDER).build();
-                            damage(getPlayer(), 1, damageSource);
+                            DamageSource damageSource = DamageSource.builder(GutitubowDamageType.OUTSIDE_BORDER).build();
+                            damage(damageSource, 1);
                         } else {
                             getPlayer().playHurtAnimation(0.0f);
                             world.playSound(getPlayer().getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0f, 1.0f);
@@ -692,12 +689,25 @@ public class GamePlayer {
     }
 
 
-    public void damage(@NotNull Player player, double amount, DamageSource damageSource, boolean canUpgrade) {
-        Player attacker = damageSource.getDirectPlayer();
-        Component distanceSuffix = Component.text("§r§6(" + Math.floor(damageSource.getDistance() * 10) / 10 + "m)");
-        Component hitMessage = Component.text("§cHIT §6§bᐅ §f" + player.getName()).append(distanceSuffix).color(NamedTextColor.LIGHT_PURPLE);
+    public void damage(final @NotNull DamageSource damageSource, double amount) {
+        Player player = getPlayer();
+        if (player == null) return;
 
-        GamePlayerDamageEvent event = new GamePlayerDamageEvent(
+        Player attacker = damageSource.getDirectPlayer();
+
+        if (attacker != null) {
+            GutitubowGameMode gameMode = game.getGameSetting().getGameMode();
+            if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
+                if (game.isTeammate(player, attacker)) {
+                    return;
+                }
+            }
+        }
+
+        Component distanceSuffix = Component.text("§r§6(" + Math.floor(damageSource.getDistance() * 10) / 10 + "m)");
+        Component hitMessage = Component.text("§cHIT §6§bᐅ §f" + player.displayName()).append(distanceSuffix).color(NamedTextColor.LIGHT_PURPLE);
+
+        GamePlayerPreDamageEvent event = new GamePlayerPreDamageEvent(
                 player,
                 amount,
                 damageSource,
@@ -707,75 +717,72 @@ public class GamePlayer {
         if (event.isCancelled()) return;
 
         double newAmount = event.getAmount();
-        if (attacker != null) {
-            GamePlayer gamePlayer = game.getGamePlayer(attacker);
-            GutitubowGameMode gameMode = game.getGameSetting().getGameMode();
-            if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
-                if (game.isTeammate(player, attacker)) {
-                    return;
-                }
-            }
-            if (canUpgrade) {
-                gamePlayer.setTotalHit(gamePlayer.getTotalHit() + 1);
-                if (gamePlayer.getTotalHit() % 2 == 0) {
-                    Random random = new Random();
-                    if (random.nextBoolean()) {
-                        if (!gamePlayer.upgradeArrowReloadTick()) {
-                            gamePlayer.upgradeMaxArrowStackSize();
-                        }
-                    } else {
-                        if (!gamePlayer.upgradeMaxArrowStackSize()) {
-                            gamePlayer.upgradeArrowReloadTick();
-                        }
-                    }
-                }
-            }
-            attacker.playSound(attacker, Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 1.0f);
-            if (event.getHitMessage() != null) {
-                Title title = Title.title(
-                        Component.empty(),
-                        event.getHitMessage(),
-                        Title.Times.times(
-                                java.time.Duration.ofMillis(100),
-                                java.time.Duration.ofMillis(1250),
-                                java.time.Duration.ofMillis(500)
-                        )
-                );
-                attacker.showTitle(title);
-            }
-        }
 
         if (player.getHealth() + player.getAbsorptionAmount() <= newAmount) {
-            this.kill(player, damageSource.getDirectPlayer(), damageSource.getDistance(), damageSource);
+            GamePlayerDeathEvent deathEvent = new GamePlayerDeathEvent(player, damageSource);
+            Bukkit.getPluginManager().callEvent(deathEvent);
+            if (deathEvent.isCancelled()) return;
+
+            onDeath();
+            if (attacker != null) {
+                GamePlayer attackerGamePlayer = getGame().getGamePlayer(attacker);
+                attackerGamePlayer.onKill(player, damageSource);
+            }
 
         } else {
             player.damage(newAmount);
-            if (attacker != null) LogManager.broadcastHitLog(attacker, player, damageSource.getDistance());
+            GamePlayerDamageEvent damageEvent = new GamePlayerDamageEvent(player, newAmount, damageSource,  event.getHitMessage());
+            Bukkit.getPluginManager().callEvent(damageEvent);
+            if (attacker != null) {
+                GamePlayer attackerGamePlayer = getGame().getGamePlayer(attacker);
+                attackerGamePlayer.onDealDamage(event);
+
+            }
         }
     }
 
-    public void damage(Player player, double amount, DamageSource damageSource) {
+    private void onDealDamage(GamePlayerPreDamageEvent event) {
+        Player player = getPlayer();
+        if (player == null) return;
 
-        GamePlayerDamageEvent event = new GamePlayerDamageEvent(player, amount, damageSource);
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) return;
+        setTotalHit(getTotalHit() + 1);
+        if (getTotalHit() % 2 == 0) {
+            Random random = new Random();
+            if (random.nextBoolean()) {
+                if (!upgradeArrowReloadTick()) {
+                    upgradeMaxArrowStackSize();
+                }
+            } else {
+                if (!upgradeMaxArrowStackSize()) {
+                    upgradeArrowReloadTick();
+                }
+            }
+        }
 
-        if (player.getHealth() + player.getAbsorptionAmount() <= event.getAmount()) {
-            this.death(event.getPlayer(), damageSource, false);
-
-        } else {
-            player.damage(event.getAmount());
+        player.playSound(player, Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 1.0f);
+        if (event.getHitMessage() != null) {
+            Title title = Title.title(
+                    Component.empty(),
+                    event.getHitMessage(),
+                    Title.Times.times(
+                            java.time.Duration.ofMillis(100),
+                            java.time.Duration.ofMillis(1250),
+                            java.time.Duration.ofMillis(500)
+                    )
+            );
+            player.showTitle(title);
         }
     }
 
-    public void kill(Player player, Player attacker, double distance, DamageSource damageSource) {
-        GamePlayerKillEvent event = new GamePlayerKillEvent(attacker, player, Component.text("You killed it!").color(NamedTextColor.DARK_RED).decoration(TextDecoration.BOLD, true));
-        Bukkit.getPluginManager().callEvent(event);
-        if (!death(player, damageSource, true)) return;
+    private void onKill(Player target, DamageSource damageSource) {
+        Player player = getPlayer();
+        if (player == null) return;
 
-        GamePlayer gamePlayer = game.getGamePlayer(attacker);
-        gamePlayer.setTotalKill(gamePlayer.getTotalKill() + 1);
-        LogManager.broadcastKillLog(attacker, player, distance);
+        GamePlayerKillEvent event = new GamePlayerKillEvent(player, target, Component.text("You killed it!").color(NamedTextColor.DARK_RED).decoration(TextDecoration.BOLD, true));
+        Bukkit.getPluginManager().callEvent(event);
+//        if (!death(target, damageSource, true)) return;
+
+        setTotalKill(getTotalKill() + 1);
         Component subtitle = event.getKillMessage();
         Title title = Title.title(
                 Component.empty(),
@@ -786,24 +793,19 @@ public class GamePlayer {
                         java.time.Duration.ofMillis(500)
                 )
         );
-        attacker.showTitle(title);
+        player.showTitle(title);
     }
 
-    public boolean death(Player player, DamageSource damageSource, boolean hideLog) {
-        GamePlayerDeathEvent event = new GamePlayerDeathEvent(
-                player,
-                damageSource,
-                Component.text("You Died!").color(NamedTextColor.RED)
-        );
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) return false;
+    private void onDeath() {
+        Player player = getPlayer();
+        if (player == null) return;
 
         World world = player.getWorld();
         Location location = player.getLocation();
         world.spawnParticle(Particle.EXPLOSION_EMITTER, location, 3);
         world.strikeLightningEffect(location);
         Title title = Title.title(
-                event.getDeathMessage(),
+                Component.text("You Died!").color(NamedTextColor.RED),
                 Component.empty(),
                 Title.Times.times(
                         java.time.Duration.ofMillis(500),
@@ -868,20 +870,7 @@ public class GamePlayer {
             double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getBaseValue();
             player.setHealth(maxHealth);
         }
-        if (!hideLog) {
-            GutitubowDamageType damageType = damageSource.getDamageType();
-            Component suffix =
-                    switch (damageType) {
-                        case OUTSIDE_BORDER -> Component.text(" (エリア外)").color(NamedTextColor.GRAY);
-                        case FAILED_LAST_STAND -> Component.text(" (背水の陣失敗)").color(NamedTextColor.GRAY);
-                        default -> Component.empty();
-                    };
-            if (damageType == GutitubowDamageType.OUTSIDE_BORDER || damageType == GutitubowDamageType.FAILED_LAST_STAND) {
-                LogManager.broadcastDeathLog(player, suffix);
-            }
-        }
         if (game.isStarted()) game.checkGameOver();
-        return true;
     }
 
     public void revive(Player reviver) {

@@ -25,11 +25,6 @@ public class BomboEvent extends GameEvent {
     }
 
     @Override
-    public boolean canActivate() {
-        return true;
-    }
-
-    @Override
     protected void onActivate() {
 
     }
@@ -52,13 +47,12 @@ public class BomboEvent extends GameEvent {
                 if (EntityUtil.isInvalidHitEntity(nearPlayer)) continue;
 
                 GamePlayer damageGamePlayer = game.getGamePlayer(nearPlayer);
-                DamageSource damageSource = DamageSource.builder()
-                        .damageType(GutitubowDamageType.BOMB_BLAST)
+                DamageSource damageSource = DamageSource.builder(GutitubowDamageType.BOMB_BLAST)
                         .directPlayer(shooter)
                         .damageLocation(MathUtil.rayTraceEntityHit(hitLocation, nearPlayer))
                         .distance(hitLocation.distance(nearPlayer.getLocation()))
                         .build();
-                damageGamePlayer.damage(nearPlayer, 0.5, damageSource, true);
+                damageGamePlayer.damage(damageSource, 0.5);
             }
             World world = hitLocation.getWorld();
             

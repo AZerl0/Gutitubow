@@ -6,7 +6,7 @@ import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.damage.DamageSource;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreDamageEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.MathUtil;
 import com.github.retrooper.packetevents.PacketEvents;
@@ -53,7 +53,7 @@ public class SmashAbility extends Ability {
     }
 
     @Override
-    public void onAnyPlayerDamage(GamePlayerDamageEvent event) {
+    public void onAnyPlayerDamage(GamePlayerPreDamageEvent event) {
         if (event.isCancelled()) return;
 
         Player hitPlayer = event.getPlayer();
@@ -93,14 +93,13 @@ public class SmashAbility extends Ability {
 
         if (target.getGameMode() == GameMode.SPECTATOR) return;
 
-        DamageSource damageSource = DamageSource.builder()
-                .damageType(GutitubowDamageType.ARROW_SHOT)
+        DamageSource damageSource = DamageSource.builder(GutitubowDamageType.ARROW_SHOT)
                 .directPlayer(player)
                 .damageLocation(target.getEyeLocation())
                 .distance(player.getLocation().distance(target.getLocation()))
                 .build();
         GamePlayer gamePlayer = context.game().getGamePlayer(target);
-        gamePlayer.damage(target, 255, damageSource, true);
+        gamePlayer.damage(damageSource, 255);
         spawnParticleLine(
                 target.getWorld(),
                 player.getEyeLocation(),

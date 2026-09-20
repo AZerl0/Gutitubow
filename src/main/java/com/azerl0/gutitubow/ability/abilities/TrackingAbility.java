@@ -3,7 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreDamageEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -52,7 +52,7 @@ public class TrackingAbility extends Ability {
     }
 
     @Override
-    public void onDealDamage(GamePlayerDamageEvent event) {
+    public void onDealDamage(GamePlayerPreDamageEvent event) {
         Player hitPlayer = event.getPlayer();
         if (!isTracking(hitPlayer)) {
             newTrackingPlayer(hitPlayer);

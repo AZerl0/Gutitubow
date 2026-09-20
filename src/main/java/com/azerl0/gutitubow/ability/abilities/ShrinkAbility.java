@@ -4,7 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreDamageEvent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
@@ -49,12 +49,12 @@ public class ShrinkAbility extends Ability {
     }
 
     @Override
-    public void onDealDamage(GamePlayerDamageEvent event) {
+    public void onDealDamage(GamePlayerPreDamageEvent event) {
         if (isShrinking()) event.setAmount(event.getAmount() / 2);
     }
 
     @Override
-    public void onDamage(GamePlayerDamageEvent event) {
+    public void onDamage(GamePlayerPreDamageEvent event) {
         GutitubowDamageType type = event.getDamageSource().getDamageType();
         Set<GutitubowDamageType> canShrinkDamageTypes = Set.of(
                 GutitubowDamageType.ARROW_SHOT,

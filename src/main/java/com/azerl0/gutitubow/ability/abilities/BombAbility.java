@@ -76,13 +76,12 @@ public class BombAbility extends Ability {
             if (context.game().getPhase() == 0 && context.game().isStarted()) continue;
 
             if (!shooter.getUniqueId().equals(damagePlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damagePlayer)) {
-                DamageSource damageSource = DamageSource.builder()
-                        .damageType(GutitubowDamageType.BOMB_BLAST)
+                DamageSource damageSource = DamageSource.builder(GutitubowDamageType.BOMB_BLAST)
                         .directPlayer(shooter)
                         .damageLocation(MathUtil.rayTraceEntityHit(loc, damagePlayer))
                         .distance(loc.distance(damagePlayer.getLocation()))
                         .build();
-                gamePlayer.damage(damagePlayer, 0.5, damageSource, true);
+                gamePlayer.damage(damageSource, 0.5);
             }
         }
         arrow.getWorld().spawnParticle(

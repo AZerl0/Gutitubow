@@ -7,5 +7,6 @@ public enum GutitubowDamageType {
     SNIPE,
     FAILED_LAST_STAND,
     OUTSIDE_BORDER,
+    FAKE_CAREPACKAGE,
     UNKNOWN
 }

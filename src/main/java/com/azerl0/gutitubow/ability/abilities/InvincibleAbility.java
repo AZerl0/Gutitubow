@@ -4,7 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerDamageEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreDamageEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.util.ComponentUtil;
 import com.azerl0.gutitubow.util.PlayerUtil;
@@ -125,7 +125,7 @@ public class InvincibleAbility extends Ability {
     }
 
     @Override
-    public void onDamage(GamePlayerDamageEvent event) {
+    public void onDamage(GamePlayerPreDamageEvent event) {
         GutitubowDamageType damageType = event.getDamageSource().getDamageType();
         Set<GutitubowDamageType> canBlockDamage = Set.of(
                 GutitubowDamageType.ARROW_SHOT,

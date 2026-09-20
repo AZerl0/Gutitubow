@@ -11,7 +11,7 @@ public class DamageSource {
     private final @Nullable Location damageLocation;
     private final double distance;
 
-    public DamageSource(GutitubowDamageType damageType, Player directPlayer, @Nullable Location damageLocation, double distance) {
+    public DamageSource(final @NotNull GutitubowDamageType damageType, Player directPlayer, @Nullable Location damageLocation, double distance) {
         this.damageType = damageType;
         this.directPlayer = directPlayer;
         this.damageLocation = damageLocation;
@@ -19,19 +19,16 @@ public class DamageSource {
     }
 
     public static class DamageSourceBuilder {
-        private GutitubowDamageType damageType;
+        private final GutitubowDamageType damageType;
         private Player directPlayer;
         private Location damageLocation;
         private double distance;
 
-        DamageSourceBuilder() {}
-
-        public DamageSourceBuilder damageType(final GutitubowDamageType damageType) {
+        public DamageSourceBuilder(@NotNull GutitubowDamageType damageType) {
             this.damageType = damageType;
-            return this;
         }
 
-        public DamageSourceBuilder directPlayer(final Player directPlayer) {
+        public DamageSourceBuilder directPlayer(@Nullable final Player directPlayer) {
             this.directPlayer = directPlayer;
             return this;
         }
@@ -52,8 +49,8 @@ public class DamageSource {
 
     }
 
-    public static DamageSourceBuilder builder() {
-        return new DamageSourceBuilder();
+    public static DamageSourceBuilder builder(GutitubowDamageType damageType) {
+        return new DamageSourceBuilder(damageType);
     }
 
     public @NotNull GutitubowDamageType getDamageType() {

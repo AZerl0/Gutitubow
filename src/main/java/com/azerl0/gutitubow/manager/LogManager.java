@@ -42,66 +42,6 @@ public class LogManager {
 
     }
 
-    public static void broadcastKillLog(Player shooter, Player target, double distance) {
-
-        Component message =
-                Component.text("")
-                        .append(Component.text("[")
-                                .color(NamedTextColor.WHITE)
-                                .decorate(TextDecoration.BOLD)
-                                .append(
-                                        Component.text("KILL")
-                                                .color(NamedTextColor.DARK_RED)
-                                ).append(
-                                        Component.text("] ")
-                                                .color(NamedTextColor.WHITE)
-                                ).append(
-                                        Component.text(shooter.getName())
-                                                .color(NamedTextColor.WHITE)
-                                                .decoration(TextDecoration.BOLD, false)
-                                ).append(
-                                        Component.text(" ➽ ")
-                                ).append(
-                                        Component.text(target.getName()).color(NamedTextColor.DARK_RED)
-                                                .decoration(TextDecoration.BOLD, false)
-                                ).append(
-                                        Component.text(" (" + Math.floor(distance * 10) / 10 + "m)")
-                                                .color(NamedTextColor.GRAY)
-                                                .decoration(TextDecoration.BOLD, false)
-                                ));
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            player.sendMessage(message);
-        }
-
-    }
-
-    public static void broadcastDeathLog(Player player, Component suffix) {
-
-        Component message =
-                Component.text("")
-                        .append(Component.text("[")
-                                .color(NamedTextColor.WHITE)
-                                .decorate(TextDecoration.BOLD)
-                                .append(
-                                        Component.text("DEATH")
-                                                .color(NamedTextColor.DARK_RED)
-                                ).append(
-                                        Component.text("] ")
-                                                .color(NamedTextColor.WHITE)
-                                ).append(
-                                        Component.text(player.getName())
-                                                .color(NamedTextColor.WHITE)
-                                                .decoration(TextDecoration.BOLD, false)
-                                ).append(
-                                        suffix
-                                ));
-
-        for (Player toPlayer : Bukkit.getOnlinePlayers()) {
-            toPlayer.sendMessage(message);
-        }
-    }
-
     public static void broadcastReviveLog(Player player, Player reviver) {
         Component message =
                 Component.text("§f[§aREVIVE§f] " + reviver.getName() + " §2≫≫≫≫ §a" + player.getName());

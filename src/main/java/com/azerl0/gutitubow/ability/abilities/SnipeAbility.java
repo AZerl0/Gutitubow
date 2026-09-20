@@ -112,8 +112,8 @@ public class SnipeAbility extends Ability {
                 if (!(game.isStarted() && game.getPhase() == 0)) {
                     if (distance > 36.0) {
                         GamePlayer gamePlayer = game.getGamePlayer(hitPlayer);
-                        DamageSource damageSource = DamageSource.builder().damageType(GutitubowDamageType.SNIPE).directPlayer(player).damageLocation(hitPos).distance(distance).build();
-                        gamePlayer.damage(hitPlayer, 2, damageSource, true);
+                        DamageSource damageSource = DamageSource.builder(GutitubowDamageType.SNIPE).directPlayer(player).damageLocation(hitPos).distance(distance).build();
+                        gamePlayer.damage(damageSource, 2);
 
                     } else {
                         player.sendMessage(getSnipeMessage(true, distance));

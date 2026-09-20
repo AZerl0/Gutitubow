@@ -179,17 +179,17 @@ public class ChangeAbility extends Ability {
     }
 
     @Override
-    public void onAnyPlayerDamage(GamePlayerDamageEvent event) {
+    public void onAnyPlayerDamage(GamePlayerPreDamageEvent event) {
         if (currentAbility != null) currentAbility.onAnyPlayerDamage(event);
     }
 
     @Override
-    public void onDamage(GamePlayerDamageEvent event) {
+    public void onDamage(GamePlayerPreDamageEvent event) {
         if (currentAbility != null) currentAbility.onDamage(event);
     }
 
     @Override
-    public void onDealDamage(GamePlayerDamageEvent event) {
+    public void onDealDamage(GamePlayerPreDamageEvent event) {
         if (currentAbility != null) currentAbility.onDealDamage(event);
     }
 

@@ -3,12 +3,14 @@ package com.azerl0.gutitubow.game;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
-import com.azerl0.gutitubow.event.gameplayer.GamePlayerWinEvent;
+import com.azerl0.gutitubow.event.gameplayer.*;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
+import com.azerl0.gutitubow.message.Message;
 import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import de.tr7zw.nbtapi.NBT;
 import net.citizensnpcs.api.CitizensAPI;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -91,6 +93,23 @@ public class GameListener implements Listener {
                     }
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDamage(GamePlayerDamageEvent event) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Component damageMessage = Message.getDamageMessage(event.getPlayer(), event.getDamageSource(), player);
+            if (damageMessage != null) player.sendMessage(damageMessage);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(GamePlayerDeathEvent event) {
+        if (event.isCancelled()) return;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Component damageMessage = Message.getDeathMessage(event.getPlayer(), event.getDamageSource(), player);
+            if (damageMessage != null) player.sendMessage(damageMessage);
         }
     }
 
