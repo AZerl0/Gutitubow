@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.data.damage.DamageSource;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.game.GamePhase;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.gameevent.GameEvent;
 import com.azerl0.gutitubow.gameevent.GameEventType;
@@ -43,7 +44,7 @@ public class BomboEvent extends GameEvent {
             for (Player nearPlayer : hitLocation.getNearbyPlayers(2)) {
 
                 if (game.isTeammate(nearPlayer, shooter)) continue;
-                if (game.getPhase() == 0 && game.isStarted()) continue;
+                if (game.getPhase() == GamePhase.PHASE0 && game.isStarted()) continue;
                 if (EntityUtil.isInvalidHitEntity(nearPlayer)) continue;
 
                 GamePlayer damageGamePlayer = game.getGamePlayer(nearPlayer);

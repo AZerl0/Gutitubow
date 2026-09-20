@@ -26,16 +26,6 @@ public class Map {
         return this.size;
     }
 
-    public Location getRandomXZPosition(double borderOffset) {
-        Random random = new Random();
-
-        double maxSize = size / 2 - borderOffset;
-        double offsetX = random.nextDouble(-maxSize, maxSize);
-        double offsetZ = random.nextDouble(-maxSize, maxSize);
-
-        return this.center.clone().add(offsetX, 0, offsetZ);
-    }
-
     public Location getRandomSafeArea() {
         Random random = new Random();
         Location area = this.center.clone();

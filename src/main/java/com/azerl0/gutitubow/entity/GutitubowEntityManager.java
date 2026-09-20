@@ -45,10 +45,6 @@ public class GutitubowEntityManager {
 
             T gutitubowEntity = constructor.newInstance(this, location);
 
-            if (initializer != null) {
-                initializer.accept(gutitubowEntity);
-            }
-
             gutitubowEntity.summon(location);
 
             UUID gutitubowEntityUUID = gutitubowEntity.getUniqueId();
@@ -57,6 +53,11 @@ public class GutitubowEntityManager {
             for (UUID partEntityUUID : gutitubowEntity.getPartEntitiesUUID()) {
                 gutitubowEntityCash.put(partEntityUUID, gutitubowEntityUUID);
             }
+
+            if (initializer != null) {
+                initializer.accept(gutitubowEntity);
+            }
+
 
             return gutitubowEntity;
 

@@ -38,12 +38,12 @@ public class Message {
         }
 
         GutitubowDamageType damageType = damageSource.getDamageType();
-//        if (damageType == GutitubowDamageType.FAKE_CAREPACKAGE) {
-//            return Component.text("§f§l[§c§lHIT§f§l] §r§f救援物資")
-//                    .append(Component.text(" ➽ "))
-//                    .append(player.displayName().color(playerIsTeammate ? NamedTextColor.RED : NamedTextColor.WHITE))
-//                    .append(getDistanceSuffix(distance));
-//        }
+        if (damageType == GutitubowDamageType.FAKE_CAREPACKAGE) {
+            return Component.text("§f§l[§c§lHIT§f§l] §r§f救援物資")
+                    .append(Component.text(" ➽ "))
+                    .append(player.displayName().color(playerIsTeammate ? NamedTextColor.RED : NamedTextColor.WHITE))
+                    .append(getDistanceSuffix(distance));
+        }
 
         return null;
     }
@@ -68,7 +68,7 @@ public class Message {
         GutitubowDamageType damageType = damageSource.getDamageType();
         Component suffix = null;
         switch (damageType) {
-//            case FAKE_CAREPACKAGE -> suffix = getSimpleSuffix("救援物資", true);
+            case FAKE_CAREPACKAGE -> suffix = getSimpleSuffix("救援物資", true);
             case OUTSIDE_BORDER -> suffix = getSimpleSuffix("エリア外", true);
             case FAILED_LAST_STAND -> suffix = getSimpleSuffix("背水の陣失敗", true);
         }

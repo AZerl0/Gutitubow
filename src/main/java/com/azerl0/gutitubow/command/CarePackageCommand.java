@@ -22,6 +22,9 @@ public class CarePackageCommand {
                         .requires(source -> source.getSender().hasPermission("gutitubow.carepackage"))
                         .then(literal("spawn").executes(CarePackageCommand::summon))
                         .then(literal("s").executes(CarePackageCommand::summon))
+                        .then(literal("spawnfake").executes(CarePackageCommand::summonFake))
+                        .then(literal("sf").executes(CarePackageCommand::summonFake))
+                        .then(literal("fake").executes(CarePackageCommand::summonFake))
                         .then(literal("killall").executes(CarePackageCommand::killAll))
                         .build(),
                 "Care package command",
@@ -39,6 +42,17 @@ public class CarePackageCommand {
             getEntityManager().spawnGutitubowEntity(
                     player.getLocation(),
                     CarePackage.class
+            );
+        }
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int summonFake(CommandContext<CommandSourceStack> context) {
+        if (context.getSource().getSender() instanceof Player player) {
+            getEntityManager().spawnGutitubowEntity(
+                    player.getLocation(),
+                    CarePackage.class,
+                    carePackage -> carePackage.setFake(true)
             );
         }
         return Command.SINGLE_SUCCESS;

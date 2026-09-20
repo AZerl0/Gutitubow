@@ -1,6 +1,8 @@
 package com.azerl0.gutitubow.entity.carepackage;
 
 import com.azerl0.gutitubow.Gutitubow;
+import com.azerl0.gutitubow.data.damage.DamageSource;
+import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.GutitubowEntityManager;
@@ -11,6 +13,7 @@ import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.packet.EntityGlowManager;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.util.EntityUtil;
+import com.azerl0.gutitubow.util.MathUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
@@ -29,6 +32,7 @@ public class CarePackage extends GutitubowEntity {
     private UUID uuid;
     private UUID interactionEntityUUID;
     private UUID displayEntityUUID;
+    private boolean isFake;
     private final Set<UUID> used_players = new HashSet<>();
     private final Set<GameTeam> used_teams = new HashSet<>();
     private final Set<Chicken> chickens = new HashSet<>();
@@ -117,6 +121,7 @@ public class CarePackage extends GutitubowEntity {
         uuid = coreEntity.getUniqueId();
         interactionEntityUUID = interaction.getUniqueId();
         displayEntityUUID = blockDisplay.getUniqueId();
+        isFake = false;
         remainedPotionCount = 3;
         setDisplayName(this.getRemainedPotionDisplay());
         Bukkit.getScheduler().runTaskLater(Gutitubow.get(), this::onMove, 3L);
@@ -179,9 +184,18 @@ public class CarePackage extends GutitubowEntity {
         return Bukkit.getServer().getEntity(this.displayEntityUUID);
     }
 
-    public void onMove() {
+    public boolean isFake() {
+        return isFake;
+    }
+
+    public void setFake(boolean isFake) {
+        this.isFake = isFake;
+    }
+
+    protected void onMove() {
         Entity entity = this.getCoreEntity();
         if (entity == null) return;
+        location = entity.getLocation();
         if (isFalling) {
             if (entity.isOnGround()) {
                 this.onLand();
@@ -267,38 +281,71 @@ public class CarePackage extends GutitubowEntity {
 
     public void onInteract(Player player) {
         if (player.getGameMode() == GameMode.SPECTATOR) return;
-        Game game = Gutitubow.get().getGame();
-        GutitubowGameMode gameMode = game.getGameSetting().getGameMode();
-        if (gameMode == GutitubowGameMode.SOLO) {
-            if (used_players.contains(player.getUniqueId())) return;
-            givePotion(player);
-            used_players.add(player.getUniqueId());
+        if (isFake) {
+            for (Player nearPlayer : location.getNearbyPlayers(3)) {
+                if (EntityUtil.isInvalidHitEntity(nearPlayer)) continue;
 
-        } else if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
-            GameTeam team = game.getTeamManager().getPlayerTeam(player);
-            if (team == null || used_teams.contains(team)) return;
-            for (UUID uuid : team.getPlayers()) {
-                Player teamPlayer = Bukkit.getPlayer(uuid);
-                if (teamPlayer == null || !teamPlayer.isOnline()) return;
-                givePotion(teamPlayer);
+                GamePlayer damageGamePlayer = Gutitubow.get().getGame().getGamePlayer(nearPlayer);
+                DamageSource damageSource = DamageSource.builder(GutitubowDamageType.FAKE_CAREPACKAGE)
+                        .damageLocation(MathUtil.rayTraceEntityHit(location, nearPlayer))
+                        .distance(location.distance(nearPlayer.getLocation()))
+                        .build();
+                damageGamePlayer.damage(damageSource, 1);
+
+                Vector knockback = nearPlayer.getLocation().toVector()
+                        .subtract(location.clone().add(0.0, -0.2, 0.0).toVector())
+                        .normalize()
+                        .multiply(1.5);
+
+                nearPlayer.setVelocity(knockback);
+
             }
-            used_teams.add(team);
+            World world = location.getWorld();
+            world.spawnParticle(
+                    Particle.EXPLOSION,
+                    location,
+                    1,
+                    0, 0, 0,
+                    0,
+                    null,
+                    true
+            );
+            world.playSound(location, Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.0f);
+            remove();
+        } else {
+            Game game = Gutitubow.get().getGame();
+            GutitubowGameMode gameMode = game.getGameSetting().getGameMode();
+            if (gameMode == GutitubowGameMode.SOLO) {
+                if (used_players.contains(player.getUniqueId())) return;
+                givePotion(player);
+                used_players.add(player.getUniqueId());
 
-            if (!team.getDeadPlayers().isEmpty()) {
-                for (UUID uuid : team.getAlivePlayers()) {
-                    GamePlayer gamePlayer = game.getGamePlayer(uuid);
-                    if (gamePlayer == null) continue;
-                    gamePlayer.giveRespawnBeacon();
+            } else if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
+                GameTeam team = game.getTeamManager().getPlayerTeam(player);
+                if (team == null || used_teams.contains(team)) return;
+                for (UUID uuid : team.getPlayers()) {
+                    Player teamPlayer = Bukkit.getPlayer(uuid);
+                    if (teamPlayer == null || !teamPlayer.isOnline()) return;
+                    givePotion(teamPlayer);
+                }
+                used_teams.add(team);
+
+                if (!team.getDeadPlayers().isEmpty()) {
+                    for (UUID uuid : team.getAlivePlayers()) {
+                        GamePlayer gamePlayer = game.getGamePlayer(uuid);
+                        if (gamePlayer == null) continue;
+                        gamePlayer.giveRespawnBeacon();
+                    }
                 }
             }
-        }
 
-        remainedPotionCount--;
-        if (remainedPotionCount <= 0) {
-            this.remove();
-            return;
+            remainedPotionCount--;
+            if (remainedPotionCount <= 0) {
+                remove();
+                return;
+            }
+            setDisplayName(this.getRemainedPotionDisplay());
         }
-        setDisplayName(this.getRemainedPotionDisplay());
     }
 
     private void givePotion(Player player) {

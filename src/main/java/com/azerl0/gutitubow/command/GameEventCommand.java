@@ -45,11 +45,11 @@ public class GameEventCommand {
                                                         ctx.getArgument("event_type", GameEventType.class)
                                                 )))))
                         .then(literal("deactivate")
-                                .then(argument("controller_gameevent_type", new GameEventControllerGameEventTypeArgument()))
+                                .then(argument("controller_gameevent_type", new GameEventControllerGameEventTypeArgument())
                                 .executes(ctx -> deactivateEvent(
                                         ctx.getSource().getSender(),
                                         ctx.getArgument("controller_gameevent_type", GameEventControllerGameEventType.class)
-                                )))
+                                ))))
                         .then(literal("gui").executes(ctx -> openGUI(ctx.getSource().getSender())))
                         .build(),
                 List.of("ge", "event")

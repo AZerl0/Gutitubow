@@ -5,6 +5,7 @@ import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.damage.DamageSource;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
+import com.azerl0.gutitubow.game.GamePhase;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.azerl0.gutitubow.util.MathUtil;
@@ -73,7 +74,7 @@ public class BombAbility extends Ability {
 
             GamePlayer gamePlayer = context.game().getGamePlayer(damagePlayer);
             if (gamePlayer.isTeammate(playerUUID)) continue;
-            if (context.game().getPhase() == 0 && context.game().isStarted()) continue;
+            if (context.game().getPhase() == GamePhase.PHASE0 && context.game().isStarted()) continue;
 
             if (!shooter.getUniqueId().equals(damagePlayer.getUniqueId()) && !EntityUtil.isInvalidHitEntity(damagePlayer)) {
                 DamageSource damageSource = DamageSource.builder(GutitubowDamageType.BOMB_BLAST)

@@ -8,6 +8,7 @@ import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.shield.Shield;
 import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.game.GamePhase;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
 import net.kyori.adventure.text.Component;
@@ -109,7 +110,7 @@ public class SnipeAbility extends Ability {
                 double distance = entityHit.getHitEntity().getLocation().distance(player.getLocation());
 
                 Game game = context.game();
-                if (!(game.isStarted() && game.getPhase() == 0)) {
+                if (!(game.isStarted() && game.getPhase() == GamePhase.PHASE0)) {
                     if (distance > 36.0) {
                         GamePlayer gamePlayer = game.getGamePlayer(hitPlayer);
                         DamageSource damageSource = DamageSource.builder(GutitubowDamageType.SNIPE).directPlayer(player).damageLocation(hitPos).distance(distance).build();

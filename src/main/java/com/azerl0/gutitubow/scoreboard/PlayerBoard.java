@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.scoreboard;
 
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.game.GamePhase;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.team.GameTeam;
@@ -93,7 +94,9 @@ public class PlayerBoard {
     public void update() {
         Player player = this.gamePlayer.getPlayer();
         if (player == null) return;
-        if (game.isStarted() && game.getPhase() != -1) {
+        if (!game.isStarted() || game.getPhase() == GamePhase.UNPLAYED || game.getPhase() == GamePhase.STARTING) {
+            hideAll();
+        } else {
             _playerName.setDisplay(Component.text("Player: " + player.getName()).color(NamedTextColor.GREEN));
             updateAlivePlayerCount();
             updateInsideSafeArea(player);
@@ -104,8 +107,6 @@ public class PlayerBoard {
             _insideSafeArea.setHide(false);
             _abilityName.setHide(false);
             updateTeammateInfo();
-        } else {
-            hideAll();
         }
         player.setScoreboard(scoreboard);
     }
@@ -225,6 +226,7 @@ public class PlayerBoard {
         boolean isInside = game.isInsideNextSafeArea(player.getLocation());
 
         Component insideState = isInside ? Component.text("内").color(NamedTextColor.GOLD) : Component.text("外").color(NamedTextColor.RED);
+//        Component insideState = Component.text("xDiff:" + (player.getLocation().getX() - game.getSafeArea().getX()) + ", yDiff:" + (player.getLocation().getZ() - game.getSafeArea().getZ()));
 
         _insideSafeArea.setDisplay(
                 Component.text(" - セーフエリア: [").color(NamedTextColor.GREEN)

@@ -8,6 +8,7 @@ import com.azerl0.gutitubow.entity.GutitubowEntityType;
 import com.azerl0.gutitubow.entity.carepackage.CarePackage;
 import com.azerl0.gutitubow.entity.teleportable.BukkitTeleportableEntity;
 import com.azerl0.gutitubow.entity.teleportable.Teleportable;
+import com.azerl0.gutitubow.game.GamePhase;
 import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.EntityUtil;
 import net.kyori.adventure.text.Component;
@@ -101,7 +102,7 @@ public class SwapAbility extends Ability {
             if (!entityTypeSet.contains(entityType)) continue;
             if (player.getUniqueId() == entity.getUniqueId()) continue;
             if (EntityUtil.isInvalidHitEntity(entity)) continue;
-            if (context.game().isStarted() && context.game().getPhase() == 0) {
+            if (context.game().isStarted() && context.game().getPhase() == GamePhase.PHASE0) {
                 if (entity.getType() == EntityType.PLAYER) continue;
             }
             if (entity instanceof Arrow arrow) {

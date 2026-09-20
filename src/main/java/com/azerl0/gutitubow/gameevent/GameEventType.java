@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.gameevent;
 
+import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.gameevent.events.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -59,10 +60,20 @@ public enum GameEventType {
             List.of(
                     Component.text("全員のスキンが同じになってしまった！")
             ),
-                    Component.text(""),
-                    ItemStack.of(Material.PIGLIN_HEAD),
+            Component.text(""),
+            ItemStack.of(Material.PIGLIN_HEAD),
             SkinEvent::new
-            );
+    ),
+    CAREPACKAGE(
+            Component.text("救援物資到着"),
+            List.of(
+                    Component.text("このフェーズ中、大量のケアパッケージが投下される。"),
+                    Component.text("ただし、中には粗悪品も含まれているので気をつけるように。")
+            ),
+            Component.text("大量の救援物資が投下された！"),
+            GutitubowItem.RED_POTION,
+            CarePackageEvent::new
+    );
 
 
     private final Component name;

@@ -20,14 +20,25 @@ import java.util.List;
 
 public class GutitubowItem {
 
+    public static final ItemStack RED_POTION;
+    static {
+        ItemStack itemStack = new ItemStack(Material.POTION);
+
+        PotionMeta meta = (PotionMeta) itemStack.getItemMeta();
+        if (meta != null) {
+            meta.setColor(Color.RED);
+            itemStack.setItemMeta(meta);
+        }
+        RED_POTION = itemStack.clone();
+    }
+
     public static final ItemStack RECOVERY_POTION;
     static {
-        ItemStack item = new ItemStack(Material.POTION);
+        ItemStack item = RED_POTION;
 
-        PotionMeta meta = (PotionMeta) item.getItemMeta();
+        ItemMeta meta =item.getItemMeta();
         if (meta != null) {
             meta.displayName(Component.text("回復のポーション").decoration(TextDecoration.ITALIC, false));
-            meta.setColor(Color.RED);
             item.setItemMeta(meta);
         }
         RECOVERY_POTION = item.clone();

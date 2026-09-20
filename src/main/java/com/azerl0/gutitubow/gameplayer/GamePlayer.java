@@ -138,7 +138,7 @@ public class GamePlayer {
                     int borderOutsideDamageTick = 30;
                     if (borderOutsideTick % borderOutsideDamageTick == 0) {
                         int damageCount = 10;
-                        if (game.getPhase() == 7) damageCount = 2;
+                        if (game.isFinalPhase()) damageCount = 2;
                         if (borderOutsideTick % (damageCount * borderOutsideDamageTick) == 0) {
                             DamageSource damageSource = DamageSource.builder(GutitubowDamageType.OUTSIDE_BORDER).build();
                             damage(damageSource, 1);
@@ -704,8 +704,8 @@ public class GamePlayer {
             }
         }
 
-        Component distanceSuffix = Component.text("§r§6(" + Math.floor(damageSource.getDistance() * 10) / 10 + "m)");
-        Component hitMessage = Component.text("§cHIT §6§bᐅ §f" + player.displayName()).append(distanceSuffix).color(NamedTextColor.LIGHT_PURPLE);
+        Component distanceSuffix = Component.text(" §r§6(" + Math.floor(damageSource.getDistance() * 10) / 10 + "m)");
+        Component hitMessage = Component.text("§cHIT §6ᐅ §f").append(player.displayName().color(NamedTextColor.WHITE)).append(distanceSuffix);
 
         GamePlayerPreDamageEvent event = new GamePlayerPreDamageEvent(
                 player,
@@ -735,13 +735,12 @@ public class GamePlayer {
             Bukkit.getPluginManager().callEvent(damageEvent);
             if (attacker != null) {
                 GamePlayer attackerGamePlayer = getGame().getGamePlayer(attacker);
-                attackerGamePlayer.onDealDamage(event);
-
+                attackerGamePlayer.onDealDamage(damageEvent);
             }
         }
     }
 
-    private void onDealDamage(GamePlayerPreDamageEvent event) {
+    private void onDealDamage(GamePlayerDamageEvent event) {
         Player player = getPlayer();
         if (player == null) return;
 

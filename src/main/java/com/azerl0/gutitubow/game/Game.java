@@ -20,6 +20,7 @@ import com.azerl0.gutitubow.map.Map;
 import com.azerl0.gutitubow.map.MapRepairManager;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.team.TeamManager;
+import com.azerl0.gutitubow.util.MathUtil;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -45,8 +46,7 @@ public class Game {
     private boolean started;
     private int nextTick;
     private int currentTicks;
-    private int phase;
-    private boolean isShrinking;
+    private GamePhase gamePhase;
     private Set<UUID> players;
     private final Set<UUID> alivePlayers = new HashSet<>();
     private final List<UUID> deathOrder = new ArrayList<>();
@@ -55,10 +55,7 @@ public class Game {
     private final int LAST_PHASE_CYCLE_TICK = 15 * 20;
     private Location safeArea;
     private Location oldSafeArea;
-    private double nextSafeAreaMinX;
-    private double nextSafeAreaMaxX;
-    private double nextSafeAreaMinZ;
-    private double nextSafeAreaMaxZ;
+    private double safeAreaSize;
     private final GutitubowManagers gutitubowManagers;
     private final GamePlayerManager gamePlayerManager;
     private final AbilityManager abilityManager;
@@ -131,46 +128,35 @@ public class Game {
     }
 
     public boolean isStarted() {
-        return this.started;
+        return started;
     }
 
     public void start() {
-        this.started = true;
-        this.players.clear();
+        started = true;
+        gamePhase = GamePhase.STARTING;
+        players.clear();
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             if (getSpectatorManager().isSpectator(player)) continue;
-            this.players.add(player.getUniqueId());
+            players.add(player.getUniqueId());
         }
     }
 
-    private enum phaseTicks {
-        PHASE1(180),
-        PHASE2(120),
-        PHASE3(120),
-        PHASE4(60),
-        PHASE5(60);
 
-        private final int seconds;
 
-        phaseTicks(int seconds) {
-            this.seconds = seconds;
-        }
-
-        private int getTicks() {
-            return seconds * 20;
-        }
-    }
-
-    public int getPhase() {
-        return this.phase;
+    public GamePhase getPhase() {
+        return gamePhase;
     }
 
     public boolean isFinalPhase() {
-        return getPhase() == 7;
+        return getPhase() == GamePhase.FINAL_PHASE;
+    }
+
+    public Location getSafeArea() {
+        return safeArea.clone();
     }
 
     public boolean isShrinking() {
-        return this.isShrinking;
+        return gamePhase.isShrinking();
     }
 
     public double getProgress() {
@@ -215,8 +201,7 @@ public class Game {
         this.started = false;
         this.nextTick = 11 * 20;
         this.currentTicks = 0;
-        this.phase = -1;
-        this.isShrinking = false;
+        gamePhase = GamePhase.UNPLAYED;
         this.players = new java.util.HashSet<>();
         this.alivePlayers.clear();
         this.deathOrder.clear();
@@ -297,7 +282,7 @@ public class Game {
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(gameSetting.getDefaultHealth());
             player.setHealth(gameSetting.getDefaultHealth());
             if (!debugManager.isNoStartTeleport()) {
-                Location location = this.map.getRandomXZPosition(30);
+                Location location = MathUtil.randomLocation(safeArea, map.getSize() - 30 * 2);
                 location.setY(200.0);
                 location.getDirection().setY(0);
                 player.teleport(location);
@@ -397,23 +382,21 @@ public class Game {
         if (this.currentTicks > this.nextTick && !isFinalPhase()) this.phaseUpdate();
 
         // ケアパッケージの生成
-        Random random = new Random();
-        switch (phase) {
-            case (1):
+        switch (gamePhase) {
+            case PHASE1 -> {
                 if (this.currentTicks == 0 || this.currentTicks == 60 * 20 || this.currentTicks == 120 * 20) {
                     randomCarePackageSpawn(gameSetting.getCarePackageAmount(), true);
                 }
-                break;
-            case (2):
-            case (3):
+            }
+            case PHASE2, PHASE3 -> {
                 if (this.currentTicks == 0 || this.currentTicks == 60 * 20) {
                     randomCarePackageSpawn(gameSetting.getCarePackageAmount(), true);
                 }
-                break;
+            }
         }
 
         // 範囲外ケアパッケージ削除
-        if (isShrinking) {
+        if (isShrinking()) {
             for (GutitubowEntity gutitubowEntity : gutitubow.getGutitubowEntityManager().getGutitubowEntities()) {
                 if (gutitubowEntity instanceof CarePackage carePackage) {
                     if (!map.getBorder().isInside(carePackage.getLocation())) carePackage.remove();
@@ -425,15 +408,14 @@ public class Game {
         this.bossBar.progress((float) (isFinalPhase() ? 0.0 : 1.0 - this.getProgress()));
 
         int remainedSeconds = (this.nextTick - this.currentTicks) / 20;
-        String remainedText = this.phase == 0 ? "セーフエリア決定まで後 " : this.isShrinking ? "次のフェーズまで後 " : "縮小開始まで後 ";
-        if (this.phase != 6 && !isFinalPhase()) {
-            this.bossBar.name(Component.text("現在のフェーズ " + getPhase() + ": " + remainedText + remainedSeconds + "秒"));
-
+        String remainedText = gamePhase == GamePhase.PHASE0 ? "セーフエリア決定まで後 " : isShrinking() ? "次のフェーズまで後 " : "縮小開始まで後 ";
+        if (gamePhase != GamePhase.PRE_FINAL_PHASE  && !isFinalPhase()) {
+            bossBar.name(Component.text("現在のフェーズ " + getPhase() + ": " + remainedText + remainedSeconds + "秒"));
         }
 
         //  最終フェーズカウントダウン表示
         Component lastPhaseRemainedText = null;
-        if (this.currentTicks % 20 == 0 && this.phase == 6) {
+        if (currentTicks % 20 == 0 && gamePhase == GamePhase.PRE_FINAL_PHASE) {
             lastPhaseRemainedText =
                     Component.text("あと").color(NamedTextColor.GOLD)
                             .append(Component.text(remainedSeconds).color(NamedTextColor.RED)
@@ -441,14 +423,14 @@ public class Game {
                                             .append(Component.text("最終フェーズ").color(NamedTextColor.RED)
                                                     .append(Component.text("が始まります").color(NamedTextColor.GOLD)
                                                     ))));
-            this.bossBar.name(lastPhaseRemainedText);
+            bossBar.name(lastPhaseRemainedText);
         }
 
 
         // プレイヤーへの処理
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 
-            if (remainedSeconds <= 10 && this.currentTicks % 20 == 1 && this.phase == -1) {
+            if (remainedSeconds <= 10 && this.currentTicks % 20 == 1 && gamePhase == GamePhase.STARTING) {
                 Title title = Title.title(
                         Component.text("後").color(NamedTextColor.GOLD)
                                 .append(Component.text(remainedSeconds).color(NamedTextColor.RED)
@@ -464,7 +446,7 @@ public class Game {
                 player.showTitle(title);
             }
 
-            if (phase == 0 && (currentTicks + 10) % 20 == 0) {
+            if (gamePhase == GamePhase.PHASE0 && (currentTicks + 10) % 20 == 0) {
                 for (UUID uuid : alivePlayers) {
                     Player target = Bukkit.getPlayer(uuid);
                     if (target != null && uuid != player.getUniqueId() && !teamManager.isTeammate(player, target)) {
@@ -480,15 +462,15 @@ public class Game {
                 }
             }
 
-            if (phase > 0 && phase < 6 && isShrinking) {
-                setWorldBorderToSafeAreaByProgress(map.getCenter(), getShrinkProgress());
+            if (gamePhase.getPhaseNumber() >= 1 && gamePhase.getPhaseNumber() <= 5 && isShrinking()) {
+                map.getBorder().setCenter(MathUtil.getLocationByProgress(map.getCenter(), safeArea, getShrinkProgress()));
             }
 
             if (remainedSeconds <= 10 && this.currentTicks % 20 == 0 && !isFinalPhase()) {
                 player.playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             }
 
-            if (this.phase == 6 && this.currentTicks % 20 == 0 && lastPhaseRemainedText != null) {
+            if (gamePhase == GamePhase.PRE_FINAL_PHASE && remainedSeconds <= 10 && this.currentTicks % 20 == 0 && lastPhaseRemainedText != null) {
                 showSubtitle(player, lastPhaseRemainedText);
             }
 
@@ -516,26 +498,24 @@ public class Game {
             if (oldSafeArea == null) {
                 oldSafeArea = safeArea.clone();
             }
-            setWorldBorderToSafeAreaByProgress(oldSafeArea, (float) lastPhaseCycleCurrentTick / (float) LAST_PHASE_CYCLE_TICK);
+            float progress = (float) lastPhaseCycleCurrentTick / (float) LAST_PHASE_CYCLE_TICK;
+            map.getBorder().setCenter(MathUtil.getLocationByProgress(oldSafeArea, safeArea, progress));
         }
 
     }
 
     private float getShrinkProgress() {
-        if (phase > 0 && phase < 6) {
+        return getShrinkProgress(gamePhase);
+    }
+
+    private float getShrinkProgress(GamePhase gamePhase) {
+        if (gamePhase.getPhaseNumber() >= 1 && gamePhase.getPhaseNumber() <= 5) {
             float phaseTick = (30 * 20 + 20);
             float base = phaseTick * 5;
-            float current = phaseTick * (phase - 1) + currentTicks;
+            float current = phaseTick * (gamePhase.getPhaseNumber() - 1) + currentTicks;
             return current / base;
         }
         return 0.0f;
-    }
-
-    private void setWorldBorderToSafeAreaByProgress(Location start, float progress) {
-        progress = Math.max(0.0f, Math.min(1.0f, progress));
-        WorldBorder border = map.getBorder();
-        Vector offset = safeArea.clone().toVector().subtract(start.clone().toVector()).multiply(progress);
-        border.setCenter(start.clone().add(offset));
     }
 
     private void randomCarePackageSpawn(int count, boolean showLog) {
@@ -550,7 +530,7 @@ public class Game {
             }
         }
         for (int i = 0; i < count; i++) {
-            Location location = this.map.getRandomXZPosition(50);
+            Location location = MathUtil.randomLocation(safeArea, getNextSafeAreaSize() - 10);
             location.setY(175);
             Gutitubow.get().getGutitubowEntityManager().spawnGutitubowEntity(
                     location,
@@ -559,45 +539,44 @@ public class Game {
         }
     }
 
+    private int getNextPhaseTick(GamePhase gamePhase) {
+        switch (gamePhase) {
+            case PHASE1 -> {
+                return 180 * 20;
+            }
+            case PHASE2, PHASE3 -> {
+                return 120 * 20;
+            }
+            case PHASE4, PHASE5 -> {
+                return 60 * 20;
+            }
+            case PRE_FINAL_PHASE -> {
+                return 15 * 20;
+            }
+            case null, default -> {
+                return 30 * 20;
+            }
+        }
+    }
+
     private void phaseUpdate() {
-        if (this.isShrinking || this.phase == -1 || this.phase == 0 || this.phase == 6) {
-            this.phase += 1;
+        gamePhase = gamePhase.getNextPhase();
+        if (isShrinking()) {
+            bossBar.color(BossBar.Color.RED);
+            nextTick = 30 * 20;
+            int borderChangeTicks = 31 * 20;
+            map.getBorder().changeSize(getNextSafeAreaSize(), borderChangeTicks);
+
+        } else {
             updateNextSafeAreaSize();
 
-            if (this.phase == 0) init();
-            this.bossBar.color(BossBar.Color.RED);
-            this.isShrinking = false;
+            if (gamePhase == GamePhase.PHASE0) init();
+            bossBar.color(gamePhase == GamePhase.FINAL_PHASE || gamePhase == GamePhase.PRE_FINAL_PHASE ? BossBar.Color.RED : BossBar.Color.BLUE);
 
-            if (this.phase > 0 && this.phase <= 5) {
-                this.bossBar.color(BossBar.Color.BLUE);
+            if (gamePhase != GamePhase.PHASE0) {
                 if (debugManager.isQuickPhase()) {
-                    this.nextTick = 15 * 20;
-                } else this.nextTick = phaseTicks.valueOf("PHASE" + this.phase).getTicks();
-
-            } else if (this.phase == 6) {
-                this.nextTick = 15 * 20;
-            }
-        } else {
-            this.bossBar.color(BossBar.Color.RED);
-            this.isShrinking = true;
-            this.nextTick = 30 * 20;
-            int borderChangeTicks = 31 * 20;
-            switch (this.phase) {
-                case (1):
-                    map.getBorder().changeSize(150, borderChangeTicks);
-                    break;
-                case (2):
-                    map.getBorder().changeSize(105, borderChangeTicks);
-                    break;
-                case (3):
-                    map.getBorder().changeSize(63, borderChangeTicks);
-                    break;
-                case (4):
-                    map.getBorder().changeSize(31, borderChangeTicks);
-                    break;
-                case (5):
-                    map.getBorder().changeSize(10, borderChangeTicks);
-                    break;
+                    nextTick = 15 * 20;
+                } else nextTick = getNextPhaseTick(gamePhase);
             }
         }
 
@@ -605,14 +584,14 @@ public class Game {
             this.bossBar.name(Component.text("最終フェーズ進行中"));
         }
 
-        if (!isShrinking) {
-            GameEventControllerGameEventType oldGameEventControllerGameEventType = getPhaseEventType(phase - 1);
+        if (!isShrinking()) {
+            GameEventControllerGameEventType oldGameEventControllerGameEventType = getPhaseEventType(gamePhase.getPhaseNumber() - 1);
             if (oldGameEventControllerGameEventType != null) {
                 GameEvent oldGameEvent = getGameSetting().getGameEventController().getEvent(oldGameEventControllerGameEventType);
                 if (oldGameEvent != null) oldGameEvent.deactivate(true);
             }
 
-            GameEventControllerGameEventType nextGameEventControllerGameEventType = getPhaseEventType(phase);
+            GameEventControllerGameEventType nextGameEventControllerGameEventType = getPhaseEventType(gamePhase.getPhaseNumber());
             if (nextGameEventControllerGameEventType != null) {
                 GameEvent nextGameEvent = getGameSetting().getGameEventController().getEvent(nextGameEventControllerGameEventType);
                 if (nextGameEvent != null) Bukkit.getScheduler().runTaskLater(Gutitubow.get(), () -> nextGameEvent.activate(true), 60L);
@@ -629,7 +608,7 @@ public class Game {
                                 .append(Component.text("が始まりました").color(NamedTextColor.GOLD))
                 );
             }
-            if (this.phase == 1 && !isShrinking) {
+            if (gamePhase == GamePhase.PHASE1 && !isShrinking()) {
                 for (UUID uuid : players) {
                     Player target = Bukkit.getPlayer(uuid);
                     if (target != null) {
@@ -638,7 +617,7 @@ public class Game {
                 }
             }
 
-            if (phase >= 1 && phase <= 5 && isShrinking) {
+            if (gamePhase.getPhaseNumber() >= 1 && gamePhase.getPhaseNumber() <= 5 && isShrinking()) {
                 if (!isInsideNextSafeArea(player.getLocation())) {
                     Title title = Title.title(
                             Component.empty(),
@@ -653,7 +632,7 @@ public class Game {
                 }
             }
 
-            if (phase >= 1 && phase <= 5 && !isShrinking) {
+            if (gamePhase.getPhaseNumber() >= 1 && gamePhase.getPhaseNumber() <= 5 && !isShrinking()) {
                 if (Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getValue() - player.getHealth() < 2.0) {
                     player.give(GutitubowItem.RECOVERY_POTION);
                     player.sendMessage(Component.text("\n[!]").color(NamedTextColor.GOLD)
@@ -682,22 +661,18 @@ public class Game {
     }
 
     private void updateNextSafeAreaSize() {
-        double size = switch (phase) {
-            case 0, 1 -> 150;
-            case 2 -> 105;
-            case 3 -> 63;
-            case 4 -> 31;
-            case 5, 6, 7 -> 10;
+        safeAreaSize = getNextSafeAreaSize();
+    }
+
+    public double getNextSafeAreaSize() {
+        return switch (gamePhase) {
+            case PHASE0, PHASE1, PHASE1_SHRINKING -> 150;
+            case PHASE2, PHASE2_SHRINKING -> 105;
+            case PHASE3, PHASE3_SHRINKING -> 65;
+            case PHASE4, PHASE4_SHRINKING -> 31;
+            case PHASE5, PHASE5_SHRINKING, PRE_FINAL_PHASE, FINAL_PHASE -> 10;
             default -> 300;
         };
-
-        double centerX = safeArea.getX();
-        double centerZ = safeArea.getZ();
-        double half = size / 2;
-        nextSafeAreaMaxX = centerX + half;
-        nextSafeAreaMinX = centerX - half;
-        nextSafeAreaMaxZ = centerZ + half;
-        nextSafeAreaMinZ = centerZ - half;
     }
 
     public void addDeadPlayer(Player player) {
@@ -915,10 +890,16 @@ public class Game {
     public boolean isInsideNextSafeArea(Location loc) {
 
         if (!loc.getWorld().equals(safeArea.getWorld())) return false;
-
-        double x = loc.getX();
-        double z = loc.getZ();
-        return x <= nextSafeAreaMaxX && x >= nextSafeAreaMinX && z <= nextSafeAreaMaxZ && z >= nextSafeAreaMinZ;
+        GamePhase nextGamePhase = switch (gamePhase) {
+            case PHASE0, PHASE1, PHASE1_SHRINKING -> GamePhase.PHASE2;
+            case PHASE2, PHASE2_SHRINKING -> GamePhase.PHASE3;
+            case PHASE3, PHASE3_SHRINKING -> GamePhase.PHASE4;
+            case PHASE4, PHASE4_SHRINKING -> GamePhase.PHASE5;
+            case PHASE5, PHASE5_SHRINKING -> GamePhase.FINAL_PHASE;
+            default -> GamePhase.FINAL_PHASE;
+        };
+        Location nextPhaseSafeAreaLoc = MathUtil.getLocationByProgress(map.getCenter(), safeArea, getShrinkProgress(nextGamePhase));
+        return Math.abs(loc.getX() - nextPhaseSafeAreaLoc.getX()) <= getNextSafeAreaSize() / 2 && Math.abs(loc.getZ() - nextPhaseSafeAreaLoc.getZ()) <= getNextSafeAreaSize() / 2;
     }
 
     public PlayerBoard getPlayerBoard(GamePlayer gamePlayer) {

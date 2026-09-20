@@ -1,10 +1,13 @@
 package com.azerl0.gutitubow.util;
 
 import org.bukkit.Location;
+import org.bukkit.WorldBorder;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+
+import java.util.Random;
 
 public class MathUtil {
     public static double getLerp(double value, double low1, double high1, double low2, double high2) {
@@ -50,5 +53,22 @@ public class MathUtil {
         );
 
         return result != null ? result.getHitPosition().toLocation(location.getWorld()) : null;
+    }
+
+    public static Location randomLocation(Location center, double width) {
+        Random random = new Random();
+
+        double r = width / 2;
+        double offsetX = random.nextDouble(-r, r);
+        double offsetZ = random.nextDouble(-r, r);
+
+        return center.clone().add(offsetX, 0, offsetZ);
+    }
+
+    public static Location getLocationByProgress(Location start, Location end, float progress) {
+        if (!start.getWorld().equals(end.getWorld())) return start;
+        progress = Math.max(0.0f, Math.min(1.0f, progress));
+        Vector offset = end.clone().toVector().subtract(start.clone().toVector()).multiply(progress);
+        return start.clone().add(offset);
     }
 }
