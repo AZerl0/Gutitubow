@@ -156,7 +156,7 @@ public class MedusaAbility extends Ability {
                 if (context.game().isTeammate(player, nearPlayer)) continue;
                 if (!MathUtil.isInView(player, nearPlayer.getLocation(), 100, 80)) continue;
                 if (!canSee(player, nearPlayer)) continue;
-                if (nearPlayer.hasPotionEffect(PotionEffectType.INVISIBILITY)) return;
+                if (nearPlayer.hasPotionEffect(PotionEffectType.INVISIBILITY)) continue;
 
                 LookingTime lookingTime = oldLookingPlayers.getOrDefault(nearPlayer, new LookingTime());
                 lookingTime.update(false);
