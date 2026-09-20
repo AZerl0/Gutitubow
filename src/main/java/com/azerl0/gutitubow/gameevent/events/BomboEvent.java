@@ -52,7 +52,7 @@ public class BomboEvent extends GameEvent {
                         .damageLocation(MathUtil.rayTraceEntityHit(hitLocation, nearPlayer))
                         .distance(hitLocation.distance(nearPlayer.getLocation()))
                         .build();
-                damageGamePlayer.damage(damageSource, 0.5);
+                damageGamePlayer.damage(damageSource, 1);
             }
             World world = hitLocation.getWorld();
             

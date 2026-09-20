@@ -81,7 +81,7 @@ public class BombAbility extends Ability {
                         .damageLocation(MathUtil.rayTraceEntityHit(loc, damagePlayer))
                         .distance(loc.distance(damagePlayer.getLocation()))
                         .build();
-                gamePlayer.damage(damageSource, 0.5);
+                gamePlayer.damage(damageSource, 1);
             }
         }
         arrow.getWorld().spawnParticle(

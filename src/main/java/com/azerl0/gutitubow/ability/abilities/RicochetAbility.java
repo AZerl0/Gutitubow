@@ -88,7 +88,7 @@ public class RicochetAbility extends Ability {
                             .distance(shooterPlayer.getLocation()
                                     .distance(damagePlayer.getLocation()))
                             .build();
-                    gamePlayer.damage(damageSource, 0.5);
+                    gamePlayer.damage(damageSource, 1);
                     setRicochetDamageCount(arrow, ricochetDamageCount + 1);
                 }
             }
