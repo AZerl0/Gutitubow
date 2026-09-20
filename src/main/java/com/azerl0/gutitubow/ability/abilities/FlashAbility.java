@@ -56,7 +56,7 @@ public class FlashAbility extends Ability {
         arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
         ArrowUtil.setFixRotation(arrow, velocity);
 
-        setCompassCooldown(12 * 20);
+        setCompassCooldown(20 * 20);
         startCompassCooldownTask();
 
 
