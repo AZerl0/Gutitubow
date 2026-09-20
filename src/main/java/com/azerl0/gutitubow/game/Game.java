@@ -27,7 +27,8 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scoreboard.Scoreboard;
@@ -256,9 +257,10 @@ public class Game {
             }
         }
 
+        List<EntityType> removeEntityType = List.of(EntityType.ARROW, EntityType.ITEM);
         for (World world : Bukkit.getWorlds()) {
-            for (Arrow arrow : world.getEntitiesByClass(Arrow.class)) {
-                arrow.remove();
+            for (Entity entity : world.getEntities()) {
+                if (removeEntityType.contains(entity.getType())) entity.remove();
             }
         }
 
