@@ -55,7 +55,6 @@ public class Game {
     private final int LAST_PHASE_CYCLE_TICK = 15 * 20;
     private Location safeArea;
     private Location oldSafeArea;
-    private double safeAreaSize;
     private final GutitubowManagers gutitubowManagers;
     private final GamePlayerManager gamePlayerManager;
     private final AbilityManager abilityManager;
@@ -260,7 +259,6 @@ public class Game {
         this.map.getBorder().setCenter(this.map.getCenter());
         this.map.getBorder().setSize(this.map.getSize());
         safeArea = map.getRandomSafeArea();
-        updateNextSafeAreaSize();
         deathOrder.clear();
         alivePlayers.clear();
         AbilitySelector abilitySelector = new AbilitySelector(getGameSetting().getDisabledAbilities());
@@ -568,8 +566,6 @@ public class Game {
             map.getBorder().changeSize(getNextSafeAreaSize(), borderChangeTicks);
 
         } else {
-            updateNextSafeAreaSize();
-
             if (gamePhase == GamePhase.PHASE0) init();
             bossBar.color(gamePhase == GamePhase.FINAL_PHASE || gamePhase == GamePhase.PRE_FINAL_PHASE ? BossBar.Color.RED : BossBar.Color.BLUE);
 
@@ -658,10 +654,6 @@ public class Game {
             case 4 -> GameEventControllerGameEventType.PHASE4;
             default -> null;
         };
-    }
-
-    private void updateNextSafeAreaSize() {
-        safeAreaSize = getNextSafeAreaSize();
     }
 
     public double getNextSafeAreaSize() {
