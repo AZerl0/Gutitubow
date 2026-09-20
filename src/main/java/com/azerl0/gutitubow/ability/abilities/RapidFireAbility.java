@@ -45,7 +45,7 @@ public class RapidFireAbility extends Ability {
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         stopRapidFire();
     }
 

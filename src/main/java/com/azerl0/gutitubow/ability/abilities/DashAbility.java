@@ -45,7 +45,7 @@ public class DashAbility extends Ability {
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         stopSprinting();
     }
 
@@ -125,9 +125,11 @@ public class DashAbility extends Ability {
 
     private void stopSprinting() {
         Player player = getPlayer();
-        this.dashingTick = 0;
-        Objects.requireNonNull(player.getAttribute(Attribute.STEP_HEIGHT)).setBaseValue(0.6);
-        Objects.requireNonNull(player.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0.1);
+        dashingTick = 0;
+        if (player != null) {
+            Objects.requireNonNull(player.getAttribute(Attribute.STEP_HEIGHT)).setBaseValue(0.6);
+            Objects.requireNonNull(player.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0.1);
+        }
         undoWater();
     }
 

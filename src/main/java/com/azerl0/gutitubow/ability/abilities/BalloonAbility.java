@@ -43,7 +43,7 @@ public class BalloonAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
+    protected void onInit(Player player) {
         if (updateTask != null && !updateTask.isCancelled()) return;
 
         updateTask = new BukkitRunnable() {
@@ -55,7 +55,7 @@ public class BalloonAbility extends Ability {
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         if (happyGhast != null) happyGhast.remove();
         if (updateTask != null) updateTask.cancel();
         updateTask = null;

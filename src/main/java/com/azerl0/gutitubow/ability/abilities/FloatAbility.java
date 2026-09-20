@@ -29,7 +29,6 @@ public class FloatAbility extends Ability {
     private final int floatMaxCharge = 20 * 20;
 
     private int floatCharge;
-    private BukkitTask updateTask;
     private BukkitTask floatingTask;
     private int areaPlacingCharge;
     private Location floatAreaCenter;
@@ -45,25 +44,14 @@ public class FloatAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
+    protected void onInit(Player player) {
         this.floatCharge = 15 * 20;
         this.floatAreaCenter = null;
         this.isPlacing = false;
-
-        if (updateTask != null && !updateTask.isCancelled()) return;
-
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update();
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     @Override
-    public void onReset() {
-        if (updateTask != null) updateTask.cancel();
-        updateTask = null;
+    protected void onReset() {
         stopFloating();
     }
 
@@ -90,7 +78,8 @@ public class FloatAbility extends Ability {
         }
     }
 
-    private void update() {
+    @Override
+    protected void onTick() {
         Player player = getPlayer();
         if (player == null) return;
 

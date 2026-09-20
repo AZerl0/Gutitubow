@@ -20,7 +20,6 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
@@ -33,7 +32,6 @@ public class AppraisalAbility extends Ability {
     private final Map<Player, Integer> lookingPlayers = new HashMap<>();
     private Map<Player, Integer> oldLookingPlayers = new HashMap<>();
     private final Map<UUID, InfoDisplay> playerAppraisals = new HashMap<>();
-    private BukkitTask updateTask;
 
 
     public AppraisalAbility(AbilityContext context) {
@@ -46,7 +44,7 @@ public class AppraisalAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
+    protected void onInit(Player player) {
         updateTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -56,7 +54,7 @@ public class AppraisalAbility extends Ability {
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         for (InfoDisplay infoDisplay : new HashSet<>(playerAppraisals.values())) {
             infoDisplay.remove();
         }

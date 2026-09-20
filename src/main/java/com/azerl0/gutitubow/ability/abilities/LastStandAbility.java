@@ -41,7 +41,7 @@ public class LastStandAbility extends Ability {
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         stopLastStand();
     }
 

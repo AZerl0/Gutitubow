@@ -45,7 +45,7 @@ public class SmashAbility extends Ability {
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         for (CountdownDisplay countdownDisplay : new HashSet<>(playerCountdowns.values())) {
             countdownDisplay.remove();
         }

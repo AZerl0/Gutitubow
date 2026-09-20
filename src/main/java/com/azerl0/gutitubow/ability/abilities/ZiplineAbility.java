@@ -10,8 +10,6 @@ import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +19,6 @@ import java.util.Objects;
 public class ZiplineAbility extends Ability {
     private Zipline zipline;
     private @Nullable Chicken leashChicken;
-    private BukkitTask updateTask;
 
 
     public ZiplineAbility(AbilityContext context) {
@@ -34,18 +31,7 @@ public class ZiplineAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update();
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
-
-    }
-
-    @Override
-    public void onReset() {
+    protected void onReset() {
         if (zipline != null) context.ziplineManager().removeZipline(zipline);
         if (leashChicken != null) leashChicken.remove();
         updateTask.cancel();
@@ -91,7 +77,8 @@ public class ZiplineAbility extends Ability {
         }
     }
 
-    private void update() {
+    @Override
+    protected void onTick() {
         if (leashChicken != null) {
             if (leashChicken.isInsideVehicle()) {
                 if (getPlayer() != null) leashChicken.setLeashHolder(getPlayer());

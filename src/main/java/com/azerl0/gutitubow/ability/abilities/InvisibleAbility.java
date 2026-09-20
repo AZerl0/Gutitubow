@@ -40,12 +40,12 @@ public class InvisibleAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
+    protected void onInit(Player player) {
         toInvisibleProgressTick = 0;
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         stopInvisible();
     }
 

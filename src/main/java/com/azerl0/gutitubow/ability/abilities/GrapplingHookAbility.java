@@ -15,8 +15,6 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +25,6 @@ public class GrapplingHookAbility extends Ability {
     private @Nullable Chicken leashChicken;
     private @Nullable Arrow grapplingArrow;
     private GrapplingHoolAbilityStateType state = GrapplingHoolAbilityStateType.NONE;
-    private BukkitTask updateTask;
 
     public GrapplingHookAbility(AbilityContext context) {
         super(context);
@@ -39,20 +36,9 @@ public class GrapplingHookAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update();
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
-    }
-
-    @Override
-    public void onReset() {
+    protected void onReset() {
         if (leashChicken != null) leashChicken.remove();
         if (grapplingArrow != null) grapplingArrow.remove();
-        updateTask.cancel();
     }
 
     @Override

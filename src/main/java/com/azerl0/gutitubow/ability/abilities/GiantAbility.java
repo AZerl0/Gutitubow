@@ -39,7 +39,7 @@ public class GiantAbility extends Ability {
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         resetGiant();
     }
 

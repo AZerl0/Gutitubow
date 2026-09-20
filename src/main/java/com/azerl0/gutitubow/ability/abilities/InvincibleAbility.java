@@ -21,8 +21,6 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -34,7 +32,6 @@ public class InvincibleAbility extends Ability {
     private final int MAX_INVINCIBLE_CHARGE = 10 * 20;
     private boolean canInvincible = true;
     private boolean isInvincible = false;
-    private BukkitTask updateTask;
 
     public InvincibleAbility(AbilityContext context) {
         super(context);
@@ -46,23 +43,10 @@ public class InvincibleAbility extends Ability {
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         resetInvincible();
         if (updateTask != null) updateTask.cancel();
         updateTask = null;
-    }
-
-    @Override
-    public void onInit(Player player) {
-        if (updateTask != null && !updateTask.isCancelled()) return;
-
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update();
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
-
     }
 
     @Override
@@ -184,7 +168,8 @@ public class InvincibleAbility extends Ability {
         equipment.setBoots(ItemStack.of(Material.AIR));
     }
 
-    private void update() {
+    @Override
+    protected void onTick() {
         Player player = getPlayer();
         if (player == null) return;
         if (isInvincible) {

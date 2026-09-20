@@ -11,14 +11,11 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 
 public class JumpAbility extends Ability {
-    private BukkitTask task = null;
     private int chargeTick;
     private final int maxChargeTick = (2 * 20) * 10; // 一つのゲージのチャージに2秒かかりそのゲージが10個ある
 
@@ -33,22 +30,17 @@ public class JumpAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
+    protected void onInit(Player player) {
         player.setAllowFlight(true);
         chargeTick = 0;
-        if (task != null && !task.isCancelled()) return;
-
-        task = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update(player);
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
-    public void update(Player player) {
+    @Override
+    protected void onTick() {
         chargeTick++;
         if (chargeTick > maxChargeTick) chargeTick = maxChargeTick;
+        Player player = getPlayer();
+        if (player == null) return;
         if (((Entity) player).isOnGround() && chargeTick >= maxChargeTick / 10) player.setAllowFlight(true);
 
         Component message = ComponentUtil.getGaugeComponent(
@@ -62,11 +54,9 @@ public class JumpAbility extends Ability {
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         getPlayer().setAllowFlight(false);
         getPlayer().sendActionBar(Component.empty());
-        if (task != null) task.cancel();
-        task = null;
     }
 
     @Override

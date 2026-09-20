@@ -39,7 +39,7 @@ public class ChangeAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
+    protected void onInit(Player player) {
 
         changeAbilityTask = new BukkitRunnable() {
             @Override
@@ -51,7 +51,7 @@ public class ChangeAbility extends Ability {
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         if (currentAbility != null) currentAbility.reset();
         changeAbilityTask.cancel();
         Player player = getPlayer();
@@ -74,7 +74,7 @@ public class ChangeAbility extends Ability {
         player.getInventory().setItem(22, displayItem);
 
         currentAbility = context.game().getAbilityManager().createAbility(nextAbilityType);
-        currentAbility.onInit(player);
+        currentAbility.init(player);
 
         Title title = Title.title(
                 Component.empty(),

@@ -30,12 +30,12 @@ public class ShrinkAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
+    protected void onInit(Player player) {
         Objects.requireNonNull(player.getAttribute(Attribute.SCALE)).setBaseValue(0.75);
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         Player player = getPlayer();
         if (player != null) {
             Objects.requireNonNull(player.getAttribute(Attribute.SCALE)).setBaseValue(1.0);

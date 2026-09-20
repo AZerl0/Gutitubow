@@ -32,12 +32,12 @@ public class EscapeAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
+    protected void onInit(Player player) {
         resetEscape();
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         resetEscape();
     }
 

@@ -28,6 +28,8 @@ public abstract class Ability {
     protected UUID playerUUID;
     protected final AbilityContext context;
     protected BukkitTask cooldownTask;
+    protected BukkitTask updateTask;
+
 
     public Ability(AbilityContext context) {
         this.context = context;
@@ -42,10 +44,16 @@ public abstract class Ability {
 
     public final void init(Player player) {
         this.playerUUID = player.getUniqueId();
+        updateTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                onTick();
+            }
+        }.runTaskTimer(context.gutitubow(), 0L, 1L);
         onInit(player);
     }
 
-    public void onInit(Player player) {}
+    protected void onInit(Player player) {}
 
     public final void reset() {
         onReset();
@@ -58,9 +66,12 @@ public abstract class Ability {
         }
         if (cooldownTask != null) cooldownTask.cancel();
         cooldownTask = null;
+        if (updateTask != null) updateTask.cancel();
     }
 
-    public void onReset() {}
+    protected void onReset() {}
+
+    protected void onTick() {}
 
     public boolean hasCompassCooldown() {
         Player player = getPlayer();

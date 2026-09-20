@@ -27,7 +27,7 @@ public class QuickFireAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
+    protected void onInit(Player player) {
         GamePlayer gamePlayer = context.game().getGamePlayer(player);
         gamePlayer.setMaxArrowStackSize(3);
     }

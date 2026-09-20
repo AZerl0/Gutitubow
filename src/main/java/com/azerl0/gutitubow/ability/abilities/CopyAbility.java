@@ -24,8 +24,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,10 +32,9 @@ import java.util.*;
 public class CopyAbility extends Ability {
     private @Nullable Ability currentAbility;
     private int currentAbilityRemainedTick = 0;
-    private Map<UUID, Long> copiedPlayerTick = new HashMap<>();
-    private List<AbilityType> stockAbilities = new ArrayList<>();
-    private BukkitTask updateTask;
-    private CopiedAbilitiesGUI copiedAbilitiesGUI = new CopiedAbilitiesGUI(this);
+    private final Map<UUID, Long> copiedPlayerTick = new HashMap<>();
+    private final List<AbilityType> stockAbilities = new ArrayList<>();
+    private final CopiedAbilitiesGUI copiedAbilitiesGUI = new CopiedAbilitiesGUI(this);
 
     public CopyAbility(AbilityContext context) {
         super(context);
@@ -49,29 +46,20 @@ public class CopyAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
+    protected void onInit(Player player) {
         player.getInventory().setItem(22, OPEN_STOCKED_ABILITIES_ICON);
-
-
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update();
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
-
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         if (currentAbility != null) currentAbility.reset();
-        updateTask.cancel();
         Player player = getPlayer();
         if (player == null) return;
         player.getInventory().setItem(22, GutitubowItem.INVALID_SLOT_BLACK);
     }
 
-    private void update() {
+    @Override
+    protected void onTick() {
         currentAbilityRemainedTick--;
         if (currentAbility != null) {
             if (currentAbilityRemainedTick <= 0) {
@@ -124,7 +112,7 @@ public class CopyAbility extends Ability {
 
         if (currentAbility != null) currentAbility.reset();
         currentAbility = context.game().getAbilityManager().createAbility(abilityType);
-        currentAbility.onInit(player);
+        currentAbility.init(player);
         currentAbilityRemainedTick = 60 * 20;
         player.sendMessage(Component.text("「").append(abilityType.getName()).append(Component.text("」の能力を1分間使用します。")).color(NamedTextColor.GREEN));
         player.playSound(player, Sound.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, 1.0f, 1.0f);

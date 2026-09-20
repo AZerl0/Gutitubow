@@ -11,8 +11,6 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.RayTraceResult;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +18,6 @@ public class BarrierAbility extends Ability {
     private final int BARRIER_RESTORE_TICK = 20 * 20;
     private int barrierRestockCharge;
     private int barrierStack;
-    private BukkitTask barrierRestockTask = null;
 
     public BarrierAbility(AbilityContext context) {
         super(context);
@@ -32,26 +29,13 @@ public class BarrierAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
+    protected void onInit(Player player) {
         this.barrierStack = 3;
         this.barrierRestockCharge = 0;
-        if (barrierRestockTask != null && !barrierRestockTask.isCancelled()) return;
-
-        barrierRestockTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update();
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     @Override
-    public void onReset() {
-        if (barrierRestockTask != null) barrierRestockTask.cancel();
-        barrierRestockTask = null;
-    }
-
-    private void update() {
+    protected void onTick() {
         if (barrierStack < 3) {
             barrierRestockCharge++;
                     if (barrierRestockCharge >= BARRIER_RESTORE_TICK) {
@@ -60,11 +44,13 @@ public class BarrierAbility extends Ability {
                     }
         }
 
+        Player player = getPlayer();
+        if (player == null) return;
         Component message = Component.text("Barrier: ");
         for (int i = 0; i < 3; i++) {
             message = message.append(Component.text(i < barrierStack ? "○" : "-"));
         }
-        getPlayer().sendActionBar(message);
+        player.sendActionBar(message);
     }
 
     @Override

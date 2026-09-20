@@ -36,7 +36,7 @@ public class DetectionAbility extends Ability {
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         resetGlowing();
     }
 

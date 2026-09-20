@@ -15,14 +15,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 public class ShieldAbility extends Ability {
-    private BukkitTask updateTask;
     private Shield shield;
 
     public ShieldAbility(AbilityContext context) {
@@ -35,23 +32,14 @@ public class ShieldAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
+    protected void onInit(Player player) {
         shield = getEntityManager().spawnGutitubowEntity(player.getLocation(), Shield.class);
         shield.setOwnerUUID(playerUUID);
-        if (updateTask != null && !updateTask.isCancelled()) return;
-
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update();
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         shield.remove();
-        updateTask.cancel();
     }
 
     @Override
@@ -104,7 +92,8 @@ public class ShieldAbility extends Ability {
         }
     }
 
-    private void update() {
+    @Override
+    protected void onTick() {
         Player player = getPlayer();
         if (player == null) return;
         if (shield.isBlocking()) setCompassCooldown(200);

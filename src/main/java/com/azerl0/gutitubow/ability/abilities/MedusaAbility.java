@@ -16,8 +16,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class MedusaAbility extends Ability {
-    private BukkitTask updateTask;
     private final Map<Player, LookingTime> lookingPlayers = new HashMap<>();
     private Map<Player, LookingTime> oldLookingPlayers = new HashMap<>();
     private final Set<Player> petrificationPlayers = new HashSet<>();
@@ -41,19 +38,7 @@ public class MedusaAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update();
-            }
-        }.runTaskTimer(context.gutitubow(), 5L, 1L);
-    }
-
-    @Override
-    public void onReset() {
-        if (updateTask != null) updateTask.cancel();
-        updateTask = null;
+    protected void onReset() {
         resetGlow();
         for (Player target : petrificationPlayers) {
             resetPetrification(target);

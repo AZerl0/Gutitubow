@@ -37,7 +37,6 @@ public class CloneAbility extends Ability {
     private int cloneStock = MAX_CLONE_STOCK_SIZE;
     private int cloneRestockTick = 0;
     private final Set<Clone> clones = new HashSet<>();
-    private BukkitTask updateTask;
 
     public CloneAbility(AbilityContext context) {
         super(context);
@@ -49,22 +48,8 @@ public class CloneAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
-        if (updateTask != null && !updateTask.isCancelled()) return;
-
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update();
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
-    }
-
-    @Override
-    public void onReset() {
+    protected void onReset() {
         resetClones();
-        if (updateTask != null) updateTask.cancel();
-        updateTask = null;
     }
 
     @Override
@@ -101,7 +86,8 @@ public class CloneAbility extends Ability {
         }
     }
 
-    private void update() {
+    @Override
+    protected void onTick() {
         Player player = getPlayer();
         if (player == null) return;
 
@@ -365,9 +351,8 @@ public class CloneAbility extends Ability {
             Vector horizontalDir = new Vector(dx, 0, dz).normalize();
 
 // 最終velocity
-            Vector velocity = horizontalDir.multiply(v * cosTheta)
+            return horizontalDir.multiply(v * cosTheta)
                     .setY(v * sinTheta);
-            return velocity;
         }
 
         private void remove() {

@@ -35,7 +35,7 @@ public class TrackingAbility extends Ability {
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         if (trackingTask != null) trackingTask.cancel();
         trackingTask = null;
 

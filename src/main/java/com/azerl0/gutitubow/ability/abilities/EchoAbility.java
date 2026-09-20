@@ -21,7 +21,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +30,6 @@ import java.util.List;
 
 public class EchoAbility extends Ability {
     private FakePlayer fakePlayer;
-    private BukkitTask updateTask;
     private final List<Flame> flames = new ArrayList<>();
     private int echoTime = 3;
     private boolean timeLeaping = false;
@@ -46,7 +44,7 @@ public class EchoAbility extends Ability {
     }
 
     @Override
-    public void onInit(Player player) {
+    protected void onInit(Player player) {
         fakePlayer = context.fakePlayerManager().createFakePlayer(player.getName(), player.getLocation());
         NPC npc = fakePlayer.getNpc();
         npc.data().set(NPC.Metadata.COLLIDABLE, false);
@@ -54,23 +52,11 @@ public class EchoAbility extends Ability {
         if (fakePlayer.getNpc().getCosmeticEntity() instanceof Player echoPlayer) {
             context.scoreboardManager().addEchoPlayer(echoPlayer);
         }
-
-
-        if (updateTask != null && !updateTask.isCancelled()) return;
-
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update();
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     @Override
-    public void onReset() {
+    protected void onReset() {
         fakePlayer.getNpc().destroy();
-        if (updateTask != null) updateTask.cancel();
-        updateTask = null;
         if (fakePlayer.getNpc().getEntity() instanceof Player echoPlayer) {
             context.scoreboardManager().removeEchoPlayer(echoPlayer);
         }
@@ -116,7 +102,8 @@ public class EchoAbility extends Ability {
         if (echoTime > 5) echoTime = 1;
     }
 
-    private void update() {
+    @Override
+    protected void onTick() {
         Player player = getPlayer();
         if (player == null) return;
         if (!timeLeaping) {
