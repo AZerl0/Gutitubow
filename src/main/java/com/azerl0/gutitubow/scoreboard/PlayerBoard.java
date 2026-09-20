@@ -226,7 +226,6 @@ public class PlayerBoard {
         boolean isInside = game.isInsideNextSafeArea(player.getLocation());
 
         Component insideState = isInside ? Component.text("内").color(NamedTextColor.GOLD) : Component.text("外").color(NamedTextColor.RED);
-//        Component insideState = Component.text("xDiff:" + (player.getLocation().getX() - game.getSafeArea().getX()) + ", yDiff:" + (player.getLocation().getZ() - game.getSafeArea().getZ()));
 
         _insideSafeArea.setDisplay(
                 Component.text(" - セーフエリア: [").color(NamedTextColor.GREEN)
