@@ -410,7 +410,7 @@ public class Game {
         int remainedSeconds = (this.nextTick - this.currentTicks) / 20;
         String remainedText = gamePhase == GamePhase.PHASE0 ? "セーフエリア決定まで後 " : isShrinking() ? "次のフェーズまで後 " : "縮小開始まで後 ";
         if (gamePhase != GamePhase.PRE_FINAL_PHASE  && !isFinalPhase()) {
-            bossBar.name(Component.text("現在のフェーズ " + getPhase() + ": " + remainedText + remainedSeconds + "秒"));
+            bossBar.name(Component.text("現在のフェーズ " + getPhase().getPhaseNumber() + ": " + remainedText + remainedSeconds + "秒"));
         }
 
         //  最終フェーズカウントダウン表示
