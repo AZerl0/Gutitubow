@@ -39,9 +39,7 @@ public class GrapplingHookAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        super.init(player);
-
+    public void onInit(Player player) {
         updateTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -51,9 +49,7 @@ public class GrapplingHookAbility extends Ability {
     }
 
     @Override
-    public void reset() {
-        super.reset();
-
+    public void onReset() {
         if (leashChicken != null) leashChicken.remove();
         if (grapplingArrow != null) grapplingArrow.remove();
         updateTask.cancel();

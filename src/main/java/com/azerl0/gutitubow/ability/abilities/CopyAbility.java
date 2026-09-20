@@ -49,8 +49,7 @@ public class CopyAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        super.init(player);
+    public void onInit(Player player) {
         player.getInventory().setItem(22, OPEN_STOCKED_ABILITIES_ICON);
 
 
@@ -64,7 +63,7 @@ public class CopyAbility extends Ability {
     }
 
     @Override
-    public void reset() {
+    public void onReset() {
         if (currentAbility != null) currentAbility.reset();
         updateTask.cancel();
         Player player = getPlayer();
@@ -125,7 +124,7 @@ public class CopyAbility extends Ability {
 
         if (currentAbility != null) currentAbility.reset();
         currentAbility = context.game().getAbilityManager().createAbility(abilityType);
-        currentAbility.init(player);
+        currentAbility.onInit(player);
         currentAbilityRemainedTick = 60 * 20;
         player.sendMessage(Component.text("「").append(abilityType.getName()).append(Component.text("」の能力を1分間使用します。")).color(NamedTextColor.GREEN));
         player.playSound(player, Sound.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, 1.0f, 1.0f);

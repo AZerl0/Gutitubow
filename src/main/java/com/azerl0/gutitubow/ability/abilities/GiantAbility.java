@@ -39,13 +39,7 @@ public class GiantAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        super.init(player);
-    }
-
-    @Override
-    public void reset() {
-        super.reset();
+    public void onReset() {
         resetGiant();
     }
 

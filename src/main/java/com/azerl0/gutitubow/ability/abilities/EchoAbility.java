@@ -46,8 +46,7 @@ public class EchoAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        super.init(player);
+    public void onInit(Player player) {
         fakePlayer = context.fakePlayerManager().createFakePlayer(player.getName(), player.getLocation());
         NPC npc = fakePlayer.getNpc();
         npc.data().set(NPC.Metadata.COLLIDABLE, false);
@@ -68,8 +67,7 @@ public class EchoAbility extends Ability {
     }
 
     @Override
-    public void reset() {
-        super.reset();
+    public void onReset() {
         fakePlayer.getNpc().destroy();
         if (updateTask != null) updateTask.cancel();
         updateTask = null;

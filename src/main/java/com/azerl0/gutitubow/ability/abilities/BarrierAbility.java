@@ -32,8 +32,7 @@ public class BarrierAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        this.playerUUID = player.getUniqueId();
+    public void onInit(Player player) {
         this.barrierStack = 3;
         this.barrierRestockCharge = 0;
         if (barrierRestockTask != null && !barrierRestockTask.isCancelled()) return;
@@ -47,8 +46,7 @@ public class BarrierAbility extends Ability {
     }
 
     @Override
-    public void reset() {
-        super.reset();
+    public void onReset() {
         if (barrierRestockTask != null) barrierRestockTask.cancel();
         barrierRestockTask = null;
     }

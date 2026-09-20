@@ -45,12 +45,8 @@ public class RapidFireAbility extends Ability {
     }
 
     @Override
-    public void reset() {
-        super.reset();
+    public void onReset() {
         stopRapidFire();
-        Player player = getPlayer();
-        if (player == null) return;
-        player.setCooldown(Material.BOW, 0);
     }
 
     @Override

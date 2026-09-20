@@ -46,17 +46,14 @@ public class InvincibleAbility extends Ability {
     }
 
     @Override
-    public void reset() {
-        super.reset();
+    public void onReset() {
         resetInvincible();
         if (updateTask != null) updateTask.cancel();
         updateTask = null;
     }
 
     @Override
-    public void init(Player player) {
-        super.init(player);
-
+    public void onInit(Player player) {
         if (updateTask != null && !updateTask.isCancelled()) return;
 
         updateTask = new BukkitRunnable() {

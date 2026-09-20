@@ -35,8 +35,7 @@ public class ShieldAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        this.playerUUID = player.getUniqueId();
+    public void onInit(Player player) {
         shield = getEntityManager().spawnGutitubowEntity(player.getLocation(), Shield.class);
         shield.setOwnerUUID(playerUUID);
         if (updateTask != null && !updateTask.isCancelled()) return;
@@ -50,8 +49,7 @@ public class ShieldAbility extends Ability {
     }
 
     @Override
-    public void reset() {
-        super.reset();
+    public void onReset() {
         shield.remove();
         updateTask.cancel();
     }

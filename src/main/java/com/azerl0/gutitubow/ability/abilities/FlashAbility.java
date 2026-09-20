@@ -33,11 +33,6 @@ public class FlashAbility extends Ability {
     }
 
     @Override
-    public void reset() {
-        super.reset();
-    }
-
-    @Override
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
         if (!hasCompassCooldown()) {
             launchFlash();

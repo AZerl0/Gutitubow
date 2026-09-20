@@ -34,9 +34,7 @@ public class ZiplineAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        super.init(player);
-
+    public void onInit(Player player) {
         updateTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -47,8 +45,7 @@ public class ZiplineAbility extends Ability {
     }
 
     @Override
-    public void reset() {
-        super.reset();
+    public void onReset() {
         if (zipline != null) context.ziplineManager().removeZipline(zipline);
         if (leashChicken != null) leashChicken.remove();
         updateTask.cancel();

@@ -40,20 +40,27 @@ public abstract class Ability {
         return Bukkit.getPlayer(playerUUID);
     }
 
-    public void init(Player player) {
+    public final void init(Player player) {
         this.playerUUID = player.getUniqueId();
+        onInit(player);
     }
 
-    public void reset() {
+    public void onInit(Player player) {}
+
+    public final void reset() {
+        onReset();
         Player player = getPlayer();
         if (player != null) {
             getPlayer().sendActionBar(Component.empty());
             setCompassCooldown(0);
+            player.setCooldown(Material.BOW, 0);
             player.setAbsorptionAmount(0);
         }
         if (cooldownTask != null) cooldownTask.cancel();
         cooldownTask = null;
     }
+
+    public void onReset() {}
 
     public boolean hasCompassCooldown() {
         Player player = getPlayer();

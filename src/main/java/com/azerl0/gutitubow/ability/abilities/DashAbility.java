@@ -45,7 +45,7 @@ public class DashAbility extends Ability {
     }
 
     @Override
-    public void reset() {
+    public void onReset() {
         stopSprinting();
     }
 

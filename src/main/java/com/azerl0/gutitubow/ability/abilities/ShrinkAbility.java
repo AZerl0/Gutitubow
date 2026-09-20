@@ -30,16 +30,17 @@ public class ShrinkAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        super.init(player);
-        Objects.requireNonNull(getPlayer().getAttribute(Attribute.SCALE)).setBaseValue(0.75);
+    public void onInit(Player player) {
+        Objects.requireNonNull(player.getAttribute(Attribute.SCALE)).setBaseValue(0.75);
     }
 
     @Override
-    public void reset() {
-        super.reset();
-        Objects.requireNonNull(getPlayer().getAttribute(Attribute.SCALE)).setBaseValue(1.0);
-        Objects.requireNonNull(getPlayer().getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0.1);
+    public void onReset() {
+        Player player = getPlayer();
+        if (player != null) {
+            Objects.requireNonNull(player.getAttribute(Attribute.SCALE)).setBaseValue(1.0);
+            Objects.requireNonNull(player.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0.1);
+        }
         if (shrinkTask != null) shrinkTask.cancel();
         shrinkTask = null;
     }

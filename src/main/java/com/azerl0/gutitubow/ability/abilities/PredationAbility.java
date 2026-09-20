@@ -25,8 +25,7 @@ public class PredationAbility extends Ability {
     }
 
     @Override
-    public void reset() {
-        super.reset();
+    public void onReset() {
         Player player = getPlayer();
         if (player == null) return;
         double maxHealth = context.game().isStarted() ? context.game().getGameSetting().getDefaultHealth() : 20;

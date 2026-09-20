@@ -36,8 +36,7 @@ public class ToughAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        this.playerUUID = player.getUniqueId();
+    public void onInit(Player player) {
         regenerationTick = 60 * 20;
         regeneration();
         regeneratingProgressTick = 0;
@@ -45,7 +44,7 @@ public class ToughAbility extends Ability {
     }
 
     @Override
-    public void reset() {
+    public void onReset() {
         stopRegeneration();
         Player player = getPlayer();
         Objects.requireNonNull(player.getAttribute(Attribute.MAX_ABSORPTION)).setBaseValue(0);

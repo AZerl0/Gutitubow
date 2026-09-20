@@ -32,13 +32,12 @@ public class EscapeAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        this.playerUUID = player.getUniqueId();
-        reset();
+    public void onInit(Player player) {
+        resetEscape();
     }
 
     @Override
-    public void reset() {
+    public void onReset() {
         resetEscape();
     }
 

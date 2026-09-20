@@ -45,8 +45,7 @@ public class FloatAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        this.playerUUID = player.getUniqueId();
+    public void onInit(Player player) {
         this.floatCharge = 15 * 20;
         this.floatAreaCenter = null;
         this.isPlacing = false;
@@ -62,8 +61,7 @@ public class FloatAbility extends Ability {
     }
 
     @Override
-    public void reset() {
-        super.reset();
+    public void onReset() {
         if (updateTask != null) updateTask.cancel();
         updateTask = null;
         stopFloating();

@@ -39,13 +39,12 @@ public class InvisibleAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        this.playerUUID = player.getUniqueId();
+    public void onInit(Player player) {
         toInvisibleProgressTick = 0;
     }
 
     @Override
-    public void reset() {
+    public void onReset() {
         stopInvisible();
     }
 

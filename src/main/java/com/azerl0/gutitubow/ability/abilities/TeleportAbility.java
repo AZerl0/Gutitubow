@@ -34,18 +34,6 @@ public class TeleportAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        this.playerUUID = player.getUniqueId();
-        player.setCooldown(Material.COMPASS, 0);
-    }
-
-    @Override
-    public void reset() {
-        getPlayer().setCooldown(Material.COMPASS, 0);
-    }
-
-
-    @Override
     public void onInteract(PlayerInteractEvent event) {
         ItemStack item = event.getItem();
         Action action = event.getAction();

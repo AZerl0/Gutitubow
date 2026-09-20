@@ -46,9 +46,7 @@ public class AppraisalAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        super.init(player);
-
+    public void onInit(Player player) {
         updateTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -58,9 +56,7 @@ public class AppraisalAbility extends Ability {
     }
 
     @Override
-    public void reset() {
-        super.reset();
-
+    public void onReset() {
         for (InfoDisplay infoDisplay : new HashSet<>(playerAppraisals.values())) {
             infoDisplay.remove();
         }

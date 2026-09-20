@@ -41,10 +41,7 @@ public class MedusaAbility extends Ability {
     }
 
     @Override
-    public void init(Player player) {
-        super.init(player);
-
-
+    public void onInit(Player player) {
         updateTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -54,8 +51,7 @@ public class MedusaAbility extends Ability {
     }
 
     @Override
-    public void reset() {
-        super.reset();
+    public void onReset() {
         if (updateTask != null) updateTask.cancel();
         updateTask = null;
         resetGlow();
