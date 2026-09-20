@@ -12,6 +12,7 @@ import com.azerl0.gutitubow.util.ComponentUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
+import org.bukkit.GameMode;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -72,6 +73,9 @@ public class InvisibleAbility extends Ability {
     private void toInvisible() {
         if (isInvisible()) return;
         Player player = getPlayer();
+        if (player == null) return;
+
+        if (player.getGameMode() == GameMode.SPECTATOR) return;
         toInvisibleProgressTick++;
 
         if (toInvisibleProgressTick >= toInvisibleTick) {
