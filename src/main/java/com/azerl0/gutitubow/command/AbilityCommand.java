@@ -5,6 +5,9 @@ import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.command.argument.AbilityTypeArgument;
 import com.azerl0.gutitubow.gui.guis.AbilitySelectorGUI;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
@@ -13,6 +16,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static io.papermc.paper.command.brigadier.Commands.argument;
 import static io.papermc.paper.command.brigadier.Commands.literal;
@@ -26,61 +32,20 @@ public class AbilityCommand {
                         .then(literal("list").executes(ctx -> list(ctx.getSource().getSender())))
                         .then(literal("gui").executes(ctx -> openGui(ctx.getSource().getSender(), getAbilitySelectorGUI())))
                         .then(literal("get")
-                                .executes(ctx -> {
-                                    if (ctx.getSource().getSender() instanceof Player sender) {
-                                        get(ctx.getSource().getSender(), getAbilityManager(), sender);
-                                    }
-                                    return Command.SINGLE_SUCCESS;
-                                })
+                                .executes(AbilityCommand::get)
                                 .then(argument("target", ArgumentTypes.player())
-                                        .executes(ctx -> {
-                                            final PlayerSelectorArgumentResolver targetResolver = ctx.getArgument("target", PlayerSelectorArgumentResolver.class);
-                                            final Player target = targetResolver.resolve(ctx.getSource()).getFirst();
-                                            return get(ctx.getSource().getSender(), getAbilityManager(), target);
-                                        })))
+                                        .executes(AbilityCommand::get)))
                         .then(literal("set")
                                 .then(argument("ability", new AbilityTypeArgument())
-                                        .executes(ctx -> {
-                                            if (ctx.getSource().getSender() instanceof Player sender) {
-                                                set(
-                                                        ctx.getSource().getSender(),
-                                                        getAbilityManager(),
-                                                        ctx.getArgument("ability", AbilityType.class),
-                                                        sender
-                                                );
-                                            }
-                                            return Command.SINGLE_SUCCESS;
-                                        })
-                                        .then(argument("target", ArgumentTypes.player())
-                                                .executes(ctx -> {
-                                                    final PlayerSelectorArgumentResolver targetResolver = ctx.getArgument("target", PlayerSelectorArgumentResolver.class);
-                                                    final Player target = targetResolver.resolve(ctx.getSource()).getFirst();
-                                                    set(
-                                                            ctx.getSource().getSender(), getAbilityManager(),
-                                                            ctx.getArgument("ability", AbilityType.class),
-                                                            target
-                                                    );
-                                                    return Command.SINGLE_SUCCESS;
-                                                }))))
-                        .then(literal("reset")
-                                .executes(ctx -> {
-                                    if (ctx.getSource().getSender() instanceof Player sender) {
-                                        reset(ctx.getSource().getSender(), getAbilityManager(), sender);
-                                    }
-                                    return Command.SINGLE_SUCCESS;
-                                })
-                                .then(argument("target", ArgumentTypes.player())
-                                        .executes(ctx -> {
-                                                    final PlayerSelectorArgumentResolver targetResolver = ctx.getArgument("target", PlayerSelectorArgumentResolver.class);
-                                                    final Player target = targetResolver.resolve(ctx.getSource()).getFirst();
-                                                    reset(
-                                                            ctx.getSource().getSender(),
-                                                            getAbilityManager(),
-                                                            target
-                                                    );
-                                                    return Command.SINGLE_SUCCESS;
-                                                }
+                                        .executes(AbilityCommand::set)
+                                        .then(argument("targets", ArgumentTypes.players())
+                                                .executes(AbilityCommand::set)
                                         )))
+                        .then(literal("reset")
+                                .executes(AbilityCommand::reset)
+                                .then(argument("targets", ArgumentTypes.players())
+                                        .executes(AbilityCommand::reset)
+                                ))
                         .build(),
                 "Ability command"
         );
@@ -109,44 +74,66 @@ public class AbilityCommand {
         return com.mojang.brigadier.Command.SINGLE_SUCCESS;
     }
 
-    private static int get(CommandSender sender, AbilityManager abilityManager, Player target) {
-        if (!(sender instanceof Player player)) return 0;
-        if (target == null) {
-            player.sendMessage("プレイヤーが見つかりませんでした");
-            return 0;
+    private static int get(CommandContext<CommandSourceStack> context) {
+        Player target = null;
+        final CommandSender sender = context.getSource().getSender();
+        try {
+            final PlayerSelectorArgumentResolver targetResolver = context.getArgument("target", PlayerSelectorArgumentResolver.class);
+            target = targetResolver.resolve(context.getSource()).getFirst();
+        } catch (Exception e) {
+            if (sender instanceof Player sendPlayer) target = sendPlayer;
         }
-        Ability ability = abilityManager.getAbility(target);
+
+        if (target == null) return Command.SINGLE_SUCCESS;
+
+        Ability ability = getAbilityManager().getAbility(target);
         if (ability == null) {
-            player.sendMessage(target.getName() + "は能力を持っていません");
+            sender.sendMessage(target.displayName().append(Component.text("は能力を持っていません")));
             return 0;
+        } else {
+            sender.sendMessage(target.displayName().append(Component.text(target.getName() + "の能力は").append(ability.getType().getName()).append(Component.text("です"))));
+
         }
-        player.sendMessage(Component.text(target.getName() + "の能力は").append(ability.getType().getName()).append(Component.text("です")));
-        return com.mojang.brigadier.Command.SINGLE_SUCCESS;
+
+        return Command.SINGLE_SUCCESS;
     }
 
-    private static void set(CommandSender sender, AbilityManager abilityManager, AbilityType abilityType, Player target) {
-        if (!(sender instanceof Player player)) return;
-        if (target == null) {
-            player.sendMessage("プレイヤーが見つかりませんでした");
-            return;
+    private static int set(CommandContext<CommandSourceStack> context) {
+        List<Player> targets = new ArrayList<>();
+        final CommandSender sender = context.getSource().getSender();
+        try {
+            final PlayerSelectorArgumentResolver resolver = context.getArgument("targets", PlayerSelectorArgumentResolver.class);
+            targets = resolver.resolve(context.getSource());
+        } catch (Exception e) {
+            if (sender instanceof Player sendPlayer) {
+                targets.add(sendPlayer);
+            }
         }
-        if (abilityType == null) {
-            player.sendMessage("その能力は存在しません");
-            return;
+        AbilityType abilityType = context.getArgument("ability", AbilityType.class);
+
+        for (final Player target : targets) {
+            getAbilityManager().setAbility(target, abilityType);
+            Component abilityTypeMessage = abilityType.getName().color(NamedTextColor.GOLD).hoverEvent(abilityType.getDisplayItem().asHoverEvent());
+            sender.sendMessage(target.displayName().append(Component.text("の能力を ")).append(abilityTypeMessage).append(Component.text(" に設定しました！").color(NamedTextColor.WHITE)));
         }
-        abilityManager.setAbility(target, abilityType);
-        Component abilityTypeMessage = abilityType.getName().color(NamedTextColor.GOLD).hoverEvent(abilityType.getDisplayItem().asHoverEvent());
-        player.sendMessage(Component.text(target.getName() + "の能力を ").append(abilityTypeMessage).append(Component.text(" に設定しました！").color(NamedTextColor.WHITE)));
+        return Command.SINGLE_SUCCESS;
     }
 
-    private static int reset(CommandSender sender, AbilityManager abilityManager, Player target) {
-        if (!(sender instanceof Player player)) return 0;
-        if (target == null) {
-            player.sendMessage("プレイヤーが見つかりませんでした");
-            return 0;
+    private static int reset(CommandContext<CommandSourceStack> context) {
+        List<Player> targets = new ArrayList<>();
+        final CommandSender sender = context.getSource().getSender();
+        try {
+            final PlayerSelectorArgumentResolver resolver = context.getArgument("targets", PlayerSelectorArgumentResolver.class);
+            targets = resolver.resolve(context.getSource());
+        } catch (Exception e) {
+            if (sender instanceof Player sendPlayer) targets.add(sendPlayer);
         }
-        abilityManager.resetAbility(target);
-        player.sendMessage(target.getName() + "の能力を削除しました");
-        return com.mojang.brigadier.Command.SINGLE_SUCCESS;
+
+        AbilityManager abilityManager = getAbilityManager();
+        for (final Player target : targets) {
+            abilityManager.resetAbility(target);
+            sender.sendMessage(target.displayName().append(Component.text("の能力を削除しました")));
+        }
+        return Command.SINGLE_SUCCESS;
     }
 }
