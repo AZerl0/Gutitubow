@@ -42,7 +42,7 @@ public class InvincibleAbility extends Ability {
 
     @Override
     public @NotNull AbilityType getType() {
-        return null;
+        return AbilityType.INVINCIBLE;
     }
 
     @Override
