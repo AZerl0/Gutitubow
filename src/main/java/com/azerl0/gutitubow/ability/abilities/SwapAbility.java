@@ -16,10 +16,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
@@ -119,13 +116,16 @@ public class SwapAbility extends Ability {
                 if (arrow.isInBlock()) continue;
             }
 
-
             Location playerEyeLocation = player.getEyeLocation().clone();
+            Location entityLocation = entity.getLocation();
+            if (entity instanceof LivingEntity livingEntity) {
+                entityLocation = livingEntity.getEyeLocation();
+            }
 
             RayTraceResult blockHit = player.getWorld().rayTraceBlocks(
                     playerEyeLocation,
-                    entity.getLocation().clone().toVector().subtract(playerEyeLocation.toVector()),
-                    playerEyeLocation.distance(entity.getLocation()),
+                    entityLocation.clone().toVector().subtract(playerEyeLocation.toVector()),
+                    playerEyeLocation.distance(entityLocation),
                     FluidCollisionMode.NEVER,
                     true
             );
