@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EchoAbility extends Ability {
-    private FakePlayer fakePlayer;
+    private @Nullable FakePlayer fakePlayer;
     private final List<Flame> flames = new ArrayList<>();
     private int echoTime = 3;
     private boolean timeLeaping = false;
@@ -45,21 +45,12 @@ public class EchoAbility extends Ability {
 
     @Override
     protected void onInit(Player player) {
-        fakePlayer = context.fakePlayerManager().createFakePlayer(player.getName(), player.getLocation());
-        NPC npc = fakePlayer.getNpc();
-        npc.data().set(NPC.Metadata.COLLIDABLE, false);
-        npc.getEntity().setSneaking(true);
-        if (fakePlayer.getNpc().getCosmeticEntity() instanceof Player echoPlayer) {
-            context.scoreboardManager().addEchoPlayer(echoPlayer);
-        }
+        createFakePlayer();
     }
 
     @Override
     protected void onReset() {
-        fakePlayer.getNpc().destroy();
-        if (fakePlayer.getNpc().getEntity() instanceof Player echoPlayer) {
-            context.scoreboardManager().removeEchoPlayer(echoPlayer);
-        }
+        removeFakePlayer();
     }
 
     @Override
@@ -94,6 +85,29 @@ public class EchoAbility extends Ability {
         }
     }
 
+    private void createFakePlayer() {
+        Player player = getPlayer();
+        if (player == null) return;
+
+        fakePlayer = context.fakePlayerManager().createFakePlayer(player.getName(), player.getLocation());
+        NPC npc = fakePlayer.getNpc();
+        npc.data().set(NPC.Metadata.COLLIDABLE, false);
+        npc.getEntity().setSneaking(true);
+        if (fakePlayer.getNpc().getCosmeticEntity() instanceof Player echoPlayer) {
+            context.scoreboardManager().addEchoPlayer(echoPlayer);
+        }
+    }
+
+    private void removeFakePlayer() {
+        if (fakePlayer == null) return;
+        fakePlayer.getNpc().destroy();
+        if (fakePlayer.getNpc().getEntity() instanceof Player echoPlayer) {
+            context.scoreboardManager().removeEchoPlayer(echoPlayer);
+        }
+        fakePlayer = null;
+
+    }
+
     private void onRightClickCompass() {
         Player player = getPlayer();
         if (player == null) return;
@@ -106,16 +120,21 @@ public class EchoAbility extends Ability {
     protected void onTick() {
         Player player = getPlayer();
         if (player == null) return;
-        if (!timeLeaping) {
-            flames.add(Flame.getFlame(player));
-            if (flames.size() > 5 * 20) flames.removeFirst();
-            int index = 5 * 20 - echoTime * 20;
-            if (index >= flames.size()) index = 0;
-            if (!flames.isEmpty()) updateFakePlayer(fakePlayer, flames.get(index));
 
+        if (!timeLeaping) {
+            if (player.getGameMode() == GameMode.SPECTATOR) {
+                removeFakePlayer();
+            } else {
+                if (fakePlayer == null) createFakePlayer();
+                flames.add(Flame.getFlame(player));
+                if (flames.size() > 5 * 20) flames.removeFirst();
+                int index = 5 * 20 - echoTime * 20;
+                if (index >= flames.size()) index = 0;
+                if (!flames.isEmpty()) updateFakePlayer(fakePlayer, flames.get(index));
+            }
         }
         if (!hasCompassCooldown()) player.sendActionBar(Component.text("反響: " + echoTime + "秒前"));
-        if (fakePlayer.getNpc().getCosmeticEntity() instanceof Player echoPlayer) {
+        if (fakePlayer != null && fakePlayer.getNpc().getCosmeticEntity() instanceof Player echoPlayer) {
             PotionEffect invisible = new PotionEffect(PotionEffectType.INVISIBILITY, -1, 0, true, false, true);
             echoPlayer.addPotionEffect(invisible);
         }

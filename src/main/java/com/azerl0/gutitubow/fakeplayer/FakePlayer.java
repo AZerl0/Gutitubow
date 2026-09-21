@@ -16,7 +16,7 @@ public class FakePlayer {
     private final Location spawnLocation;
     private final NPC npc;
 
-    public FakePlayer(JavaPlugin plugin, final String name, final Location spawnLocation) {
+    protected FakePlayer(JavaPlugin plugin, final String name, final Location spawnLocation) {
         this.plugin = plugin;
         this.name = name;
         this.spawnLocation = spawnLocation;
