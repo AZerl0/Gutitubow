@@ -6,6 +6,7 @@ import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.event.gameplayer.*;
 import com.azerl0.gutitubow.gui.guis.CopiedAbilitiesGUI;
+import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import net.kyori.adventure.text.Component;
@@ -152,6 +153,9 @@ public class CopyAbility extends Ability {
             copiedPlayerTick.put(origin.getUniqueId(), currentTime);
             player.sendMessage(Component.text("「").append(abilityType.getName()).append(Component.text("」の能力をストックしました。")).color(NamedTextColor.GREEN));
             player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+            if (stockAbilities.size() >= 9) {
+                AdvancementUtil.grantAdvancement(player, "gutitubow:ability/extend/copy_collect_many_ability");
+            }
         }
     }
 

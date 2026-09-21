@@ -1,0 +1,29 @@
+{
+  "parent": "gutitubow:ability/type/copy",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "text": "「複製」の能力で9以上の能力をストックする"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:written_book"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "能力コレクター",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
