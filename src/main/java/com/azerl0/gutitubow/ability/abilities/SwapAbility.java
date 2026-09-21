@@ -71,7 +71,7 @@ public class SwapAbility extends Ability {
             Location playerLocation = player.getLocation().clone();
             Location entityLocation = lookingEntity.get().getLocation().clone();
 
-            player.teleport(entityLocation.setDirection(playerLocation.getDirection()));
+            player.teleport(entityLocation.clone().setDirection(playerLocation.getDirection()));
             lookingEntity.get().teleport(playerLocation.setDirection(entityLocation.getDirection()));
             player.setVelocity(playerVelocity);
             if (lookingEntity.get() instanceof Entity entity) {
