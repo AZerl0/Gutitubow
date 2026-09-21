@@ -1,0 +1,29 @@
+{
+  "parent": "gutitubow:ability/type/barrier",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "text": "「障壁」の能力でプレイヤーを捕まえる"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:axolotl_bucket"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "ポケモンゲットだぜ",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

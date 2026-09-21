@@ -4,6 +4,8 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.map.MapRepairManager;
+import com.azerl0.gutitubow.util.AdvancementUtil;
+import com.azerl0.gutitubow.util.LocationUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -63,7 +65,16 @@ public class BarrierAbility extends Ability {
     }
 
     private void placeBarrier() {
-        Location baseLoc = getBaseLocation(getPlayer());
+        Player player = getPlayer();
+        if (player == null) return;
+
+        Location baseLoc = getBaseLocation(player);
+
+        for (Player nearPlayer : baseLoc.getNearbyPlayers(1.5)) {
+            if (nearPlayer.getUniqueId().equals(playerUUID)) continue;
+            if (!LocationUtil.isIn3x3x3(baseLoc, nearPlayer.getLocation())) continue;
+            AdvancementUtil.grantAdvancement(player, "gutitubow:ability/extend/barrier_catch_player");
+        }
 
         //Up
         fiLLGlass(baseLoc.clone().add(1, 2, 1), baseLoc.clone().add(-1, 2, -1));
