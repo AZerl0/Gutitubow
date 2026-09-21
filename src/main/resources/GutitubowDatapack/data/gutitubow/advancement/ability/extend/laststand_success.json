@@ -1,0 +1,29 @@
+{
+  "parent": "gutitubow:ability/type/laststand",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "text": "「背水」の能力で背水の陣を敷いてからプレイヤーを倒す"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:orange_dye"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "ピンチをチャンスに",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

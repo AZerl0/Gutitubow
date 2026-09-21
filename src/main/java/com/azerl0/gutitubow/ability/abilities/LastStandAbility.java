@@ -8,6 +8,7 @@ import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
+import com.azerl0.gutitubow.util.AdvancementUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -84,6 +85,7 @@ public class LastStandAbility extends Ability {
             GamePlayer gamePlayer = context.game().getGamePlayer(player);
             gamePlayer.setArrowReloadTick(60);
             event.setKillMessage(Component.text("背水の陣は成功した").color(NamedTextColor.YELLOW));
+            AdvancementUtil.grantAdvancement(player, "gutitubow:ability/extend/laststand_success");
         }
     }
 
