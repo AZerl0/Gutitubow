@@ -245,5 +245,7 @@ public class GameListener implements Listener {
     @EventHandler
     public void onWin(GamePlayerWinEvent event) {
         AdvancementUtil.grantAdvancement(event.getPlayer(), "gutitubow:gutitubow/win");
+        GamePlayer gamePlayer = game.getGamePlayer(event.getPlayer());
+        if (gamePlayer.getTotalKill() == 0) AdvancementUtil.grantAdvancement(event.getPlayer(), "gutitubow:gutitubow/win");
     }
 }
