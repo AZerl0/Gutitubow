@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.MathUtil;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import org.bukkit.*;
@@ -100,6 +101,7 @@ public class DashAbility extends Ability {
             for (Block block : this.replaceableBlocks) {
                 checkReplaceBlock(block);
             }
+            if (replacedBlocks.contains(player.getLocation().clone().add(0.0, -0.4, 0.0).getBlock())) AdvancementUtil.grantAdvancement(player, "gutitubow:ability/extend/dash_on_water");
             this.replaceableBlocks.clear();
 
         }
