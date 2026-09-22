@@ -50,7 +50,7 @@ public class SwapAbility extends Ability {
             setCompassCooldown(isDebugMode() ? 20 : 15 * 20);
             startCompassCooldownTask();
         } else {
-            setCompassCooldown(60);
+            setCompassCooldown(20);
             startCompassCooldownTask();
         }
     }
