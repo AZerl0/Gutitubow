@@ -13,11 +13,8 @@ import org.bukkit.block.data.Levelled;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInputEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +24,6 @@ import java.util.Set;
 
 public class DashAbility extends Ability {
     private int dashingTick;
-    private BukkitTask task = null;
     private final int topSpeedTick = 5 * 20;
     private final Set<Block> replaceableBlocks;
     private final Set<Block> replacedBlocks;
@@ -50,27 +46,17 @@ public class DashAbility extends Ability {
     }
 
     @Override
-    public void onToggleSprint(PlayerToggleSprintEvent event) {
+    public void onTick() {
         Player player = getPlayer();
-
-        if (event.isSprinting()) {
-            if (task != null && !task.isCancelled()) return;
-
-            task = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (!player.isSprinting() || player.isSwimming() || player.isFlying() || player.isSneaking()) {
-                        stopSprinting();
-                        this.cancel();
-                        return;
-                    }
-                    Sprinting(player);
-                }
-            }.runTaskTimer(context.gutitubow(), 0L, 1L);
+        if (player == null) return;
+        if (player.isSprinting()) {
+            onSprinting(player);
+        } else {
+            if (dashingTick > 0) stopSprinting();
         }
     }
 
-    private void Sprinting(Player player) {
+    private void onSprinting(Player player) {
         this.dashingTick += 1;
 
         if (this.dashingTick < topSpeedTick && this.dashingTick >= 1.2 * 20) {
@@ -167,8 +153,6 @@ public class DashAbility extends Ability {
 
                 }
             }
-
-
         }
     }
 
