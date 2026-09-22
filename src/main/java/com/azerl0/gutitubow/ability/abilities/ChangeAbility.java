@@ -75,7 +75,7 @@ public class ChangeAbility extends Ability {
         AbilitySelector abilitySelector = new AbilitySelector(disabledAbilities);
         AbilityType nextAbilityType = abilitySelector.nextAbility();
 
-        if (currentAbility.getType() == nextAbilityType) AdvancementUtil.grantAdvancement(player, "gutitubow:ability/extend/change_same_ability");
+        if (currentAbility != null && currentAbility.getType() == nextAbilityType) AdvancementUtil.grantAdvancement(player, "gutitubow:ability/extend/change_same_ability");
         ItemStack displayItem = nextAbilityType.getDisplayItem(player);
         ItemUtil.setCantMove(displayItem, true);
         ItemUtil.setCantDrop(displayItem, true);
