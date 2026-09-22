@@ -235,11 +235,11 @@ public class Game {
             }
         }
         resetSoloPlayerTeams();
-        if (gameMap != null) {
-            gameMap.getBorder().setCenter(0.0, 0.0);
-            gameMap.getBorder().setSize(59999968);
-            gameMap.getBorder().setDamageBuffer(0.0);
-            safeArea = gameMap.getCenter();
+        if (arena != null) {
+            arena.getGameMap().getBorder().setCenter(0.0, 0.0);
+            arena.getGameMap().getBorder().setSize(59999968);
+            arena.getGameMap().getBorder().setDamageBuffer(0.0);
+            safeArea = arena.getGameMap().getCenter();
         }
 
         for (GutitubowEntity gutitubowEntity : gutitubow.getGutitubowEntityManager().getGutitubowEntities()) {
@@ -262,10 +262,10 @@ public class Game {
 
 
     private void init() {
-        this.nextTick = gameSetting.getPhase0seconds() * 20;
-        this.gameMap.getBorder().setCenter(this.gameMap.getCenter());
-        this.gameMap.getBorder().setSize(this.gameMap.getSize());
-        safeArea = gameMap.getRandomSafeArea();
+        nextTick = gameSetting.getPhase0seconds() * 20;
+        arena.getGameMap().getBorder().setCenter(arena.getGameMap().getCenter());
+        arena.getGameMap().getBorder().setSize(arena.getGameMap().getSize());
+        safeArea = arena.getGameMap().getRandomSafeArea();
         deathOrder.clear();
         alivePlayers.clear();
         AbilitySelector abilitySelector = new AbilitySelector(getGameSetting().getDisabledAbilities());
@@ -287,7 +287,7 @@ public class Game {
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(gameSetting.getDefaultHealth());
             player.setHealth(gameSetting.getDefaultHealth());
             if (!debugManager.isNoStartTeleport()) {
-                Location location = MathUtil.randomLocation(safeArea, gameMap.getSize() - 30 * 2);
+                Location location = MathUtil.randomLocation(safeArea, arena.getGameMap().getSize() - 30 * 2);
                 location.setY(200.0);
                 location.getDirection().setY(0);
                 player.teleport(location);
@@ -404,7 +404,7 @@ public class Game {
         if (isShrinking()) {
             for (GutitubowEntity gutitubowEntity : gutitubow.getGutitubowEntityManager().getGutitubowEntities()) {
                 if (gutitubowEntity instanceof CarePackage carePackage) {
-                    if (!gameMap.getBorder().isInside(carePackage.getLocation())) carePackage.remove();
+                    if (!arena.getGameMap().getBorder().isInside(carePackage.getLocation())) carePackage.remove();
                 }
             }
         }
@@ -468,7 +468,7 @@ public class Game {
             }
 
             if (gamePhase.getPhaseNumber() >= 1 && gamePhase.getPhaseNumber() <= 5 && isShrinking()) {
-                gameMap.getBorder().setCenter(MathUtil.getLocationByProgress(gameMap.getCenter(), safeArea, getShrinkProgress()));
+                arena.getGameMap().getBorder().setCenter(MathUtil.getLocationByProgress(arena.getGameMap().getCenter(), safeArea, getShrinkProgress()));
             }
 
             if (remainedSeconds <= 10 && this.currentTicks % 20 == 0 && !isFinalPhase()) {
@@ -486,7 +486,7 @@ public class Game {
             int lastPhaseCycleCurrentTick = currentTicks % LAST_PHASE_CYCLE_TICK;
             if (lastPhaseCycleCurrentTick == 0) {
                 oldSafeArea = safeArea.clone();
-                Location newSafeArea = gameMap.getRandomSafeArea();
+                Location newSafeArea = arena.getGameMap().getRandomSafeArea();
 
                 double maxDistance = 15.0;
 
@@ -504,7 +504,7 @@ public class Game {
                 oldSafeArea = safeArea.clone();
             }
             float progress = (float) lastPhaseCycleCurrentTick / (float) LAST_PHASE_CYCLE_TICK;
-            gameMap.getBorder().setCenter(MathUtil.getLocationByProgress(oldSafeArea, safeArea, progress));
+            arena.getGameMap().getBorder().setCenter(MathUtil.getLocationByProgress(oldSafeArea, safeArea, progress));
         }
 
     }
@@ -570,7 +570,7 @@ public class Game {
             bossBar.color(BossBar.Color.RED);
             nextTick = 30 * 20;
             int borderChangeTicks = 31 * 20;
-            gameMap.getBorder().changeSize(getNextSafeAreaSize(), borderChangeTicks);
+            arena.getGameMap().getBorder().changeSize(getNextSafeAreaSize(), borderChangeTicks);
 
         } else {
             if (gamePhase == GamePhase.PHASE0) init();
@@ -897,7 +897,7 @@ public class Game {
             case PHASE5, PHASE5_SHRINKING -> GamePhase.FINAL_PHASE;
             default -> GamePhase.FINAL_PHASE;
         };
-        Location nextPhaseSafeAreaLoc = MathUtil.getLocationByProgress(gameMap.getCenter(), safeArea, getShrinkProgress(nextGamePhase));
+        Location nextPhaseSafeAreaLoc = MathUtil.getLocationByProgress(arena.getGameMap().getCenter(), safeArea, getShrinkProgress(nextGamePhase));
         return Math.abs(loc.getX() - nextPhaseSafeAreaLoc.getX()) <= getNextSafeAreaSize() / 2 && Math.abs(loc.getZ() - nextPhaseSafeAreaLoc.getZ()) <= getNextSafeAreaSize() / 2;
     }
 
