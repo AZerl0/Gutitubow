@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.event.gameplayer.*;
+import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import net.kyori.adventure.text.Component;
@@ -68,6 +69,8 @@ public class ChangeAbility extends Ability {
         disabledAbilities.add(AbilityType.CHANGE);
         AbilitySelector abilitySelector = new AbilitySelector(disabledAbilities);
         AbilityType nextAbilityType = abilitySelector.nextAbility();
+
+        if (currentAbility.getType() == nextAbilityType) AdvancementUtil.grantAdvancement(player, "gutitubow:ability/extend/change_same_ability");
         ItemStack displayItem = nextAbilityType.getDisplayItem(player);
         ItemUtil.setCantMove(displayItem, true);
         ItemUtil.setCantDrop(displayItem, true);

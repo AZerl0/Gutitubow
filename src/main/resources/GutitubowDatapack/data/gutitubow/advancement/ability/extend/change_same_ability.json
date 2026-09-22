@@ -1,0 +1,29 @@
+{
+  "parent": "gutitubow:ability/type/change",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "text": "「変化」の能力で前と同じ能力に変化する"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:ender_chest"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "もう一回遊べるドン",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": false
+}
