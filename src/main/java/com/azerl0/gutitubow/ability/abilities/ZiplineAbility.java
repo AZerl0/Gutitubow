@@ -34,7 +34,6 @@ public class ZiplineAbility extends Ability {
     protected void onReset() {
         if (zipline != null) context.ziplineManager().removeZipline(zipline);
         if (leashChicken != null) leashChicken.remove();
-        updateTask.cancel();
     }
 
     @Override

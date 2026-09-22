@@ -19,7 +19,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
@@ -44,24 +43,14 @@ public class AppraisalAbility extends Ability {
     }
 
     @Override
-    protected void onInit(Player player) {
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update();
-            }
-        }.runTaskTimer(context.gutitubow(), 5L, 1L);
-    }
-
-    @Override
     protected void onReset() {
         for (InfoDisplay infoDisplay : new HashSet<>(playerAppraisals.values())) {
             infoDisplay.remove();
         }
-        updateTask.cancel();
     }
 
-    private void update() {
+    @Override
+    public void onTick() {
         Player player = getPlayer();
         if (player == null) return;
 

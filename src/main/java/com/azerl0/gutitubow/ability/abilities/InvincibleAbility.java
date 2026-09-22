@@ -45,8 +45,6 @@ public class InvincibleAbility extends Ability {
     @Override
     protected void onReset() {
         resetInvincible();
-        if (updateTask != null) updateTask.cancel();
-        updateTask = null;
     }
 
     @Override

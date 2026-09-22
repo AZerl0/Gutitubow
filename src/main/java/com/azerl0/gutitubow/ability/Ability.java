@@ -28,8 +28,6 @@ public abstract class Ability {
     protected UUID playerUUID;
     protected final AbilityContext context;
     protected BukkitTask cooldownTask;
-    protected BukkitTask updateTask;
-
 
     public Ability(AbilityContext context) {
         this.context = context;
@@ -44,12 +42,6 @@ public abstract class Ability {
 
     public final void init(Player player) {
         this.playerUUID = player.getUniqueId();
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                onTick();
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
         onInit(player);
     }
 
@@ -66,7 +58,6 @@ public abstract class Ability {
         }
         if (cooldownTask != null) cooldownTask.cancel();
         cooldownTask = null;
-        if (updateTask != null) updateTask.cancel();
     }
 
     protected void onReset() {}

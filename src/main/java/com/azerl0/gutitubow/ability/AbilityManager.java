@@ -5,6 +5,8 @@ import com.azerl0.gutitubow.util.ItemUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -13,9 +15,16 @@ public class AbilityManager {
 
     private final Map<UUID, Ability> abilities = new HashMap<>();
     private final AbilityContext context;
+    private final BukkitTask updateTask;
 
     public AbilityManager(AbilityContext context) {
         this.context = context;
+        updateTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                update();
+            }
+        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     @Nullable
@@ -76,4 +85,9 @@ public class AbilityManager {
         return AbilityRegistry.create(abilityType, context);
     }
 
+    private void update() {
+        for (Ability ability : new HashSet<>(abilities.values())) {
+            ability.onTick();
+        }
+    }
 }
