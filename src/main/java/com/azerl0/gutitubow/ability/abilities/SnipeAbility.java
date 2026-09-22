@@ -11,6 +11,7 @@ import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GamePhase;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
+import com.azerl0.gutitubow.util.AdvancementUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
@@ -89,6 +90,7 @@ public class SnipeAbility extends Ability {
                             double distance = start.distance(armorStand.getLocation());
                             if (distance >= 36.0) {
                                 shield.shieldBreak();
+                                AdvancementUtil.grantAdvancement(player, "gutitubow:ability/extend/snipe_break_shield");
                                 return false;
                             } else {
                                 if (!failed[0]) {

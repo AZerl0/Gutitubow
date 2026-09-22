@@ -1,0 +1,29 @@
+{
+  "parent": "gutitubow:ability/type/snipe",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "text": "「狙撃」の能力で大盾の盾を撃ち抜く"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:iron_axe"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "ガラス製の盾だって？",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": false
+}
