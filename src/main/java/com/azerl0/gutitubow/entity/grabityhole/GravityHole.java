@@ -1,6 +1,5 @@
 package com.azerl0.gutitubow.entity.grabityhole;
 
-import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.GutitubowEntityManager;
 import com.azerl0.gutitubow.entity.GutitubowEntityType;
@@ -8,8 +7,6 @@ import com.azerl0.gutitubow.util.EntityUtil;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +15,6 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class GravityHole extends GutitubowEntity {
-    private BukkitTask updateTask;
     private int life;
     private boolean isSmall;
     private Vector direction;
@@ -51,23 +47,10 @@ public class GravityHole extends GutitubowEntity {
     }
 
     @Override
-    public void remove() {
-        updateTask.cancel();
-        removeGutitubowEntity();
-    }
-
-    @Override
     protected void summon(Location location) {
-        uuid = UUID.randomUUID();
         life = 3 * 20;
         isSmall = true;
         direction = location.getDirection();
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update();
-            }
-        }.runTaskTimer(Gutitubow.get(), 0L, 1L);
     }
 
     public void setDirection(@NotNull Vector direction) {
@@ -84,7 +67,8 @@ public class GravityHole extends GutitubowEntity {
         onGrowUp();
     }
 
-    private void update() {
+    @Override
+    protected void onTick() {
         life--;
         if (life <= 0) {
             if (isSmall) {

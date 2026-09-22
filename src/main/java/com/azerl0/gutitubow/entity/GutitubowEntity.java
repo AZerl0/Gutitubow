@@ -10,16 +10,17 @@ import java.util.UUID;
 public abstract class GutitubowEntity implements Teleportable {
 
     private final GutitubowEntityManager entityManager;
-    protected UUID uuid;
+    protected final UUID uuid;
     protected Location location;
     protected boolean isRemoved = false;
 
     public GutitubowEntity(GutitubowEntityManager gutitubowEntityManager, Location location) {
         entityManager = gutitubowEntityManager;
         this.location = location;
+        uuid = UUID.randomUUID();
     }
 
-    public UUID getUniqueId() {
+    public final @NotNull UUID getUniqueId() {
         return uuid;
     }
 
@@ -31,16 +32,19 @@ public abstract class GutitubowEntity implements Teleportable {
 
     public abstract Set<UUID> getPartEntitiesUUID();
 
-    public abstract void remove();
-
-    protected abstract void summon(Location location);
-
-    protected final void removeGutitubowEntity() {
+    public final void remove() {
         entityManager.onGutitubowEntityRemove(uuid);
         isRemoved = true;
+        onRemove();
     }
+
+    protected void onRemove() {}
+
+    protected abstract void summon(Location location);
 
     public final boolean isRemoved() {
         return isRemoved;
     }
+
+    protected void onTick() {}
 }

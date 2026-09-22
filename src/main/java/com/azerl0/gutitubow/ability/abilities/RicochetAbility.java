@@ -5,12 +5,14 @@ import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.damage.DamageSource;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
+import com.azerl0.gutitubow.entity.explosionparticle.ExplosionParticle;
 import com.azerl0.gutitubow.game.GamePhase;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.azerl0.gutitubow.util.MathUtil;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -62,15 +64,10 @@ public class RicochetAbility extends Ability {
             ArrowUtil.RicochetEvent(context.gutitubow(), event, 0.8);
 
             setRicochetCount(arrow, ricochetCount - 1);
-            world.spawnParticle(
-                    Particle.EXPLOSION,
-                    arrow.getLocation(),
-                    1,
-                    0, 0, 0,
-                    0,
-                    null,
-                    true
-            );
+
+            context.gutitubow().getGutitubowEntityManager().spawnGutitubowEntity(arrow.getLocation(), ExplosionParticle.class, particle -> {
+                particle.setColor(TextColor.color(4321162));
+            });
 
             int ricochetDamageCount = getRicochetDamageCount(arrow);
             Location loc = arrow.getLocation();

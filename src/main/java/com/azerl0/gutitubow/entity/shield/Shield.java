@@ -15,8 +15,6 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +33,6 @@ public class Shield extends GutitubowEntity {
     private boolean isBlocking;
     private final Map<ArmorStand, Integer> shieldStands = new HashMap<>();
     private final Map<UUID, Long> blockedPlayer = new HashMap<>();
-    private BukkitTask updateTask;
 
     public Shield(GutitubowEntityManager gutitubowEntityManager, Location location) {
         super(gutitubowEntityManager, location);
@@ -69,9 +66,8 @@ public class Shield extends GutitubowEntity {
     }
 
     @Override
-    public void remove() {
+    public void onRemove() {
         for (ArmorStand stand : shieldStands.keySet()) stand.remove();
-        updateTask.cancel();
     }
 
     @Override
@@ -86,15 +82,6 @@ public class Shield extends GutitubowEntity {
             });
             shieldStands.put(armorStand, i);
         }
-
-        uuid = UUID.randomUUID();
-
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                tick();
-            }
-        }.runTaskTimer(Gutitubow.get(), 0L, 1L);
     }
 
     public void setOwnerUUID(UUID uuid) {
@@ -170,7 +157,8 @@ public class Shield extends GutitubowEntity {
         Bukkit.getPluginManager().callEvent(event);
     }
 
-    private void tick() {
+    @Override
+    protected void onTick() {
         Player owner = getOwner();
         if (owner == null) return;
         Game game = Gutitubow.get().getGame();

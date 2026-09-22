@@ -150,6 +150,7 @@ public final class Gutitubow extends JavaPlugin {
 
         game.onDisablePlugin();
         ziplineManager.removeAllZiplines();
+        gutitubowEntityManager.removeAllGutitubowEntities();
     }
 
     private void registerAbilities() {

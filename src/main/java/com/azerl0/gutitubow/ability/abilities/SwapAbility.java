@@ -60,10 +60,10 @@ public class SwapAbility extends Ability {
         if (player == null) return false;
         Optional<Teleportable> lookingEntity = getLookingEntity(player, 50);
         if (lookingEntity.isPresent()) {
-            Vector playerVelocity = player.getVelocity();
+            Vector playerVelocity = player.getVelocity().clone();
             Vector entityVelocity = null;
             if (lookingEntity.get() instanceof Entity entity) {
-                entityVelocity = entity.getVelocity();
+                entityVelocity = entity.getVelocity().clone();
             }
             Location playerLocation = player.getLocation().clone();
             Location entityLocation = lookingEntity.get().getLocation().clone();

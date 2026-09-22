@@ -29,7 +29,6 @@ import org.joml.Vector3f;
 import java.util.*;
 
 public class CarePackage extends GutitubowEntity {
-    private UUID uuid;
     private UUID interactionEntityUUID;
     private UUID displayEntityUUID;
     private boolean isFake;
@@ -118,7 +117,6 @@ public class CarePackage extends GutitubowEntity {
             });
             chickens.add(chicken);
         }
-        uuid = coreEntity.getUniqueId();
         interactionEntityUUID = interaction.getUniqueId();
         displayEntityUUID = blockDisplay.getUniqueId();
         isFake = false;
@@ -155,10 +153,6 @@ public class CarePackage extends GutitubowEntity {
             uuidSet.add(chicken.getUniqueId());
         }
         return uuidSet;
-    }
-
-    public UUID getUniqueId() {
-        return this.uuid;
     }
 
     private void setDisplayName(Component displayName) {
@@ -264,7 +258,8 @@ public class CarePackage extends GutitubowEntity {
         }
     }
 
-    public void remove() {
+    @Override
+    public void onRemove() {
         Entity coreEntity = getCoreEntity();
 
         if (coreEntity == null) return;
@@ -276,7 +271,6 @@ public class CarePackage extends GutitubowEntity {
         }
         removeBalloonEntities();
         coreEntity.remove();
-        removeGutitubowEntity();
     }
 
     public void onInteract(Player player) {
