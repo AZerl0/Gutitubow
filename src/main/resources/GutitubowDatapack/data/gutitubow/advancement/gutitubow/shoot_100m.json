@@ -1,0 +1,35 @@
+{
+  "parent": "gutitubow:gutitubow/shoot_75m",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "frame": "challenge",
+    "announce_to_chat": true,
+    "description": {
+      "text": "100m以上離れた場所からプレイヤーを撃ち抜く\n(狙撃や跳弾、爆弾などの能力ダメージ不可)"
+    },
+    "icon": {
+      "components": {
+        "minecraft:potion_contents": {
+          "custom_color": 15466373
+        }
+      },
+      "count": 1,
+      "id": "minecraft:tipped_arrow"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "届け、遥か彼方へ",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

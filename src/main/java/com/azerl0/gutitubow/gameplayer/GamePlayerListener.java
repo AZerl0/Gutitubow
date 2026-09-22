@@ -52,55 +52,6 @@ public class GamePlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onArrowHit(ProjectileHitEvent event) {
-        if (event.isCancelled()) return;
-
-        Entity shooter = (Entity) event.getEntity().getShooter();
-        Entity tar = event.getHitEntity();
-
-        if (!(event.getEntity() instanceof AbstractArrow)) return;
-        if (event.getEntity() instanceof SpectralArrow) return;
-        if (shooter == null || tar == null) return;
-
-        if (shooter.getUniqueId().equals(tar.getUniqueId())) {
-            event.setCancelled(true);
-            return;
-        }
-        if (EntityUtil.isInvalidHitEntity(tar)) return;
-
-        if (!(tar instanceof Player tarPlayer)) {
-            if (tar instanceof HappyGhast) {
-                event.getEntity().remove();
-                ((HappyGhast) tar).damage(2);
-                event.setCancelled(true);
-                return;
-            }
-            if (!(tar instanceof ArmorStand armorStand && armorStand.isInvulnerable())) event.setCancelled(true);
-            return;
-        } else if (CitizensAPI.getNPCRegistry().isNPC(tarPlayer)) {
-            event.setCancelled(true);
-            return;
-        }
-        if (!(shooter instanceof Player shooterPlayer)) return;
-        if (game.getTeamManager().isTeammate(shooterPlayer, tarPlayer)) {
-            event.setCancelled(true);
-            return;
-        }
-
-        double distance = shooter.getLocation().distance(tar.getLocation());
-
-        DamageSource damageSource = DamageSource.builder(GutitubowDamageType.ARROW_SHOT)
-                .directPlayer(shooterPlayer)
-                .damageLocation(event.getEntity().getLocation())
-                .distance(distance)
-                .build();
-        game.getGamePlayer(tarPlayer).damage(damageSource, 2);
-
-        event.setCancelled(true);
-        event.getEntity().remove();
-    }
-
-    @EventHandler
     public void onDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
 

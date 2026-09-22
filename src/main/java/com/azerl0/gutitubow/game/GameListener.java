@@ -1,44 +1,48 @@
 package com.azerl0.gutitubow.game;
 
+import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.data.damage.DamageSource;
+import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
 import com.azerl0.gutitubow.event.gameplayer.*;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.message.Message;
+import com.azerl0.gutitubow.pdc.LocationDataType;
 import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.ArrowUtil;
+import com.azerl0.gutitubow.util.EntityUtil;
 import de.tr7zw.nbtapi.NBT;
 import net.citizensnpcs.api.CitizensAPI;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.Tag;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDropItemEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class GameListener implements Listener {
-    private final JavaPlugin plugin;
+    private final Gutitubow gutitubow;
     private final Game game;
+    private final NamespacedKey spawnLocationKey;
 
-    public GameListener(JavaPlugin plugin, Game game) {
-        this.plugin = plugin;
+    public GameListener(Gutitubow gutitubow, Game game) {
+        this.gutitubow = gutitubow;
         this.game = game;
+        spawnLocationKey = new NamespacedKey(gutitubow, "spawn_location");
     }
 
     @EventHandler
@@ -64,36 +68,98 @@ public class GameListener implements Listener {
         if (!(event.getEntity() instanceof AbstractArrow arrow)) return;
         if (event.isCancelled()) return;
 
-        Block block = event.getHitBlock();
-        AbilityType abilityType = null;
+        Entity hitEntity = event.getHitEntity();
 
-        if (arrow.getShooter() instanceof Player shooter) {
+        if (hitEntity == null) {
+            // hit block
+            Block block = event.getHitBlock();
+            AbilityType abilityType = null;
 
-            Ability ability = game.getGamePlayer(shooter).getAbility();
-            if (ability != null) abilityType = ability.getType();
-        }
+            if (arrow.getShooter() instanceof Player shooter) {
 
-        if (block != null && event.getEntity() instanceof Arrow) {
-            ((Arrow) event.getEntity()).setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
+                Ability ability = game.getGamePlayer(shooter).getAbility();
+                if (ability != null) abilityType = ability.getType();
+            }
 
-            if (block.getType() == Material.SLIME_BLOCK) {
-                if (abilityType != AbilityType.CONTROL) {
-                    ArrowUtil.RicochetEvent(plugin, event);
-                }
+            if (block != null && event.getEntity() instanceof Arrow) {
+                ((Arrow) event.getEntity()).setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
 
-            } else if (GutitubowBlockTags.BREAKABLE_BY_GUTITUBOW_ARROW.isTagged(block.getType())) {
-                if (game.getGlassBreakManager().breakConnectedGlass(block, 64)) {
+                if (block.getType() == Material.SLIME_BLOCK) {
+                    if (abilityType != AbilityType.CONTROL) {
+                        ArrowUtil.RicochetEvent(gutitubow, event);
+                    }
 
-                    Bukkit.getScheduler().runTask(plugin, () -> NBT.modify(event.getEntity(), nbt -> {
-                        nbt.setBoolean("inGround", false);
-                    }));
+                } else if (GutitubowBlockTags.BREAKABLE_BY_GUTITUBOW_ARROW.isTagged(block.getType())) {
+                    if (game.getGlassBreakManager().breakConnectedGlass(block, 64)) {
 
-                    if (abilityType != AbilityType.RICOCHET) {
-                        event.getEntity().remove();
+                        Bukkit.getScheduler().runTask(gutitubow, () -> NBT.modify(event.getEntity(), nbt -> {
+                            nbt.setBoolean("inGround", false);
+                        }));
+
+                        if (abilityType != AbilityType.RICOCHET) {
+                            event.getEntity().remove();
+                        }
                     }
                 }
             }
+        } else {
+            // Hit Entity
+
+            Entity shooter = (Entity) event.getEntity().getShooter();
+
+            if (!(event.getEntity() instanceof AbstractArrow)) return;
+            if (event.getEntity() instanceof SpectralArrow) return;
+            if (shooter == null) return;
+
+            // myself cancel
+            if (shooter.getUniqueId().equals(hitEntity.getUniqueId())) {
+                event.setCancelled(true);
+                return;
+            }
+            if (EntityUtil.isInvalidHitEntity(hitEntity)) return;
+
+            if (hitEntity instanceof Player hitPlayer) {
+                if (CitizensAPI.getNPCRegistry().isNPC(hitPlayer)) {
+                    event.setCancelled(true);
+                    return;
+                }
+                if (!(shooter instanceof Player shooterPlayer)) return;
+
+                if (game.getTeamManager().isTeammate(shooterPlayer, hitPlayer)) {
+                    event.setCancelled(true);
+                    return;
+                }
+
+                Location projectileSpawnLocation = arrow.getPersistentDataContainer().getOrDefault(spawnLocationKey, LocationDataType.INSTANCE, arrow.getLocation());
+
+                double distance = projectileSpawnLocation.distance(hitEntity.getLocation());
+
+                DamageSource damageSource = DamageSource.builder(GutitubowDamageType.ARROW_SHOT)
+                        .directPlayer(shooterPlayer)
+                        .damageLocation(event.getEntity().getLocation())
+                        .distance(distance)
+                        .build();
+                game.getGamePlayer(hitPlayer).damage(damageSource, 2);
+
+                event.setCancelled(true);
+                event.getEntity().remove();
+
+            } else {
+                if (hitEntity instanceof HappyGhast hitHappyGhast) {
+                    event.getEntity().remove();
+
+                    hitHappyGhast.damage(2);
+                    event.setCancelled(true);
+                    return;
+                }
+                if (!(hitEntity instanceof ArmorStand armorStand && armorStand.isInvulnerable())) event.setCancelled(true);
+            }
         }
+    }
+
+    @EventHandler
+    public void onShoot(EntityShootBowEvent event) {
+        event.getProjectile().getPersistentDataContainer().set(spawnLocationKey, LocationDataType.INSTANCE, event.getProjectile().getLocation());
     }
 
     @EventHandler
@@ -101,6 +167,14 @@ public class GameListener implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) {
             Component damageMessage = Message.getDamageMessage(event.getPlayer(), event.getDamageSource(), player);
             if (damageMessage != null) player.sendMessage(damageMessage);
+        }
+        if (event.getDamageSource().getDamageType() == GutitubowDamageType.ARROW_SHOT) {
+            double distance = event.getDamageSource().getDistance();
+            Player attacker = event.getDamageSource().getDirectPlayer();
+
+            if (attacker != null) {
+
+            }
         }
     }
 
