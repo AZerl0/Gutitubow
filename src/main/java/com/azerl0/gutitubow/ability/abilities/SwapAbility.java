@@ -61,9 +61,11 @@ public class SwapAbility extends Ability {
         Optional<Teleportable> lookingEntity = getLookingEntity(player, 50);
         if (lookingEntity.isPresent()) {
             Vector playerVelocity = player.getVelocity().clone();
-            Vector entityVelocity = null;
-            if (lookingEntity.get() instanceof Entity entity) {
-                entityVelocity = entity.getVelocity().clone();
+            Vector entityVelocity;
+            if (lookingEntity.get() instanceof BukkitTeleportableEntity entity) {
+                entityVelocity = entity.getEntity().getVelocity().clone();
+            } else {
+                entityVelocity = null;
             }
             Location playerLocation = player.getLocation().clone();
             Location entityLocation = lookingEntity.get().getLocation().clone();
@@ -71,8 +73,8 @@ public class SwapAbility extends Ability {
             player.teleport(entityLocation.clone().setDirection(playerLocation.getDirection()));
             lookingEntity.get().teleport(playerLocation.setDirection(entityLocation.getDirection()));
             player.setVelocity(playerVelocity);
-            if (lookingEntity.get() instanceof Entity entity) {
-                entity.setVelocity(entityVelocity);
+            if (lookingEntity.get() instanceof BukkitTeleportableEntity entity) {
+                entity.getEntity().setVelocity(entityVelocity);
             }
 
             entityLocation.getWorld().playSound(entityLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 2.0f);

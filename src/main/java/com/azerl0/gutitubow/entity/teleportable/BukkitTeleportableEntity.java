@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public class BukkitTeleportableEntity implements Teleportable{
     private final Entity entity;
 
-    public BukkitTeleportableEntity(Entity entity) {
+    public BukkitTeleportableEntity(@NotNull Entity entity) {
         this.entity = entity;
     }
     @Override
@@ -18,5 +18,9 @@ public class BukkitTeleportableEntity implements Teleportable{
     @Override
     public void teleport(Location location) {
         entity.teleport(location);
+    }
+
+    public @NotNull Entity getEntity() {
+        return entity;
     }
 }
