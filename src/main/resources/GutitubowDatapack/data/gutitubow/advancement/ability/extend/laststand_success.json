@@ -6,6 +6,7 @@
     }
   },
   "display": {
+    "frame": "goal",
     "announce_to_chat": false,
     "description": {
       "text": "「背水」の能力で背水の陣を敷いてからプレイヤーを倒す"
@@ -16,7 +17,7 @@
     },
     "show_toast": true,
     "title": {
-      "text": "ピンチをチャンスに",
+      "text": "命を懸けて",
       "italic": false
     }
   },
