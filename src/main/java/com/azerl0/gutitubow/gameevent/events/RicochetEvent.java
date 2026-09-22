@@ -1,9 +1,11 @@
 package com.azerl0.gutitubow.gameevent.events;
 
 import com.azerl0.gutitubow.Gutitubow;
+import com.azerl0.gutitubow.entity.explosionparticle.ExplosionParticle;
 import com.azerl0.gutitubow.gameevent.GameEvent;
 import com.azerl0.gutitubow.gameevent.GameEventType;
 import com.azerl0.gutitubow.util.ArrowUtil;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,6 +34,10 @@ public class RicochetEvent extends GameEvent {
 
     @Override
     protected void onArrowHit(ProjectileHitEvent event) {
+        if (event.getEntity().getVelocity().length() <= 0.3) return;
         ArrowUtil.RicochetEvent(Gutitubow.get(), event, 0.8);
+        Gutitubow.get().getGutitubowEntityManager().spawnGutitubowEntity(event.getEntity().getLocation(), ExplosionParticle.class, particle -> {
+            particle.setColor(TextColor.color(4321162));
+        });
     }
 }
