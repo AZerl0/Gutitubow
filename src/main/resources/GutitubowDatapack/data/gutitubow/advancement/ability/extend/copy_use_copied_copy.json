@@ -1,0 +1,40 @@
+{
+  "parent": "gutitubow:ability/type/copy",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "text": "「複製」の能力で複製の能力を複製し、使用する"
+    },
+    "icon": {
+      "components": {
+        "minecraft:banner_patterns": [
+          {
+            "color": "brown",
+            "pattern": {
+              "translation_key": "",
+              "asset_id": "minecraft:creeper"
+            }
+          }
+        ]
+      },
+      "count": 1,
+      "id": "minecraft:white_banner"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "複製製複製",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

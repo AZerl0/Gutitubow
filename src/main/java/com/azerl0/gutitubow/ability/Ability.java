@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.ability;
 
 
+import com.azerl0.gutitubow.event.ability.copy.UseCopiedAbilityEvent;
 import com.azerl0.gutitubow.event.gameplayer.*;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldBreakEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldLowerEvent;
@@ -176,4 +177,6 @@ public abstract class Ability {
     public void onShieldLower(ShieldLowerEvent event) {}
 
     public void onShieldBreak(ShieldBreakEvent event) {}
+
+    public void onUseCopiedAbility(UseCopiedAbilityEvent event) {}
 }

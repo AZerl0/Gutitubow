@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
+import com.azerl0.gutitubow.event.ability.copy.UseCopiedAbilityEvent;
 import com.azerl0.gutitubow.event.gameplayer.*;
 import com.azerl0.gutitubow.gui.guis.CopiedAbilitiesGUI;
 import com.azerl0.gutitubow.util.AdvancementUtil;
@@ -267,5 +268,11 @@ public class CopyAbility extends Ability {
     @Override
     public void onDeath(GamePlayerDeathEvent event) {
         if (currentAbility != null) currentAbility.onDeath(event);
+    }
+
+    @Override
+    public void onUseCopiedAbility(UseCopiedAbilityEvent event) {
+        if (event.getAbilityType() == AbilityType.COPY) AdvancementUtil.grantAdvancement(event.getPlayer(), "gutitubow:ability/extend/copy_use_copied_copy");
+        if (currentAbility != null) currentAbility.onUseCopiedAbility(event);
     }
 }

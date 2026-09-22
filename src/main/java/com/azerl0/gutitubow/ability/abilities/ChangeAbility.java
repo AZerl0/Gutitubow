@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.ability.abilities;
 
 import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
+import com.azerl0.gutitubow.event.ability.copy.UseCopiedAbilityEvent;
 import com.azerl0.gutitubow.event.gameplayer.*;
 import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
@@ -208,5 +209,10 @@ public class ChangeAbility extends Ability {
     @Override
     public void onClick(InventoryClickEvent event) {
         if (currentAbility != null) currentAbility.onClick(event);
+    }
+
+    @Override
+    public void onUseCopiedAbility(UseCopiedAbilityEvent event) {
+        if (currentAbility != null) currentAbility.onUseCopiedAbility(event);
     }
 }

@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.ability;
 
+import com.azerl0.gutitubow.event.ability.copy.UseCopiedAbilityEvent;
 import com.azerl0.gutitubow.event.gameplayer.*;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldBreakEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldLowerEvent;
@@ -236,5 +237,11 @@ public class AbilityListener implements Listener {
             Ability ability = abilityManager.getAbility(owner);
             if (ability != null) ability.onShieldBreak(event);
         }
+    }
+
+    @EventHandler
+    public void onUseCopiedAbility(UseCopiedAbilityEvent event) {
+        Ability ability = abilityManager.getAbility(event.getPlayer());
+        if (ability != null) ability.onUseCopiedAbility(event);
     }
 }
