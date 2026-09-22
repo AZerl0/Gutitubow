@@ -3,7 +3,7 @@ package com.azerl0.gutitubow.game;
 import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.GutitubowManagers;
 import com.azerl0.gutitubow.debug.DebugManager;
-import com.azerl0.gutitubow.map.MapManager;
+import com.azerl0.gutitubow.gamemap.GameMapManager;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -12,25 +12,25 @@ import org.bukkit.scheduler.BukkitTask;
 
 public class GameManager {
     private final Gutitubow gutitubow;
-    private final MapManager mapManager;
+    private final GameMapManager gameMapManager;
     private final DebugManager debugManager;
     private final GutitubowManagers gutitubowManagers;
     private BukkitTask gameTask;
 
     public GameManager(
             Gutitubow gutitubow,
-            MapManager mapManager,
+            GameMapManager gameMapManager,
             DebugManager debugManager,
             GutitubowManagers gutitubowManagers
     ) {
         this.gutitubow = gutitubow;
-        this.mapManager = mapManager;
+        this.gameMapManager = gameMapManager;
         this.debugManager = debugManager;
         this.gutitubowManagers = gutitubowManagers;
     }
 
     public Game newGame() {
-        return new Game(gutitubow, mapManager.getTestMap(), debugManager, gutitubowManagers);
+        return new Game(gutitubow, debugManager, gutitubowManagers);
     }
 
     public void resetGame(Game game) {

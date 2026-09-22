@@ -27,6 +27,7 @@ public class GameGUI extends AbstractGUI {
     final int DEFAULT_HEALTH_BUTTON_SLOT = 19;
     final int PHASE0_SECOND_BUTTON_SLOT = 20;
     final int CAREPACKAGE_AMOUNT_BUTTON_SLOT = 21;
+    final int MAP_SELECTOR_BUTTON_SLOT = 22;
     final int GAME_EVENT_SETTING_BUTTON_SLOT = 23;
     final int SPECTATOR_SETTING_BUTTON_SLOT = 25;
 
@@ -61,6 +62,14 @@ public class GameGUI extends AbstractGUI {
         updateSetDefaultHealthButton();
         updatePhase0SecondsButton();
         updateCarePackageAmountButton();
+        addButton(
+                MAP_SELECTOR_BUTTON_SLOT,
+                getAbstractSimpleButtonItem(Material.FILLED_MAP, Component.text("マップ選択")),
+                event -> {
+                    if (!(event.getWhoClicked() instanceof Player clicker)) return;
+                    game.getGameMapSelectorGUI().open(clicker);
+                }
+        );
         addButton(
                 GAME_EVENT_SETTING_BUTTON_SLOT,
                 getAbstractSimpleButtonItem(Material.FIREWORK_ROCKET, Component.text("ゲームイベント設定")),

@@ -40,6 +40,8 @@ public class GutitubowBootstrap implements PluginBootstrap {
             SetSkinCommand.register(event.registrar());
             SetNameCommand.register(event.registrar());
             FakePlayerCommand.register(event.registrar());
+            MapCommand.register(event.registrar());
+            GutitubowCommand.register(event.registrar());
         }));
     }
 }

@@ -1,7 +1,7 @@
 package com.azerl0.gutitubow.manager;
 
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
-import com.azerl0.gutitubow.map.MapRepairManager;
+import com.azerl0.gutitubow.gamemap.MapRepairManager;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;

@@ -8,6 +8,7 @@ import com.azerl0.gutitubow.entity.carepackage.CarePackage;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerWinEvent;
+import com.azerl0.gutitubow.gui.guis.GameMapSelectorGUI;
 import com.azerl0.gutitubow.scoreboard.PlayerBoard;
 import com.azerl0.gutitubow.scoreboard.PlayerBoardManager;
 import com.azerl0.gutitubow.scoreboard.ScoreboardManager;
@@ -16,8 +17,8 @@ import com.azerl0.gutitubow.gameevent.GameEventControllerGameEventType;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.gameplayer.GamePlayerManager;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
-import com.azerl0.gutitubow.map.Map;
-import com.azerl0.gutitubow.map.MapRepairManager;
+import com.azerl0.gutitubow.gamemap.GameMap;
+import com.azerl0.gutitubow.gamemap.MapRepairManager;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.team.TeamManager;
 import com.azerl0.gutitubow.util.MathUtil;
@@ -51,10 +52,11 @@ public class Game {
     private final Set<UUID> alivePlayers = new HashSet<>();
     private final List<UUID> deathOrder = new ArrayList<>();
     private final BossBar bossBar = BossBar.bossBar(Component.text(""), 0.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
-    private final Map map;
+    private GameMap gameMap;
     private final int LAST_PHASE_CYCLE_TICK = 15 * 20;
     private Location safeArea;
     private Location oldSafeArea;
+    private final GameMapSelectorGUI gameMapSelectorGUI;
     private final GutitubowManagers gutitubowManagers;
     private final GamePlayerManager gamePlayerManager;
     private final AbilityManager abilityManager;
@@ -68,12 +70,10 @@ public class Game {
 
     public Game(
             Gutitubow gutitubow,
-            Map map,
             DebugManager debugManager,
             GutitubowManagers gutitubowManagers
     ) {
         this.gutitubow = gutitubow;
-        this.map = map;
         this.gutitubowManagers = gutitubowManagers;
         this.debugManager = debugManager;
         AbilityContext abilityContext = new AbilityContext(gutitubow, this, gutitubowManagers);
@@ -82,6 +82,7 @@ public class Game {
         this.scoreboardManager = gutitubowManagers.getScoreboardManager();
         this.playerBoardManager = new PlayerBoardManager(scoreboardManager);
         this.teamManager = new TeamManager(this);
+        gameMapSelectorGUI = new GameMapSelectorGUI(this);
         reset();
     }
 
@@ -230,11 +231,13 @@ public class Game {
             }
         }
         resetSoloPlayerTeams();
-        map.getBorder().setCenter(0.0, 0.0);
-        map.getBorder().setSize(59999968);
-        map.getBorder().setDamageBuffer(0.0);
+        if (gameMap != null) {
+            gameMap.getBorder().setCenter(0.0, 0.0);
+            gameMap.getBorder().setSize(59999968);
+            gameMap.getBorder().setDamageBuffer(0.0);
+            safeArea = gameMap.getCenter();
+        }
 
-        this.safeArea = map.getCenter();
         for (GutitubowEntity gutitubowEntity : gutitubow.getGutitubowEntityManager().getGutitubowEntities()) {
             if (gutitubowEntity instanceof CarePackage carePackage) {
                 carePackage.remove();
@@ -256,9 +259,9 @@ public class Game {
 
     private void init() {
         this.nextTick = gameSetting.getPhase0seconds() * 20;
-        this.map.getBorder().setCenter(this.map.getCenter());
-        this.map.getBorder().setSize(this.map.getSize());
-        safeArea = map.getRandomSafeArea();
+        this.gameMap.getBorder().setCenter(this.gameMap.getCenter());
+        this.gameMap.getBorder().setSize(this.gameMap.getSize());
+        safeArea = gameMap.getRandomSafeArea();
         deathOrder.clear();
         alivePlayers.clear();
         AbilitySelector abilitySelector = new AbilitySelector(getGameSetting().getDisabledAbilities());
@@ -280,7 +283,7 @@ public class Game {
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(gameSetting.getDefaultHealth());
             player.setHealth(gameSetting.getDefaultHealth());
             if (!debugManager.isNoStartTeleport()) {
-                Location location = MathUtil.randomLocation(safeArea, map.getSize() - 30 * 2);
+                Location location = MathUtil.randomLocation(safeArea, gameMap.getSize() - 30 * 2);
                 location.setY(200.0);
                 location.getDirection().setY(0);
                 player.teleport(location);
@@ -397,7 +400,7 @@ public class Game {
         if (isShrinking()) {
             for (GutitubowEntity gutitubowEntity : gutitubow.getGutitubowEntityManager().getGutitubowEntities()) {
                 if (gutitubowEntity instanceof CarePackage carePackage) {
-                    if (!map.getBorder().isInside(carePackage.getLocation())) carePackage.remove();
+                    if (!gameMap.getBorder().isInside(carePackage.getLocation())) carePackage.remove();
                 }
             }
         }
@@ -461,7 +464,7 @@ public class Game {
             }
 
             if (gamePhase.getPhaseNumber() >= 1 && gamePhase.getPhaseNumber() <= 5 && isShrinking()) {
-                map.getBorder().setCenter(MathUtil.getLocationByProgress(map.getCenter(), safeArea, getShrinkProgress()));
+                gameMap.getBorder().setCenter(MathUtil.getLocationByProgress(gameMap.getCenter(), safeArea, getShrinkProgress()));
             }
 
             if (remainedSeconds <= 10 && this.currentTicks % 20 == 0 && !isFinalPhase()) {
@@ -479,7 +482,7 @@ public class Game {
             int lastPhaseCycleCurrentTick = currentTicks % LAST_PHASE_CYCLE_TICK;
             if (lastPhaseCycleCurrentTick == 0) {
                 oldSafeArea = safeArea.clone();
-                Location newSafeArea = map.getRandomSafeArea();
+                Location newSafeArea = gameMap.getRandomSafeArea();
 
                 double maxDistance = 15.0;
 
@@ -497,7 +500,7 @@ public class Game {
                 oldSafeArea = safeArea.clone();
             }
             float progress = (float) lastPhaseCycleCurrentTick / (float) LAST_PHASE_CYCLE_TICK;
-            map.getBorder().setCenter(MathUtil.getLocationByProgress(oldSafeArea, safeArea, progress));
+            gameMap.getBorder().setCenter(MathUtil.getLocationByProgress(oldSafeArea, safeArea, progress));
         }
 
     }
@@ -563,7 +566,7 @@ public class Game {
             bossBar.color(BossBar.Color.RED);
             nextTick = 30 * 20;
             int borderChangeTicks = 31 * 20;
-            map.getBorder().changeSize(getNextSafeAreaSize(), borderChangeTicks);
+            gameMap.getBorder().changeSize(getNextSafeAreaSize(), borderChangeTicks);
 
         } else {
             if (gamePhase == GamePhase.PHASE0) init();
@@ -890,7 +893,7 @@ public class Game {
             case PHASE5, PHASE5_SHRINKING -> GamePhase.FINAL_PHASE;
             default -> GamePhase.FINAL_PHASE;
         };
-        Location nextPhaseSafeAreaLoc = MathUtil.getLocationByProgress(map.getCenter(), safeArea, getShrinkProgress(nextGamePhase));
+        Location nextPhaseSafeAreaLoc = MathUtil.getLocationByProgress(gameMap.getCenter(), safeArea, getShrinkProgress(nextGamePhase));
         return Math.abs(loc.getX() - nextPhaseSafeAreaLoc.getX()) <= getNextSafeAreaSize() / 2 && Math.abs(loc.getZ() - nextPhaseSafeAreaLoc.getZ()) <= getNextSafeAreaSize() / 2;
     }
 
@@ -902,6 +905,18 @@ public class Game {
         reset();
         abilityManager.allResetAbilities();
         teamManager.removeAllTeam();
+    }
+
+    public GameMap getGameMap() {
+        return gameMap;
+    }
+
+    public void setGameMap(GameMap gameMap) {
+        this.gameMap = gameMap;
+    }
+
+    public GameMapSelectorGUI getGameMapSelectorGUI() {
+        return gameMapSelectorGUI;
     }
 
 }

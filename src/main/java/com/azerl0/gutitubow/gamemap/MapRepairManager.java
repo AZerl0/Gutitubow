@@ -1,4 +1,4 @@
-package com.azerl0.gutitubow.map;
+package com.azerl0.gutitubow.gamemap;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;

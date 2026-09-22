@@ -2,6 +2,7 @@ package com.azerl0.gutitubow;
 
 import com.azerl0.gutitubow.ability.zipline.ZiplineListener;
 import com.azerl0.gutitubow.ability.zipline.ZiplineManager;
+import com.azerl0.gutitubow.config.ConfigManager;
 import com.azerl0.gutitubow.entity.GutitubowEntityListener;
 import com.azerl0.gutitubow.entity.GutitubowEntityManager;
 import com.azerl0.gutitubow.entity.carepackage.CarePackageListener;
@@ -16,7 +17,7 @@ import com.azerl0.gutitubow.gui.AllGUI;
 import com.azerl0.gutitubow.gui.GUIListener;
 import com.azerl0.gutitubow.gui.guis.AbilitySelectorGUI;
 import com.azerl0.gutitubow.gui.guis.GameGUI;
-import com.azerl0.gutitubow.map.MapManager;
+import com.azerl0.gutitubow.gamemap.GameMapManager;
 import com.azerl0.gutitubow.item.ItemListener;
 import com.azerl0.gutitubow.packet.*;
 import com.azerl0.gutitubow.pin.PinListener;
@@ -42,12 +43,13 @@ import com.azerl0.gutitubow.ability.abilities.*;
 
 public final class Gutitubow extends JavaPlugin {
     private static Gutitubow instance;
+    private ConfigManager configManager;
     private ScoreboardManager scoreboardManager;
     private EntityFlagManager flagManager;
     private EntityGlowManager glowManager;
     private FixLeftClickManager fixLeftClickManager;
     private DebugManager debugManager;
-    private MapManager mapManager;
+    private GameMapManager gameMapManager;
     private GameManager gameManager;
     private final PlayerSkinChanger playerSkinChanger = new PlayerSkinChanger(this);
     private final FakePlayerManager fakePlayerManager = new FakePlayerManager(this);
@@ -72,6 +74,8 @@ public final class Gutitubow extends JavaPlugin {
         registerAbilities();
 
         // Managers
+        configManager = new ConfigManager(this);
+        gameMapManager = new GameMapManager();
         this.scoreboardManager = new ScoreboardManager();
         this.flagManager = new EntityFlagManager(this);
         this.glowManager = new EntityGlowManager(flagManager, scoreboardManager);
@@ -80,9 +84,10 @@ public final class Gutitubow extends JavaPlugin {
         gutitubowEntityManager = new GutitubowEntityManager();
         gutitubowManagers = new GutitubowManagers(glowManager, scoreboardManager, playerSkinChanger, fakePlayerManager, ziplineManager, gutitubowEntityManager);
 
+        configManager.processConfigs();
+
         // Game
-        this.mapManager = new MapManager();
-        this.gameManager = new GameManager(this, this.mapManager, this.debugManager, gutitubowManagers);
+        this.gameManager = new GameManager(this, this.gameMapManager, this.debugManager, gutitubowManagers);
         // MainGame
         this.game = gameManager.newGame();
 
@@ -180,6 +185,14 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.GRAPPLINGHOOK, GrapplingHookAbility::new);
         AbilityRegistry.register(AbilityType.SWAP, SwapAbility::new);
         AbilityRegistry.register(AbilityType.GRAVITY, GravityAbility::new);
+    }
+
+    public ConfigManager getConfigManager() {
+        return configManager;
+    }
+
+    public GameMapManager getGameMapManager() {
+        return gameMapManager;
     }
 
     public Game getGame() {
