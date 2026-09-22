@@ -37,7 +37,7 @@ public class GameGUI extends AbstractGUI {
     final int CAREPACKAGE_AMOUNT_BUTTON_SLOT = 21;
     final int MAP_SELECTOR_BUTTON_SLOT = 22;
     final int GAME_EVENT_SETTING_BUTTON_SLOT = 23;
-    final int SPECTATOR_SETTING_BUTTON_SLOT = 25;
+    final int SPECTATOR_SETTING_BUTTON_SLOT = 26;
 
 
     public GameGUI(GameManager gameManager, Game game) {
