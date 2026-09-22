@@ -50,7 +50,7 @@ public class DashAbility extends Ability {
     public void onTick() {
         Player player = getPlayer();
         if (player == null) return;
-        if (player.isSprinting()) {
+        if (player.isSprinting() && !player.isSwimming() && !player.isFlying()) {
             onSprinting(player);
         } else {
             if (dashingTick > 0) stopSprinting();
