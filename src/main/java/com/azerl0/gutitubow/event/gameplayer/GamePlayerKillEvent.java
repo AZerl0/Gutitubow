@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.event.gameplayer;
 
+import com.azerl0.gutitubow.data.damage.DamageSource;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -10,11 +11,13 @@ public class GamePlayerKillEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
     private final Player player;
     private final Player target;
+    private final DamageSource damageSource;
     private Component killMessage;
 
-    public GamePlayerKillEvent(@NotNull Player player,@NotNull Player target,@NotNull Component killMessage) {
+    public GamePlayerKillEvent(@NotNull Player player,@NotNull Player target, @NotNull DamageSource damageSource, @NotNull Component killMessage) {
         this.player = player;
         this.target = target;
+        this.damageSource = damageSource;
         this.killMessage = killMessage;
     }
 
@@ -24,6 +27,10 @@ public class GamePlayerKillEvent extends Event {
 
     public @NotNull Player getTarget() {
         return target;
+    }
+
+    public @NotNull DamageSource getDamageSource() {
+        return damageSource;
     }
 
     public @NotNull Component getKillMessage() {

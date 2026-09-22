@@ -725,8 +725,13 @@ public class GamePlayer {
 
             onDeath();
             if (attacker != null) {
+                GamePlayerKillEvent killEvent = new GamePlayerKillEvent(attacker, player, damageSource, Component.text("You killed it!").color(NamedTextColor.DARK_RED).decoration(TextDecoration.BOLD, true));
+                Bukkit.getPluginManager().callEvent(killEvent);
+
                 GamePlayer attackerGamePlayer = getGame().getGamePlayer(attacker);
-                attackerGamePlayer.onKill(player, damageSource);
+                attackerGamePlayer.onKill(killEvent);
+
+
             }
 
         } else {
@@ -773,13 +778,8 @@ public class GamePlayer {
         }
     }
 
-    private void onKill(Player target, DamageSource damageSource) {
-        Player player = getPlayer();
-        if (player == null) return;
-
-        GamePlayerKillEvent event = new GamePlayerKillEvent(player, target, Component.text("You killed it!").color(NamedTextColor.DARK_RED).decoration(TextDecoration.BOLD, true));
-        Bukkit.getPluginManager().callEvent(event);
-//        if (!death(target, damageSource, true)) return;
+    private void onKill(GamePlayerKillEvent event) {
+        Player player = event.getPlayer();
 
         setTotalKill(getTotalKill() + 1);
         Component subtitle = event.getKillMessage();

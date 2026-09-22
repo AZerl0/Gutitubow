@@ -5,6 +5,7 @@ public enum GutitubowDamageType {
     BOMB_BLAST,
     RICOCHET_BLAST,
     SNIPE,
+    SMASH,
     FAILED_LAST_STAND,
     OUTSIDE_BORDER,
     FAKE_CAREPACKAGE,

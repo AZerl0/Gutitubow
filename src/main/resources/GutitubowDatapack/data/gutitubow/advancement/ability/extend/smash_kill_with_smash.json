@@ -1,0 +1,30 @@
+{
+  "parent": "gutitubow:ability/type/smash",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "frame": "goal",
+    "announce_to_chat": false,
+    "description": {
+      "text": "「必殺」の能力でとどめを刺す"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:netherite_spear"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "とどめだ！",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

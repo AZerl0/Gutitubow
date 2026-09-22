@@ -6,8 +6,10 @@ import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.damage.DamageSource;
 import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreDamageEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
+import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.MathUtil;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
@@ -86,13 +88,18 @@ public class SmashAbility extends Ability {
         }
     }
 
+    @Override
+    public void onKill(GamePlayerKillEvent event) {
+        if (event.getDamageSource().getDamageType() == GutitubowDamageType.SMASH) AdvancementUtil.grantAdvancement(event.getPlayer(), "gutitubow");
+    }
+
     private void smash(Player target) {
         Player player = getPlayer();
         if (player == null) return;
 
         if (target.getGameMode() == GameMode.SPECTATOR) return;
 
-        DamageSource damageSource = DamageSource.builder(GutitubowDamageType.ARROW_SHOT)
+        DamageSource damageSource = DamageSource.builder(GutitubowDamageType.SMASH)
                 .directPlayer(player)
                 .damageLocation(target.getEyeLocation())
                 .distance(player.getLocation().distance(target.getLocation()))
