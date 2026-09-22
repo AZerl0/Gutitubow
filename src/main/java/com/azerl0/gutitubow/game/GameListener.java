@@ -173,7 +173,10 @@ public class GameListener implements Listener {
             Player attacker = event.getDamageSource().getDirectPlayer();
 
             if (attacker != null) {
-
+                if (distance >= 75) {
+                    AdvancementUtil.grantAdvancement(attacker, "gutitubow:gutitubow/shoot_75m");
+                    if (distance >= 100) AdvancementUtil.grantAdvancement(attacker, "gutitubow:/gutitubow/shoot_100m");
+                }
             }
         }
     }
