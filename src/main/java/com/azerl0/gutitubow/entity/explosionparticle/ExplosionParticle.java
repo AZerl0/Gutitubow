@@ -112,7 +112,7 @@ public class ExplosionParticle extends GutitubowEntity {
             case 15 -> "\uE00F";
             default -> "";
         };
-        return Component.text(text + step).font(Key.key("gutitubow:particle"));
+        return Component.text(text).font(Key.key("gutitubow:particle"));
     }
 
 }
