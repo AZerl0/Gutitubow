@@ -49,6 +49,7 @@ public class ConfigManager {
             String legacy = section.getString("name");
             if (legacy != null) name = LegacyComponentSerializer.legacyAmpersand().deserialize(legacy);
             Location center = section.getLocation("center");
+            Location lobby = section.getLocation("lobby");
             double size = section.getDouble("size");
             double phase1size = section.getDouble("phase1size");
             double phase2size = section.getDouble("phase2size");
@@ -60,6 +61,7 @@ public class ConfigManager {
                     id,
                     name,
                     center,
+                    lobby,
                     size,
                     phase1size,
                     phase2size,
@@ -82,6 +84,7 @@ public class ConfigManager {
 
             config.set(path + ".name", LegacyComponentSerializer.legacyAmpersand().serialize(gameMap.getName()));
             config.set(path + ".center", gameMap.getCenter());
+            config.set(path + ".lobby", gameMap.getLobby());
             config.set(path + ".size", gameMap.getSize());
             config.set(path + ".phase1size", gameMap.getPhase1Size());
             config.set(path + ".phase2size", gameMap.getPhase2Size());

@@ -5,6 +5,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEn
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 
 public class PlayerUtil {
@@ -74,5 +76,11 @@ public class PlayerUtil {
             }
         }
         return health;
+    }
+
+    public static void playerConsumerOnWorld(World world, Consumer<Player> playerConsumer) {
+        for (Player p : world.getPlayers()) {
+            playerConsumer.accept(p);
+        }
     }
 }

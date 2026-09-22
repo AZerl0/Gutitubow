@@ -3,13 +3,15 @@ package com.azerl0.gutitubow.gamemap;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.WorldBorder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
 public class GameMap {
-    private String id;
-    private Component name;
+    private final String id;
+    private final Component name;
     private final Location center;
+    private @NotNull Location lobby;
     private final double size;
 
     private double phase1Size;
@@ -18,10 +20,22 @@ public class GameMap {
     private double phase4Size;
     private double phase5Size;
 
-    public GameMap(String id, Component name, Location center, double size, double phase1Size, double phase2Size, double phase3Size, double phase4Size, double phase5Size) {
+    public GameMap(
+            String id,
+            Component name,
+            Location center,
+            @NotNull Location lobby,
+            double size,
+            double phase1Size,
+            double phase2Size,
+            double phase3Size,
+            double phase4Size,
+            double phase5Size
+    ) {
         this.id = id;
         this.name = name;
         this.center = center;
+        this.lobby = lobby;
         this.size = size;
         this.phase1Size = phase1Size;
         this.phase2Size = phase2Size;
@@ -41,6 +55,14 @@ public class GameMap {
 
     public Location getCenter() {
         return this.center;
+    }
+
+    public @NotNull Location getLobby() {
+        return lobby;
+    }
+
+    public void setLobby(@NotNull Location lobby) {
+        this.lobby = lobby;
     }
 
     public WorldBorder getBorder() {

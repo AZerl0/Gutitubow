@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.game;
 import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.GutitubowManagers;
 import com.azerl0.gutitubow.ability.*;
+import com.azerl0.gutitubow.arena.Arena;
 import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.carepackage.CarePackage;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
@@ -22,6 +23,7 @@ import com.azerl0.gutitubow.gamemap.MapRepairManager;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.team.TeamManager;
 import com.azerl0.gutitubow.util.MathUtil;
+import com.azerl0.gutitubow.util.PlayerUtil;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -39,6 +41,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.*;
 
 public class Game {
@@ -52,6 +55,7 @@ public class Game {
     private final Set<UUID> alivePlayers = new HashSet<>();
     private final List<UUID> deathOrder = new ArrayList<>();
     private final BossBar bossBar = BossBar.bossBar(Component.text(""), 0.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
+    private Arena arena;
     private GameMap gameMap;
     private final int LAST_PHASE_CYCLE_TICK = 15 * 20;
     private Location safeArea;
@@ -905,6 +909,7 @@ public class Game {
         reset();
         abilityManager.allResetAbilities();
         teamManager.removeAllTeam();
+        if (arena != null) gutitubowManagers.getArenaManager().destroy(arena);
     }
 
     public GameMap getGameMap() {
@@ -913,6 +918,57 @@ public class Game {
 
     public void setGameMap(GameMap gameMap) {
         this.gameMap = gameMap;
+         Location lobby = gameMap.getLobby();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.teleport(lobby);
+        }
+        try {
+            if (arena != null) gutitubowManagers.getArenaManager().destroy(arena);
+            arena = null;
+            arena = gutitubowManagers.getArenaManager().create(gameMap);
+
+        } catch (IOException ignored) {
+
+        }
+    }
+
+    public @Nullable Arena getArena() {
+        return arena;
+    }
+
+    public void resetArena() {
+        if (arena == null) return;
+
+        Location safe = Bukkit.getWorld("world").getSpawnLocation();
+        Map<UUID, Location> playerLocationMap = new HashMap<>();
+
+        PlayerUtil.playerConsumerOnWorld(arena.getWorld(), player -> {
+            playerLocationMap.put(player.getUniqueId(), player.getLocation().clone());
+            player.teleport(safe);
+        });
+
+        Bukkit.getScheduler().runTaskLater(gutitubow, () -> {
+            try {
+                if (arena != null) gutitubowManagers.getArenaManager().destroy(arena);
+                arena = null;
+                arena = gutitubowManagers.getArenaManager().create(gameMap);
+
+            } catch (IOException ignored) {
+
+            }
+        }, 20L);
+
+        Bukkit.getScheduler().runTaskLater(gutitubow, () -> {
+            for (UUID playerUUID : playerLocationMap.keySet()) {
+                Player player = Bukkit.getPlayer(playerUUID);
+                if (player == null) continue;
+
+                Location location = playerLocationMap.get(playerUUID);
+                location.setWorld(arena.getWorld());
+                player.teleport(location);
+            }
+        },  5 * 20L);
+
     }
 
     public GameMapSelectorGUI getGameMapSelectorGUI() {

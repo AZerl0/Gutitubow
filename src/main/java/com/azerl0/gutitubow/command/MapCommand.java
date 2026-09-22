@@ -32,6 +32,9 @@ public class MapCommand {
                         .then(literal("info")
                                 .then(argument("mapId", StringArgumentType.word())
                                         .executes(MapCommand::info)))
+                        .then(literal("setlobby")
+                                .then(argument("mapId", StringArgumentType.word())
+                                        .executes(MapCommand::setLobby)))
                         .then(literal("reload").executes(MapCommand::reload))
                         .build(),
                 "Gutitubow map command"
@@ -82,6 +85,30 @@ public class MapCommand {
             message = "Map: " + id;
             message = message + "\n- Center:\n  - World: " + center.getWorld().getName() + "\n  - Pos: [" + center.getX() + ", " + center.getY() + ", " + center.getZ() + "]";
             message = message + "\n- Size: " + gameMap.getSize();
+        } else {
+            message = "Map: " + id + " が存在しません";
+        }
+        sender.sendMessage(message);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int setLobby(CommandContext<CommandSourceStack> context) {
+        CommandSender sender = context.getSource().getSender();
+        if (!(sender instanceof Player sendPlayer)) return Command.SINGLE_SUCCESS;
+        String id = context.getArgument("mapId", String.class);
+        GameMap gameMap = getMapManager().getMap(id);
+        String message;
+        if (gameMap != null) {
+            Location lobby = sendPlayer.getLocation();
+            GameMap newMap = gameMap;
+            newMap.setLobby(lobby);
+            GameMapManager gameMapManager = Gutitubow.get().getGameMapManager();
+            gameMapManager.deleteMap(gameMap.getId());
+            gameMapManager.addMap(newMap);
+            gameMapManager.saveMaps();
+            message = "Map: " + id + "のロビーを";
+            message = message + "\nWorld: " + lobby.getWorld().getName() + "\n  - Pos: [" + lobby.getX() + ", " + lobby.getY() + ", " + lobby.getZ() + "]";
+            message = message + "\nに設定しました";
         } else {
             message = "Map: " + id + " が存在しません";
         }

@@ -2,6 +2,7 @@ package com.azerl0.gutitubow;
 
 import com.azerl0.gutitubow.ability.zipline.ZiplineListener;
 import com.azerl0.gutitubow.ability.zipline.ZiplineManager;
+import com.azerl0.gutitubow.arena.ArenaManager;
 import com.azerl0.gutitubow.config.ConfigManager;
 import com.azerl0.gutitubow.entity.GutitubowEntityListener;
 import com.azerl0.gutitubow.entity.GutitubowEntityManager;
@@ -50,6 +51,7 @@ public final class Gutitubow extends JavaPlugin {
     private FixLeftClickManager fixLeftClickManager;
     private DebugManager debugManager;
     private GameMapManager gameMapManager;
+    private ArenaManager arenaManager;
     private GameManager gameManager;
     private final PlayerSkinChanger playerSkinChanger = new PlayerSkinChanger(this);
     private final FakePlayerManager fakePlayerManager = new FakePlayerManager(this);
@@ -76,13 +78,14 @@ public final class Gutitubow extends JavaPlugin {
         // Managers
         configManager = new ConfigManager(this);
         gameMapManager = new GameMapManager();
+        arenaManager = new ArenaManager(this);
         this.scoreboardManager = new ScoreboardManager();
         this.flagManager = new EntityFlagManager(this);
         this.glowManager = new EntityGlowManager(flagManager, scoreboardManager);
         this.fixLeftClickManager = new FixLeftClickManager(this);
         this.debugManager = new DebugManager(this);
         gutitubowEntityManager = new GutitubowEntityManager();
-        gutitubowManagers = new GutitubowManagers(glowManager, scoreboardManager, playerSkinChanger, fakePlayerManager, ziplineManager, gutitubowEntityManager);
+        gutitubowManagers = new GutitubowManagers(glowManager, scoreboardManager, playerSkinChanger, fakePlayerManager, ziplineManager, gutitubowEntityManager, arenaManager);
 
         configManager.processConfigs();
 

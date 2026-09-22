@@ -23,29 +23,36 @@ public class GameCommand {
                         .then(literal("start").executes(GameCommand::start))
                         .then(literal("reset").executes(GameCommand::reset))
                         .then(literal("gui").executes(GameCommand::gui))
+                        .then(literal("resetarena").executes(GameCommand::resetArena))
                         .build(),
                 "Gutitubow game command"
         );
     }
 
-    private static int reset(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static int reset(CommandContext<CommandSourceStack> context) {
         CommandSender sender = context.getSource().getSender();
         getGameManager().resetGame(getGame());
         sender.sendMessage(Component.text("ゲームをリセットしました"));
         return com.mojang.brigadier.Command.SINGLE_SUCCESS;
     }
 
-    private static int start(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static int start(CommandContext<CommandSourceStack> context) {
         CommandSender sender = context.getSource().getSender();
         getGameManager().startGame(getGame());
         return com.mojang.brigadier.Command.SINGLE_SUCCESS;
     }
 
-    private static int gui(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static int gui(CommandContext<CommandSourceStack> context) {
         CommandSender sender = context.getSource().getSender();
         if (sender instanceof Player senderPlayer) {
             Gutitubow.get().getAllGUI().gameGUI().open(senderPlayer);
         }
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int resetArena(CommandContext<CommandSourceStack> context) {
+        CommandSender sender = context.getSource().getSender();
+        getGame().resetArena();
         return Command.SINGLE_SUCCESS;
     }
 

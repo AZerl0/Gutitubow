@@ -1,11 +1,13 @@
 package com.azerl0.gutitubow.gui.guis;
 
+import com.azerl0.gutitubow.arena.Arena;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GameManager;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.gui.AbstractGUI;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -13,16 +15,22 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class GameGUI extends AbstractGUI {
+    private static final Logger log = LoggerFactory.getLogger(GameGUI.class);
     private final GameManager gameManager;
     private final Game game;
 
     final int GAME_START_BUTTON_SLOT = 0;
     final int TOGGLE_GAME_MODE_BUTTON_SLOT = 2;
     final int GAME_RESET_BUTTON_SLOT = 8;
+    final int ORIGINAL_MAP_TELEPORT_BUTTON_SLOT = 15;
+    final int ARENA_TELEPORT_BUTTON_SLOT = 16;
+    final int ARENA_RESET_BUTTON_SLOT = 17;
     final int ABILITY_SWITCH_BUTTON_SLOT = 18;
     final int DEFAULT_HEALTH_BUTTON_SLOT = 19;
     final int PHASE0_SECOND_BUTTON_SLOT = 20;
@@ -48,6 +56,24 @@ public class GameGUI extends AbstractGUI {
                 getAbstractSimpleButtonItem(Material.BOW, Component.text("リセット")), event -> {
                     gameManager.resetGame(game);
                 });
+        addButton(ORIGINAL_MAP_TELEPORT_BUTTON_SLOT, getAbstractSimpleButtonItem(Material.CARTOGRAPHY_TABLE, Component.text("アリーナの元のマップにテレポート")), event -> {
+            if (!(event.getWhoClicked() instanceof Player clicker)) return;
+            if (game.getGameMap() != null) clicker.teleport(game.getGameMap().getLobby());
+        });
+        addButton(ARENA_TELEPORT_BUTTON_SLOT, getAbstractSimpleButtonItem(Material.LODESTONE, Component.text("アリーナにテレポート")), event -> {
+            if (!(event.getWhoClicked() instanceof Player clicker)) return;
+            Arena arena = game.getArena();
+            if (arena != null) {
+                Location lobby = arena.getGameMap().getLobby().clone();
+                lobby.setWorld(arena.getWorld());
+                clicker.teleport(lobby);
+
+            }
+        });
+        addButton(ARENA_RESET_BUTTON_SLOT, getAbstractSimpleButtonItem(Material.REDSTONE_BLOCK, Component.text("アリーナをリセット")), event -> {
+            game.resetArena();
+        });
+
         addButton(ABILITY_SWITCH_BUTTON_SLOT, getAbstractSimpleButtonItem(Material.NETHER_STAR, Component.text("能力スイッチ")), event -> {
             if (!(event.getWhoClicked() instanceof Player clicker)) return;
             game.getGameSetting().getAbilityDisableGUI().open(clicker);
