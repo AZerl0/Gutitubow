@@ -4,6 +4,10 @@ import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.event.ability.copy.UseCopiedAbilityEvent;
 import com.azerl0.gutitubow.event.gameplayer.*;
+import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldBreakEvent;
+import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldLowerEvent;
+import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldRaiseEvent;
+import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldRaisingEvent;
 import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
@@ -209,6 +213,31 @@ public class ChangeAbility extends Ability {
     @Override
     public void onClick(InventoryClickEvent event) {
         if (currentAbility != null) currentAbility.onClick(event);
+    }
+
+    @Override
+    public void onWin(GamePlayerWinEvent event) {
+        if (currentAbility != null) currentAbility.onWin(event);
+    }
+
+    @Override
+    public void onShieldRaise(ShieldRaiseEvent event) {
+        if (currentAbility != null) currentAbility.onShieldRaise(event);
+    }
+
+    @Override
+    public void onShieldRaising(ShieldRaisingEvent event) {
+        if (currentAbility != null) currentAbility.onShieldRaising(event);
+    }
+
+    @Override
+    public void onShieldLower(ShieldLowerEvent event) {
+        if (currentAbility != null) currentAbility.onShieldLower(event);
+    }
+
+    @Override
+    public void onShieldBreak(ShieldBreakEvent event) {
+        if (currentAbility != null) currentAbility.onShieldBreak(event);
     }
 
     @Override
