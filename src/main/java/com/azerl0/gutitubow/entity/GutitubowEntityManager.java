@@ -96,7 +96,7 @@ public class GutitubowEntityManager {
     }
 
     public Collection<? extends GutitubowEntity> getGutitubowEntities() {
-        return gutitubowEntities.values();
+        return new ArrayList<>(gutitubowEntities.values());
     }
 
     public void onGutitubowEntityRemove(UUID gutitubowEntityUUID) {
