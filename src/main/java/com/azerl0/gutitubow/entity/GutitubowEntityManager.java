@@ -42,7 +42,7 @@ public class GutitubowEntityManager {
         if (gutitubowEntityUUID == null) return Optional.empty();
 
         GutitubowEntity gutitubowEntity = gutitubowEntities.get(gutitubowEntityUUID);
-        return Optional.of(gutitubowEntity);
+        return Optional.ofNullable(gutitubowEntity);
     }
 
 

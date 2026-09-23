@@ -29,6 +29,7 @@ import org.joml.Vector3f;
 import java.util.*;
 
 public class CarePackage extends GutitubowEntity {
+    private Chicken core;
     private UUID interactionEntityUUID;
     private UUID displayEntityUUID;
     private boolean isFake;
@@ -51,11 +52,7 @@ public class CarePackage extends GutitubowEntity {
 
     @Override
     public @NotNull Location getLocation() {
-        if (getCoreEntity() == null) {
-            return location;
-        } else {
-            return getCoreEntity().getLocation();
-        }
+        return core.getLocation();
     }
 
     @Override
@@ -89,7 +86,7 @@ public class CarePackage extends GutitubowEntity {
 
         });
 
-        Chicken coreEntity = world.spawn(location, Chicken.class, (Chicken core) -> {
+        core = world.spawn(location, Chicken.class, (Chicken core) -> {
             core.setInvisible(true);
             core.setInvulnerable(true);
             core.setCollidable(false);
@@ -110,7 +107,7 @@ public class CarePackage extends GutitubowEntity {
             double randomY = random.nextDouble(-randomRadius, randomRadius);
             Chicken chicken = world.spawn(location.clone().add(randomX, 4.5, randomY), Chicken.class, (Chicken c) -> {
                 Objects.requireNonNull(c.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0);
-                c.setLeashHolder(coreEntity);
+                c.setLeashHolder(core);
                 c.addScoreboardTag("gutitubow.carePackageEntity");
                 c.setVariant(Chicken.Variant.TEMPERATE);
                 c.setInvulnerable(true);
@@ -127,8 +124,6 @@ public class CarePackage extends GutitubowEntity {
 
     @Override
     public void teleport(Location location) {
-        Entity core = getCoreEntity();
-        if (core == null) return;
         Location oldLocation = getLocation().clone();
         core.teleport(location);
 
@@ -146,7 +141,8 @@ public class CarePackage extends GutitubowEntity {
     @Override
     public Set<UUID> getPartEntitiesUUID() {
         Set<UUID> uuidSet = new HashSet<>();
-        uuidSet.add(uuid);
+        if (getCoreEntity() != null) uuidSet.add(getCoreEntity().getUniqueId());
+        uuidSet.add(core.getUniqueId());
         uuidSet.add(displayEntityUUID);
         uuidSet.add(interactionEntityUUID);
         for (Chicken chicken : chickens) {
@@ -171,7 +167,7 @@ public class CarePackage extends GutitubowEntity {
 
     @Nullable
     public Entity getCoreEntity() {
-        return Bukkit.getServer().getEntity(this.uuid);
+        return core;
     }
 
     public Entity getDisplayEntity() {
@@ -216,8 +212,6 @@ public class CarePackage extends GutitubowEntity {
 
     private void onLand() {
         removeBalloonEntities();
-        Entity coreEntity = this.getCoreEntity();
-        if (coreEntity == null) return;
         spawnPoofParticle();
         if (!isLanded) spawnFirework();
         isLanded = true;
@@ -236,10 +230,8 @@ public class CarePackage extends GutitubowEntity {
     }
 
     private void spawnPoofParticle() {
-        Entity coreEntity = this.getCoreEntity();
-        if (coreEntity == null) return;
 
-        Location center = coreEntity.getLocation();
+        Location center = getLocation();
         int speed = 1;
 
         for (int i = 0; i < 15; i++) {
@@ -250,7 +242,7 @@ public class CarePackage extends GutitubowEntity {
 
             center.getWorld().spawnParticle(
                     Particle.POOF,
-                    coreEntity.getLocation().clone().add(0, 0.5, 0),
+                    getLocation().clone().add(0, 0.5, 0),
                     0,
                     dir.getX(), dir.getY(), dir.getZ(),
                     speed
