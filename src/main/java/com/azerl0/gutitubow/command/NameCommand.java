@@ -27,7 +27,7 @@ public class NameCommand {
                 literal("name")
                         .requires(source -> source.getSender().hasPermission("gutitubow.name"))
                         .then(literal("set").then(argument("targets", ArgumentTypes.players())
-                                .then(argument("name", StringArgumentType.word())
+                                .then(argument("name", StringArgumentType.greedyString())
                                         .executes(NameCommand::setName))))
                         .then(literal("reset").then(argument("targets", ArgumentTypes.players())
                                 .executes(NameCommand::resetName)))
