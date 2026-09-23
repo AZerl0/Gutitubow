@@ -236,10 +236,11 @@ public class Game {
         }
         resetSoloPlayerTeams();
         if (arena != null) {
-            arena.getGameMap().getBorder().setCenter(0.0, 0.0);
-            arena.getGameMap().getBorder().setSize(59999968);
-            arena.getGameMap().getBorder().setDamageBuffer(0.0);
+            arena.getBorder().setCenter(0.0, 0.0);
+            arena.getBorder().setSize(59999968);
+            arena.getBorder().setDamageBuffer(0.0);
             safeArea = arena.getGameMap().getCenter();
+            safeArea.setWorld(arena.getWorld());
         }
 
         for (GutitubowEntity gutitubowEntity : gutitubow.getGutitubowEntityManager().getGutitubowEntities()) {
@@ -263,9 +264,10 @@ public class Game {
 
     private void init() {
         nextTick = gameSetting.getPhase0seconds() * 20;
-        arena.getGameMap().getBorder().setCenter(arena.getGameMap().getCenter());
-        arena.getGameMap().getBorder().setSize(arena.getGameMap().getSize());
+        arena.getBorder().setCenter(arena.getGameMap().getCenter());
+        arena.getBorder().setSize(arena.getGameMap().getSize());
         safeArea = arena.getGameMap().getRandomSafeArea();
+        safeArea.setWorld(arena.getWorld());
         deathOrder.clear();
         alivePlayers.clear();
         AbilitySelector abilitySelector = new AbilitySelector(getGameSetting().getDisabledAbilities());
@@ -288,6 +290,7 @@ public class Game {
             player.setHealth(gameSetting.getDefaultHealth());
             if (!debugManager.isNoStartTeleport()) {
                 Location location = MathUtil.randomLocation(safeArea, arena.getGameMap().getSize() - 30 * 2);
+                location.setWorld(arena.getWorld());
                 location.setY(200.0);
                 location.getDirection().setY(0);
                 player.teleport(location);
@@ -404,7 +407,7 @@ public class Game {
         if (isShrinking()) {
             for (GutitubowEntity gutitubowEntity : gutitubow.getGutitubowEntityManager().getGutitubowEntities()) {
                 if (gutitubowEntity instanceof CarePackage carePackage) {
-                    if (!arena.getGameMap().getBorder().isInside(carePackage.getLocation())) carePackage.remove();
+                    if (!arena.getBorder().isInside(carePackage.getLocation())) carePackage.remove();
                 }
             }
         }
@@ -468,7 +471,9 @@ public class Game {
             }
 
             if (gamePhase.getPhaseNumber() >= 1 && gamePhase.getPhaseNumber() <= 5 && isShrinking()) {
-                arena.getGameMap().getBorder().setCenter(MathUtil.getLocationByProgress(arena.getGameMap().getCenter(), safeArea, getShrinkProgress()));
+                Location endLocation = arena.getGameMap().getCenter();
+                endLocation.setWorld(arena.getWorld());
+                arena.getBorder().setCenter(MathUtil.getLocationByProgress(endLocation, safeArea, getShrinkProgress()));
             }
 
             if (remainedSeconds <= 10 && this.currentTicks % 20 == 0 && !isFinalPhase()) {
@@ -487,6 +492,7 @@ public class Game {
             if (lastPhaseCycleCurrentTick == 0) {
                 oldSafeArea = safeArea.clone();
                 Location newSafeArea = arena.getGameMap().getRandomSafeArea();
+                newSafeArea.setWorld(arena.getWorld());
 
                 double maxDistance = 15.0;
 
@@ -504,7 +510,7 @@ public class Game {
                 oldSafeArea = safeArea.clone();
             }
             float progress = (float) lastPhaseCycleCurrentTick / (float) LAST_PHASE_CYCLE_TICK;
-            arena.getGameMap().getBorder().setCenter(MathUtil.getLocationByProgress(oldSafeArea, safeArea, progress));
+            arena.getBorder().setCenter(MathUtil.getLocationByProgress(oldSafeArea, safeArea, progress));
         }
 
     }
@@ -570,7 +576,7 @@ public class Game {
             bossBar.color(BossBar.Color.RED);
             nextTick = 30 * 20;
             int borderChangeTicks = 31 * 20;
-            arena.getGameMap().getBorder().changeSize(getNextSafeAreaSize(), borderChangeTicks);
+            arena.getBorder().changeSize(getNextSafeAreaSize(), borderChangeTicks);
 
         } else {
             if (gamePhase == GamePhase.PHASE0) init();

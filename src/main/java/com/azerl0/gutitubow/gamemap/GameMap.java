@@ -14,16 +14,16 @@ public class GameMap {
     private @NotNull Location lobby;
     private final double size;
 
-    private double phase1Size;
-    private double phase2Size;
-    private double phase3Size;
-    private double phase4Size;
-    private double phase5Size;
+    private final double phase1Size;
+    private final double phase2Size;
+    private final double phase3Size;
+    private final double phase4Size;
+    private final double phase5Size;
 
     public GameMap(
             String id,
             Component name,
-            Location center,
+            @NotNull Location center,
             @NotNull Location lobby,
             double size,
             double phase1Size,
@@ -73,7 +73,7 @@ public class GameMap {
         return this.size;
     }
 
-    public Location getRandomSafeArea() {
+    public @NotNull Location getRandomSafeArea() {
         Random random = new Random();
         Location area = this.center.clone();
         double sizeOffset = size / 2 - 75;

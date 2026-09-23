@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.arena;
 
 import com.azerl0.gutitubow.gamemap.GameMap;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -37,5 +38,9 @@ public class Arena {
 
     public @NotNull World getWorld() {
         return world;
+    }
+
+    public WorldBorder getBorder() {
+        return world.getWorldBorder();
     }
 }
