@@ -13,9 +13,11 @@ import com.azerl0.gutitubow.pdc.LocationDataType;
 import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.EntityUtil;
+import com.azerl0.gutitubow.util.PlayerUtil;
 import de.tr7zw.nbtapi.NBT;
 import net.citizensnpcs.api.CitizensAPI;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
@@ -25,10 +27,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -251,6 +250,24 @@ public class GameListener implements Listener {
                     ) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onInteractEntity(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked() instanceof Player inteactPlayer) {
+            Player player = event.getPlayer();
+            if (player.getGameMode() != GameMode.SPECTATOR) return;
+            GamePlayer interactGamePlayer = game.getGamePlayer(inteactPlayer);
+            Ability ability = game.getAbilityManager().getAbility(inteactPlayer);
+            Component abilityName = ability == null ? Component.text("なし") : ability.getType().getName();
+            Component message = inteactPlayer.displayName().color(NamedTextColor.GREEN)
+                    .append(Component.text("\n能力：").color(NamedTextColor.GOLD).append(abilityName))
+                    .append(Component.text("\n残り体力：").color(NamedTextColor.GOLD).append(PlayerUtil.getHealthComponent(inteactPlayer)))
+                    .append(Component.text("\nキル数：").color(NamedTextColor.GOLD).append(Component.text(interactGamePlayer.getTotalKill()).color(NamedTextColor.GREEN)))
+                    .append(Component.text(", ヒット数：").color(NamedTextColor.GOLD).append(Component.text(interactGamePlayer.getTotalHit()).color(NamedTextColor.GREEN)))
+                    .append(Component.text("\nポーション数：").color(NamedTextColor.GOLD).append(Component.text(interactGamePlayer.getPotionAmount() + "個").color(NamedTextColor.GREEN)));
+            player.sendMessage(message);
         }
     }
 
