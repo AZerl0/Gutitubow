@@ -15,13 +15,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class GameGUI extends AbstractGUI {
-    private static final Logger log = LoggerFactory.getLogger(GameGUI.class);
     private final GameManager gameManager;
     private final Game game;
 
