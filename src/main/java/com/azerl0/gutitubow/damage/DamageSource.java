@@ -1,4 +1,4 @@
-package com.azerl0.gutitubow.data.damage;
+package com.azerl0.gutitubow.damage;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

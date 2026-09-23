@@ -1,8 +1,8 @@
 package com.azerl0.gutitubow.entity.carepackage;
 
 import com.azerl0.gutitubow.Gutitubow;
-import com.azerl0.gutitubow.data.damage.DamageSource;
-import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
+import com.azerl0.gutitubow.damage.DamageSource;
+import com.azerl0.gutitubow.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.GutitubowEntityManager;

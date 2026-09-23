@@ -1,6 +1,6 @@
 package com.azerl0.gutitubow.event.gameplayer;
 
-import com.azerl0.gutitubow.data.damage.DamageSource;
+import com.azerl0.gutitubow.damage.DamageSource;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;

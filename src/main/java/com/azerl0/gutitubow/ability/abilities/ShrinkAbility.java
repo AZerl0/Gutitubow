@@ -3,7 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
-import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
+import com.azerl0.gutitubow.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreDamageEvent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Sound;

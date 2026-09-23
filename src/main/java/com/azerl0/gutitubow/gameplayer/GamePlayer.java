@@ -1,8 +1,8 @@
 package com.azerl0.gutitubow.gameplayer;
 
 import com.azerl0.gutitubow.ability.Ability;
-import com.azerl0.gutitubow.data.damage.DamageSource;
-import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
+import com.azerl0.gutitubow.damage.DamageSource;
+import com.azerl0.gutitubow.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.event.gameplayer.*;
 import com.azerl0.gutitubow.game.Game;

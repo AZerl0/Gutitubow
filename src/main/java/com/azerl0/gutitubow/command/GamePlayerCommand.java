@@ -2,8 +2,8 @@ package com.azerl0.gutitubow.command;
 
 import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.command.argument.GameDamageTypeArgument;
-import com.azerl0.gutitubow.data.damage.DamageSource;
-import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
+import com.azerl0.gutitubow.damage.DamageSource;
+import com.azerl0.gutitubow.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.mojang.brigadier.Command;

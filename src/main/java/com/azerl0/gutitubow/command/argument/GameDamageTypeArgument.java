@@ -1,6 +1,6 @@
 package com.azerl0.gutitubow.command.argument;
 
-import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
+import com.azerl0.gutitubow.damage.GutitubowDamageType;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;

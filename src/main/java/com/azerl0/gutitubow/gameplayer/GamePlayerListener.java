@@ -1,7 +1,5 @@
 package com.azerl0.gutitubow.gameplayer;
 
-import com.azerl0.gutitubow.data.damage.DamageSource;
-import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerCreatePinEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreCreatePinEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
@@ -9,8 +7,6 @@ import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.pin.Pin;
 import com.azerl0.gutitubow.team.GameTeam;
-import com.azerl0.gutitubow.util.EntityUtil;
-import net.citizensnpcs.api.CitizensAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;

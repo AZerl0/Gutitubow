@@ -1,8 +1,8 @@
 package com.azerl0.gutitubow.message;
 
 import com.azerl0.gutitubow.Gutitubow;
-import com.azerl0.gutitubow.data.damage.DamageSource;
-import com.azerl0.gutitubow.data.damage.GutitubowDamageType;
+import com.azerl0.gutitubow.damage.DamageSource;
+import com.azerl0.gutitubow.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.game.Game;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

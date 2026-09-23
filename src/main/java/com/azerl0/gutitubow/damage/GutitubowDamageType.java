@@ -1,4 +1,4 @@
-package com.azerl0.gutitubow.data.damage;
+package com.azerl0.gutitubow.damage;
 
 public enum GutitubowDamageType {
     ARROW_SHOT,
