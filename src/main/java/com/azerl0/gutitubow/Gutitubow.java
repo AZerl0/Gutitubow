@@ -9,6 +9,7 @@ import com.azerl0.gutitubow.entity.GutitubowEntityManager;
 import com.azerl0.gutitubow.entity.carepackage.CarePackageListener;
 import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.fakeplayer.FakePlayerManager;
+import com.azerl0.gutitubow.firstjoin.FirstJoin;
 import com.azerl0.gutitubow.game.*;
 import com.azerl0.gutitubow.player.PlayerSkinChangerListener;
 import com.azerl0.gutitubow.scoreboard.ScoreboardManager;
@@ -45,6 +46,7 @@ import com.azerl0.gutitubow.ability.abilities.*;
 public final class Gutitubow extends JavaPlugin {
     private static Gutitubow instance;
     private ConfigManager configManager;
+    private FirstJoin firstJoin;
     private ScoreboardManager scoreboardManager;
     private EntityFlagManager flagManager;
     private EntityGlowManager glowManager;
@@ -77,6 +79,7 @@ public final class Gutitubow extends JavaPlugin {
 
         // Managers
         configManager = new ConfigManager(this);
+        firstJoin = new FirstJoin();
         gameMapManager = new GameMapManager();
         arenaManager = new ArenaManager(this);
         this.scoreboardManager = new ScoreboardManager();
@@ -116,6 +119,7 @@ public final class Gutitubow extends JavaPlugin {
         pluginManager.registerEvents(new PinListener(pinManager), this);
         pluginManager.registerEvents(new ZiplineListener(ziplineManager), this);
         pluginManager.registerEvents(new PlayerSkinChangerListener(playerSkinChanger), this);
+        pluginManager.registerEvents(new FirstJoin(), this);
 
         // packetListener登録
         EventManager eventManager = PacketEvents.getAPI().getEventManager();
