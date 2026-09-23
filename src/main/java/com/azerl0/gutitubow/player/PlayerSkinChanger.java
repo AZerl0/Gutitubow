@@ -107,7 +107,9 @@ public class PlayerSkinChanger {
     }
 
     public void cacheSkin(Player player) {
-        cacheSkin(player.getName());
+        Bukkit.getServer().getAsyncScheduler().runNow(plugin, task -> {
+            cacheSkin(player.getName());
+        });
     }
 
     public void cacheSkin(String playerName) {
