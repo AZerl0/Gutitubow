@@ -121,7 +121,8 @@ public class MedusaAbility extends Ability {
         }
     }
 
-    private void update() {
+    @Override
+    protected void onTick() {
         Player player = getPlayer();
         if (player == null) return;
 
