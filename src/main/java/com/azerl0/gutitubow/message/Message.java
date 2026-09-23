@@ -71,6 +71,7 @@ public class Message {
             case FAKE_CAREPACKAGE -> suffix = getSimpleSuffix("救援物資", true);
             case OUTSIDE_BORDER -> suffix = getSimpleSuffix("エリア外", true);
             case FAILED_LAST_STAND -> suffix = getSimpleSuffix("背水の陣失敗", true);
+            case LOGOUT -> suffix = getSimpleSuffix("ログアウト", true);
         }
         if (suffix == null) return null;
 

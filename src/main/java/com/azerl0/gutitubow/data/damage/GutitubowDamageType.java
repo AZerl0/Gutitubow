@@ -9,5 +9,6 @@ public enum GutitubowDamageType {
     FAILED_LAST_STAND,
     OUTSIDE_BORDER,
     FAKE_CAREPACKAGE,
+    LOGOUT,
     UNKNOWN
 }

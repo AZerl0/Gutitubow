@@ -28,6 +28,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -61,6 +62,17 @@ public class GameListener implements Listener {
             game.showBossBar(player);
         }
         gamePlayer.updatePlayerBoard();
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        if (game.isStarted() && game.getAlivePlayers().contains(player.getUniqueId())) {
+            GamePlayer gamePlayer = game.getGamePlayer(player);
+            DamageSource damageSource = DamageSource.builder(GutitubowDamageType.LOGOUT).build();
+            gamePlayer.damage(damageSource, 255);
+            game.addDeadPlayer(player);
+        }
     }
 
     @EventHandler

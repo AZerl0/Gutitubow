@@ -677,6 +677,7 @@ public class Game {
     public void addDeadPlayer(Player player) {
         UUID uuid = player.getUniqueId();
         alivePlayers.remove(uuid);
+        if (deathOrder.contains(uuid)) return;
         deathOrder.remove(uuid);
         deathOrder.add(uuid);
     }
