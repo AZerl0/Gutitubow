@@ -4,6 +4,8 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreDamageEvent;
+import com.azerl0.gutitubow.profiler.ProfileChangeReason;
+import com.azerl0.gutitubow.profiler.SkinDataManager;
 import com.azerl0.gutitubow.util.MathUtil;
 import com.azerl0.gutitubow.util.PlayerUtil;
 import net.kyori.adventure.text.Component;
@@ -258,7 +260,7 @@ public class MedusaAbility extends Ability {
         target.showTitle(title);
         target.playSound(target, Sound.ENTITY_VEX_DEATH, 1.0f, 1.0f);
 
-        context.skinChanger().setStoneSkin(target);
+        context.getGutitubowManagers().getProfileManager().getProfile(target).setSkin(SkinDataManager.STONE_SKIN(), ProfileChangeReason.MEDUSA);
 
         PotionEffect slowness = new PotionEffect(PotionEffectType.SLOWNESS, -1, 3, true, false, true);
         PotionEffect weakness = new PotionEffect(PotionEffectType.WEAKNESS, -1, 0, true, false, true);
@@ -280,9 +282,9 @@ public class MedusaAbility extends Ability {
 
     private void resetPetrification(Player target) {
         if (PlayerUtil.isBedrock(target)) {
-            context.skinChanger().setRandomDefaultSkin(target);
+//            context.skinChanger().setRandomDefaultSkin(target);
         } else {
-            context.skinChanger().resetSkin(target);
+            context.getGutitubowManagers().getProfileManager().getProfile(target).resetSkin(ProfileChangeReason.MEDUSA);
         }
         target.removePotionEffect(PotionEffectType.SLOWNESS);
         target.removePotionEffect(PotionEffectType.WEAKNESS);

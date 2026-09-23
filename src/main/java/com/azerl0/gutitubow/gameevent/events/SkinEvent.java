@@ -5,6 +5,8 @@ import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.gameevent.GameEvent;
 import com.azerl0.gutitubow.gameevent.GameEventType;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
+import com.azerl0.gutitubow.profiler.ProfileChangeReason;
+import com.azerl0.gutitubow.profiler.SkinData;
 import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -32,8 +34,9 @@ public class SkinEvent extends GameEvent {
     protected void onActivate() {
         Player skinPlayer = getSkinPlayer();
         if (skinPlayer == null) return;
+        SkinData skinData = Gutitubow.get().getGutitubowManagers().getSkinDataManager().getPlayerSkinData(skinPlayer);
         playersConsumer(player -> {
-            Gutitubow.get().getPlayerSkinChanger().setSkin(player, skinPlayer.getName());
+            Gutitubow.get().getGutitubowManagers().getProfileManager().getProfile(player).setSkin(skinData, ProfileChangeReason.SKIN_EVENT);
         });
 
         playActivateEffect(
@@ -48,7 +51,7 @@ public class SkinEvent extends GameEvent {
     @Override
     protected void onDeactivated() {
         playersConsumer(player -> {
-            Gutitubow.get().getPlayerSkinChanger().resetSkin(player);
+            Gutitubow.get().getGutitubowManagers().getProfileManager().getProfile(player).resetSkin(ProfileChangeReason.SKIN_EVENT);
         });
     }
 

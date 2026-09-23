@@ -11,7 +11,10 @@ import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.fakeplayer.FakePlayerManager;
 import com.azerl0.gutitubow.firstjoin.FirstJoin;
 import com.azerl0.gutitubow.game.*;
-import com.azerl0.gutitubow.player.PlayerSkinChangerListener;
+import com.azerl0.gutitubow.profiler.ProfileListener;
+import com.azerl0.gutitubow.profiler.ProfileManager;
+import com.azerl0.gutitubow.profiler.SkinDataListener;
+import com.azerl0.gutitubow.profiler.SkinDataManager;
 import com.azerl0.gutitubow.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.gameevent.GameEventListener;
 import com.azerl0.gutitubow.gameplayer.GamePlayerListener;
@@ -26,7 +29,6 @@ import com.azerl0.gutitubow.pin.PinListener;
 import com.azerl0.gutitubow.pin.PinManager;
 import com.azerl0.gutitubow.player.FixLeftClickListener;
 import com.azerl0.gutitubow.player.FixLeftClickManager;
-import com.azerl0.gutitubow.player.PlayerSkinChanger;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
 import com.github.retrooper.packetevents.PacketEvents;
@@ -47,6 +49,8 @@ public final class Gutitubow extends JavaPlugin {
     private static Gutitubow instance;
     private ConfigManager configManager;
     private FirstJoin firstJoin;
+    private SkinDataManager skinDataManager;
+    private ProfileManager profileManager;
     private ScoreboardManager scoreboardManager;
     private EntityFlagManager flagManager;
     private EntityGlowManager glowManager;
@@ -55,7 +59,6 @@ public final class Gutitubow extends JavaPlugin {
     private GameMapManager gameMapManager;
     private ArenaManager arenaManager;
     private GameManager gameManager;
-    private final PlayerSkinChanger playerSkinChanger = new PlayerSkinChanger(this);
     private final FakePlayerManager fakePlayerManager = new FakePlayerManager(this);
     private final PinManager pinManager = new PinManager(this);
     private final ZiplineManager ziplineManager = new ZiplineManager(this);
@@ -80,6 +83,8 @@ public final class Gutitubow extends JavaPlugin {
         // Managers
         configManager = new ConfigManager(this);
         firstJoin = new FirstJoin();
+        skinDataManager = new SkinDataManager(this);
+        profileManager = new ProfileManager(skinDataManager);
         gameMapManager = new GameMapManager();
         arenaManager = new ArenaManager(this);
         this.scoreboardManager = new ScoreboardManager();
@@ -88,7 +93,7 @@ public final class Gutitubow extends JavaPlugin {
         this.fixLeftClickManager = new FixLeftClickManager(this);
         this.debugManager = new DebugManager(this);
         gutitubowEntityManager = new GutitubowEntityManager();
-        gutitubowManagers = new GutitubowManagers(glowManager, scoreboardManager, playerSkinChanger, fakePlayerManager, ziplineManager, gutitubowEntityManager, arenaManager);
+        gutitubowManagers = new GutitubowManagers(glowManager, scoreboardManager, fakePlayerManager, ziplineManager, gutitubowEntityManager, arenaManager, skinDataManager, profileManager);
 
         configManager.processConfigs();
 
@@ -118,8 +123,9 @@ public final class Gutitubow extends JavaPlugin {
         pluginManager.registerEvents(new FixLeftClickListener(fixLeftClickManager), this);
         pluginManager.registerEvents(new PinListener(pinManager), this);
         pluginManager.registerEvents(new ZiplineListener(ziplineManager), this);
-        pluginManager.registerEvents(new PlayerSkinChangerListener(playerSkinChanger), this);
         pluginManager.registerEvents(new FirstJoin(), this);
+        pluginManager.registerEvents(new SkinDataListener(skinDataManager), this);
+        pluginManager.registerEvents(new ProfileListener(profileManager), this);
 
         // packetListener登録
         EventManager eventManager = PacketEvents.getAPI().getEventManager();
@@ -195,6 +201,10 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.GRAVITY, GravityAbility::new);
     }
 
+    public GutitubowManagers getGutitubowManagers() {
+        return gutitubowManagers;
+    }
+
     public ConfigManager getConfigManager() {
         return configManager;
     }
@@ -217,10 +227,6 @@ public final class Gutitubow extends JavaPlugin {
 
     public AbilitySelectorGUI getAbilitySelectorGUI() {
         return abilitySelectorGUI;
-    }
-
-    public PlayerSkinChanger getPlayerSkinChanger() {
-        return playerSkinChanger;
     }
 
     public FakePlayerManager getFakePlayerManager() {
