@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.command;
 import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GameManager;
+import com.azerl0.gutitubow.game.GameStartResult;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -38,7 +39,10 @@ public class GameCommand {
 
     private static int start(CommandContext<CommandSourceStack> context) {
         CommandSender sender = context.getSource().getSender();
-        getGameManager().startGame(getGame());
+        GameStartResult result = getGame().start();
+        if (result == GameStartResult.MAP_IS_NULL) {
+            sender.sendMessage("マップが設定されていません");
+        }
         return com.mojang.brigadier.Command.SINGLE_SUCCESS;
     }
 

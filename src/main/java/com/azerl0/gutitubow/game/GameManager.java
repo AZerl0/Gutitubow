@@ -5,16 +5,18 @@ import com.azerl0.gutitubow.GutitubowManagers;
 import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.gamemap.GameMapManager;
 
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class GameManager {
     private final Gutitubow gutitubow;
     private final GameMapManager gameMapManager;
     private final DebugManager debugManager;
     private final GutitubowManagers gutitubowManagers;
+    private final Set<Game> gameSet = new HashSet<>();
     private BukkitTask gameTask;
 
     public GameManager(
@@ -27,10 +29,19 @@ public class GameManager {
         this.gameMapManager = gameMapManager;
         this.debugManager = debugManager;
         this.gutitubowManagers = gutitubowManagers;
+
+        gameTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                tick();
+            }
+        }.runTaskTimer(gutitubow, 0L, 1L);
     }
 
     public Game newGame() {
-        return new Game(gutitubow, debugManager, gutitubowManagers);
+        Game game = new Game(gutitubow, debugManager, gutitubowManagers);
+        gameSet.add(game);
+        return game;
     }
 
     public void resetGame(Game game) {
@@ -41,24 +52,9 @@ public class GameManager {
         return game.isStarted();
     }
 
-    public void startGame(Game game) {
-        if (game == null || game.isStarted()) return;
-
-        Bukkit.getServer().broadcast(Component.text("start"));
-
-        game.start();
-
-        if (gameTask != null && !gameTask.isCancelled()) return;
-
-        gameTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!game.isStarted()) {
-                    this.cancel();
-                    return;
-                }
-                game.tick();
-            }
-        }.runTaskTimer(gutitubow, 0L, 1L);
+    private void tick() {
+        for (Game game : gameSet) {
+            game.update();
+        }
     }
 }

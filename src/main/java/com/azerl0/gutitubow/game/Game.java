@@ -135,7 +135,9 @@ public class Game {
         return started;
     }
 
-    public void start() {
+    public GameStartResult start() {
+        if (gameMap == null || arena == null) return GameStartResult.MAP_IS_NULL;
+        Bukkit.getServer().broadcast(Component.text("start"));
         started = true;
         gamePhase = GamePhase.STARTING;
         players.clear();
@@ -143,6 +145,8 @@ public class Game {
             if (getSpectatorManager().isSpectator(player)) continue;
             players.add(player.getUniqueId());
         }
+
+        return GameStartResult.SUCCESS;
     }
 
 
@@ -369,10 +373,6 @@ public class Game {
         }
     }
 
-    public void tick() {
-        this.update();
-    }
-
     private void resetSoloPlayerTeams() {
 //        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
 //            Scoreboard board = scoreboardManager.getScoreboard(onlinePlayer);
@@ -384,7 +384,8 @@ public class Game {
 //        }
     }
 
-    private void update() {
+    protected void update() {
+        if (!isStarted()) return;
         this.currentTicks++;
 
         if (this.currentTicks > this.nextTick && !isFinalPhase()) this.phaseUpdate();

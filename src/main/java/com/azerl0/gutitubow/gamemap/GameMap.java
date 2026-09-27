@@ -54,11 +54,11 @@ public class GameMap {
     }
 
     public Location getCenter() {
-        return this.center;
+        return this.center.clone();
     }
 
     public @NotNull Location getLobby() {
-        return lobby;
+        return lobby.clone();
     }
 
     public void setLobby(@NotNull Location lobby) {

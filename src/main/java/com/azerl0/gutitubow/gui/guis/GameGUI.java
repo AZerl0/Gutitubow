@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.gui.guis;
 import com.azerl0.gutitubow.arena.Arena;
 import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GameManager;
+import com.azerl0.gutitubow.game.GameStartResult;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.gui.AbstractGUI;
 import net.kyori.adventure.text.Component;
@@ -46,7 +47,10 @@ public class GameGUI extends AbstractGUI {
 
 
         addButton(GAME_START_BUTTON_SLOT, getAbstractSimpleButtonItem(Material.BOW, Component.text("ゲーム開始")), event -> {
-            gameManager.startGame(game);
+            GameStartResult result = game.start();
+            if (result == GameStartResult.MAP_IS_NULL) {
+                event.getWhoClicked().sendMessage("マップが設定されていません");
+            }
         });
         addButton(
                 GAME_RESET_BUTTON_SLOT,
