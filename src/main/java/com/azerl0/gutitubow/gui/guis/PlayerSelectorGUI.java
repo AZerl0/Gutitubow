@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class PlayerSelectorGUI extends AbstractGUI {
-    private Consumer<Player> onSelect;
+    private final Consumer<Player> onSelect;
 
     public PlayerSelectorGUI(Consumer<Player> onSelect) {
         super(54, Component.text("プレイヤーを選択"));
@@ -34,9 +34,7 @@ public class PlayerSelectorGUI extends AbstractGUI {
             ));
             itemStack.setItemMeta(meta);
             if (hasEmptySlot()) {
-                addButton(getEmptySlot(), itemStack, event -> {
-                    onSelect.accept(player);
-                });
+                addButton(getEmptySlot(), itemStack, event -> onSelect.accept(player));
             }
         }
     }
