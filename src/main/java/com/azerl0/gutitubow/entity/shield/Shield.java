@@ -196,7 +196,7 @@ public class Shield extends GutitubowEntity {
                     }
                     blockedPlayer.put(nearPlayerUUID, world.getGameTime());
 
-                    Vector velocity = nearPlayer.getLocation().getDirection().multiply(2);
+                    Vector velocity = owner.getLocation().getDirection().multiply(2);
                     if (velocity.getY() < 0) velocity.setY(0.5);
                     nearPlayer.setVelocity(velocity);
                     blockEffect(nearPlayer.getLocation());
