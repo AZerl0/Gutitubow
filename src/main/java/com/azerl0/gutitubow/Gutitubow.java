@@ -20,7 +20,7 @@ import com.azerl0.gutitubow.gameevent.GameEventListener;
 import com.azerl0.gutitubow.gameplayer.GamePlayerListener;
 import com.azerl0.gutitubow.gui.AllGUI;
 import com.azerl0.gutitubow.gui.GUIListener;
-import com.azerl0.gutitubow.gui.guis.AbilitySelectorGUI;
+import com.azerl0.gutitubow.gui.guis.AbilitySetGUI;
 import com.azerl0.gutitubow.gui.guis.GameGUI;
 import com.azerl0.gutitubow.gamemap.GameMapManager;
 import com.azerl0.gutitubow.item.ItemListener;
@@ -70,7 +70,7 @@ public final class Gutitubow extends JavaPlugin {
 
 
     private Game game;
-    private AbilitySelectorGUI abilitySelectorGUI;
+    private AbilitySetGUI abilitySetGUI;
 
     @Override
     public void onEnable() {
@@ -104,9 +104,9 @@ public final class Gutitubow extends JavaPlugin {
 
         //GUI
         GameGUI gameGUI = new GameGUI(gameManager, game);
-        this.abilitySelectorGUI = new AbilitySelectorGUI(game.getAbilityManager());
+        this.abilitySetGUI = new AbilitySetGUI(game.getAbilityManager());
 
-        allGUI = new AllGUI(gameGUI, abilitySelectorGUI);
+        allGUI = new AllGUI(gameGUI, abilitySetGUI);
 
 
         // Listener登録
@@ -225,8 +225,8 @@ public final class Gutitubow extends JavaPlugin {
         return debugManager;
     }
 
-    public AbilitySelectorGUI getAbilitySelectorGUI() {
-        return abilitySelectorGUI;
+    public AbilitySetGUI getAbilitySelectorGUI() {
+        return abilitySetGUI;
     }
 
     public FakePlayerManager getFakePlayerManager() {

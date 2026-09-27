@@ -3,17 +3,15 @@ package com.azerl0.gutitubow.command;
 import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.command.argument.AbilityTypeArgument;
-import com.azerl0.gutitubow.gui.guis.AbilitySelectorGUI;
+import com.azerl0.gutitubow.gui.guis.AbilitySetGUI;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
@@ -55,7 +53,7 @@ public class AbilityCommand {
         return Gutitubow.get().getGame().getAbilityManager();
     }
 
-    private static AbilitySelectorGUI getAbilitySelectorGUI() {
+    private static AbilitySetGUI getAbilitySelectorGUI() {
         return Gutitubow.get().getAbilitySelectorGUI();
     }
 
@@ -68,7 +66,7 @@ public class AbilityCommand {
         return com.mojang.brigadier.Command.SINGLE_SUCCESS;
     }
 
-    private static int openGui(CommandSender sender, AbilitySelectorGUI gui) {
+    private static int openGui(CommandSender sender, AbilitySetGUI gui) {
         if (!(sender instanceof Player player)) return 0;
         gui.open(player);
         return com.mojang.brigadier.Command.SINGLE_SUCCESS;

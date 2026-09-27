@@ -9,10 +9,10 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
-public class AbilitySelectorGUI extends AbstractAbilitiesGUI {
+public class AbilitySetGUI extends AbstractAbilitiesGUI {
     private final AbilityManager abilityManager;
 
-    public AbilitySelectorGUI(AbilityManager abilityManager) {
+    public AbilitySetGUI(AbilityManager abilityManager) {
         super(Component.text("能力選択"));
         this.abilityManager = abilityManager;
         updateGUI();
