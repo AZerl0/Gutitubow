@@ -251,6 +251,7 @@ public class EchoAbility extends Ability {
                 }
                 int index = flames.size() - step;
                 if (index >= flames.size()) index = flames.size() - 1;
+                if (index < 0) index = 0;
                 updateFakePlayer(timeLeapFakePlayer, flames.get(index));
                 player.setSpectatorTarget(timeLeapEntity);
                 if (PlayerUtil.isBedrock(player)) {
