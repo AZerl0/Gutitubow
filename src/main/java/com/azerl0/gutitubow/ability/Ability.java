@@ -63,6 +63,10 @@ public abstract class Ability {
 
     protected void onReset() {}
 
+    public void tick() {
+        onTick();
+    }
+
     protected void onTick() {}
 
     public boolean hasCompassCooldown() {

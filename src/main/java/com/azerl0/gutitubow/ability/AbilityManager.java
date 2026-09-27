@@ -87,7 +87,7 @@ public class AbilityManager {
 
     private void update() {
         for (Ability ability : new HashSet<>(abilities.values())) {
-            ability.onTick();
+            ability.tick();
         }
     }
 }

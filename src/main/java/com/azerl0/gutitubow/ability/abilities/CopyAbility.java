@@ -86,6 +86,8 @@ public class CopyAbility extends Ability {
                 player.sendMessage(Component.text("「").append(currentAbility.getType().getName()).append(Component.text("」の能力の使用が終了しました。")).color(NamedTextColor.RED));
                 player.getInventory().setItem(22, OPEN_STOCKED_ABILITIES_ICON);
                 currentAbility = null;
+            } else {
+                currentAbility.tick();
             }
         }
     }

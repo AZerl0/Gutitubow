@@ -111,6 +111,11 @@ public class ChangeAbility extends Ability {
     }
 
     @Override
+    protected void onTick() {
+        if (currentAbility != null) currentAbility.tick();
+    }
+
+    @Override
     public void onShoot(EntityShootBowEvent event) {
         if (currentAbility != null) currentAbility.onShoot(event);
     }
