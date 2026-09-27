@@ -11,9 +11,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class CarePackageEvent extends GameEvent {
     private BukkitTask spawnTask;
     private final long  SPAWN_SPAN_TICK = 15 * 20;
+    private final Set<CarePackage> carePackageSet = new HashSet<>();
 
     @Override
     public @NotNull GameEventType getEventType() {
@@ -33,6 +37,9 @@ public class CarePackageEvent extends GameEvent {
     @Override
     protected void onDeactivated() {
         spawnTask.cancel();
+        for (CarePackage carePackage : carePackageSet) {
+            if (!carePackage.isRemoved()) carePackage.remove();
+        }
     }
 
     private void spawnCarePackages() {
@@ -45,6 +52,7 @@ public class CarePackageEvent extends GameEvent {
                     CarePackage.class
             );
             if (i == 1) carePackage.setFake(true);
+            carePackageSet.add(carePackage);
         }
     }
 }
