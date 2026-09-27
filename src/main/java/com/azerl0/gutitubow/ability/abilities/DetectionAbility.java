@@ -67,9 +67,10 @@ public class DetectionAbility extends Ability {
 
     @Override
     public void onSneaking(GamePlayerSneakingEvent event) {
-        detectionTick++;
         Player player = getPlayer();
         if (player == null) return;
+        if (player.getGameMode() == GameMode.SPECTATOR) return;
+        detectionTick++;
 
         if (detectionTick >= DETECTION_TICK) {
             if (detectionTick == DETECTION_TICK) {
