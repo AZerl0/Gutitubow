@@ -4,6 +4,7 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -21,7 +22,7 @@ public class Profile {
         this.skinDataManager = skinDataManager;
     }
 
-    public void setSkin(SkinData skinData, ProfileChangeReason reason) {
+    public void setSkin(@NotNull SkinData skinData, @NotNull ProfileChangeReason reason) {
         ProfileChangeReason topLevelReason = getTopLevelSkinChangeReason();
         skins.put(reason, skinData);
         if (topLevelReason == null || reason.getLevel() >= topLevelReason.getLevel()) updateSkin();
@@ -80,6 +81,7 @@ public class Profile {
 
         SkinData skinData = getTopLevelSkinData();
         if (skinData == null) skinData = skinDataManager.getPlayerSkinData(player);
+        if (skinData == null) return;
 
         final PlayerProfile playerProfile = player.getPlayerProfile();
         playerProfile.setProperties(skinData.getTextureProperty());

@@ -1,10 +1,12 @@
 package com.azerl0.gutitubow.profiler;
 
 import com.destroystokyo.paper.profile.ProfileProperty;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.URI;
@@ -51,13 +53,15 @@ public class SkinDataManager {
         ));
     }
 
-    public SkinData getPlayerSkinData(Player player) {
+    public @Nullable SkinData getPlayerSkinData(Player player) {
         return getSkinData(player.getName());
     }
 
-    public SkinData getSkinData(String playerName) {
+    public @Nullable SkinData getSkinData(String playerName) {
         if (cache.containsKey(playerName)) return cache.get(playerName);
-        SkinData skinData = new SkinData(getTextureProperty(playerName));
+        Collection<ProfileProperty> properties = getTextureProperty(playerName);
+        if (properties == null) return null;
+        SkinData skinData = new SkinData(properties);
         cache.put(playerName, skinData);
         return skinData;
     }
@@ -65,12 +69,14 @@ public class SkinDataManager {
     public void cashPlayerSkinData(Player player) {
         String playerName = player.getName();
         if (cache.containsKey(playerName)) return;
-        SkinData skinData = new SkinData(getTextureProperty(playerName));
+        Collection<ProfileProperty> properties = getTextureProperty(playerName);
+        if (properties == null) return;
+        SkinData skinData = new SkinData(properties);
         cache.put(playerName, skinData);
     }
 
 
-    private Collection<ProfileProperty> getTextureProperty(String targetSkin) {
+    private @Nullable Collection<ProfileProperty> getTextureProperty(String targetSkin) {
 
         final String profileResponse = makeRequest(PROFILE_URL + targetSkin);
         final JsonObject profileObject = JsonParser.parseString(profileResponse).getAsJsonObject();
@@ -79,7 +85,9 @@ public class SkinDataManager {
         final String skinResponse = makeRequest(SKIN_URL.formatted(uuid));
         final JsonObject skinObject = JsonParser.parseString(skinResponse).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
         final String value = skinObject.get("value").getAsString();
-        final String signature = skinObject.get("signature").getAsString();
+        final JsonElement element = skinObject.get("signature");
+        if (element == null) return null;
+        final String signature = element.getAsString();
         final ProfileProperty profileProperty = new ProfileProperty("textures", value, signature);
 
         return List.of(profileProperty);

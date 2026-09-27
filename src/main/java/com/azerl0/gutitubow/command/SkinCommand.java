@@ -47,7 +47,7 @@ public class SkinCommand {
         Profile profile = gutitubowManagers().getProfileManager().getProfile(target);
         String skinName = context.getArgument("skinName", String.class);
         SkinData skinData = gutitubowManagers().getSkinDataManager().getSkinData(skinName);
-        profile.setSkin(skinData, ProfileChangeReason.COMMAND);
+        if (skinData != null) profile.setSkin(skinData, ProfileChangeReason.COMMAND);
 
         return Command.SINGLE_SUCCESS;
     }
