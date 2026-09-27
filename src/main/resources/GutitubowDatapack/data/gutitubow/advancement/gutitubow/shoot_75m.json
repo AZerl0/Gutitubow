@@ -7,7 +7,7 @@
   },
   "display": {
     "frame": "goal",
-    "announce_to_chat": false,
+    "announce_to_chat": true,
     "description": {
       "text": "75m以上離れた場所からプレイヤーを撃ち抜く\n(狙撃や跳弾、爆弾などの能力ダメージ不可)"
     },
@@ -31,5 +31,5 @@
       "impossible"
     ]
   ],
-  "sends_telemetry_event": true
+  "sends_telemetry_event": false
 }
