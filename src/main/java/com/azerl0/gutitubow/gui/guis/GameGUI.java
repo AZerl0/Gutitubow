@@ -1,15 +1,16 @@
 package com.azerl0.gutitubow.gui.guis;
 
+import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.arena.Arena;
-import com.azerl0.gutitubow.game.Game;
-import com.azerl0.gutitubow.game.GameManager;
-import com.azerl0.gutitubow.game.GameStartResult;
-import com.azerl0.gutitubow.game.GutitubowGameMode;
+import com.azerl0.gutitubow.game.*;
 import com.azerl0.gutitubow.gui.AbstractGUI;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -17,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameGUI extends AbstractGUI {
@@ -35,6 +37,7 @@ public class GameGUI extends AbstractGUI {
     final int CAREPACKAGE_AMOUNT_BUTTON_SLOT = 21;
     final int MAP_SELECTOR_BUTTON_SLOT = 22;
     final int GAME_EVENT_SETTING_BUTTON_SLOT = 23;
+    final int SINGLE_ABILITY_BUTTON_SLOT = 24;
     final int SPECTATOR_SETTING_BUTTON_SLOT = 26;
 
 
@@ -43,9 +46,11 @@ public class GameGUI extends AbstractGUI {
         this.gameManager = gameManager;
         this.game = game;
 
+        updateGUI();
+    }
 
-
-
+    @Override
+    public void updateGUI() {
         addButton(GAME_START_BUTTON_SLOT, getAbstractSimpleButtonItem(Material.BOW, Component.text("ゲーム開始")), event -> {
             GameStartResult result = game.start();
             if (result == GameStartResult.MAP_IS_NULL) {
@@ -105,8 +110,8 @@ public class GameGUI extends AbstractGUI {
                     game.getGameSetting().getGameEventController().openGameEventGUI(clicker);
                 }
         );
+        updateSingleAbilityTypeButton();
     }
-
 
     private void updateToggleGameModeButton() {
         addButton(TOGGLE_GAME_MODE_BUTTON_SLOT, getToggleGameModeButtonItem(), event -> toggleGameMode());
@@ -212,6 +217,70 @@ public class GameGUI extends AbstractGUI {
         updateCarePackageAmountButton();
     }
 
+    private void updateSingleAbilityTypeButton() {
+        AbilityType singleAbility = getGameSetting().getSingleAbility();
+        ItemStack itemStack;
+        if (singleAbility == null) {
+            itemStack = getAbstractSimpleButtonItem(Material.BARRIER, Component.text("全員同じする能力は選択されていません").color(NamedTextColor.WHITE), List.of(
+                    Component.text("[クリック] 全員同じにする能力を選択").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.GRAY)
+            ));
+            addButton(SINGLE_ABILITY_BUTTON_SLOT, itemStack, event -> {
+                if (!(event.getWhoClicked() instanceof Player clicker)) return;
+                AbilityTypeSelectorWithDisabledGUI abilityTypeGUI = new AbilityTypeSelectorWithDisabledGUI(
+                        getGameSetting(),
+                        select -> {
+                            if (select.isDisabled()) {
+                                clicker.playSound(clicker, Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                            } else {
+                                getGameSetting().setSingleAbility(select.abilityType());
+                                updateSingleAbilityTypeButton();
+                                open(clicker);
+                            }
+                        }
+                );
+                abilityTypeGUI.open(clicker);
+            });
+        } else {
+            itemStack = singleAbility.getDisplayItem();
+            List<Component> lore = new ArrayList<>(List.of(
+                    Component.text("§7[左クリック] 全員同じ能力をリセット").decoration(TextDecoration.ITALIC, false),
+                    Component.text("§7[右クリック] 全員同じにする能力を選択").decoration(TextDecoration.ITALIC, false)
+            ));
+            List<Component> abilityLore = singleAbility.getDisplayItem().lore();
+            if (abilityLore != null) {
+                lore.addFirst(Component.empty());
+                lore.addFirst(abilityLore.getFirst());
+            }
+            ItemMeta meta = itemStack.getItemMeta();
+            if (meta != null) {
+                meta.lore(lore);
+                itemStack.setItemMeta(meta);
+            }
+
+            addButton(SINGLE_ABILITY_BUTTON_SLOT, itemStack, event -> {
+                if (!(event.getWhoClicked() instanceof Player clicker)) return;
+                if (event.isLeftClick()) {
+                    getGameSetting().resetSingleAbility();
+                } else {
+                    AbilityTypeSelectorWithDisabledGUI abilityTypeGUI = new AbilityTypeSelectorWithDisabledGUI(
+                            game.getGameSetting(),
+                            select -> {
+                                if (select.isDisabled()) {
+                                    clicker.playSound(clicker, Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                                } else {
+                                    getGameSetting().setSingleAbility(select.abilityType());
+                                    updateSingleAbilityTypeButton();
+                                    open(clicker);
+                                }
+                            }
+                    );
+                    abilityTypeGUI.open(clicker);
+                }
+            });
+        }
+
+    }
+
 
     private ItemStack getToggleGameModeButtonItem() {
         String displayName = "NULL";
@@ -221,5 +290,9 @@ public class GameGUI extends AbstractGUI {
             case TRIO -> displayName = "TRIOモード";
         }
         return getAbstractSimpleButtonItem(Material.BOW, Component.text(displayName));
+    }
+
+    private GameSetting getGameSetting() {
+        return game.getGameSetting();
     }
 }

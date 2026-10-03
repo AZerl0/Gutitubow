@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -75,14 +76,19 @@ public abstract class AbstractGUI implements InventoryHolder {
         return getEmptySlot() != -1;
     }
 
-    public ItemStack getAbstractSimpleButtonItem(Material material, Component displayName) {
+    public ItemStack getAbstractSimpleButtonItem(Material material, Component displayName, List<Component> lore) {
         ItemStack itemStack = new ItemStack(material);
 
         ItemMeta meta = itemStack.getItemMeta();
         if (meta != null) {
             meta.displayName(displayName.decoration(TextDecoration.ITALIC, false));
+            meta.lore(lore);
         }
         itemStack.setItemMeta(meta);
         return itemStack;
+    }
+
+    public ItemStack getAbstractSimpleButtonItem(Material material, Component displayName) {
+        return getAbstractSimpleButtonItem(material, displayName, List.of());
     }
 }

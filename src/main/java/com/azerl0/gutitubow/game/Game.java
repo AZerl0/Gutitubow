@@ -322,6 +322,8 @@ public class Game {
 
             // 能力を割り当てる
             AbilityType ability = abilitySelector.nextAbility();
+            if (gameSetting.getSingleAbility() != null) ability = gameSetting.getSingleAbility();
+
             abilityManager.setAbility(player, ability);
             abilityManager.setDisplayItem(player, ability, 13);
 
@@ -338,7 +340,7 @@ public class Game {
             player.showTitle(title);
             player.sendMessage(abilityMessage);
 
-
+            // Team
             GutitubowGameMode gameMode = getGameSetting().getGameMode();
             if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
                 GameTeam gameTeam = teamManager.getPlayerTeam(player);

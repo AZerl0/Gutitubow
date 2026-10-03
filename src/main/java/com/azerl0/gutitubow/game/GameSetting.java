@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.gameevent.GameEventController;
 import com.azerl0.gutitubow.gui.guis.AbilityDisableGUI;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,6 +16,7 @@ public class GameSetting {
     private int carePackageAmount = 3;
     private Set<AbilityType> disabledAbilities = new HashSet<>();
     private final GameEventController gameEventController = new GameEventController();
+    private @Nullable AbilityType singleAbility;
 
     private final AbilityDisableGUI abilityDisableGUI;
 
@@ -56,7 +58,7 @@ public class GameSetting {
     }
 
     public @NotNull Set<AbilityType> getDisabledAbilities() {
-        return disabledAbilities;
+        return new HashSet<>(disabledAbilities);
     }
 
     public void setDisabledAbilities(@NotNull Set<AbilityType> disabledAbilities) {
@@ -81,4 +83,15 @@ public class GameSetting {
         return gameEventController;
     }
 
+    public @Nullable AbilityType getSingleAbility() {
+        return singleAbility;
+    }
+
+    public void setSingleAbility(@Nullable AbilityType singleAbility) {
+        this.singleAbility = singleAbility;
+    }
+
+    public void resetSingleAbility() {
+        singleAbility = null;
+    }
 }
