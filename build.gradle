@@ -26,11 +26,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:26.3.build.+")
 
     compileOnly("de.tr7zw:item-nbt-api-plugin:2.15.5")
-    compileOnly("com.github.retrooper:packetevents-spigot:2.11.2")
-    compileOnly("net.citizensnpcs:citizens-main:2.0.41-SNAPSHOT") {
+    compileOnly("com.github.retrooper:packetevents-spigot:2.14.0")
+    compileOnly("net.citizensnpcs:citizens-main:2.0.44-SNAPSHOT") {
         exclude group: '*', module: '*'
     }
 }
@@ -40,11 +40,11 @@ tasks {
         // Configure the Minecraft version for our task.
         // This is the only required configuration besides applying the plugin.
         // Your plugin's jar (or shadowJar if present) will be used automatically.
-        minecraftVersion("1.21")
+        minecraftVersion("26.3")
     }
 }
 
-def targetJavaVersion = 21
+def targetJavaVersion = 25
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion
