@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class CarePackageEvent extends GameEvent {
     private BukkitTask spawnTask;
-    private final long  SPAWN_SPAN_TICK = 15 * 20;
+    private final long  SPAWN_SPAN_TICK = 25 * 20;
     private final Set<CarePackage> carePackageSet = new HashSet<>();
 
     @Override
@@ -40,6 +40,7 @@ public class CarePackageEvent extends GameEvent {
         for (CarePackage carePackage : carePackageSet) {
             if (!carePackage.isRemoved()) carePackage.remove();
         }
+        carePackageSet.clear();
     }
 
     private void spawnCarePackages() {
