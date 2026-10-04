@@ -7,6 +7,7 @@ import com.azerl0.gutitubow.game.Game;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.object.ObjectContents;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -31,8 +32,10 @@ public class Message {
 
             boolean attackerIsTeammate = game.isTeammate(player, attacker);
             return Component.text("§f§l[§c§lHIT§f§l] ")
+                    .append(Component.object(ObjectContents.playerHead(attacker)))
                     .append(attacker.displayName().color(attackerIsTeammate ? NamedTextColor.AQUA : NamedTextColor.WHITE))
                     .append(Component.text(" ➽ "))
+                    .append(Component.object(ObjectContents.playerHead(player)))
                     .append(player.displayName().color(playerIsTeammate ? NamedTextColor.RED : NamedTextColor.WHITE))
                     .append(getDistanceSuffix(distance));
         }
@@ -41,6 +44,7 @@ public class Message {
         if (damageType == GutitubowDamageType.FAKE_CAREPACKAGE) {
             return Component.text("§f§l[§c§lHIT§f§l] §r§f救援物資")
                     .append(Component.text(" ➽ "))
+                    .append(Component.object(ObjectContents.playerHead(player)))
                     .append(player.displayName().color(playerIsTeammate ? NamedTextColor.RED : NamedTextColor.WHITE))
                     .append(getDistanceSuffix(distance));
         }
@@ -59,8 +63,10 @@ public class Message {
 
             boolean attackerIsTeammate = game.isTeammate(player, attacker);
             return Component.text("§f§l[§4§lKILL§f§l] ")
+                    .append(Component.object(ObjectContents.playerHead(attacker)))
                     .append(attacker.displayName().color(attackerIsTeammate ? NamedTextColor.AQUA : NamedTextColor.WHITE))
                     .append(Component.text(" ➽ "))
+                    .append(Component.object(ObjectContents.playerHead(player)))
                     .append(player.displayName().color(playerIsTeammate ? NamedTextColor.AQUA : NamedTextColor.WHITE))
                     .append(getDistanceSuffix(distance));
         }
