@@ -54,19 +54,8 @@ public class GamePlayerListener implements Listener {
         if (event.getDamage() == 0.0) return;
 
         DamageType type = event.getDamageSource().getDamageType();
-        if (type == DamageType.OUTSIDE_BORDER) {
-            this.game.getGamePlayer(player).borderOutside();
-            event.setCancelled(true);
-            return;
-        }
         if (type == DamageType.GENERIC) return;
         event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onToggleSneak(PlayerToggleSneakEvent event) {
-        GamePlayer gamePlayer = game.getGamePlayer(event.getPlayer());
-        gamePlayer.onToggleSneak(event);
     }
 
     @EventHandler
@@ -82,16 +71,6 @@ public class GamePlayerListener implements Listener {
         event.setCancelled(true);
         player.setFoodLevel(20);
         player.setSaturation(20f);
-    }
-
-    @EventHandler
-    public void onChangePotionEffect(EntityPotionEffectEvent event) {
-        if (event.isCancelled()) return;
-        if (!(event.getEntity() instanceof Player player)) return;
-
-        GamePlayer gamePlayer = game.getGamePlayer(player);
-
-        if (event.getModifiedType() == PotionEffectType.BLINDNESS) gamePlayer.setFlashParticleTask();
     }
 
     @EventHandler

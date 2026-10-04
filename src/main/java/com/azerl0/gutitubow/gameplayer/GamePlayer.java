@@ -12,6 +12,7 @@ import com.azerl0.gutitubow.manager.LogManager;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.util.ComponentUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
+import com.azerl0.gutitubow.util.PostEffectUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -24,7 +25,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
@@ -34,8 +34,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,18 +46,15 @@ public class GamePlayer {
     private final JavaPlugin plugin;
     private final @NotNull UUID playerUUID;
     private final Game game;
-    private BukkitTask borderOutsideTimerTask = null;
-    private BukkitTask arrowReloadTask = null;
-    private BukkitTask firstElytraTask = null;
     private int playerArrowReloadTick;
     private int playerArrowMaxStackSize;
     private int playerTotalHit;
     private int playerTotalKill;
     private int playerBorderOutsideTick;
+    private int arrowReloadProgressTick;
+    private boolean firstElytraFlag;
     private final NamespacedKey gutitubowArrowItemKey;
     private final PlayerBoard playerBoard;
-    private BukkitTask flashParticleTask = null;
-    private BukkitTask sneakingTask = null;
     private final int REVIVE_TICK = 15 * 20;
     private final int COMPASS_TELEPORT_TICK = 10 * 20;
     private int sneakingTick = 0;
@@ -72,11 +67,13 @@ public class GamePlayer {
         this.plugin = plugin;
         this.playerUUID = player.getUniqueId();
         this.game = game;
-        this.playerArrowReloadTick = 100;
-        this.playerArrowMaxStackSize = 1;
-        this.playerTotalHit = 0;
-        this.playerTotalKill = 0;
-        this.playerBorderOutsideTick = 0;
+        playerArrowReloadTick = 100;
+        playerArrowMaxStackSize = 1;
+        playerTotalHit = 0;
+        playerTotalKill = 0;
+        playerBorderOutsideTick = 0;
+        arrowReloadProgressTick = 0;
+        firstElytraFlag = false;
         gutitubowArrowItemKey = new NamespacedKey(this.plugin, "gutitubow.arrow");
         this.playerBoard = game.getPlayerBoard(this);
         this.remainedFlashTick = 0;
@@ -117,42 +114,31 @@ public class GamePlayer {
         this.playerBorderOutsideTick = ticks;
     }
 
-    public void borderOutside() {
-
-        if (borderOutsideTimerTask != null && !borderOutsideTimerTask.isCancelled()) return;
-
-        borderOutsideTimerTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                Player player = getPlayer();
-                if (player != null) {
-                    World world = player.getWorld();
-                    if (world.getWorldBorder().isInside(player.getLocation()) || getPlayer().getGameMode() != GameMode.ADVENTURE) {
-                        setBorderOutsideTicks(0);
-                        this.cancel();
-                        return;
-                    }
-
-                    int borderOutsideTick = getBorderOutsideTicks() + 1;
-                    setBorderOutsideTicks(borderOutsideTick);
-                    int borderOutsideDamageTick = 30;
-                    if (borderOutsideTick % borderOutsideDamageTick == 0) {
-                        int damageCount = 10;
-                        if (game.isFinalPhase()) damageCount = 2;
-                        if (borderOutsideTick % (damageCount * borderOutsideDamageTick) == 0) {
-                            DamageSource damageSource = DamageSource.builder(GutitubowDamageType.OUTSIDE_BORDER).build();
-                            damage(damageSource, 1);
-                        } else {
-                            getPlayer().playHurtAnimation(0.0f);
-                            world.playSound(getPlayer().getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0f, 1.0f);
-                        }
-                    }
-
-                }
-
+    private void updateBorderOutside() {
+        Player player = getPlayer();
+        if (player != null) {
+            World world = player.getWorld();
+            if (world.getWorldBorder().isInside(player.getLocation()) || getPlayer().getGameMode() != GameMode.ADVENTURE) {
+                setBorderOutsideTicks(0);
+                return;
             }
 
-        }.runTaskTimer(plugin, 0L, 1L);
+            int borderOutsideTick = getBorderOutsideTicks() + 1;
+            setBorderOutsideTicks(borderOutsideTick);
+            int borderOutsideDamageTick = 30;
+            if (borderOutsideTick % borderOutsideDamageTick == 0) {
+                int damageCount = 10;
+                if (game.isFinalPhase()) damageCount = 2;
+                if (borderOutsideTick % (damageCount * borderOutsideDamageTick) == 0) {
+                    DamageSource damageSource = DamageSource.builder(GutitubowDamageType.OUTSIDE_BORDER).build();
+                    damage(damageSource, 1);
+                } else {
+                    getPlayer().playHurtAnimation(0.0f);
+                    world.playSound(getPlayer().getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0f, 1.0f);
+                }
+            }
+
+        }
     }
 
     public int getTotalHit() {
@@ -193,7 +179,6 @@ public class GamePlayer {
 
     public void setMaxArrowStackSize(int size) {
         this.playerArrowMaxStackSize = size;
-        this.updateArrow();
     }
 
     public void resetMaxArrowStackSize() {
@@ -276,7 +261,6 @@ public class GamePlayer {
         int slot = this.getArrowItemSlot();
         if (slot == -1) slot = this.getCanAddArrowSlot();
         if (slot != -1) getPlayer().getInventory().setItem(slot, getArrowItem(amount));
-        this.updateArrow();
     }
 
     public void addArrow(int amount) {
@@ -334,29 +318,72 @@ public class GamePlayer {
         return -1;
     }
 
-    public void updateArrow() {
+    protected void tick() {
+        Player player = getPlayer();
+        updateBorderOutside();
+        updateArrow();
 
-        if (arrowReloadTask != null) return;
-
-        arrowReloadTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                Player player = getPlayer();
-                if (player == null) {
-                    cancel();
-                    arrowReloadTask = null;
-                    return;
+        if (player != null) {
+            // Sneak
+            if (player.isSneaking()) {
+                sneakingTick++;
+                GamePlayerSneakingEvent event = new GamePlayerSneakingEvent(player, sneakingTick);
+                Bukkit.getPluginManager().callEvent(event);
+            } else {
+                sneakingTick = 0;
+                compassTeleportingTick = 0;
+                if (isReviving()) {
+                    revivingTick = 0;
+                    player.removePotionEffect(PotionEffectType.GLOWING);
                 }
+            }
 
-                if (getArrowAmount() >= getMaxArrowStackSize()) {
-                    cancel();
-                    arrowReloadTask = null;
-                    return;
+            // Flash
+            if (player.hasPotionEffect(PotionEffectType.BLINDNESS) || remainedFlashTick > 0) {
+                if (remainedFlashTick > 0) {
+                    remainedFlashTick--;
+
+                    if (remainedFlashTick > 20) {
+                        PostEffectUtil.applyFlashEffect(player, 1.0f);
+                    } else if (remainedFlashTick == 0) {
+                        PostEffectUtil.clearFlashEffect(player);
+                    } else {
+                        float strength = remainedFlashTick / 20.0f;
+                        PostEffectUtil.applyFlashEffect(player,  strength);
+                    }
                 }
+                player.getWorld().spawnParticle(
+                        Particle.INSTANT_EFFECT,
+                        player.getEyeLocation(),
+                        3,
+                        0.15, 0.15, 0.15,
+                        0,
+                        new Particle.Spell(Color.fromRGB(255, 255, 255), 1),
+                        true
+                );
+            }
+        }
 
+        if (firstElytraFlag && player != null) {
+            if (((Entity) player).isOnGround()) {
+                resetFirstElytra();
+                return;
+            }
+            if (!player.isInsideVehicle()) {
+                player.setGliding(true);
+            }
+        }
+    }
+
+    private void updateArrow() {
+        if (getArrowAmount() < getMaxArrowStackSize()) {
+            arrowReloadProgressTick++;
+
+            if (arrowReloadProgressTick >= getArrowReloadTick()) {
+                arrowReloadProgressTick = 0;
                 addArrow(1);
             }
-        }.runTaskTimer(plugin, getArrowReloadTick(), getArrowReloadTick());
+        }
     }
 
     public void firstElytra() {
@@ -369,29 +396,14 @@ public class GamePlayer {
         elytra.setItemMeta(meta);
         player.getInventory().setChestplate(elytra);
         player.setGliding(true);
-
-        if (firstElytraTask != null && !firstElytraTask.isCancelled()) return;
-        firstElytraTask = new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                if (((Entity) player).isOnGround()) {
-                    resetFirstElytra();
-                    return;
-                }
-                if (!player.isInsideVehicle()) {
-                    player.setGliding(true);
-                }
-            }
-        }.runTaskTimer(plugin, 5L, 1L);
+        firstElytraFlag = true;
     }
 
     public void resetFirstElytra() {
         Player player = getPlayer();
-        if (this.firstElytraTask == null || player == null) return;
+        if (player == null) return;
         getPlayer().getInventory().setChestplate(new ItemStack(Material.AIR));
-        this.firstElytraTask.cancel();
-        firstElytraTask = null;
+        firstElytraFlag = false;
     }
 
     public int getPotionAmount() {
@@ -416,34 +428,6 @@ public class GamePlayer {
 
     public void setFlashParticle(int duration) {
         remainedFlashTick = duration;
-        setFlashParticleTask();
-    }
-
-    public void setFlashParticleTask() {
-        if (flashParticleTask != null && !flashParticleTask.isCancelled()) return;
-
-        flashParticleTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                Player player = getPlayer();
-                if (player == null) return;
-                if (!player.isOnline() || (!player.hasPotionEffect(PotionEffectType.BLINDNESS) && remainedFlashTick <= 0)) {
-                    this.cancel();
-                    flashParticleTask = null;
-                    return;
-                }
-                if (remainedFlashTick > 0) remainedFlashTick--;
-                player.getWorld().spawnParticle(
-                        Particle.INSTANT_EFFECT,
-                        player.getEyeLocation(),
-                        3,
-                        0.15, 0.15, 0.15,
-                        0,
-                        new Particle.Spell(Color.fromRGB(255, 255, 255), 1),
-                        true
-                );
-            }
-        }.runTaskTimer(plugin, 0L, 1L);
     }
 
     public void onDropPotion(PlayerDropItemEvent event) {
@@ -486,30 +470,6 @@ public class GamePlayer {
         return revivingTick != 0;
     }
 
-    public void onToggleSneak(PlayerToggleSneakEvent event) {
-        Player player = event.getPlayer();
-        if (event.isSneaking()) {
-            if (sneakingTask != null && !sneakingTask.isCancelled()) return;
-
-            sneakingTask = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    sneakingTick++;
-                    GamePlayerSneakingEvent event = new GamePlayerSneakingEvent(player, sneakingTick);
-                    Bukkit.getPluginManager().callEvent(event);
-                }
-            }.runTaskTimer(plugin, 0L, 1L);
-        } else {
-            if (sneakingTask != null) sneakingTask.cancel();
-            sneakingTask = null;
-            sneakingTick = 0;
-            compassTeleportingTick = 0;
-            if (isReviving()) {
-                revivingTick = 0;
-                player.removePotionEffect(PotionEffectType.GLOWING);
-            }
-        }
-    }
 
     public boolean isTeammate(Player target) {
         return game.isTeammate(playerUUID, target.getUniqueId());
@@ -736,7 +696,7 @@ public class GamePlayer {
 
         } else {
             player.damage(newAmount);
-            GamePlayerDamageEvent damageEvent = new GamePlayerDamageEvent(player, newAmount, damageSource,  event.getHitMessage());
+            GamePlayerDamageEvent damageEvent = new GamePlayerDamageEvent(player, newAmount, damageSource, event.getHitMessage());
             Bukkit.getPluginManager().callEvent(damageEvent);
             if (attacker != null) {
                 GamePlayer attackerGamePlayer = getGame().getGamePlayer(attacker);

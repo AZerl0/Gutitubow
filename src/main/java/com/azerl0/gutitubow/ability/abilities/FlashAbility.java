@@ -169,16 +169,6 @@ public class FlashAbility extends Ability {
     private void applyFlashEffect(Player player, long tick) {
         if (tick <= 0) return;
 
-        Title title = Title.title(
-                Component.text("\uE000"),
-                Component.empty(),
-                Title.Times.times(
-                        java.time.Duration.ofMillis(100),
-                        java.time.Duration.ofMillis(50 * tick),
-                        java.time.Duration.ofMillis(1000)
-                )
-        );
-        player.showTitle(title);
         GamePlayer gamePlayer = context.game().getGamePlayer(player);
         gamePlayer.setFlashParticle((int) tick + 20);
 

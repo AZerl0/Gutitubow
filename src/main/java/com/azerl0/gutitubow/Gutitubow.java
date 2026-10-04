@@ -31,6 +31,7 @@ import com.azerl0.gutitubow.player.FixLeftClickListener;
 import com.azerl0.gutitubow.player.FixLeftClickManager;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
+import com.azerl0.gutitubow.util.PostEffectUtil;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.EventManager;
 import com.github.retrooper.packetevents.event.PacketListenerCommon;
@@ -76,6 +77,7 @@ public final class Gutitubow extends JavaPlugin {
     public void onEnable() {
         instance = this;
         ItemUtil.init(this);
+        PostEffectUtil.init();
 
         // Ability登録
         registerAbilities();

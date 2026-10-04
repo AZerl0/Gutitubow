@@ -118,8 +118,6 @@ public class CloneAbility extends Ability {
         PotionEffect blindness = new PotionEffect(PotionEffectType.BLINDNESS, 4 * 20, 0, true, false, true);
         player.addPotionEffects(Set.of(glowing, blindness));
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_VEX_CHARGE, 1.0f, 1.0f);
-        GamePlayer gamePlayer = context.game().getGamePlayer(player);
-        gamePlayer.setFlashParticleTask();
         Title title = Title.title(
                 Component.empty(),
                 Component.text("分身に攻撃してしまった！").color(NamedTextColor.RED),
