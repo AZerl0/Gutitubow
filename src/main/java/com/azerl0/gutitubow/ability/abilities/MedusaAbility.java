@@ -8,6 +8,7 @@ import com.azerl0.gutitubow.profiler.ProfileChangeReason;
 import com.azerl0.gutitubow.profiler.SkinDataManager;
 import com.azerl0.gutitubow.util.MathUtil;
 import com.azerl0.gutitubow.util.PlayerUtil;
+import com.azerl0.gutitubow.util.PostEffectUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -174,16 +175,14 @@ public class MedusaAbility extends Ability {
         PotionEffect slowness = new PotionEffect(PotionEffectType.SLOWNESS, 10, 0, true, true, true);
         target.addPotionEffect(slowness);
 
-        Title title = Title.title(
-                Component.empty(),
-                Component.text("見られている...").color(NamedTextColor.DARK_PURPLE),
-                Title.Times.times(
-                        java.time.Duration.ofMillis(0),
-                        java.time.Duration.ofSeconds(1),
-                        java.time.Duration.ofMillis(0)
-                )
-        );
-        target.showTitle(title);
+        float effectStrength;
+        if (lookingTime.getLookingTick() > 20) {
+            effectStrength = 1.0f;
+        } else {
+            effectStrength = lookingTime.getLookingTick() / 20.f;
+        }
+        PostEffectUtil.applyGrayEffect(target, effectStrength);
+
 
         double offset = 3;
         Random random = new Random();
