@@ -86,19 +86,18 @@ public class CarePackage extends GutitubowEntity {
 
         });
 
-        core = world.spawn(location, Chicken.class, (Chicken core) -> {
-            core.setInvisible(true);
-            core.setInvulnerable(true);
-            core.setCollidable(false);
-            Objects.requireNonNull(core.getAttribute(Attribute.SCALE)).setBaseValue(0);
-            Objects.requireNonNull(core.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0);
-            Objects.requireNonNull(core.getAttribute(Attribute.JUMP_STRENGTH)).setBaseValue(0);
-            core.setSilent(true);
-            core.addPassenger(blockDisplay);
-            core.addPassenger(interaction);
-            core.addScoreboardTag("gutitubow.carePackageEntity");
-            core.addScoreboardTag("gutitubow.carePackageCoreEntity");
-        });
+        core = world.spawn(location, Chicken.class);
+        core.setInvisible(true);
+        core.setInvulnerable(true);
+        core.setCollidable(false);
+        core.getAttribute(Attribute.SCALE).setBaseValue(0);
+        core.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0);
+        core.getAttribute(Attribute.JUMP_STRENGTH).setBaseValue(0);
+        core.setSilent(true);
+        core.addPassenger(blockDisplay);
+        core.addPassenger(interaction);
+        core.addScoreboardTag("gutitubow.carePackageEntity");
+        core.addScoreboardTag("gutitubow.carePackageCoreEntity");
 
         for (int i = 0; i < 10; i++) {
             double randomRadius = 0.8;
