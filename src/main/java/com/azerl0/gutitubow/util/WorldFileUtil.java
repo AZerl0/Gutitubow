@@ -32,7 +32,7 @@ public final class WorldFileUtil {
 
                 String fileName = file.getFileName().toString();
 
-                if (fileName.equals("uid.dat") || fileName.equals("session.lock")) {
+                if (fileName.equals("uid.dat") || fileName.equals("session.lock") || fileName.equals("metadata.dat")) {
                     return FileVisitResult.CONTINUE;
                 }
 

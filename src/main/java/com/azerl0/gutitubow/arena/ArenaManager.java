@@ -34,14 +34,15 @@ public class ArenaManager {
 
         String worldName = gameMap.getId() + "_" + UUID.randomUUID();
 
-        Path template = gameMap.getCenter().getWorld().getWorldPath();
+        World mapWorld = gameMap.getCenter().getWorld();
+        Path template = mapWorld.getWorldPath();
 
         if (!Files.exists(template)) {
             throw new IllegalArgumentException(
                     "Template world does not exist: " + gameMap.getId());
         }
 
-        Path target = Path.of(worldName);
+        Path target = Path.of("world/dimensions/minecraft").resolve(worldName);
 
         if (Files.exists(target)) {
             WorldFileUtil.deleteDirectory(target);
@@ -50,7 +51,7 @@ public class ArenaManager {
         WorldFileUtil.copyDirectory(template, target);
 
 
-        World world = Bukkit.createWorld(new WorldCreator(worldName));
+        World world = Bukkit.createWorld(WorldCreator.name(worldName));
 
         if (world == null) {
             throw new IllegalStateException(
@@ -108,7 +109,7 @@ public class ArenaManager {
             }
         }
         File worldContainer = Bukkit.getWorldContainer();
-        Path worldPath = worldContainer.toPath().resolve(worldName);
+        Path worldPath = worldContainer.toPath().resolve("world").resolve("dimensions").resolve("minecraft").resolve(worldName);
         WorldFileUtil.deleteDirectory(worldPath);
     }
 
