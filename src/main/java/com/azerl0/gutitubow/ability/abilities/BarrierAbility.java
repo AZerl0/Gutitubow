@@ -17,7 +17,6 @@ import org.bukkit.util.RayTraceResult;
 import org.jetbrains.annotations.NotNull;
 
 public class BarrierAbility extends Ability {
-    private final int BARRIER_RESTORE_TICK = 20 * 20;
     private int barrierRestockCharge;
     private int barrierStack;
 
@@ -40,10 +39,11 @@ public class BarrierAbility extends Ability {
     protected void onTick() {
         if (barrierStack < 3) {
             barrierRestockCharge++;
-                    if (barrierRestockCharge >= BARRIER_RESTORE_TICK) {
-                        barrierStack++;
-                        barrierRestockCharge = 0;
-                    }
+            int BARRIER_RESTORE_TICK = 20 * 20;
+            if (barrierRestockCharge >= BARRIER_RESTORE_TICK) {
+                barrierStack++;
+                barrierRestockCharge = 0;
+            }
         }
 
         Player player = getPlayer();
