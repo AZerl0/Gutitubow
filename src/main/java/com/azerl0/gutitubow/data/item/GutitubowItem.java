@@ -843,4 +843,27 @@ public class GutitubowItem {
         itemStack.setItemMeta(meta);
         ABILITY_ICON_GRAVITY = itemStack.clone();
     }
+
+    public static final ItemStack ABILITY_ICON_INVERSION;
+    static {
+        ItemStack itemStack = new ItemStack(Material.PAPER);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「反転」は、様々なものを反転させ混乱を与える能力。"),
+
+                Component.text("§f能力はストックを消費して使用できる。"),
+                Component.text("§f弓を左クリックすると、ストックを一つ消費して周囲のエンティティの向きを反転させる。"),
+                Component.text("§fまたSHIFTしながら左クリックすることでストックを二つ消費して特殊な弾を撃つことができる。"),
+                Component.text("§fこの弾は着弾後、周囲のプレイヤーの視界を反転させる。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 [左クリック(弓)] - ストックを一つ使用して周囲のエンティティの向きを反転させる"),
+                Component.text("§7 [Shift+左クリック(弓)] - ストックを二つ使用して着弾地点周囲のプレイヤーの視界を反転させる弾を発射する")
+        ));
+        meta.setItemModel(NamespacedKey.minecraft("snout_armor_trim_smithing_template"));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_INVERSION = itemStack.clone();
+    }
 }

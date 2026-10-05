@@ -7,6 +7,7 @@ import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldBreakEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldLowerEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldRaiseEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldRaisingEvent;
+import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -18,8 +19,6 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +27,7 @@ import java.util.UUID;
 public abstract class Ability {
     protected UUID playerUUID;
     protected final AbilityContext context;
-    protected BukkitTask cooldownTask;
+    private boolean cooldownMessageFlag = false;
 
     public Ability(AbilityContext context) {
         this.context = context;
@@ -57,14 +56,21 @@ public abstract class Ability {
             player.setCooldown(Material.BOW, 0);
             player.setAbsorptionAmount(0);
         }
-        if (cooldownTask != null) cooldownTask.cancel();
-        cooldownTask = null;
     }
 
     protected void onReset() {}
 
     public void tick() {
         onTick();
+        Player player = getPlayer();
+        if (cooldownMessageFlag && player != null) {
+            if (hasCompassCooldown()) {
+                sendActionBarCompassCooldown();
+            } else {
+                player.sendActionBar(Component.text(" - 能力使用可能 - ").color(NamedTextColor.GREEN));
+                cooldownMessageFlag = false;
+            }
+        }
     }
 
     protected void onTick() {}
@@ -97,25 +103,7 @@ public abstract class Ability {
     }
 
     public void startCompassCooldownTask() {
-        if (cooldownTask != null && !cooldownTask.isCancelled()) return;
-
-        cooldownTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                Player player = getPlayer();
-                if (player == null) {
-                    this.cancel();
-                    return;
-                }
-                if (player.getCooldown(Material.COMPASS) == 0) {
-                    this.cancel();
-                    player.sendActionBar(Component.text(" - 能力使用可能 - ").color(NamedTextColor.GREEN));
-                    cooldownTask = null;
-                    return;
-                }
-                sendActionBarCompassCooldown();
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
+        cooldownMessageFlag = true;
     }
 
     public boolean isDebugMode() {
@@ -123,6 +111,10 @@ public abstract class Ability {
         if (player == null) return false;
         Material handItem = player.getInventory().getItemInOffHand().getType();
         return handItem == Material.PAPER;
+    }
+
+    public GamePlayer getGamePlayer() {
+        return context.game().getGamePlayer(playerUUID);
     }
 
     /*

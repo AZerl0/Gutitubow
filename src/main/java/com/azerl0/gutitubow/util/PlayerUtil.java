@@ -4,12 +4,13 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityStatus;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -82,5 +83,32 @@ public class PlayerUtil {
         for (Player p : world.getPlayers()) {
             playerConsumer.accept(p);
         }
+    }
+
+    public static boolean canSee(Player player, Location location) {
+        World world = player.getWorld();
+        Location eye = player.getEyeLocation();
+        Vector direction = location.clone().toVector().subtract(eye.toVector());
+        double distance = eye.distance(location);
+
+        RayTraceResult blockHit = world.rayTraceBlocks(
+                eye,
+                direction,
+                distance,
+                FluidCollisionMode.NEVER,
+                true
+        );
+
+        return blockHit == null;
+    }
+
+    public static boolean canSee(Player player, Player target) {
+
+        return canSee(player, target.getLocation()) || canSee(player, target.getEyeLocation());
+    }
+
+    public static void failEffectWithMessage(Player player, Component message) {
+        player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+        player.sendMessage(message);
     }
 }

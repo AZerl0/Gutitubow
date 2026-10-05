@@ -50,6 +50,7 @@ public class AbstractAbilitiesGUI extends AbstractGUI {
         addAbilityButton(AbilityType.GRAPPLINGHOOK);
         addAbilityButton(AbilityType.SWAP);
         addAbilityButton(AbilityType.GRAVITY);
+        addAbilityButton(AbilityType.INVERSION);
     }
 
     public void addAbilityButton(AbilityType type) {

@@ -46,7 +46,8 @@ public enum AbilityType {
     ZIPLINE(Component.text("登攀"), GutitubowItem.ABILITY_ICON_ZIPLINE),
     GRAPPLINGHOOK(Component.text("鉤縄"), GutitubowItem.ABILITY_ICON_GRAPPLINGHOOK),
     SWAP(Component.text("交換"), GutitubowItem.ABILITY_ICON_SWAP),
-    GRAVITY(Component.text("引力"), GutitubowItem.ABILITY_ICON_GRAVITY);
+    GRAVITY(Component.text("引力"), GutitubowItem.ABILITY_ICON_GRAVITY),
+    INVERSION(Component.text("反転"), GutitubowItem.ABILITY_ICON_INVERSION);
 
     private final Component name;
     private final ItemStack displayItem;
