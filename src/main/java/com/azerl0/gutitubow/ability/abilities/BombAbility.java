@@ -74,7 +74,9 @@ public class BombAbility extends Ability {
 
         double knockbackRadius = 3;
         for (Entity entity : world.getNearbyEntities(loc.add(0, -0.2, 0), knockbackRadius, knockbackRadius, knockbackRadius)) {
+            if (EntityUtil.isInvalidHitEntity(entity)) continue;
             if (entity instanceof LivingEntity living) {
+
 
                 Vector knockback = living.getLocation().toVector()
                         .subtract(loc.toVector())
@@ -86,7 +88,7 @@ public class BombAbility extends Ability {
         }
 
         for (Player damagePlayer : loc.getNearbyPlayers(2)) {
-
+            if (EntityUtil.isInvalidHitEntity(damagePlayer)) continue;
             GamePlayer gamePlayer = context.game().getGamePlayer(damagePlayer);
             if (gamePlayer.isTeammate(playerUUID)) continue;
             if (context.game().getPhase() == GamePhase.PHASE0 && context.game().isStarted()) continue;
