@@ -16,11 +16,14 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class BombAbility extends Ability {
+    private @Nullable Arrow lastShootArrow;
     public BombAbility(AbilityContext context) {
         super(context);
     }
@@ -35,21 +38,33 @@ public class BombAbility extends Ability {
         Arrow arrow = (Arrow) event.getProjectile();
         EntityUtil.setGlow(arrow, NamedTextColor.RED);
         arrow.setGlowing(true);
-        arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_TNT_PRIMED, 1.0f, 1.0f);
+        lastShootArrow = arrow;
     }
 
     @Override
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
 
-        for (World world : Bukkit.getWorlds()) {
-            for (Arrow arrow : world.getEntitiesByClass(Arrow.class)) {
-                if (!(arrow.getShooter() instanceof Player shooter)) continue;
-                if (!shooter.getUniqueId().equals(event.getPlayer().getUniqueId())) continue;
-                explode(arrow);
-
-            }
+        if (lastShootArrow == null) return;
+        if (lastShootArrow.isValid()) {
+            explode(lastShootArrow);
         }
+        lastShootArrow = null;
+    }
 
+    @Override
+    public void onArrowHit(ProjectileHitEvent event) {
+        if (event.isCancelled()) return;
+        if (event.getHitEntity() != null) return;
+        if (!(event.getEntity() instanceof Arrow arrow)) return;
+
+        event.getEntity().getWorld().playSound(arrow.getLocation(), Sound.ENTITY_TNT_PRIMED, 1.0f, 1.75f);
+        Bukkit.getScheduler().runTaskLater(context.gutitubow(), () -> {
+            if (!arrow.isValid()) return;
+
+            explode(arrow);
+
+            arrow.remove();
+        }, 20L);
     }
 
     private void explode(Arrow arrow) {
