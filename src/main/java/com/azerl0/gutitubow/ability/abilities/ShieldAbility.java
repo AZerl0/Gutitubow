@@ -72,7 +72,7 @@ public class ShieldAbility extends Ability {
     }
 
     @Override
-    public void onAnyArrowHit(ProjectileHitEvent event) {
+    public void onAnyProjectileHit(ProjectileHitEvent event) {
         if (event.isCancelled()) return;
         Entity hitEntity = event.getHitEntity();
         if (hitEntity == null) return;

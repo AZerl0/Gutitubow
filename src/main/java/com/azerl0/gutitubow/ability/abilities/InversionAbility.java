@@ -80,7 +80,7 @@ public class InversionAbility extends Ability {
     }
 
     @Override
-    public void onAnyArrowHit(ProjectileHitEvent event) {
+    public void onAnyProjectileHit(ProjectileHitEvent event) {
         if (inversionBall == null) return;
         Projectile projectile = event.getEntity();
         if (!projectile.getUniqueId().equals(inversionBall.getUniqueId())) return;

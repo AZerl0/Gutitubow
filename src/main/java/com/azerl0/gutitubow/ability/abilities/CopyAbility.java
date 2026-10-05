@@ -192,8 +192,8 @@ public class CopyAbility extends Ability {
     }
 
     @Override
-    public void onAnyArrowHit(ProjectileHitEvent event) {
-        if (currentAbility != null) currentAbility.onAnyArrowHit(event);
+    public void onAnyProjectileHit(ProjectileHitEvent event) {
+        if (currentAbility != null) currentAbility.onAnyProjectileHit(event);
     }
 
     @Override

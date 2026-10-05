@@ -73,7 +73,7 @@ public class CloneAbility extends Ability {
     }
 
     @Override
-    public void onAnyArrowHit(ProjectileHitEvent event) {
+    public void onAnyProjectileHit(ProjectileHitEvent event) {
         if (event.isCancelled()) return;
         if (event.getHitEntity() instanceof Player hitPlayer) {
             Clone clone = getClone(hitPlayer.getUniqueId());

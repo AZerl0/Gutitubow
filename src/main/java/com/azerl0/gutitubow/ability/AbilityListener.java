@@ -84,7 +84,7 @@ public class AbilityListener implements Listener {
     @EventHandler
     public void onHit(ProjectileHitEvent event) {
         for (Ability ability : abilityManager.getValues()) {
-            ability.onAnyArrowHit(event);
+            ability.onAnyProjectileHit(event);
         }
 
         if (!(event.getEntity().getShooter() instanceof Player player)) return;

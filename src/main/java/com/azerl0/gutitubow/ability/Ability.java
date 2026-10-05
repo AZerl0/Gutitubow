@@ -126,7 +126,7 @@ public abstract class Ability {
 
     public void onArrowHit(ProjectileHitEvent event) {}
 
-    public void onAnyArrowHit(ProjectileHitEvent event) {}
+    public void onAnyProjectileHit(ProjectileHitEvent event) {}
 
     public void onLeftClick(PlayerFixLeftClickEvent event) {}
 

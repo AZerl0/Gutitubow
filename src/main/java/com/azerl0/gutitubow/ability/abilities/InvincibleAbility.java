@@ -48,7 +48,7 @@ public class InvincibleAbility extends Ability {
     }
 
     @Override
-    public void onAnyArrowHit(ProjectileHitEvent event) {
+    public void onAnyProjectileHit(ProjectileHitEvent event) {
         if (event.getHitEntity() != null && event.getHitEntity().getUniqueId() == playerUUID && isInvincible) {
             block(event.getEntity().getLocation());
             event.getEntity().remove();
