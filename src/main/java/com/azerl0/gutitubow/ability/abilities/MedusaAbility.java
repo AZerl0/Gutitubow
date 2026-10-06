@@ -157,7 +157,7 @@ public class MedusaAbility extends Ability {
                 if (tick <= 0) {
                     context.glowManager().setGlowColor(player, lookedPlayer, NamedTextColor.WHITE);
                     context.glowManager().removeGlow(player, lookedPlayer);
-
+                    PostEffectUtil.clearGrayEffect(player);
                 } else {
                     putLookingPlayer(lookedPlayer, lookingTime);
                 }
