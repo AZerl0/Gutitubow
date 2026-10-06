@@ -9,6 +9,7 @@ import com.azerl0.gutitubow.util.ComponentUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
+import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
@@ -55,14 +56,14 @@ public class GiantAbility extends Ability {
     @Override
     public void onSneaking(GamePlayerSneakingEvent event) {
         if (hasCompassCooldown()) return;
+        Player player = event.getPlayer();
+        if (player.getGameMode() == GameMode.SPECTATOR) return;
 
         if (!isGiant) {
             toGiantProcessTick++;
             if (toGiantProcessTick >= GIANT_TICK) {
                 activateGiant();
             } else {
-                Player player = getPlayer();
-                if (player == null) return;
                 Component subtitle = ComponentUtil.getGaugeComponent(
                         Component.text("巨体化チャージ中... ").color(NamedTextColor.GRAY),
                         toGiantProcessTick,
