@@ -84,7 +84,7 @@ public class GamePlayerListener implements Listener {
         if (!(event.getEntered() instanceof Player player)) return;
         if (game.isGamePlayer(player)) {
             ItemStack chestplate = player.getInventory().getChestplate();
-            if (chestplate != null && chestplate.getType() == Material.ELYTRA) {
+            if (chestplate.getType() == Material.ELYTRA) {
                 player.getInventory().setChestplate(ItemStack.of(Material.AIR));
             }
         }
