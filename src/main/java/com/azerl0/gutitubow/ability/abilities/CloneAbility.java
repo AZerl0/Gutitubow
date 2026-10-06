@@ -3,10 +3,8 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
-import com.azerl0.gutitubow.ability.data.CloneAIType;
 import com.azerl0.gutitubow.event.gameplayer.PlayerFixLeftClickEvent;
 import com.azerl0.gutitubow.fakeplayer.FakePlayer;
-import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.util.PlayerAnimation;
@@ -360,4 +358,11 @@ public class CloneAbility extends Ability {
             cloneUpdateTask = null;
         }
     }
+
+    public enum CloneAIType {
+        RUN,
+        CONTROL_RUN,
+        SPYGLASS
+    }
+
 }

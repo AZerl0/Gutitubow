@@ -3,7 +3,6 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
-import com.azerl0.gutitubow.ability.data.GrapplingHoolAbilityStateType;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import org.bukkit.Location;
@@ -65,6 +64,16 @@ public class GrapplingHookAbility extends Ability {
                 }
             }
         }
+    }
+
+    @Override
+    public void tick() {
+        if (leashChicken != null) {
+            if (leashChicken.isInsideVehicle()) {
+                if (getPlayer() != null) leashChicken.setLeashHolder(getPlayer());
+            }
+        }
+        if (grapplingArrow != null && leashChicken != null) grapplingArrow.addPassenger(leashChicken);
     }
 
     @Override
@@ -131,12 +140,9 @@ public class GrapplingHookAbility extends Ability {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SHULKER_SHOOT, 1.0f, 2.0f);
     }
 
-    private void update() {
-        if (leashChicken != null) {
-            if (leashChicken.isInsideVehicle()) {
-                if (getPlayer() != null) leashChicken.setLeashHolder(getPlayer());
-            }
-        }
-        if (grapplingArrow != null && leashChicken != null) grapplingArrow.addPassenger(leashChicken);
+    public enum GrapplingHoolAbilityStateType {
+        NONE,
+        SHOOTING,
+        READY
     }
 }
