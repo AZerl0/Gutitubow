@@ -254,6 +254,7 @@ public class GameGUI extends AbstractGUI {
             ItemMeta meta = itemStack.getItemMeta();
             if (meta != null) {
                 meta.lore(lore);
+                meta.displayName(Component.text("全員").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false).append(singleAbility.getName()));
                 itemStack.setItemMeta(meta);
             }
 
@@ -261,6 +262,7 @@ public class GameGUI extends AbstractGUI {
                 if (!(event.getWhoClicked() instanceof Player clicker)) return;
                 if (event.isLeftClick()) {
                     getGameSetting().resetSingleAbility();
+                    updateSingleAbilityTypeButton();
                 } else {
                     AbilityTypeSelectorWithDisabledGUI abilityTypeGUI = new AbilityTypeSelectorWithDisabledGUI(
                             game.getGameSetting(),
