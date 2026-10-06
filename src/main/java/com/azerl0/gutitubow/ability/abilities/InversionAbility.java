@@ -3,7 +3,6 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
-import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.MathUtil;
 import com.azerl0.gutitubow.util.PlayerUtil;
@@ -38,7 +37,7 @@ public class InversionAbility extends Ability {
     protected void onTick() {
         if (stock < 2) {
             restockCharge++;
-            int RESTOCK_CHARGE_TICK = 20 * 20;
+            int RESTOCK_CHARGE_TICK = 25 * 20;
             if (restockCharge >= RESTOCK_CHARGE_TICK) {
                 stock++;
                 restockCharge = 0;
@@ -48,7 +47,7 @@ public class InversionAbility extends Ability {
         Player player = getPlayer();
         if (player == null) return;
         if (hasCompassCooldown()) return;
-        Component message = Component.text("Stock: ");
+        Component message = Component.text("反転: ");
         for (int i = 0; i < 2; i++) {
             message = message.append(Component.text(i < stock ? "○" : "-"));
         }
@@ -63,16 +62,21 @@ public class InversionAbility extends Ability {
             if (player == null) return;
             if (stock < 2) {
                 PlayerUtil.failEffectWithMessage(player, Component.text("能力を使用するためのストックが足りません！").color(NamedTextColor.RED));
+                return;
+            }
+            if (hasCompassCooldown()) {
+                PlayerUtil.failEffectWithMessage(player, Component.text("クールダウン中です！").color(NamedTextColor.RED));
+                return;
             }
 
-            shootInversionArrow(player);
-            setCompassCooldown(isDebugMode() ? 20 : 45 * 20);
+            shootInversionBall(player);
+            setCompassCooldown(isDebugMode() ? 20 : 25 * 20);
             startCompassCooldownTask();
             if (!isDebugMode()) stock -= 2;
         } else {
             if (stock <= 0) return;
             tryInversion();
-            setCompassCooldown(isDebugMode() ? 20 : 20 * 20);
+            setCompassCooldown(20);
             startCompassCooldownTask();
             if (!isDebugMode()) stock--;
 
@@ -85,6 +89,7 @@ public class InversionAbility extends Ability {
         Projectile projectile = event.getEntity();
         if (!projectile.getUniqueId().equals(inversionBall.getUniqueId())) return;
 
+        projectile.getWorld().playSound(projectile.getLocation(), Sound.ENTITY_SHULKER_BULLET_HIT, 1.0f, 1.0f);
         Bukkit.getScheduler().runTaskLater(context.gutitubow(), () -> {
             projectile.getWorld().playSound(projectile.getLocation(), "gutitubow:sound.finger_snap", SoundCategory.MASTER, 0.75f, 1.0f);
             inversionFlash(projectile.getLocation());
@@ -104,7 +109,7 @@ public class InversionAbility extends Ability {
             Bukkit.getScheduler().runTaskLater(context.gutitubow(), () -> {
                 nearPlayer.postEffects().remove(key);
                 nearPlayer.playSound(nearPlayer, "gutitubow:sound.finger_snap", SoundCategory.MASTER, 0.5f, 1.0f);
-            }, 70);
+            }, 80);
         }
     }
 
@@ -122,16 +127,13 @@ public class InversionAbility extends Ability {
                 Vector velocity = arrow.getVelocity().multiply(-1.0);
                 arrow.setVelocity(velocity);
                 ArrowUtil.setFixRotation(arrow, velocity);
-            } if (nearEntity instanceof LivingEntity livingEntity) {
-                Rotation rotation = livingEntity.getLocation().getRotation();
-                livingEntity.setRotation(rotation.yaw() + 180.0f, -rotation.pitch());
-                livingEntity.setVelocity(livingEntity.getVelocity().multiply(-1.0));
             }
         }
 
         for (Player nearPlayer : player.getLocation().getNearbyPlayers(10)) {
             if (!MathUtil.isInView(player, nearPlayer.getLocation(), 100, 80)) continue;
             if (!PlayerUtil.canSee(player, nearPlayer)) continue;
+            if (context.game().isTeammate(player, nearPlayer)) continue;
 
             Rotation rotation = nearPlayer.getLocation().getRotation();
             nearPlayer.setRotation(rotation.yaw() + 180.0f, -rotation.pitch());
@@ -140,12 +142,14 @@ public class InversionAbility extends Ability {
 
     }
 
-    private void shootInversionArrow(Player player) {
-        Vector velocity = player.getLocation().getDirection().multiply(3);
+    private void shootInversionBall(Player player) {
+        Vector velocity = player.getLocation().getDirection().multiply(2);
         inversionBall = player.getWorld().spawn(player.getEyeLocation(), Snowball.class);
         inversionBall.setShooter(player);
         inversionBall.setVelocity(velocity);
         ItemStack itemStack = ItemStack.of(Material.FIREWORK_STAR);
         inversionBall.setItem(itemStack);
+
+        player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_SNOWBALL_THROW, 1.0f, 0.5f);
     }
 }

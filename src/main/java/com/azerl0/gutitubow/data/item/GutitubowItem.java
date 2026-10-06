@@ -850,7 +850,7 @@ public class GutitubowItem {
 
         ItemMeta meta = itemStack.getItemMeta();
         meta.lore(List.of(
-                Component.text("§6「反転」は、様々なものを反転させ混乱を与える能力。"),
+                Component.text("§6「反転」は、周囲の様々なものを反転させる能力。"),
 
                 Component.text("§f能力はストックを消費して使用できる。"),
                 Component.text("§f弓を左クリックすると、ストックを一つ消費して周囲のエンティティの向きを反転させる。"),
