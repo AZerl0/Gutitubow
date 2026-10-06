@@ -175,4 +175,6 @@ public abstract class Ability {
     public void onShieldBreak(ShieldBreakEvent event) {}
 
     public void onUseCopiedAbility(UseCopiedAbilityEvent event) {}
+
+    public void onSwapItem(PlayerSwapHandItemsEvent event) {}
 }

@@ -15,15 +15,12 @@ import com.azerl0.gutitubow.util.AdvancementUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
-import org.bukkit.Color;
-import org.bukkit.FluidCollisionMode;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -49,12 +46,30 @@ public class SnipeAbility extends Ability {
         if (!(event.getEntity() instanceof Player player)) return;
         if (!player.isSneaking()) return;
         if (event.getForce() < 1.0) return;
-        snipe((AbstractArrow) event.getProjectile());
+        snipe();
+        event.setCancelled(true);
+    }
+    @Override
+    public void onSwapItem(PlayerSwapHandItemsEvent event) {
+        if (event.isCancelled()) return;
+
+        Player player = event.getPlayer();
+        if (!player.isSneaking()) return;
+        if (player.getActiveItem().getType() != Material.SPYGLASS) return;
+        if (player.getActiveItemHand() == EquipmentSlot.OFF_HAND) return;
+        if (player.hasCooldown(Material.SPYGLASS)) return;
+
+        GamePlayer gamePlayer = getGamePlayer();
+        if (gamePlayer.getArrowAmount() <= 0) return;
+
+        snipe();
+        gamePlayer.removeArrow(1);
+        player.setCooldown(Material.SPYGLASS, 2 * 20);
         event.setCancelled(true);
     }
 
-    private void snipe(AbstractArrow arrow) {
-        Player player = (Player) arrow.getShooter();
+    private void snipe() {
+        Player player = getPlayer();
         if (player == null) return;
         Location eye = player.getEyeLocation();
         Vector dir = eye.getDirection().normalize();

@@ -306,4 +306,9 @@ public class CopyAbility extends Ability {
         if (event.getAbilityType() == AbilityType.COPY) AdvancementUtil.grantAdvancement(event.getPlayer(), "gutitubow:ability/extend/copy_use_copied_copy");
         if (currentAbility != null) currentAbility.onUseCopiedAbility(event);
     }
+
+    @Override
+    public void onSwapItem(PlayerSwapHandItemsEvent event) {
+        if (currentAbility != null) currentAbility.onSwapItem(event);
+    }
 }

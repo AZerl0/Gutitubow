@@ -244,4 +244,10 @@ public class AbilityListener implements Listener {
         Ability ability = abilityManager.getAbility(event.getPlayer());
         if (ability != null) ability.onUseCopiedAbility(event);
     }
+
+    @EventHandler
+    public void onSwapItem(PlayerSwapHandItemsEvent event) {
+        Ability ability = abilityManager.getAbility(event.getPlayer());
+        if (ability != null) ability.onSwapItem(event);
+    }
 }

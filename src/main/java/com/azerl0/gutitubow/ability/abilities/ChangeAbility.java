@@ -249,4 +249,9 @@ public class ChangeAbility extends Ability {
     public void onUseCopiedAbility(UseCopiedAbilityEvent event) {
         if (currentAbility != null) currentAbility.onUseCopiedAbility(event);
     }
+
+    @Override
+    public void onSwapItem(PlayerSwapHandItemsEvent event) {
+        if (currentAbility != null) currentAbility.onSwapItem(event);
+    }
 }
