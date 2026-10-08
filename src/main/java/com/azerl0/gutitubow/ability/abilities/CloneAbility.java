@@ -31,7 +31,6 @@ import java.util.UUID;
 
 public class CloneAbility extends Ability {
     private final int MAX_CLONE_STOCK_SIZE = 3;
-    private final int CLONE_RESTOCK_TICK = 20 * 20;
     private int cloneStock = MAX_CLONE_STOCK_SIZE;
     private int cloneRestockTick = 0;
     private final Set<Clone> clones = new HashSet<>();
@@ -98,6 +97,7 @@ public class CloneAbility extends Ability {
         player.sendActionBar(message);
         if (cloneStock < MAX_CLONE_STOCK_SIZE) {
             cloneRestockTick++;
+            int CLONE_RESTOCK_TICK = 20 * 20;
             if (cloneRestockTick >= CLONE_RESTOCK_TICK) {
                 cloneStock++;
                 cloneRestockTick = 0;
