@@ -293,7 +293,7 @@ public class Game {
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(gameSetting.getDefaultHealth());
             player.setHealth(gameSetting.getDefaultHealth());
             if (!debugManager.isNoStartTeleport()) {
-                Location location = MathUtil.randomLocation(safeArea, arena.getGameMap().getSize() - 30 * 2);
+                Location location = MathUtil.randomLocation(gameMap.getCenter(), gameMap.getSize() - 30 * 2);
                 location.setWorld(arena.getWorld());
                 location.setY(200.0);
                 location.getDirection().setY(0);
