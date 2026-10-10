@@ -9,18 +9,20 @@ import com.azerl0.gutitubow.util.PlayerUtil;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.GameMode;
-import org.bukkit.Sound;
+import net.kyori.adventure.title.Title;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class ErasureAbility extends Ability {
-    private final Key postEffectKey = Key.key("gutitubow:erasing");
+    private final Key erasingKey = Key.key("gutitubow:erasing");
+    private final Key erasuredKey = Key.key("gutitubow:erasured");
     private int charge = 0;
     private boolean erasureActivate = false;
     private final Set<Player> lookingPlayers = new HashSet<>();
@@ -38,14 +40,19 @@ public class ErasureAbility extends Ability {
 
     @Override
     protected void onReset() {
-        resetGlow(lookingPlayers);
+        resetErasure();
     }
 
     @Override
     public void onPlayerLeftClickBow(PlayerInteractEvent event){
         if (erasureActivate) {
-            resetErasing();
+            deactivateErasure();
         } else {
+            if (hasCompassCooldown()) {
+                Player player = event.getPlayer();
+                PlayerUtil.failEffectWithMessage(player, Component.text("クールダウン中です！").color(NamedTextColor.RED));
+                return;
+            }
             activateErasing();
         }
     }
@@ -56,14 +63,15 @@ public class ErasureAbility extends Ability {
         if (player == null) return;
 
         if (erasureActivate) {
-            if (!isDebugMode()) charge++;
+            if (!isDebugMode()) charge--;
             if (charge <= 0) {
-                resetErasing();
+                deactivateErasure();
                 charge = 0;
             } else {
                 oldLookingPlayers.clear();
                 oldLookingPlayers.addAll(lookingPlayers);
                 if (!isErasing()) {
+                    lookingPlayers.clear();
                     for (Player nearPlayer : player.getWorld().getNearbyPlayers(player.getLocation(), 50)) {
                         if (nearPlayer.getGameMode() == GameMode.SPECTATOR || nearPlayer.getGameMode() == GameMode.CREATIVE) continue;
                         if (context.game().isTeammate(player, nearPlayer)) continue;
@@ -78,7 +86,7 @@ public class ErasureAbility extends Ability {
                         }
                         GamePlayer lookingGamePlayer = context.game().getGamePlayer(nearPlayer);
                         lookingGamePlayer.setRemainedErasureTick(1);
-                        nearPlayer.postEffects().add(postEffectKey);
+                        nearPlayer.postEffects().add(erasuredKey);
                         lookingPlayers.add(nearPlayer);
                         oldLookingPlayers.remove(nearPlayer);
                     }
@@ -101,12 +109,64 @@ public class ErasureAbility extends Ability {
     private void activateErasing() {
         Player player = getPlayer();
         if (player == null) return;
-        player.playSound(player, Sound.ENTITY_PHANTOM_AMBIENT, 1.0f, 1.5f);
         erasureActivate = true;
+        player.playSound(player, Sound.ENTITY_ILLUSIONER_PREPARE_MIRROR, 1.0f, 2.0f);
+        player.postEffects().add(erasingKey);
+        Title title = Title.title(
+                Component.empty(),
+                Component.text("抹消発動中").color(NamedTextColor.GRAY),
+                Title.Times.times(
+                        java.time.Duration.ofMillis(100),
+                        java.time.Duration.ofSeconds(1),
+                        java.time.Duration.ofMillis(500)
+                )
+        );
+        player.showTitle(title);
+
+        for (int i = 0; i < 15; i++) {
+            double x = Math.random() * 2 - 1;
+            double y = Math.random() * 2 - 1;
+            double z = Math.random() * 2 - 1;
+            Vector dir = new Vector(x, y, z).normalize().multiply(0.7);
+
+            Particle.DUST_COLOR_TRANSITION.builder()
+                    .location(player.getEyeLocation())
+                    .count(1)
+                    .offset(dir.getX(), dir.getY(), dir.getZ())
+                    .speed(1.0)
+                    .colorTransition(Color.fromRGB(11206669), Color.fromRGB(15073383))
+                    .spawn();
+
+        }
     }
 
-    private void resetErasing() {
+    private void deactivateErasure() {
+        Player player = getPlayer();
+        if (player == null) return;
+
+        resetErasure();
+        Title title = Title.title(
+                Component.empty(),
+                Component.text("抹消解除").color(NamedTextColor.GRAY),
+                Title.Times.times(
+                        java.time.Duration.ofMillis(100),
+                        java.time.Duration.ofSeconds(1),
+                        java.time.Duration.ofMillis(500)
+                )
+        );
+        player.showTitle(title);
+        player.playSound(player, Sound.ENTITY_PHANTOM_AMBIENT, 1.0f, 1.5f);
+        setCompassCooldown(isDebugMode() ? 20 : 5 * 20);
+        startCompassCooldownTask();
+    }
+
+    private void resetErasure() {
+        Player player = getPlayer();
+        if (player == null) return;
+
         erasureActivate = false;
+        player.postEffects().remove(erasingKey);
+        resetGlow(lookingPlayers);
     }
 
     private void resetGlow(Set<Player> resetPlayers) {
@@ -116,7 +176,7 @@ public class ErasureAbility extends Ability {
         for (Player looking : resetPlayers) {
             context.glowManager().setGlowColor(player, looking, NamedTextColor.WHITE);
             context.glowManager().removeGlow(player, looking);
-            looking.postEffects().remove(postEffectKey);
+            looking.postEffects().remove(erasuredKey);
         }
     }
 }

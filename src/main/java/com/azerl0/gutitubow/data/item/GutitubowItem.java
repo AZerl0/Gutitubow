@@ -872,7 +872,7 @@ public class GutitubowItem {
 
     public static final ItemStack ABILITY_ICON_ERASURE;
     static {
-        ItemStack itemStack = new ItemStack(Material.PHANTOM_MEMBRANE);
+        ItemStack itemStack = new ItemStack(Material.FIREWORK_STAR);
 
         ItemMeta meta = itemStack.getItemMeta();
         meta.lore(List.of(
