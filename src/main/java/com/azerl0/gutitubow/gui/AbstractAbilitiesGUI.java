@@ -51,7 +51,7 @@ public class AbstractAbilitiesGUI extends AbstractGUI {
         addAbilityButton(AbilityType.SWAP);
         addAbilityButton(AbilityType.GRAVITY);
         addAbilityButton(AbilityType.INVERSION);
-//        addAbilityButton(AbilityType.ERASURE);
+        addAbilityButton(AbilityType.ERASURE);
     }
 
     public void addAbilityButton(AbilityType type) {
