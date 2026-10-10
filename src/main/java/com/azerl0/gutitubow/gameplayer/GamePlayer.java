@@ -332,10 +332,7 @@ public class GamePlayer {
     }
 
     public boolean isErasing() {
-//        return remainedErasureTick > 0;
-        Player player = getPlayer();
-        if (player == null) return false;
-        return player.getInventory().getItemInOffHand().getType() == Material.WHITE_DYE;
+        return remainedErasureTick > 0;
     }
 
     protected void tick() {
@@ -381,6 +378,11 @@ public class GamePlayer {
                         new Particle.Spell(Color.fromRGB(255, 255, 255), 1),
                         true
                 );
+            }
+
+            if (remainedErasureTick > 0) {
+                remainedErasureTick--;
+
             }
         }
 
