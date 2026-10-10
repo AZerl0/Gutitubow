@@ -148,7 +148,15 @@ public class MedusaAbility extends Ability {
                     if (!canSee(player, nearPlayer)) continue;
                     if (nearPlayer.hasPotionEffect(PotionEffectType.INVISIBILITY)) continue;
 
-                    LookingTime lookingTime = oldLookingPlayers.getOrDefault(nearPlayer, new LookingTime());
+                    LookingTime lookingTime;
+                    if (oldLookingPlayers.containsKey(nearPlayer)) {
+                        lookingTime = oldLookingPlayers.get(nearPlayer);
+                    } else {
+                        lookingTime = new LookingTime();
+                        context.glowManager().setGlowColor(player, nearPlayer, NamedTextColor.DARK_PURPLE);
+                        context.glowManager().addGlow(player, nearPlayer);
+                    }
+
                     lookingTime.update(false);
 
                     putLookingPlayer(nearPlayer, lookingTime);
@@ -175,8 +183,6 @@ public class MedusaAbility extends Ability {
         Player player = getPlayer();
         if (player == null) return;
 
-        context.glowManager().setGlowColor(player, target, NamedTextColor.DARK_PURPLE);
-        context.glowManager().addGlow(player, target);
         lookingPlayers.put(target, lookingTime);
         PotionEffect slowness = new PotionEffect(PotionEffectType.SLOWNESS, 10, 0, true, true, true);
         target.addPotionEffect(slowness);
