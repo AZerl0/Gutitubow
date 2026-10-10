@@ -318,8 +318,6 @@ public class Game {
             player.setCompassTarget(safeArea);
             gamePlayer.setArrowAmount(0);
 
-            if (!debugManager.isNoStartTeleport()) gamePlayer.firstElytra();
-
             // 能力を割り当てる
             AbilityType ability = abilitySelector.nextAbility();
             if (gameSetting.getSingleAbility() != null) ability = gameSetting.getSingleAbility();
@@ -339,6 +337,8 @@ public class Game {
             );
             player.showTitle(title);
             player.sendMessage(abilityMessage);
+
+            if (!debugManager.isNoStartTeleport()) gamePlayer.firstElytra();
 
             // Team
             GutitubowGameMode gameMode = getGameSetting().getGameMode();
