@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerOnAbilityErasureEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.MathUtil;
 import com.azerl0.gutitubow.util.PlayerUtil;
@@ -53,8 +54,17 @@ public class ErasureAbility extends Ability {
                 PlayerUtil.failEffectWithMessage(player, Component.text("クールダウン中です！").color(NamedTextColor.RED));
                 return;
             }
+            if (isErasing()) {
+                onErasureEffect();
+                return;
+            }
             activateErasing();
         }
+    }
+
+    @Override
+    public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {
+        if (erasureActivate) deactivateErasure();
     }
 
     @Override
@@ -85,7 +95,7 @@ public class ErasureAbility extends Ability {
                             context.glowManager().addGlow(player, nearPlayer);
                         }
                         GamePlayer lookingGamePlayer = context.game().getGamePlayer(nearPlayer);
-                        lookingGamePlayer.setRemainedErasureTick(1);
+                        lookingGamePlayer.setRemainedErasureTick(3);
                         nearPlayer.postEffects().add(erasuredKey);
                         lookingPlayers.add(nearPlayer);
                         oldLookingPlayers.remove(nearPlayer);

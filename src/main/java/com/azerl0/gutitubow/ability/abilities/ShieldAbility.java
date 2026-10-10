@@ -50,7 +50,13 @@ public class ShieldAbility extends Ability {
         if (player == null) return;
 
         if (event.isSneaking()) {
-            if (!shield.isBlocking() && shield.getHealth() > 0 && player.getGameMode() != GameMode.SPECTATOR&& !hasCompassCooldown()) shield.raise();
+            if (!shield.isBlocking() && shield.getHealth() > 0 && player.getGameMode() != GameMode.SPECTATOR&& !hasCompassCooldown()) {
+                if (isErasing()) {
+                    onErasureEffect();
+                    return;
+                }
+                shield.raise();
+            }
         } else {
             if (shield.isBlocking()) shield.lower();
         }
