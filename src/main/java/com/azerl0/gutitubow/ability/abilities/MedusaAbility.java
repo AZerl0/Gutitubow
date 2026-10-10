@@ -308,7 +308,7 @@ public class MedusaAbility extends Ability {
         for (Player lookingPlayer : lookingPlayers.keySet()) {
             context.glowManager().setGlowColor(player, lookingPlayer, NamedTextColor.WHITE);
             context.glowManager().removeGlow(player, lookingPlayer);
-            PostEffectUtil.clearGrayEffect(player);
+            PostEffectUtil.clearGrayEffect(lookingPlayer);
         }
     }
 }
