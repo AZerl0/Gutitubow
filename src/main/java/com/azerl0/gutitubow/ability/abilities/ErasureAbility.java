@@ -22,9 +22,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ErasureAbility extends Ability {
-    private final Key erasingKey = Key.key("gutitubow:erasing");
-    private final Key erasuredKey = Key.key("gutitubow:erasured");
-    private int charge = 0;
+    private final Key ERASING_EFFECT_KEY = Key.key("gutitubow:erasing");
+    private final Key ERASURED_EFFECT_KEY = Key.key("gutitubow:erasured");
+    private final int MAX_CHARGE = 20 * 20;
+    private int charge = MAX_CHARGE / 2;
     private boolean erasureActivate = false;
     private final Set<Player> lookingPlayers = new HashSet<>();
     private final Set<Player> oldLookingPlayers = new HashSet<>();
@@ -49,9 +50,13 @@ public class ErasureAbility extends Ability {
         if (erasureActivate) {
             deactivateErasure();
         } else {
+            Player player = event.getPlayer();
             if (hasCompassCooldown()) {
-                Player player = event.getPlayer();
                 PlayerUtil.failEffectWithMessage(player, Component.text("クールダウン中です！").color(NamedTextColor.RED));
+                return;
+            }
+            if (charge < 30) {
+                PlayerUtil.failEffectWithMessage(player, Component.text("発動には抹消チャージが1.5秒以上必要です！").color(NamedTextColor.RED));
                 return;
             }
             if (isErasing()) {
@@ -96,7 +101,7 @@ public class ErasureAbility extends Ability {
                         }
                         GamePlayer lookingGamePlayer = context.game().getGamePlayer(nearPlayer);
                         lookingGamePlayer.setRemainedErasureTick(3);
-                        nearPlayer.postEffects().add(erasuredKey);
+                        nearPlayer.postEffects().add(ERASURED_EFFECT_KEY);
                         lookingPlayers.add(nearPlayer);
                         oldLookingPlayers.remove(nearPlayer);
                     }
@@ -107,7 +112,6 @@ public class ErasureAbility extends Ability {
         } else {
             if (player.getWorld().getGameTime() % 6 == 0) {
                 charge++;
-                int MAX_CHARGE = 7 * 20;
                 charge = Math.min(charge, MAX_CHARGE);
             }
         }
@@ -121,7 +125,7 @@ public class ErasureAbility extends Ability {
         if (player == null) return;
         erasureActivate = true;
         player.playSound(player, Sound.ENTITY_ILLUSIONER_PREPARE_MIRROR, 1.0f, 2.0f);
-        player.postEffects().add(erasingKey);
+        player.postEffects().add(ERASING_EFFECT_KEY);
         Title title = Title.title(
                 Component.empty(),
                 Component.text("抹消発動中").color(NamedTextColor.GRAY),
@@ -175,7 +179,7 @@ public class ErasureAbility extends Ability {
         if (player == null) return;
 
         erasureActivate = false;
-        player.postEffects().remove(erasingKey);
+        player.postEffects().remove(ERASING_EFFECT_KEY);
         resetGlow(lookingPlayers);
     }
 
@@ -186,7 +190,7 @@ public class ErasureAbility extends Ability {
         for (Player looking : resetPlayers) {
             context.glowManager().setGlowColor(player, looking, NamedTextColor.WHITE);
             context.glowManager().removeGlow(player, looking);
-            looking.postEffects().remove(erasuredKey);
+            looking.postEffects().remove(ERASURED_EFFECT_KEY);
         }
     }
 }
