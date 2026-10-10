@@ -22,7 +22,6 @@ import java.util.*;
 
 public class DetectionAbility extends Ability {
     private int detectionTick = 0;
-    private final int DETECTION_TICK = 2 * 20;
     private final Set<Player> detectingPlayers = new HashSet<>();
     private Set<Player> detectedPlayers = new HashSet<>();
 
@@ -42,6 +41,9 @@ public class DetectionAbility extends Ability {
 
     @Override
     public void onArrowHit(ProjectileHitEvent event) {
+        if (isErasing()) {
+            return;
+        }
         Player player = getPlayer();
         if (player == null) return;
 
@@ -70,8 +72,10 @@ public class DetectionAbility extends Ability {
         Player player = getPlayer();
         if (player == null) return;
         if (player.getGameMode() == GameMode.SPECTATOR) return;
+        if (isErasing()) return;
         detectionTick++;
 
+        int DETECTION_TICK = 2 * 20;
         if (detectionTick >= DETECTION_TICK) {
             if (detectionTick == DETECTION_TICK) {
                 player.playSound(player, Sound.ENTITY_WITHER_SHOOT, 0.3f, 1.0f);

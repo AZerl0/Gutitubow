@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.damage.GutitubowDamageType;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerOnAbilityErasureEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreDamageEvent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Sound;
@@ -63,6 +64,11 @@ public class ShrinkAbility extends Ability {
                 GutitubowDamageType.RICOCHET_BLAST
         );
         if (canShrinkDamageTypes.contains(type)) startShrink();
+    }
+
+    @Override
+    public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {
+        stopShrink();
     }
 
     private void startShrink() {

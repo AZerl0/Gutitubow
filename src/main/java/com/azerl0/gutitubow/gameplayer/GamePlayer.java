@@ -61,6 +61,7 @@ public class GamePlayer {
     private int revivingTick = 0;
     private int compassTeleportingTick = 0;
     private int remainedFlashTick;
+    private int remainedErasureTick = 0;
 
 
     public GamePlayer(JavaPlugin plugin, Player player, Game game) {
@@ -316,6 +317,25 @@ public class GamePlayer {
             }
         }
         return -1;
+    }
+
+    public int getRemainedErasureTick() {
+        return remainedErasureTick;
+    }
+
+    public void setRemainedErasureTick(int tick) {
+        if (tick > 0 && remainedErasureTick <= 0) {
+            GamePlayerOnAbilityErasureEvent gamePlayerOnAbilityErasureEvent = new GamePlayerOnAbilityErasureEvent(this);
+            Bukkit.getPluginManager().callEvent(gamePlayerOnAbilityErasureEvent);
+        }
+        remainedErasureTick = tick;
+    }
+
+    public boolean isErasing() {
+//        return remainedErasureTick > 0;
+        Player player = getPlayer();
+        if (player == null) return false;
+        return player.getInventory().getItemInOffHand().getType() == Material.WHITE_DYE;
     }
 
     protected void tick() {

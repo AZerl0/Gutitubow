@@ -46,6 +46,10 @@ public class SwapAbility extends Ability {
             player.sendMessage(Component.text("まだクールタイム中です!").color(NamedTextColor.RED));
             return;
         }
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
         if (trySwap()) {
             setCompassCooldown(isDebugMode() ? 20 : 15 * 20);
             startCompassCooldownTask();

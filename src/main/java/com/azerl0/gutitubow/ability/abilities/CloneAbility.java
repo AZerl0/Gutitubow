@@ -57,6 +57,11 @@ public class CloneAbility extends Ability {
         if (hasCompassCooldown()) return;
         if (cloneStock <= 0) return;
 
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
+
         if (!isDebugMode()) cloneStock--;
         CloneAIType aiType;
         if (player.getInventory().getItemInMainHand().getType() == Material.SPYGLASS) {

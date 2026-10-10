@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerOnAbilityErasureEvent;
 import com.azerl0.gutitubow.event.gameplayer.PlayerFixLeftClickEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -13,24 +14,21 @@ import org.bukkit.entity.HappyGhast;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Random;
 
 public class BalloonAbility extends Ability {
     private final double HAPPY_GHAST_MAX_HEALTH = 20;
-    private final int HAPPY_GHAST_REGENERATION_TICK = 12 * 20;
-    private HappyGhast happyGhast;
+    private @Nullable HappyGhast happyGhast;
     private double happyGhastHealth = HAPPY_GHAST_MAX_HEALTH;
     private int happyGhastRegenerationTick;
     private boolean canSummon = true;
     private final ItemStack harness = randomHarness();
-    private BukkitTask updateTask;
 
     public BalloonAbility(AbilityContext context) {
         super(context);
@@ -43,22 +41,8 @@ public class BalloonAbility extends Ability {
     }
 
     @Override
-    protected void onInit(Player player) {
-        if (updateTask != null && !updateTask.isCancelled()) return;
-
-        updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                update();
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
-    }
-
-    @Override
     protected void onReset() {
         if (happyGhast != null) happyGhast.remove();
-        if (updateTask != null) updateTask.cancel();
-        updateTask = null;
     }
 
     @Override
@@ -71,8 +55,11 @@ public class BalloonAbility extends Ability {
                 player.sendMessage(Component.text("まだクールダウン中です！").color(NamedTextColor.RED));
             } else {
                 if (canSummon) {
-                    sendOutGhast(player);
-
+                    if (isErasing()) {
+                        onErasureEffect();
+                    } else {
+                        sendOutGhast(player);
+                    }
                 } else {
                     player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
 
@@ -84,19 +71,27 @@ public class BalloonAbility extends Ability {
                 player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                 player.sendMessage(Component.text("まだクールダウン中です！").color(NamedTextColor.RED));
             } else {
-                recallGhast();
+                if (isErasing()) {
+                    onErasureEffect();
+                } else {
+                    recallGhast();
+                }
             }
         }
     }
 
     @Override
     public void onDeath(GamePlayerDeathEvent event) {
-        if (happyGhast != null) {
-            recallGhast();
-        }
+        recallGhast();
     }
 
-    private void update() {
+    @Override
+    public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {
+        recallGhast();
+    }
+
+    @Override
+    public void onTick() {
         Player player = getPlayer();
         if (player == null) return;
         if (happyGhast != null) {
@@ -120,6 +115,7 @@ public class BalloonAbility extends Ability {
         player.sendActionBar(healthMessage);
         if (happyGhastHealth < HAPPY_GHAST_MAX_HEALTH) {
             happyGhastRegenerationTick++;
+            int HAPPY_GHAST_REGENERATION_TICK = 12 * 20;
             if (happyGhastRegenerationTick >= HAPPY_GHAST_REGENERATION_TICK) {
                 happyGhastHealth = Math.min(happyGhastHealth + 2, HAPPY_GHAST_MAX_HEALTH);
                 if (happyGhast != null) happyGhast.setHealth(happyGhastHealth);
@@ -183,8 +179,9 @@ public class BalloonAbility extends Ability {
     }
 
     private void recallGhast() {
-        Player player = getPlayer();
+        if (happyGhast == null) return;
         happyGhast.remove();
+        Player player = getPlayer();
         setCompassCooldown(20);
         if (player != null) {
             player.sendMessage(Component.text("ハッピーガストを回収しました！").color(NamedTextColor.GREEN));

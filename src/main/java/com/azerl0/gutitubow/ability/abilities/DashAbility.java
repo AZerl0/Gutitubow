@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerOnAbilityErasureEvent;
 import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.MathUtil;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
@@ -50,11 +51,16 @@ public class DashAbility extends Ability {
     public void onTick() {
         Player player = getPlayer();
         if (player == null) return;
-        if (player.isSprinting() && !player.isSwimming() && !player.isFlying()) {
+        if (player.isSprinting() && !player.isSwimming() && !player.isFlying() && !isErasing()) {
             onSprinting(player);
         } else {
             if (dashingTick > 0) stopSprinting();
         }
+    }
+
+    @Override
+    public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {
+        stopSprinting();
     }
 
     private void onSprinting(Player player) {

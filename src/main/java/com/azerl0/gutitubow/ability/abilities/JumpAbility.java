@@ -69,6 +69,12 @@ public class JumpAbility extends Ability {
             return;
         }
 
+        if (isErasing()) {
+            onErasureEffect();
+            event.setCancelled(true);
+            return;
+        }
+
         Vector velocity = player.getLocation().clone().getDirection();
         if (velocity.getY() < 0.4) velocity.setY(0.4);
         player.setVelocity(velocity.multiply(MathUtil.getLerp(chargeTick, 0, maxChargeTick, 0.1, 2.5)));

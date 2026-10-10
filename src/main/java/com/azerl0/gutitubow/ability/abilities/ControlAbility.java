@@ -39,6 +39,9 @@ public class ControlAbility extends Ability {
 
     @Override
     public void onShoot(EntityShootBowEvent event) {
+        if (isErasing()) {
+            return;
+        }
         Arrow arrow = (Arrow) event.getProjectile();
 
         EntityUtil.setGlow(arrow, NamedTextColor.DARK_PURPLE);
@@ -80,6 +83,10 @@ public class ControlAbility extends Ability {
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
         int cooldown = event.getPlayer().getCooldown(event.getPlayer().getInventory().getItemInMainHand());
         if (cooldown != 0) return;
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
         Collect(event.getPlayer());
     }
 
@@ -100,6 +107,11 @@ public class ControlAbility extends Ability {
                 if (controlling == null) controlling = true;
 
                 if (!arrow.isValid() || inGround || !controlling) {
+                    cancel();
+                    return;
+                }
+
+                if (isErasing()) {
                     cancel();
                     return;
                 }

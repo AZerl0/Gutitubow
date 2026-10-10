@@ -61,6 +61,7 @@ public class InvisibleAbility extends Ability {
     @Override
     public void onSneaking(GamePlayerSneakingEvent event) {
         if (!isInvisible()) {
+            if (isErasing()) return;
             toInvisible();
         }
     }

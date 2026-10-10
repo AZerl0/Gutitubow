@@ -867,4 +867,26 @@ public class GutitubowItem {
         itemStack.setItemMeta(meta);
         ABILITY_ICON_INVERSION = itemStack.clone();
     }
+
+    public static final ItemStack ABILITY_ICON_ERASURE;
+    static {
+        ItemStack itemStack = new ItemStack(Material.PHANTOM_MEMBRANE);
+
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore(List.of(
+                Component.text("§6「抹消」は、相手の力を抹消する特殊な眼を持つ能力。"),
+
+                Component.text("§f弓を左クリックすると能力を発動し、凝視している相手の能力を抹消することができる。"),
+                Component.text("§f能力発動中に弓を左クリックすることで解除することができる。"),
+                Component.text("§f画面下部の「抹消チャージ」の秒数だけ発動でき、"),
+                Component.text("§fチャージは抹消を発動していないときに徐々に溜まっていく。"),
+                Component.empty(),
+                Component.text("§7操作"),
+                Component.text("§7 [左クリック(弓)] - 抹消を発動する。"),
+                Component.text("§7 [左クリック(弓)(能力使用中)] - 抹消を解除する")
+        ));
+
+        itemStack.setItemMeta(meta);
+        ABILITY_ICON_ERASURE = itemStack.clone();
+    }
 }

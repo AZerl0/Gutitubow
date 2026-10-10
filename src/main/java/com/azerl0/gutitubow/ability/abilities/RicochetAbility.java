@@ -41,6 +41,8 @@ public class RicochetAbility extends Ability {
 
     @Override
     public void onShoot(EntityShootBowEvent event) {
+        if (isErasing()) return;
+
         Arrow arrow = (Arrow) event.getProjectile();
 
         EntityUtil.setGlow(arrow, NamedTextColor.AQUA);

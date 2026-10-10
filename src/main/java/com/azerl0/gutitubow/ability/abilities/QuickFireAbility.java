@@ -45,6 +45,10 @@ public class QuickFireAbility extends Ability {
         if (cooldown != 0) return;
         GamePlayer gamePlayer = context.game().getGamePlayer(player);
         if (gamePlayer.getArrowAmount() == 0) return;
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
         QuickShot(player);
         player.setCooldown(Material.BOW, gamePlayer.getArrowReloadTick());
     }

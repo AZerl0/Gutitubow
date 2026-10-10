@@ -51,6 +51,10 @@ public class TeleportAbility extends Ability {
         Player player = getPlayer();
         if (player == null) return;
         if (hasCompassCooldown()) return;
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
 
         if (savedLocation == null) {
             savedLocation = player.getLocation();
@@ -72,6 +76,10 @@ public class TeleportAbility extends Ability {
     private void onLeftClickCompass() {
         Player player = getPlayer();
         if (player == null) return;
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
 
         GutitubowGameMode gameMode = context.game().getGameSetting().getGameMode();
         if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {

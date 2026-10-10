@@ -45,6 +45,10 @@ public class BombAbility extends Ability {
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
 
         if (lastShootArrow == null) return;
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
         if (lastShootArrow.isValid()) {
             explode(lastShootArrow);
         }

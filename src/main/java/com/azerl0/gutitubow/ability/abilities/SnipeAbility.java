@@ -46,6 +46,10 @@ public class SnipeAbility extends Ability {
         if (!(event.getEntity() instanceof Player player)) return;
         if (!player.isSneaking()) return;
         if (event.getForce() < 1.0) return;
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
         snipe();
         event.setCancelled(true);
     }
@@ -58,6 +62,10 @@ public class SnipeAbility extends Ability {
         if (player.getActiveItem().getType() != Material.SPYGLASS) return;
         if (player.getActiveItemHand() == EquipmentSlot.OFF_HAND) return;
         if (player.hasCooldown(Material.SPYGLASS)) return;
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
 
         GamePlayer gamePlayer = getGamePlayer();
         if (gamePlayer.getArrowAmount() <= 0) return;

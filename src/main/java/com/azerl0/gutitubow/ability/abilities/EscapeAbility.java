@@ -43,12 +43,17 @@ public class EscapeAbility extends Ability {
 
     @Override
     public void onDamage(GamePlayerPreDamageEvent event) {
+        Player player = getPlayer();
+        if (player == null) return;
         GutitubowDamageType type = event.getDamageSource().getDamageType();
         if (!(type == GutitubowDamageType.ARROW_SHOT ||
                 type == GutitubowDamageType.BOMB_BLAST ||
                 type == GutitubowDamageType.RICOCHET_BLAST)) return;
-        if (!getPlayer().isSneaking()) return;
-
+        if (!player.isSneaking()) return;
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
         escape();
 
     }

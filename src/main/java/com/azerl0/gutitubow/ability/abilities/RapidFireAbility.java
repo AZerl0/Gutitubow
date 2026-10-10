@@ -5,6 +5,7 @@ import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerOnAbilityErasureEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
@@ -59,6 +60,7 @@ public class RapidFireAbility extends Ability {
         Player player = event.getPlayer();
         if (player.hasCooldown(Material.BOW)) return;
         if (player.getGameMode() == GameMode.SPECTATOR) return;
+        if (isErasing()) return;
 
         rapidFireCharge++;
         rapidFireCharge = Math.min(rapidFireCharge, getRapidFireLevel() * RAPID_FIRE_MAX_CHARGE);
@@ -91,6 +93,11 @@ public class RapidFireAbility extends Ability {
 
     @Override
     public void onDeath(GamePlayerDeathEvent event) {
+        stopRapidFire();
+    }
+
+    @Override
+    public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {
         stopRapidFire();
     }
 

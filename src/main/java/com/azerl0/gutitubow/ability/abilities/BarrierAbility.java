@@ -59,6 +59,10 @@ public class BarrierAbility extends Ability {
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
 
         if (barrierStack <= 0 || hasCompassCooldown()) return;
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
         placeBarrier();
         setCompassCooldown(20);
         startCompassCooldownTask();

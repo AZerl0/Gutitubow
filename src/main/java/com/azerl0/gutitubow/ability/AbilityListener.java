@@ -250,4 +250,10 @@ public class AbilityListener implements Listener {
         Ability ability = abilityManager.getAbility(event.getPlayer());
         if (ability != null) ability.onSwapItem(event);
     }
+
+    @EventHandler
+    public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {
+        Ability ability = abilityManager.getAbility(event.getGamePlayer().getPlayerUUID());
+        if (ability != null) ability.onAbilityErasure(event);
+    }
 }

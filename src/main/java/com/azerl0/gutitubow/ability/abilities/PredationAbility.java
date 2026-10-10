@@ -34,6 +34,10 @@ public class PredationAbility extends Ability {
 
     @Override
     public void onKill(GamePlayerKillEvent event) {
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
         predationPlayer(event);
     }
 

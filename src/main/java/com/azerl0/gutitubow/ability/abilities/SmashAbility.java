@@ -256,7 +256,7 @@ public class SmashAbility extends Ability {
                 this.remove();
                 return;
             }
-            if (MathUtil.isInView(player, target.getLocation(), 100, 80) && canSee(player, target)) {
+            if (MathUtil.isInView(player, target.getLocation(), 100, 80) && canSee(player, target) && !isErasing()) {
                 lookingTick++;
                 if (lookingTick == 1) {
                     target.playSound(target, Sound.ENTITY_WOLF_GROWL, 1.0f, 1.0f);

@@ -8,6 +8,7 @@ import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldLowerEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldRaiseEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldRaisingEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
+import com.azerl0.gutitubow.util.PlayerUtil;
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -60,7 +61,7 @@ public abstract class Ability {
 
     protected void onReset() {}
 
-    public void tick() {
+    public final void tick() {
         onTick();
         Player player = getPlayer();
         if (cooldownMessageFlag && player != null) {
@@ -115,6 +116,18 @@ public abstract class Ability {
 
     public GamePlayer getGamePlayer() {
         return context.game().getGamePlayer(playerUUID);
+    }
+
+    public boolean isErasing() {
+        GamePlayer gamePlayer = getGamePlayer();
+        return gamePlayer.isErasing();
+    }
+
+    protected void onErasureEffect() {
+        Player player = getPlayer();
+        if (player == null) return;
+
+        PlayerUtil.failEffectWithMessage(player, Component.text("能力が抹消されている...").color(NamedTextColor.RED));
     }
 
     /*
@@ -177,4 +190,6 @@ public abstract class Ability {
     public void onUseCopiedAbility(UseCopiedAbilityEvent event) {}
 
     public void onSwapItem(PlayerSwapHandItemsEvent event) {}
+
+    public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {}
 }

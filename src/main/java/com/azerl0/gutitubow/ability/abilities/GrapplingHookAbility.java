@@ -42,32 +42,36 @@ public class GrapplingHookAbility extends Ability {
 
     @Override
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
-        if (!hasCompassCooldown()) {
-            if (state == GrapplingHoolAbilityStateType.READY) {
-                if (grapplingArrow != null) {
-                    grapplingMovement(grapplingArrow.getLocation());
-                    state = GrapplingHoolAbilityStateType.NONE;
-                    if (grapplingArrow != null) grapplingArrow.remove();
-                    if (leashChicken != null) leashChicken.remove();
-                    setCompassCooldown(isDebugMode() ? 5 : 3 * 20);
-                    startCompassCooldownTask();
-                }
+        if (hasCompassCooldown()) return;
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
 
-            } else if (state == GrapplingHoolAbilityStateType.NONE) {
+        if (state == GrapplingHoolAbilityStateType.READY) {
+            if (grapplingArrow != null) {
+                grapplingMovement(grapplingArrow.getLocation());
+                state = GrapplingHoolAbilityStateType.NONE;
+                if (grapplingArrow != null) grapplingArrow.remove();
+                if (leashChicken != null) leashChicken.remove();
+                setCompassCooldown(isDebugMode() ? 5 : 3 * 20);
+                startCompassCooldownTask();
+            }
 
-                GamePlayer gamePlayer = context.game().getGamePlayer(playerUUID);
-                if (gamePlayer != null && gamePlayer.getArrowAmount() > 0) {
-                    shootGrapplingHookArrow();
-                    gamePlayer.removeArrow(1);
-                    setCompassCooldown(isDebugMode() ? 5 : 10);
-                    startCompassCooldownTask();
-                }
+        } else if (state == GrapplingHoolAbilityStateType.NONE) {
+
+            GamePlayer gamePlayer = context.game().getGamePlayer(playerUUID);
+            if (gamePlayer != null && gamePlayer.getArrowAmount() > 0) {
+                shootGrapplingHookArrow();
+                gamePlayer.removeArrow(1);
+                setCompassCooldown(isDebugMode() ? 5 : 10);
+                startCompassCooldownTask();
             }
         }
     }
 
     @Override
-    public void tick() {
+    public void onTick() {
         if (leashChicken != null) {
             if (leashChicken.isInsideVehicle()) {
                 if (getPlayer() != null) leashChicken.setLeashHolder(getPlayer());

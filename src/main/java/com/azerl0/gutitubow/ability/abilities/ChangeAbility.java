@@ -254,4 +254,9 @@ public class ChangeAbility extends Ability {
     public void onSwapItem(PlayerSwapHandItemsEvent event) {
         if (currentAbility != null) currentAbility.onSwapItem(event);
     }
+
+    @Override
+    public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {
+        if (currentAbility != null) currentAbility.onAbilityErasure(event);
+    }
 }

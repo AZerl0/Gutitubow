@@ -58,6 +58,10 @@ public class EchoAbility extends Ability {
         Player player = getPlayer();
         if (player == null) return;
         if (hasCompassCooldown()) return;
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
         timeLeap();
         setCompassCooldown(10 * 20);
         startCompassCooldownTask();
@@ -160,7 +164,7 @@ public class EchoAbility extends Ability {
             }
         }
         Flame.ShootData shootData = flame.getShootData();
-        if (shootData != null) {
+        if (shootData != null && !isErasing()) {
             Vector velocity = shootData.getVelocity();
             Arrow arrow = shootData.getLocation().getWorld().spawn(shootData.getLocation(), Arrow.class);
             arrow.setShooter(getPlayer());

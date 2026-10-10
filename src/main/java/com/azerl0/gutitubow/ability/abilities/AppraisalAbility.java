@@ -61,15 +61,17 @@ public class AppraisalAbility extends Ability {
         } else {
             oldLookingPlayers = new HashMap<>(lookingPlayers);
             lookingPlayers.clear();
-            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (onlinePlayer.getGameMode() == GameMode.SPECTATOR) continue;
-                if (context.game().isTeammate(player, onlinePlayer)) continue;
-                if (!MathUtil.isInView(player, onlinePlayer.getLocation(), 100, 80)) continue;
-                if (!canSee(player, onlinePlayer)) continue;
+            if (isErasing()) {
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    if (onlinePlayer.getGameMode() == GameMode.SPECTATOR) continue;
+                    if (context.game().isTeammate(player, onlinePlayer)) continue;
+                    if (!MathUtil.isInView(player, onlinePlayer.getLocation(), 100, 80)) continue;
+                    if (!canSee(player, onlinePlayer)) continue;
 
 
-                putLookingPlayer(onlinePlayer, 20);
-                oldLookingPlayers.remove(onlinePlayer);
+                    putLookingPlayer(onlinePlayer, 20);
+                    oldLookingPlayers.remove(onlinePlayer);
+                }
             }
             for (Player lookedPlayer : oldLookingPlayers.keySet()) {
 

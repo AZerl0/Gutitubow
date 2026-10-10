@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerOnAbilityErasureEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreDamageEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.util.ComponentUtil;
@@ -59,6 +60,8 @@ public class GiantAbility extends Ability {
         Player player = event.getPlayer();
         if (player.getGameMode() == GameMode.SPECTATOR) return;
 
+        if (isErasing()) return;
+
         if (!isGiant) {
             toGiantProcessTick++;
             if (toGiantProcessTick >= GIANT_TICK) {
@@ -94,6 +97,11 @@ public class GiantAbility extends Ability {
                 event.setAmount(newAmount);
             }
         }
+    }
+
+    @Override
+    public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {
+        if (isGiant) resetGiant();
     }
 
     private void activateGiant() {

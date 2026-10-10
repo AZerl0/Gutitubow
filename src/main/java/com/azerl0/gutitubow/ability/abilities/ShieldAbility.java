@@ -6,6 +6,7 @@ import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.GutitubowEntityManager;
 import com.azerl0.gutitubow.entity.shield.Shield;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerOnAbilityErasureEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldLowerEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldRaisingEvent;
 import net.kyori.adventure.text.Component;
@@ -44,6 +45,7 @@ public class ShieldAbility extends Ability {
 
     @Override
     public void onToggleSneak(PlayerToggleSneakEvent event) {
+        if (isErasing()) return;
         Player player = getPlayer();
         if (player == null) return;
 
@@ -102,6 +104,11 @@ public class ShieldAbility extends Ability {
             healthComponent = healthComponent.append(Component.text(i < shield.getHealth() ? "♥" : "-").color(NamedTextColor.RED));
         }
         player.sendActionBar(Component.text("SHIELD: ").append(healthComponent));
+    }
+
+    @Override
+    public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {
+        if (shield.isBlocking()) shield.lower();
     }
 
     private GutitubowEntityManager getEntityManager() {

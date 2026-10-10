@@ -69,23 +69,7 @@ public class CopyAbility extends Ability {
         currentAbilityRemainedTick--;
         if (currentAbility != null) {
             if (currentAbilityRemainedTick <= 0) {
-                Player player = getPlayer();
-                if (player == null) return;
-
-                currentAbility.reset();
-                Title title = Title.title(
-                        Component.empty(),
-                        Component.text("複製した「").append(currentAbility.getType().getName()).append(Component.text("」が終了した")).color(NamedTextColor.RED),
-                        Title.Times.times(
-                                java.time.Duration.ofMillis(100),
-                                java.time.Duration.ofSeconds(1),
-                                java.time.Duration.ofMillis(500)
-                        )
-                );
-                player.showTitle(title);
-                player.sendMessage(Component.text("「").append(currentAbility.getType().getName()).append(Component.text("」の能力の使用が終了しました。")).color(NamedTextColor.RED));
-                player.getInventory().setItem(22, OPEN_STOCKED_ABILITIES_ICON);
-                currentAbility = null;
+                resetCurrentAbility();
             } else {
                 currentAbility.tick();
             }
@@ -96,6 +80,10 @@ public class CopyAbility extends Ability {
     public void onAttack(EntityDamageByEntityEvent event) {
         Player player = getPlayer();
         if (player == null) return;
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
         if (event.getEntity() instanceof Player target && player.getInventory().getItemInMainHand().getType() != Material.BOW) {
             tryCopy(target);
         }
@@ -112,6 +100,27 @@ public class CopyAbility extends Ability {
         }
 
         if (currentAbility != null) currentAbility.onClick(event);
+    }
+
+    private void resetCurrentAbility() {
+        if (currentAbility == null) return;
+        Player player = getPlayer();
+        if (player == null) return;
+
+        currentAbility.reset();
+        Title title = Title.title(
+                Component.empty(),
+                Component.text("複製した「").append(currentAbility.getType().getName()).append(Component.text("」が終了した")).color(NamedTextColor.RED),
+                Title.Times.times(
+                        java.time.Duration.ofMillis(100),
+                        java.time.Duration.ofSeconds(1),
+                        java.time.Duration.ofMillis(500)
+                )
+        );
+        player.showTitle(title);
+        player.sendMessage(Component.text("「").append(currentAbility.getType().getName()).append(Component.text("」の能力の使用が終了しました。")).color(NamedTextColor.RED));
+        player.getInventory().setItem(22, OPEN_STOCKED_ABILITIES_ICON);
+        currentAbility = null;
     }
 
     public void setAbility(AbilityType abilityType) {
@@ -310,5 +319,10 @@ public class CopyAbility extends Ability {
     @Override
     public void onSwapItem(PlayerSwapHandItemsEvent event) {
         if (currentAbility != null) currentAbility.onSwapItem(event);
+    }
+
+    @Override
+    public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {
+        if (currentAbility != null) currentAbility.onAbilityErasure(event);
     }
 }

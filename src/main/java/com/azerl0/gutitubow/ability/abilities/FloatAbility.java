@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerOnAbilityErasureEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.ComponentUtil;
@@ -104,7 +105,16 @@ public class FloatAbility extends Ability {
         Player player = getPlayer();
         if (player == null) return;
         ItemStack mainHandItem = player.getInventory().getItemInMainHand();
-        if (mainHandItem.getType() != Material.COMPASS && mainHandItem.getType() != Material.BEACON && player.getGameMode() != GameMode.SPECTATOR) placingFloatArea();
+        if (mainHandItem.getType() == Material.COMPASS || mainHandItem.getType() == Material.BEACON || player.getGameMode() == GameMode.SPECTATOR) return;
+        if (isErasing()) {
+            return;
+        }
+        placingFloatArea();
+    }
+
+    @Override
+    public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {
+        stopFloating();
     }
 
     private void placingFloatArea() {

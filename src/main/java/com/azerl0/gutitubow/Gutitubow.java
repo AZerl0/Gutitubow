@@ -202,6 +202,7 @@ public final class Gutitubow extends JavaPlugin {
         AbilityRegistry.register(AbilityType.SWAP, SwapAbility::new);
         AbilityRegistry.register(AbilityType.GRAVITY, GravityAbility::new);
         AbilityRegistry.register(AbilityType.INVERSION, InversionAbility::new);
+        AbilityRegistry.register(AbilityType.ERASURE, ErasureAbility::new);
     }
 
     public GutitubowManagers getGutitubowManagers() {

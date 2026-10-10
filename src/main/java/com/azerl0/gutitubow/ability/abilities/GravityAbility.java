@@ -23,6 +23,8 @@ public class GravityAbility extends Ability {
 
     @Override
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
+        if (isErasing()) return;
+
         if (!hasCompassCooldown()) {
             launchGravityHole();
             setCompassCooldown(isDebugMode() ? 20 : 20 * 20);

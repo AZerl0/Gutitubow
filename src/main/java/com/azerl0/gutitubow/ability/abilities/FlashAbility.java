@@ -34,6 +34,10 @@ public class FlashAbility extends Ability {
 
     @Override
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
         if (!hasCompassCooldown()) {
             launchFlash();
         } else  {
@@ -43,6 +47,7 @@ public class FlashAbility extends Ability {
 
     private void launchFlash() {
         Player player = getPlayer();
+        if (player == null) return;
 
         Vector velocity = player.getLocation().getDirection().multiply(3);
         SpectralArrow arrow = player.getWorld().spawn(player.getEyeLocation(), SpectralArrow.class);

@@ -68,6 +68,10 @@ public class InversionAbility extends Ability {
                 PlayerUtil.failEffectWithMessage(player, Component.text("クールダウン中です！").color(NamedTextColor.RED));
                 return;
             }
+            if (isErasing()) {
+                onErasureEffect();
+                return;
+            }
 
             shootInversionBall(player);
             setCompassCooldown(isDebugMode() ? 20 : 25 * 20);
@@ -75,6 +79,10 @@ public class InversionAbility extends Ability {
             if (!isDebugMode()) stock -= 2;
         } else {
             if (stock <= 0) return;
+            if (isErasing()) {
+                onErasureEffect();
+                return;
+            }
             tryInversion();
             setCompassCooldown(20);
             startCompassCooldownTask();

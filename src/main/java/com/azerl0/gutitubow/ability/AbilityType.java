@@ -47,7 +47,8 @@ public enum AbilityType {
     GRAPPLINGHOOK(Component.text("鉤縄"), GutitubowItem.ABILITY_ICON_GRAPPLINGHOOK),
     SWAP(Component.text("交換"), GutitubowItem.ABILITY_ICON_SWAP),
     GRAVITY(Component.text("引力"), GutitubowItem.ABILITY_ICON_GRAVITY),
-    INVERSION(Component.text("反転"), GutitubowItem.ABILITY_ICON_INVERSION);
+    INVERSION(Component.text("反転"), GutitubowItem.ABILITY_ICON_INVERSION),
+    ERASURE(Component.text("抹消"), GutitubowItem.ABILITY_ICON_ERASURE);
 
     private final Component name;
     private final ItemStack displayItem;

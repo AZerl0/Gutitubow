@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.damage.GutitubowDamageType;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerOnAbilityErasureEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreDamageEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.util.ComponentUtil;
@@ -76,6 +77,8 @@ public class InvincibleAbility extends Ability {
             toInvincibleTick = 0;
             return;
         }
+
+        if (isErasing()) return;
         if (!isInvincible) {
 
             toInvincibleTick++;
@@ -117,6 +120,11 @@ public class InvincibleAbility extends Ability {
             if (location != null) block(event.getDamageSource().getDamageLocation());
             event.setCancelled(true);
         }
+    }
+
+    @Override
+    public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {
+        resetInvincible();
     }
 
     private void block(Location location) {
@@ -171,7 +179,7 @@ public class InvincibleAbility extends Ability {
         Player player = getPlayer();
         if (player == null) return;
         if (isInvincible) {
-            if (player.getInventory().getItemInOffHand().getType() != Material.PAPER) invincibleCharge--;
+            if (!isDebugMode()) invincibleCharge--;
             if (invincibleCharge <= 0) {
                 resetInvincible();
                 invincibleCharge = 0;

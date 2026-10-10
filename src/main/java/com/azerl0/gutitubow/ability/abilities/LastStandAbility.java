@@ -51,6 +51,11 @@ public class LastStandAbility extends Ability {
         Player player = getPlayer();
         if (player == null) return;
         if (!isActive() && event.getDamageSource().getDamageType() != GutitubowDamageType.FAILED_LAST_STAND) {
+            if (isErasing()) {
+                onErasureEffect();
+                return;
+            }
+
             event.setCancelled(true);
             double absorptionAmount = context.game().getGameSetting().getDefaultHealth() - 2;
             Player attacker = event.getDamageSource().getDirectPlayer();

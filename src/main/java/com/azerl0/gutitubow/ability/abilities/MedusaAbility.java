@@ -50,6 +50,10 @@ public class MedusaAbility extends Ability {
 
     @Override
     public void onPlayerLeftClickBow(PlayerInteractEvent event) {
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
         Player player = getPlayer();
         if (player == null) return;
 
@@ -136,18 +140,20 @@ public class MedusaAbility extends Ability {
         } else {
             oldLookingPlayers = new HashMap<>(lookingPlayers);
             lookingPlayers.clear();
-            for (Player nearPlayer : player.getWorld().getNearbyPlayers(player.getEyeLocation(), 50)) {
-                if (nearPlayer.getGameMode() == GameMode.SPECTATOR || nearPlayer.getGameMode() == GameMode.CREATIVE) continue;
-                if (context.game().isTeammate(player, nearPlayer)) continue;
-                if (!MathUtil.isInView(player, nearPlayer.getLocation(), 100, 80)) continue;
-                if (!canSee(player, nearPlayer)) continue;
-                if (nearPlayer.hasPotionEffect(PotionEffectType.INVISIBILITY)) continue;
+            if (!isErasing()) {
+                for (Player nearPlayer : player.getWorld().getNearbyPlayers(player.getEyeLocation(), 50)) {
+                    if (nearPlayer.getGameMode() == GameMode.SPECTATOR || nearPlayer.getGameMode() == GameMode.CREATIVE) continue;
+                    if (context.game().isTeammate(player, nearPlayer)) continue;
+                    if (!MathUtil.isInView(player, nearPlayer.getLocation(), 100, 80)) continue;
+                    if (!canSee(player, nearPlayer)) continue;
+                    if (nearPlayer.hasPotionEffect(PotionEffectType.INVISIBILITY)) continue;
 
-                LookingTime lookingTime = oldLookingPlayers.getOrDefault(nearPlayer, new LookingTime());
-                lookingTime.update(false);
+                    LookingTime lookingTime = oldLookingPlayers.getOrDefault(nearPlayer, new LookingTime());
+                    lookingTime.update(false);
 
-                putLookingPlayer(nearPlayer, lookingTime);
-                oldLookingPlayers.remove(nearPlayer);
+                    putLookingPlayer(nearPlayer, lookingTime);
+                    oldLookingPlayers.remove(nearPlayer);
+                }
             }
             for (Player lookedPlayer : oldLookingPlayers.keySet()) {
                 LookingTime lookingTime = oldLookingPlayers.get(lookedPlayer);
