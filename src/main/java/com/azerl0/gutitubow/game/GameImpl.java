@@ -709,7 +709,7 @@ public class GameImpl implements Game {
             deathOrder.add(gamePlayer);
         }
 
-        if (!debugManager.isDisableSoloModePin() && isStarted()) checkGameOver();
+        if (!debugManager.isDisableCheckGameOver() && isStarted()) checkGameOver();
 
 
         return true;
