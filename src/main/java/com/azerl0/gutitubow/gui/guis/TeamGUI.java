@@ -1,15 +1,15 @@
 package com.azerl0.gutitubow.gui.guis;
 
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
-import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
+import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.gui.AbstractGUI;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.team.TeamManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -78,10 +78,10 @@ public class TeamGUI extends AbstractGUI {
         for (int i = 0; i < counter; i++) {
             currentSlot += 9;
 
-            @Nullable UUID uuid = null;
-            if (gameTeam.getPlayers().size() > i) uuid = gameTeam.getPlayers().get(i);
+            @Nullable GamePlayer gamePlayer = null;
+            if (gameTeam.getPlayers().size() > i) gamePlayer = gameTeam.getPlayers().get(i);
             @Nullable Player player = null;
-            if (uuid != null) player = Bukkit.getPlayer(uuid);
+            if (gamePlayer != null) player = gamePlayer.getPlayer();
             setTeamPlayerButton(currentSlot, player, gameTeam, i == 0);
         }
     }

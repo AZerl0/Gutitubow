@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.gameevent;
 
+import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.gameevent.events.*;
 import net.kyori.adventure.text.Component;
@@ -11,7 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public enum GameEventType {
 
@@ -73,6 +74,16 @@ public enum GameEventType {
             Component.text("大量の救援物資が投下された！"),
             GutitubowItem.RED_POTION,
             CarePackageEvent::new
+    ),
+    DOPPELGANGER(
+            Component.text("ドッペルゲンガー出現"),
+            List.of(
+                    Component.text("君の偽物がこのワールドのどこかに出現したようだ。"),
+                    Component.text("フェーズ終了時までに偽物を倒せないと君は消滅してしまう。")
+            ),
+            Component.text("ドッペルゲンガーが現れた！"),
+            ItemStack.of(Material.PLAYER_HEAD),
+            DoppelgangerEvent::new
     );
 
 
@@ -80,15 +91,23 @@ public enum GameEventType {
     private final List<Component> lore;
     private final Component about;
     private final ItemStack baseDisplayItem;
-    private final Supplier<? extends GameEvent> supplier;
+    private final Function<GameEventContext, ? extends GameEvent> function;
 
 
-    GameEventType(Component name, List<Component> lore, Component about, ItemStack baseDisplayItem, Supplier<? extends GameEvent> supplier) {
+    /**
+     * :
+     * @param name イベントの名前、チャットの説明欄やGUI上の名前として表示される
+     * @param lore イベントの詳細、チャット欄やGUI上のLoreで表示される
+     * @param about イベントの概要、イベント発動時のサブタイトルに表示される
+     * @param baseDisplayItem イベントのアイテムアイコン
+     * @param function イベントのsupplier
+     */
+    GameEventType(Component name, List<Component> lore, Component about, ItemStack baseDisplayItem, Function<GameEventContext, GameEvent> function) {
         this.name = name;
         this.lore = lore;
         this.about = about;
         this.baseDisplayItem = baseDisplayItem;
-        this.supplier = supplier;
+        this.function = function;
     }
 
     public Component getName() {
@@ -118,6 +137,10 @@ public enum GameEventType {
     }
 
     public GameEvent create() {
-        return supplier.get();
+        GameEventContext context = new GameEventContext(
+                Gutitubow.get(),
+                Gutitubow.get().getGame()
+        );
+        return function.apply(context);
     }
 }

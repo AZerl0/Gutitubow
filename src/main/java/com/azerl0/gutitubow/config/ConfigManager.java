@@ -21,7 +21,7 @@ public class ConfigManager {
     public void processConfigs() {
         config = gutitubow.getConfig();
         defaultConfig = new Config(config);
-        loadMaps(Gutitubow.get().getGameMapManager());
+        loadMaps(Gutitubow.get().getGutitubowManagers().getGameMapManager());
     }
 
     public void reload() {
@@ -56,6 +56,7 @@ public class ConfigManager {
             double phase3size = section.getDouble("phase3size");
             double phase4size = section.getDouble("phase4size");
             double phase5size = section.getDouble("phase5size");
+            if (center == null || lobby == null) continue;
 
             GameMap gameMap = new GameMap(
                     id,

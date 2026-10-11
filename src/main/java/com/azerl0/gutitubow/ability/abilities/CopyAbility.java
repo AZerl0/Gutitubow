@@ -128,7 +128,7 @@ public class CopyAbility extends Ability {
         if (player == null) return;
 
         if (currentAbility != null) currentAbility.reset();
-        currentAbility = context.game().getAbilityManager().createAbility(abilityType);
+        currentAbility = context.getAbilityManager().createAbility(abilityType);
         currentAbility.init(player);
         currentAbilityRemainedTick = 60 * 20;
         player.sendMessage(Component.text("「").append(abilityType.getName()).append(Component.text("」の能力を1分間使用します。")).color(NamedTextColor.GREEN));
@@ -160,7 +160,7 @@ public class CopyAbility extends Ability {
             player.sendMessage(Component.text("この相手の能力は30秒間コピーできません。").color(NamedTextColor.RED));
             return;
         }
-        Ability targetAbility = context.game().getAbilityManager().getAbility(origin);
+        Ability targetAbility = context.getAbilityManager().getAbility(origin);
         if (targetAbility == null) {
             player.sendMessage(Component.text("この相手は能力を持っていません。").color(NamedTextColor.RED));
         } else {

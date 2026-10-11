@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
+import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.team.GameTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -18,7 +19,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.UUID;
 
 public class TeleportAbility extends Ability {
     private Location savedLocation;
@@ -85,13 +85,12 @@ public class TeleportAbility extends Ability {
         if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
             GameTeam team = context.game().getGameTeam(player);
             if (team == null) return;
-            List<UUID> otherAlivePlayers = team.getAlivePlayersWithout(player.getUniqueId());
+            List<GamePlayer> otherAlivePlayers = team.getAlivePlayersWithout(player.getUniqueId());
             if (!team.getPlayersWithout(player.getUniqueId()).isEmpty() && otherAlivePlayers.isEmpty()) {
                 player.sendMessage(Component.text("チームメイトが全員ダウンしています！").color(NamedTextColor.RED));
-                return;
             } else {
-                for (UUID otherAlivePlayerUUID : otherAlivePlayers) {
-                    Player otherAlivePlayer = Bukkit.getPlayer(otherAlivePlayerUUID);
+                for (GamePlayer otherAliveGamePlayer : otherAlivePlayers) {
+                    Player otherAlivePlayer = otherAliveGamePlayer.getPlayer();
                     if (otherAlivePlayer == null || !otherAlivePlayer.isOnline()) continue;
                     teleport(otherAlivePlayer.getLocation());
                     return;
@@ -105,6 +104,7 @@ public class TeleportAbility extends Ability {
 
     private void teleport(Location location) {
         Player player = getPlayer();
+        if (player == null) return;
         Location oldPlayerLocation = player.getEyeLocation().clone();
         World world = player.getWorld();
 
@@ -128,7 +128,7 @@ public class TeleportAbility extends Ability {
                 )
         );
         for (Player nearPlayer : player.getWorld().getNearbyPlayers(player.getLocation(), 5)) {
-            if (nearPlayer.getUniqueId() == player.getUniqueId()) continue;
+            if (nearPlayer.getUniqueId().equals(player.getUniqueId())) continue;
             if (context.game().isTeammate(player, nearPlayer)) continue;
             nearPlayer.addPotionEffect(effect);
             nearPlayer.showTitle(title);

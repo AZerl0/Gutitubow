@@ -1,9 +1,10 @@
 package com.azerl0.gutitubow.gameevent.events;
 
 import com.azerl0.gutitubow.Gutitubow;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.entity.carepackage.CarePackage;
-import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.gameevent.GameEvent;
+import com.azerl0.gutitubow.gameevent.GameEventContext;
 import com.azerl0.gutitubow.gameevent.GameEventType;
 import com.azerl0.gutitubow.util.MathUtil;
 import org.bukkit.Location;
@@ -15,9 +16,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class CarePackageEvent extends GameEvent {
+    public final long  SPAWN_SPAN_TICK = 25 * 20;
+
     private BukkitTask spawnTask;
-    private final long  SPAWN_SPAN_TICK = 25 * 20;
     private final Set<CarePackage> carePackageSet = new HashSet<>();
+
+    public CarePackageEvent(GameEventContext context) {
+        super(context);
+    }
 
     @Override
     public @NotNull GameEventType getEventType() {

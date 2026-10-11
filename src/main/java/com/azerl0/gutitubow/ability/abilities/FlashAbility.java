@@ -7,8 +7,6 @@ import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.MathUtil;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Player;

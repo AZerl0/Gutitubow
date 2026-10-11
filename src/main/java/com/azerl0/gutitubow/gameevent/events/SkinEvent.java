@@ -1,8 +1,9 @@
 package com.azerl0.gutitubow.gameevent.events;
 
 import com.azerl0.gutitubow.Gutitubow;
-import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.gameevent.GameEvent;
+import com.azerl0.gutitubow.gameevent.GameEventContext;
 import com.azerl0.gutitubow.gameevent.GameEventType;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.profiler.ProfileChangeReason;
@@ -20,6 +21,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class SkinEvent extends GameEvent {
+    public SkinEvent(GameEventContext context) {
+        super(context);
+    }
+
     @Override
     public @NotNull GameEventType getEventType() {
         return GameEventType.SKIN;
@@ -36,7 +41,7 @@ public class SkinEvent extends GameEvent {
         if (skinPlayer == null) return;
         SkinData skinData = Gutitubow.get().getGutitubowManagers().getSkinDataManager().getPlayerSkinData(skinPlayer);
         playersConsumer(player -> {
-            Gutitubow.get().getGutitubowManagers().getProfileManager().getProfile(player).setSkin(skinData, ProfileChangeReason.SKIN_EVENT);
+            if (skinData != null) Gutitubow.get().getGutitubowManagers().getProfileManager().getProfile(player).setSkin(skinData, ProfileChangeReason.SKIN_EVENT);
         });
 
         playActivateEffect(
@@ -50,16 +55,14 @@ public class SkinEvent extends GameEvent {
 
     @Override
     protected void onDeactivated() {
-        playersConsumer(player -> {
-            Gutitubow.get().getGutitubowManagers().getProfileManager().getProfile(player).resetSkin(ProfileChangeReason.SKIN_EVENT);
-        });
+        playersConsumer(player -> Gutitubow.get().getGutitubowManagers().getProfileManager().getProfile(player).resetSkin(ProfileChangeReason.SKIN_EVENT));
     }
 
     private @Nullable Player getSkinPlayer() {
         Game game = Gutitubow.get().getGame();
         Set<GamePlayer> players = new HashSet<>();
         if (game.isStarted()) {
-            game.getCurrentGamePlayers().forEach(gamePlayer -> {
+            game.getPlayers().forEach(gamePlayer -> {
                 if (!gamePlayer.isDead()) players.add(gamePlayer);
             });
         } else {
@@ -80,7 +83,7 @@ public class SkinEvent extends GameEvent {
     private void playersConsumer(Consumer<Player> player) {
         Game game = Gutitubow.get().getGame();
         if (game.isStarted()) {
-            game.getCurrentGamePlayers().forEach(gamePlayer -> {
+            game.getAlivePlayers().forEach(gamePlayer -> {
                 Player p = gamePlayer.getPlayer();
                 if (p != null) player.accept(p);
             });

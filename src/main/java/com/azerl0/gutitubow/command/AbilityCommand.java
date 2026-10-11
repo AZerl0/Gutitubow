@@ -50,7 +50,7 @@ public class AbilityCommand {
     }
 
     private static AbilityManager getAbilityManager() {
-        return Gutitubow.get().getGame().getAbilityManager();
+        return Gutitubow.get().getGutitubowManagers().getAbilityManager();
     }
 
     private static AbilitySetGUI getAbilitySelectorGUI() {

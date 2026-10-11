@@ -1,13 +1,13 @@
 package com.azerl0.gutitubow.entity.carepackage;
 
 import com.azerl0.gutitubow.Gutitubow;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.damage.DamageSource;
 import com.azerl0.gutitubow.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.GutitubowEntityManager;
 import com.azerl0.gutitubow.entity.GutitubowEntityType;
-import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.packet.EntityGlowManager;
@@ -308,18 +308,16 @@ public class CarePackage extends GutitubowEntity {
             } else if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
                 GameTeam team = game.getTeamManager().getPlayerTeam(player);
                 if (team == null || used_teams.contains(team)) return;
-                for (UUID uuid : team.getPlayers()) {
-                    Player teamPlayer = Bukkit.getPlayer(uuid);
+                for (GamePlayer teamGamePlayer : team.getPlayers()) {
+                    Player teamPlayer = teamGamePlayer.getPlayer();
                     if (teamPlayer == null || !teamPlayer.isOnline()) return;
                     givePotion(teamPlayer);
                 }
                 used_teams.add(team);
 
                 if (!team.getDeadPlayers().isEmpty()) {
-                    for (UUID uuid : team.getAlivePlayers()) {
-                        GamePlayer gamePlayer = game.getGamePlayer(uuid);
-                        if (gamePlayer == null) continue;
-                        gamePlayer.giveRespawnBeacon();
+                    for (GamePlayer aliveGamePlayer : team.getAlivePlayers()) {
+                        aliveGamePlayer.giveRespawnBeacon();
                     }
                 }
             }
@@ -342,7 +340,7 @@ public class CarePackage extends GutitubowEntity {
                                 .append(Component.text("]を入手した!\n").color(NamedTextColor.WHITE))
                         ));
         player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
-        EntityGlowManager glowManager = Gutitubow.get().getGlowManager();
+        EntityGlowManager glowManager = Gutitubow.get().getGutitubowManagers().getGlowManager();
         glowManager.removeGlow(player, getDisplayEntity());
     }
 

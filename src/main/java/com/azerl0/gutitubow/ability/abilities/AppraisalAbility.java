@@ -201,7 +201,7 @@ public class AppraisalAbility extends Ability {
 
             User user = PacketEvents.getAPI().getPlayerManager().getUser(player);
             Component targetAbilityName = Component.text("なし");
-            Ability targetAbility = context.game().getAbilityManager().getAbility(target);
+            Ability targetAbility = context.getAbilityManager().getAbility(target);
             if (targetAbility != null) targetAbilityName = targetAbility.getType().getName();
             double distance = player.getLocation().distance(target.getLocation());
             Component distanceComponent = Component.text(Math.floor(distance * 10) / 10 + "m");

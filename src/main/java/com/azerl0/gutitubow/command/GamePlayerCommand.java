@@ -1,10 +1,10 @@
 package com.azerl0.gutitubow.command;
 
 import com.azerl0.gutitubow.Gutitubow;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.command.argument.GameDamageTypeArgument;
 import com.azerl0.gutitubow.damage.DamageSource;
 import com.azerl0.gutitubow.damage.GutitubowDamageType;
-import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
@@ -267,7 +267,7 @@ public class GamePlayerCommand {
         CommandSender sender = context.getSource().getSender();
         Player player = senderPlayer(sender);
         if (player == null) return 0;
-        getGame().getGamePlayer(target).revive(reviver);
+        getGame().revive(target, reviver);
         return com.mojang.brigadier.Command.SINGLE_SUCCESS;
     }
 }

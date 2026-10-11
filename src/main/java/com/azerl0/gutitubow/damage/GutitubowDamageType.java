@@ -10,5 +10,6 @@ public enum GutitubowDamageType {
     OUTSIDE_BORDER,
     FAKE_CAREPACKAGE,
     LOGOUT,
+    DOPPELGANGER_DESTROY,
     UNKNOWN
 }

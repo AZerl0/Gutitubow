@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.event.gameplayer;
 
 import com.azerl0.gutitubow.damage.DamageSource;
+import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -11,16 +12,16 @@ import org.jetbrains.annotations.NotNull;
 public class GamePlayerDeathEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private boolean cancelled;
-    private final Player player;
+    private final GamePlayer gamePlayer;
     private final DamageSource damageSource;
 
-    public GamePlayerDeathEvent(Player player, DamageSource damageSource)  {
-        this.player = player;
+    public GamePlayerDeathEvent(GamePlayer gamePlayer, DamageSource damageSource)  {
+        this.gamePlayer = gamePlayer;
         this.damageSource = damageSource;
     }
 
-    public @NotNull Player getPlayer() {
-        return player;
+    public @NotNull GamePlayer getGamePlayer() {
+        return gamePlayer;
     }
 
     public @NotNull DamageSource getDamageSource() {

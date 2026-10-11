@@ -1,13 +1,13 @@
 package com.azerl0.gutitubow.entity.shield;
 
 import com.azerl0.gutitubow.Gutitubow;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.GutitubowEntityManager;
 import com.azerl0.gutitubow.entity.GutitubowEntityType;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldBreakEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldLowerEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldRaisingEvent;
-import com.azerl0.gutitubow.game.Game;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.data.BlockData;

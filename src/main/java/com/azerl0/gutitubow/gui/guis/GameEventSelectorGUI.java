@@ -25,6 +25,7 @@ public class GameEventSelectorGUI extends AbstractGUI {
         addEventButton(GameEventType.WANTED);
         addEventButton(GameEventType.SKIN);
         addEventButton(GameEventType.CAREPACKAGE);
+        addEventButton(GameEventType.DOPPELGANGER);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class GameEventSelectorGUI extends AbstractGUI {
             addButton(
                     getEmptySlot(),
                     itemStack,
-                    event -> onSelect.accept(eventType)
+                    _ -> onSelect.accept(eventType)
             );
         }
     }

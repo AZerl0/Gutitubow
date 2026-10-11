@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.team;
 
-import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.api.game.Game;
+import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.gui.guis.TeamGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -168,8 +169,8 @@ public class TeamManager {
     }
 
     public void resetTeam(GameTeam gameTeam) {
-        for (UUID uuid : gameTeam.getPlayers()) {
-            playerTeams.remove(uuid);
+        for (GamePlayer teamPlayer : gameTeam.getPlayers()) {
+            playerTeams.remove(teamPlayer.getPlayerUUID());
         }
         gameTeam.reset();
         teamGUI.updateGUI();

@@ -100,11 +100,10 @@ public class MapCommand {
         String message;
         if (gameMap != null) {
             Location lobby = sendPlayer.getLocation();
-            GameMap newMap = gameMap;
-            newMap.setLobby(lobby);
-            GameMapManager gameMapManager = Gutitubow.get().getGameMapManager();
+            gameMap.setLobby(lobby);
+            GameMapManager gameMapManager = getMapManager();
             gameMapManager.deleteMap(gameMap.getId());
-            gameMapManager.addMap(newMap);
+            gameMapManager.addMap(gameMap);
             gameMapManager.saveMaps();
             message = "Map: " + id + "のロビーを";
             message = message + "\nWorld: " + lobby.getWorld().getName() + "\n  - Pos: [" + lobby.getX() + ", " + lobby.getY() + ", " + lobby.getZ() + "]";
@@ -123,6 +122,6 @@ public class MapCommand {
     }
 
     private static GameMapManager getMapManager() {
-        return Gutitubow.get().getGameMapManager();
+        return Gutitubow.get().getGutitubowManagers().getGameMapManager();
     }
 }

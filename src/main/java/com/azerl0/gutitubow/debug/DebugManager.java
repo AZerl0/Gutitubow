@@ -11,10 +11,10 @@ public class DebugManager {
 
     public DebugManager(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.quick_phase = false;
-        this.no_start_teleport = false;
-        this.disable_check_game_over = false;
-        this.disable_solo_mode_pin = true;
+        quick_phase = false;
+        no_start_teleport = false;
+        disable_check_game_over = false;
+        disable_solo_mode_pin = true;
     }
 
     public boolean isQuickPhase() {
@@ -48,5 +48,4 @@ public class DebugManager {
     public void setDisableSoloModePin(boolean disable_solo_mode_pin) {
         this.disable_solo_mode_pin = disable_solo_mode_pin;
     }
-
 }

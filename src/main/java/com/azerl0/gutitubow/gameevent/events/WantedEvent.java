@@ -1,11 +1,12 @@
 package com.azerl0.gutitubow.gameevent.events;
 
 import com.azerl0.gutitubow.Gutitubow;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
-import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.gameevent.GameEvent;
+import com.azerl0.gutitubow.gameevent.GameEventContext;
 import com.azerl0.gutitubow.gameevent.GameEventType;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import net.kyori.adventure.text.Component;
@@ -24,6 +25,10 @@ import java.util.Set;
 
 public class WantedEvent extends GameEvent {
     private @Nullable GamePlayer wantedPlayer;
+
+    public WantedEvent(GameEventContext context) {
+        super(context);
+    }
 
     @Override
     public @NotNull GameEventType getEventType() {
@@ -74,7 +79,8 @@ public class WantedEvent extends GameEvent {
 
     @Override
     protected void onAnyPlayerDeath(GamePlayerDeathEvent event) {
-        if (isWantedPlayer(event.getPlayer())) {
+        if (wantedPlayer == null) return;
+        if (event.getGamePlayer().getPlayerUUID().equals(wantedPlayer.getPlayerUUID())) {
             showPlayerDeadMessage();
             resetWantedPlayer();
         }
@@ -84,12 +90,12 @@ public class WantedEvent extends GameEvent {
         for (int i = 0; i < 5; i++) player.give(GutitubowItem.RECOVERY_POTION);
     }
 
-    private boolean isWantedPlayer(Player player) {
+    private boolean isWantedPlayer(@NotNull Player player) {
         return wantedPlayer != null && wantedPlayer.getPlayerUUID() == player.getUniqueId();
     }
 
     private void resetWantedPlayer() {
-        if (wantedPlayer != null) {
+        if (wantedPlayer != null && wantedPlayer.getPlayer() != null) {
             wantedPlayer.getPlayer().removePotionEffect(PotionEffectType.GLOWING);
             wantedPlayer = null;
         }
@@ -113,16 +119,16 @@ public class WantedEvent extends GameEvent {
     }
 
     private @Nullable GamePlayer getWantedPlayer() {
-        Game game = Gutitubow.get().getGame();
+        Game game = context.game();
         Set<GamePlayer> players = new HashSet<>();
         if (game.isStarted()) {
-            game.getCurrentGamePlayers().forEach(gamePlayer -> {
+            game.getAlivePlayers().forEach(gamePlayer -> {
                 if (!gamePlayer.isDead()) players.add(gamePlayer);
             });
         } else {
             game.getAllGamePlayers().forEach(gamePlayer -> {
                 Player player = gamePlayer.getPlayer();
-                if (player.isOnline() && player.getGameMode() != GameMode.SPECTATOR) {
+                if (player != null && player.getGameMode() != GameMode.SPECTATOR) {
                     players.add(gamePlayer);
                 }
             });

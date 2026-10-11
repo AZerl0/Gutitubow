@@ -1,10 +1,11 @@
 package com.azerl0.gutitubow.gameevent.events;
 
 import com.azerl0.gutitubow.Gutitubow;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.damage.DamageSource;
 import com.azerl0.gutitubow.damage.GutitubowDamageType;
-import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GamePhase;
+import com.azerl0.gutitubow.gameevent.GameEventContext;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.gameevent.GameEvent;
 import com.azerl0.gutitubow.gameevent.GameEventType;
@@ -20,6 +21,10 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class BomboEvent extends GameEvent {
+    public BomboEvent(GameEventContext context) {
+        super(context);
+    }
+
     @Override
     public @NotNull GameEventType getEventType() {
         return GameEventType.BOMB;

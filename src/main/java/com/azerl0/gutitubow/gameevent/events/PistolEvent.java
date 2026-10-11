@@ -1,19 +1,19 @@
 package com.azerl0.gutitubow.gameevent.events;
 
 import com.azerl0.gutitubow.gameevent.GameEvent;
+import com.azerl0.gutitubow.gameevent.GameEventContext;
 import com.azerl0.gutitubow.gameevent.GameEventType;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class PistolEvent extends GameEvent {
-    @Override
-    public @NotNull GameEventType getEventType() {
-        return GameEventType.PISTOL;
+    public PistolEvent(GameEventContext context) {
+        super(context);
     }
 
     @Override
-    public boolean canActivate() {
-        return true;
+    public @NotNull GameEventType getEventType() {
+        return GameEventType.PISTOL;
     }
 
     @Override

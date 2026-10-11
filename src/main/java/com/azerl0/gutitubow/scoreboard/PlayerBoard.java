@@ -1,7 +1,8 @@
 package com.azerl0.gutitubow.scoreboard;
 
+import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.ability.Ability;
-import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.game.GamePhase;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
@@ -10,16 +11,15 @@ import com.azerl0.gutitubow.util.PlayerUtil;
 import io.papermc.paper.scoreboard.numbers.NumberFormat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 public class PlayerBoard {
+    private final Gutitubow gutitubow;
     private final GamePlayer gamePlayer;
     private final Game game;
     private final Scoreboard scoreboard;
@@ -39,7 +39,8 @@ public class PlayerBoard {
     private final scoreboardComponent _teammate2health;
     private final scoreboardComponent _teammate2potion;
 
-    public PlayerBoard(GamePlayer gamePlayer, Scoreboard scoreboard) {
+    public PlayerBoard(Gutitubow gutitubow, GamePlayer gamePlayer, Scoreboard scoreboard) {
+        this.gutitubow = gutitubow;
         this.gamePlayer = gamePlayer;
         this.game = gamePlayer.getGame();
         this.scoreboard = scoreboard;
@@ -118,9 +119,9 @@ public class PlayerBoard {
 
         if (gameMode == GutitubowGameMode.DUO) {
             if (team == null) return;
-            List<UUID> teammates = team.getPlayersWithout(gamePlayer.getPlayer().getUniqueId());
+            List<GamePlayer> teammates = team.getPlayersWithout(gamePlayer.getPlayer().getUniqueId());
             if (!teammates.isEmpty()) {
-                Player teammate1 = Bukkit.getPlayer(teammates.getFirst());
+                Player teammate1 = teammates.getFirst().getPlayer();
                 if (teammate1 != null) {
                     updateTeammate1(teammate1);
                     setHideTeammate1(false);
@@ -131,10 +132,10 @@ public class PlayerBoard {
 
         } else if (gameMode == GutitubowGameMode.TRIO) {
             if (team == null) return;
-            List<UUID> teammates = team.getPlayersWithout(gamePlayer.getPlayer().getUniqueId());
+            List<GamePlayer> teammates = team.getPlayersWithout(gamePlayer.getPlayer().getUniqueId());
 
             if (!teammates.isEmpty()) {
-                Player teammate1 = Bukkit.getPlayer(teammates.getFirst());
+                Player teammate1 = teammates.getFirst().getPlayer();
                 if (teammate1 != null) {
                     updateTeammate1(teammate1);
                     setHideTeammate1(false);
@@ -142,7 +143,7 @@ public class PlayerBoard {
             }
 
             if (teammates.size() >= 2) {
-                Player teammate2 = Bukkit.getPlayer(teammates.get(1));
+                Player teammate2 = teammates.get(1).getPlayer();
                 if (teammate2 != null) {
                     updateTeammate2(teammate2);
                     setHideTeammate2(false);
@@ -196,7 +197,7 @@ public class PlayerBoard {
             if (ability == null) return Component.text("None");
             return ability.getType().getName();
         } catch (Exception e) {
-            Logger logger = Bukkit.getServer().getLogger();
+            Logger logger = gutitubow.getLogger();
             logger.warning("failed get player ability name");
             logger.warning("player: " + player.getName());
             logger.warning(": " + player.getName());

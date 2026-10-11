@@ -1,14 +1,15 @@
 package com.azerl0.gutitubow.gameplayer;
 
+import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.ability.Ability;
+import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.damage.DamageSource;
 import com.azerl0.gutitubow.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.event.gameplayer.*;
-import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.scoreboard.PlayerBoard;
-import com.azerl0.gutitubow.manager.LogManager;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.util.ComponentUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
@@ -22,16 +23,13 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +41,10 @@ import java.util.Random;
 import java.util.UUID;
 
 public class GamePlayer {
-    private final JavaPlugin plugin;
+    public final int COMPASS_TELEPORT_TICK = 10 * 20;
+    public final int REVIVE_TICK = 15 * 20;
+
+    private final Gutitubow gutitubow;
     private final @NotNull UUID playerUUID;
     private final Game game;
     private int playerArrowReloadTick;
@@ -55,17 +56,16 @@ public class GamePlayer {
     private boolean firstElytraFlag;
     private final NamespacedKey gutitubowArrowItemKey;
     private final PlayerBoard playerBoard;
-    private final int REVIVE_TICK = 15 * 20;
-    private final int COMPASS_TELEPORT_TICK = 10 * 20;
     private int sneakingTick = 0;
     private int revivingTick = 0;
     private int compassTeleportingTick = 0;
     private int remainedFlashTick;
     private int remainedErasureTick = 0;
+    private @Nullable AbilityType doppelgangerHoldOriginAbility;
 
 
-    public GamePlayer(JavaPlugin plugin, Player player, Game game) {
-        this.plugin = plugin;
+    public GamePlayer(Gutitubow gutitubow, Player player, Game game) {
+        this.gutitubow = gutitubow;
         this.playerUUID = player.getUniqueId();
         this.game = game;
         playerArrowReloadTick = 100;
@@ -75,14 +75,14 @@ public class GamePlayer {
         playerBorderOutsideTick = 0;
         arrowReloadProgressTick = 0;
         firstElytraFlag = false;
-        gutitubowArrowItemKey = new NamespacedKey(this.plugin, "gutitubow.arrow");
+        gutitubowArrowItemKey = new NamespacedKey(this.gutitubow, "gutitubow.arrow");
         this.playerBoard = game.getPlayerBoard(this);
         this.remainedFlashTick = 0;
     }
 
     @Nullable
     public Ability getAbility() {
-        return game.getAbilityManager().getAbility(playerUUID);
+        return gutitubow.getGutitubowManagers().getAbilityManager().getAbility(playerUUID);
     }
 
     @Nullable
@@ -104,7 +104,7 @@ public class GamePlayer {
     }
 
     public boolean isDead() {
-        return game.getDeadPlayer().contains(this);
+        return game.getDeadPlayers().contains(this);
     }
 
     private int getBorderOutsideTicks() {
@@ -138,7 +138,6 @@ public class GamePlayer {
                     world.playSound(getPlayer().getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0f, 1.0f);
                 }
             }
-
         }
     }
 
@@ -335,6 +334,14 @@ public class GamePlayer {
         return remainedErasureTick > 0;
     }
 
+    public @Nullable AbilityType getDoppelgangerHoldOriginAbility() {
+        return doppelgangerHoldOriginAbility;
+    }
+
+    public void setDoppelgangerHoldOriginAbility(@Nullable AbilityType doppelgangerHoldOriginAbility) {
+        this.doppelgangerHoldOriginAbility = doppelgangerHoldOriginAbility;
+    }
+
     protected void tick() {
         Player player = getPlayer();
         updateBorderOutside();
@@ -391,6 +398,10 @@ public class GamePlayer {
                 resetFirstElytra();
                 return;
             }
+            if (!player.isGliding()) {
+                resetFirstElytra();
+                return;
+            }
             if (!player.isInsideVehicle()) {
                 player.setGliding(true);
             }
@@ -418,7 +429,10 @@ public class GamePlayer {
         elytra.setItemMeta(meta);
         player.getInventory().setChestplate(elytra);
         player.setGliding(true);
-        firstElytraFlag = true;
+
+        // 0 tickだとgamePlayer#tick()内でonGroundが更新される前にリセットされてしまうので
+        // onGroundが更新されてからフラグを立てる
+        Bukkit.getScheduler().runTaskLater(gutitubow, () -> firstElytraFlag = true, 1L);
     }
 
     public void resetFirstElytra() {
@@ -456,7 +470,7 @@ public class GamePlayer {
         if (game.isStarted() && event.getItemDrop().getItemStack().getType() == Material.POTION) {
             Player player = event.getPlayer();
             GutitubowGameMode gameMode = game.getGameSetting().getGameMode();
-            if (!game.getPlayers().contains(player.getUniqueId())) return;
+            if (!game.getPlayers().contains(this)) return;
 
             if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
                 GameTeam team = game.getGameTeam(player);
@@ -464,19 +478,19 @@ public class GamePlayer {
                     event.setCancelled(true);
                     return;
                 }
-                List<UUID> aliveTeammates = team.getAlivePlayersWithout(playerUUID);
+                List<GamePlayer> aliveTeammates = team.getAlivePlayersWithout(playerUUID);
                 if (aliveTeammates.isEmpty()) {
                     if (!team.getPlayersWithout(playerUUID).isEmpty())
                         player.sendMessage(Component.text("チームメイトが全員ダウンしています！！\nダウンしているチームメイトにアイテムを渡すことはできません").color(NamedTextColor.RED));
                     event.setCancelled(true);
                     return;
                 }
-                for (UUID uuid : aliveTeammates) {
-                    Player teammate = Bukkit.getPlayer(uuid);
+                for (GamePlayer gamePlayer : aliveTeammates) {
+                    Player teammate = gamePlayer.getPlayer();
                     if (teammate == null) continue;
                     GamePlayer gameTeammate = getGame().getGamePlayer(teammate);
                     if (!gameTeammate.hasEmptySlot()) continue;
-                    giveItem(teammate, event.getItemDrop().getItemStack(), true, true);
+                    giveItem(teammate, event.getItemDrop().getItemStack());
                     event.getItemDrop().remove();
                     return;
                 }
@@ -561,11 +575,10 @@ public class GamePlayer {
                 player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.0f, 1.0f);
             }
         } else if (revivingTick >= REVIVE_TICK) {
-            for (UUID uuid : team.getDeadPlayers()) {
-                Player deadTeammate = Bukkit.getPlayer(uuid);
-                if (deadTeammate == null || !deadTeammate.isOnline()) continue;
-                GamePlayer deadTeammateGameplayer = getGame().getGamePlayer(deadTeammate);
-                deadTeammateGameplayer.revive(player);
+            for (GamePlayer gamePlayer : team.getDeadPlayers()) {
+                Player deadTeammate = gamePlayer.getPlayer();
+                if (deadTeammate == null) continue;
+                game.revive(deadTeammate, player);
             }
             Inventory inventory = player.getInventory();
             List<Integer> slots = List.of(8, 7, 6, 5, 4, 3, 2, 1, 0, 35, 34, 33, 32, 31, 30, 29, 28, 27, -106);
@@ -584,8 +597,8 @@ public class GamePlayer {
                 NamedTextColor.GRAY
         );
         player.sendActionBar(Component.text("味方復活中... ").color(NamedTextColor.GREEN).append(gauge));
-        for (UUID uuid : team.getDeadPlayers()) {
-            Player deadTeammate = Bukkit.getPlayer(uuid);
+        for (GamePlayer gamePlayer : team.getDeadPlayers()) {
+            Player deadTeammate = gamePlayer.getPlayer();
             if (deadTeammate == null || !deadTeammate.isOnline()) continue;
             Title title = Title.title(
                     Component.empty(),
@@ -621,8 +634,7 @@ public class GamePlayer {
                 NamedTextColor.GREEN,
                 NamedTextColor.GRAY
         );
-        List<UUID> aliveOtherPlayers = gameTeam.getAlivePlayersWithout(playerUUID);
-        if (aliveOtherPlayers.isEmpty()) {
+        if (gameTeam.getAlivePlayersWithout(playerUUID).isEmpty()) {
             message = Component.text("テレポート可能なチームメイトがいません！").color(NamedTextColor.RED);
         }
         player.sendActionBar(message);
@@ -633,11 +645,11 @@ public class GamePlayer {
         GameTeam gameTeam = getTeam();
         if (gameTeam == null || player == null) return;
 
-        List<UUID> aliveOtherPlayers = gameTeam.getAlivePlayersWithout(playerUUID);
+        List<GamePlayer> aliveOtherPlayers = gameTeam.getAlivePlayersWithout(playerUUID);
         Player teleportTeammate = null;
         double teleportTeammateDistance = 999999999;
-        for (UUID uuid : aliveOtherPlayers) {
-            Player teammate = Bukkit.getPlayer(uuid);
+        for (GamePlayer gamePlayer : aliveOtherPlayers) {
+            Player teammate = gamePlayer.getPlayer();
             if (teammate == null) continue;
             double distance = player.getLocation().distance(teammate.getLocation());
             if (distance < teleportTeammateDistance) {
@@ -652,21 +664,18 @@ public class GamePlayer {
         teleportTeammate.sendMessage(Component.text("§6[!] §a味方がテレポートしてきた！"));
     }
 
-    private void giveItem(Player receiver, ItemStack itemStack, boolean showReceiverMessage, boolean showSenderMessage) {
+    private void giveItem(Player receiver, ItemStack itemStack) {
         GamePlayer receiverGameplayer = game.getGamePlayer(receiver);
         Player player = getPlayer();
         if (player == null) return;
         if (receiverGameplayer.hasEmptySlot()) {
-            double distance = 0;
+            double distance;
             distance = Math.floor(getPlayer().getLocation().distance(receiver.getLocation()) * 10) / 10;
-            if (showSenderMessage)
-                player.sendMessage(Component.text("§6[!] §a" + receiver.getName() + "にアイテムを渡した! (" + distance + "m)"));
-            if (showReceiverMessage)
-                receiver.sendMessage(Component.text("§6[!] §a" + getPlayer().getName() + "からアイテムを受け取った! (" + distance + "m)"));
+            player.sendMessage(Component.text("§6[!] §a" + receiver.getName() + "にアイテムを渡した! (" + distance + "m)"));
+            receiver.sendMessage(Component.text("§6[!] §a" + getPlayer().getName() + "からアイテムを受け取った! (" + distance + "m)"));
             receiver.give(itemStack);
         } else {
-            if (showSenderMessage)
-                player.sendMessage(Component.text("チームメイトのインベントリに空きがありません！！").color(NamedTextColor.RED));
+            player.sendMessage(Component.text("チームメイトのインベントリに空きがありません！！").color(NamedTextColor.RED));
         }
     }
 
@@ -701,21 +710,17 @@ public class GamePlayer {
         double newAmount = event.getAmount();
 
         if (player.getHealth() + player.getAbsorptionAmount() <= newAmount) {
-            GamePlayerDeathEvent deathEvent = new GamePlayerDeathEvent(player, damageSource);
-            Bukkit.getPluginManager().callEvent(deathEvent);
-            if (deathEvent.isCancelled()) return;
+            boolean success = game.kill(this, damageSource);
+            if (success) {
+                onDeath();
+                if (attacker != null) {
+                    GamePlayer attackerGamePlayer = getGame().getGamePlayer(attacker);
+                    GamePlayerKillEvent killEvent = new GamePlayerKillEvent(attacker, player, attackerGamePlayer, this, damageSource, Component.text("You killed it!").color(NamedTextColor.DARK_RED).decoration(TextDecoration.BOLD, true));
+                    Bukkit.getPluginManager().callEvent(killEvent);
 
-            onDeath();
-            if (attacker != null) {
-                GamePlayerKillEvent killEvent = new GamePlayerKillEvent(attacker, player, damageSource, Component.text("You killed it!").color(NamedTextColor.DARK_RED).decoration(TextDecoration.BOLD, true));
-                Bukkit.getPluginManager().callEvent(killEvent);
-
-                GamePlayer attackerGamePlayer = getGame().getGamePlayer(attacker);
-                attackerGamePlayer.onKill(killEvent);
-
-
+                    attackerGamePlayer.onKill(killEvent);
+                }
             }
-
         } else {
             player.damage(newAmount);
             GamePlayerDamageEvent damageEvent = new GamePlayerDamageEvent(player, newAmount, damageSource, event.getHitMessage());
@@ -802,7 +807,6 @@ public class GamePlayer {
 
         if (game.isStarted()) {
             player.setGameMode(GameMode.SPECTATOR);
-            game.addDeadPlayer(player);
 
             GutitubowGameMode gameMode = game.getGameSetting().getGameMode();
             if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
@@ -810,8 +814,8 @@ public class GamePlayer {
                 if (team != null) {
 
                     boolean isEliminated = team.isEliminated();
-                    for (UUID uuid : team.getPlayersWithout(playerUUID)) {
-                        Player teammate = Bukkit.getPlayer(uuid);
+                    for (GamePlayer gamePlayer : team.getPlayersWithout(playerUUID)) {
+                        Player teammate = gamePlayer.getPlayer();
                         if (teammate != null) {
                             teammate.sendTitlePart(TitlePart.TIMES, Title.Times.times(
                                     java.time.Duration.ofMillis(500),
@@ -851,27 +855,5 @@ public class GamePlayer {
             double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getBaseValue();
             player.setHealth(maxHealth);
         }
-        if (game.isStarted()) game.checkGameOver();
-    }
-
-    public void revive(Player reviver) {
-        Player player = getPlayer();
-        if (player == null) return;
-        World world = player.getWorld();
-
-        game.addRevivePlayer(player);
-        player.setGameMode(GameMode.ADVENTURE);
-        if (player.getUniqueId() != reviver.getUniqueId()) player.teleport(reviver);
-        LogManager.broadcastReviveLog(player, reviver);
-        player.getWorld().playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1.0f, 1.0f);
-
-        PotionEffect health = new PotionEffect(PotionEffectType.INSTANT_HEALTH, 1, 255, true, false, false);
-        player.addPotionEffect(health);
-
-        Firework firework = world.spawn(player.getLocation().add(0.0, 1.5, 0.0), Firework.class);
-        FireworkMeta meta = firework.getFireworkMeta();
-        meta.addEffect(FireworkEffect.builder().withColor(Color.AQUA).with(FireworkEffect.Type.BALL).build());
-        meta.setPower(0);
-        firework.setFireworkMeta(meta);
     }
 }

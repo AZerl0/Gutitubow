@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.ability;
 
+import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
 import org.bukkit.Material;
@@ -35,6 +36,11 @@ public class AbilityManager {
     @Nullable
     public Ability getAbility(UUID playerUUID) {
         return abilities.get(playerUUID);
+    }
+
+    @Nullable
+    public Ability getAbility(GamePlayer gamePlayer) {
+        return abilities.get(gamePlayer.getPlayerUUID());
     }
 
     public Set<UUID> getKeySet() {

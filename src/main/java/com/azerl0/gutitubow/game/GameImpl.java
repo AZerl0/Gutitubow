@@ -3,13 +3,17 @@ package com.azerl0.gutitubow.game;
 import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.GutitubowManagers;
 import com.azerl0.gutitubow.ability.*;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.arena.Arena;
+import com.azerl0.gutitubow.damage.DamageSource;
 import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.carepackage.CarePackage;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.debug.DebugManager;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerWinEvent;
 import com.azerl0.gutitubow.gui.guis.GameMapSelectorGUI;
+import com.azerl0.gutitubow.manager.LogManager;
 import com.azerl0.gutitubow.scoreboard.PlayerBoard;
 import com.azerl0.gutitubow.scoreboard.PlayerBoardManager;
 import com.azerl0.gutitubow.scoreboard.ScoreboardManager;
@@ -33,8 +37,12 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
@@ -44,26 +52,26 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.*;
 
-public class Game {
+public class GameImpl implements Game {
+    public final int LAST_PHASE_CYCLE_TICK = 15 * 20;
+
     private final Gutitubow gutitubow;
     private final GameSetting gameSetting = new GameSetting();
     private boolean started;
     private int nextTick;
     private int currentTicks;
     private GamePhase gamePhase;
-    private Set<UUID> players;
-    private final Set<UUID> alivePlayers = new HashSet<>();
-    private final List<UUID> deathOrder = new ArrayList<>();
+    private Set<GamePlayer> players;
+    private final Set<GamePlayer> alivePlayers = new HashSet<>();
+    private final List<GamePlayer> deathOrder = new ArrayList<>();
     private final BossBar bossBar = BossBar.bossBar(Component.text(""), 0.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
     private Arena arena;
     private GameMap gameMap;
-    private final int LAST_PHASE_CYCLE_TICK = 15 * 20;
     private Location safeArea;
     private Location oldSafeArea;
     private final GameMapSelectorGUI gameMapSelectorGUI;
     private final GutitubowManagers gutitubowManagers;
     private final GamePlayerManager gamePlayerManager;
-    private final AbilityManager abilityManager;
     private final DebugManager debugManager;
     private final MapRepairManager mapRepairManager = new MapRepairManager();
     private final GlassBreakManager glassBreakManager = new GlassBreakManager(mapRepairManager);
@@ -72,58 +80,62 @@ public class Game {
     private final TeamManager teamManager;
     private final SpectatorManager spectatorManager = new SpectatorManager();
 
-    public Game(
-            Gutitubow gutitubow,
-            DebugManager debugManager,
-            GutitubowManagers gutitubowManagers
+    public GameImpl(
+            Gutitubow gutitubow
     ) {
         this.gutitubow = gutitubow;
-        this.gutitubowManagers = gutitubowManagers;
-        this.debugManager = debugManager;
-        AbilityContext abilityContext = new AbilityContext(gutitubow, this, gutitubowManagers);
-        this.abilityManager = new AbilityManager(abilityContext);
+        this.gutitubowManagers = gutitubow.getGutitubowManagers();
+        this.debugManager = gutitubow.getGutitubowManagers().getDebugManager();
         this.gamePlayerManager = new GamePlayerManager(gutitubow, this);
         this.scoreboardManager = gutitubowManagers.getScoreboardManager();
-        this.playerBoardManager = new PlayerBoardManager(scoreboardManager);
+        this.playerBoardManager = new PlayerBoardManager(gutitubow, scoreboardManager);
         this.teamManager = new TeamManager(this);
         gameMapSelectorGUI = new GameMapSelectorGUI(this);
         reset();
     }
 
+    @Override
     public @NotNull GameSetting getGameSetting() {
         return gameSetting;
     }
 
+    @Override
     public @NotNull GamePlayer getGamePlayer(@NotNull Player player) {
         return gamePlayerManager.getGamePlayer(player);
     }
 
-    public @Nullable GamePlayer getGamePlayer(UUID uuid) {
+    @Override
+    public @Nullable GamePlayer getGamePlayer(@NotNull UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return null;
         return getGamePlayer(player);
     }
 
-    public @Nullable GameTeam getGameTeam(Player player) {
+    @Override
+    public @Nullable GameTeam getGameTeam(@NotNull Player player) {
         return teamManager.getPlayerTeam(player);
     }
 
-    public @Nullable GameTeam getGameTeam(UUID uuid) {
+    @Override
+    public @Nullable GameTeam getGameTeam(@NotNull UUID uuid) {
         return teamManager.getPlayerTeam(uuid);
     }
 
-    public boolean isGamePlayer(Player player) {
-        return getPlayers().contains(player.getUniqueId());
+    @Override
+    public boolean isThisGamePlaying(@NotNull Player player) {
+        return getPlayers().contains(getGamePlayer(player));
     }
 
-    public boolean isTeammate(Player player, Player target) {
+    @Override
+    public boolean isTeammate(@NotNull Player player, @NotNull Player target) {
         if (player.getUniqueId() == target.getUniqueId()) return true;
         GameTeam gameTeam = getGameTeam(player);
         if (gameTeam == null) return false;
         return gameTeam.isTeammate(target);
     }
 
-    public boolean isTeammate(UUID player, UUID target) {
+    @Override
+    public boolean isTeammate(@NotNull UUID player, @NotNull UUID target) {
         if (player == target) return true;
         GameTeam gameTeam = getGameTeam(player);
         if (gameTeam == null) return false;
@@ -131,11 +143,13 @@ public class Game {
 
     }
 
+    @Override
     public boolean isStarted() {
         return started;
     }
 
-    public GameStartResult start() {
+    @Override
+    public @NotNull GameStartResult start() {
         if (gameMap == null || arena == null) return GameStartResult.MAP_IS_NULL;
         Bukkit.getServer().broadcast(Component.text("start"));
         started = true;
@@ -143,58 +157,59 @@ public class Game {
         players.clear();
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             if (getSpectatorManager().isSpectator(player)) continue;
-            players.add(player.getUniqueId());
+            players.add(getGamePlayer(player));
         }
 
         return GameStartResult.SUCCESS;
     }
 
 
-
-    public GamePhase getPhase() {
+    @Override
+    public @NotNull GamePhase getPhase() {
         return gamePhase;
     }
 
+    @Override
     public boolean isFinalPhase() {
         return getPhase() == GamePhase.FINAL_PHASE;
     }
 
-    public Location getSafeArea() {
+    @Override
+    public @NotNull Location getSafeArea() {
         return safeArea.clone();
     }
 
+    @Override
     public boolean isShrinking() {
         return gamePhase.isShrinking();
     }
 
-    public double getProgress() {
-        return (double) this.currentTicks / (double) this.nextTick;
+    @Override
+    public float getPhaseProgress() {
+        return (float) this.currentTicks / (float) this.nextTick;
     }
 
-    public Set<UUID> getPlayers() {
-        return this.players;
+    @Override
+    public @NotNull Set<GamePlayer> getPlayers() {
+        return players;
     }
 
-    public Set<GamePlayer> getCurrentGamePlayers() {
-        Set<GamePlayer> gamePlayers = new HashSet<>();
-        getPlayers().forEach(uuid -> gamePlayers.add(getGamePlayer(uuid)));
-        return gamePlayers;
-    }
-
-    public Set<GamePlayer> getAllGamePlayers() {
+    @Override
+    public @NotNull Set<GamePlayer> getAllGamePlayers() {
         return gamePlayerManager.getGamePlayers();
     }
 
-    public Set<UUID> getAlivePlayers() {
-        return this.alivePlayers;
+    @Override
+    public @NotNull Set<GamePlayer> getAlivePlayers() {
+        return alivePlayers;
     }
 
-    public List<GamePlayer> getDeadPlayer() {
-        List<GamePlayer> deadPlayers = new ArrayList<>();
-        deathOrder.forEach(uuid -> deadPlayers.add(getGamePlayer(uuid)));
-        return deadPlayers;
+    @Override
+    public @NotNull List<GamePlayer> getDeadPlayers() {
+        return new ArrayList<>(deathOrder);
     }
 
+    @Override
     public void setGameMode(GutitubowGameMode gameMode) {
         if (getGameSetting().getGameMode() != gameMode) {
             if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
@@ -205,14 +220,15 @@ public class Game {
         }
     }
 
+    @Override
     public void reset() {
         this.started = false;
         this.nextTick = 11 * 20;
         this.currentTicks = 0;
         gamePhase = GamePhase.UNPLAYED;
-        this.players = new java.util.HashSet<>();
-        this.alivePlayers.clear();
-        this.deathOrder.clear();
+        players = new java.util.HashSet<>();
+        alivePlayers.clear();
+        deathOrder.clear();
         this.bossBar.progress(0.0f);
         this.bossBar.color(BossBar.Color.BLUE);
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
@@ -222,8 +238,8 @@ public class Game {
             gamePlayer.updatePlayerBoard();
             GameTeam gameTeam = gamePlayer.getTeam();
             if (gameTeam != null) {
-                for (UUID uuid : gameTeam.getPlayersWithout(player.getUniqueId())) {
-                    Player teammate = Bukkit.getPlayer(uuid);
+                for (GamePlayer otherGamePlayer : gameTeam.getPlayersWithout(player.getUniqueId())) {
+                    Player teammate = otherGamePlayer.getPlayer();
                     if (teammate != null) gutitubowManagers.getGlowManager().removeGlow(player, teammate);
                 }
             }
@@ -279,17 +295,17 @@ public class Game {
         resetSoloPlayerTeams();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.showBossBar(this.bossBar);
-            if (!players.contains(player.getUniqueId())) {
+            showBossBar(player);
+            if (!players.contains(getGamePlayer(player))) {
                 player.setGameMode(GameMode.SPECTATOR);
             }
         }
 
         // ゲームプレイヤーの処理
-        for (UUID uuid : this.players) {
-            Player player = Bukkit.getPlayer(uuid);
+        for (GamePlayer gamePlayer : players) {
+            Player player = gamePlayer.getPlayer();
             if (player == null || !player.isOnline()) continue;
-            alivePlayers.add(uuid);
+            alivePlayers.add(gamePlayer);
             Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(gameSetting.getDefaultHealth());
             player.setHealth(gameSetting.getDefaultHealth());
             if (!debugManager.isNoStartTeleport()) {
@@ -299,8 +315,6 @@ public class Game {
                 location.getDirection().setY(0);
                 player.teleport(location);
             }
-
-            GamePlayer gamePlayer = gamePlayerManager.getGamePlayer(player);
 
             gamePlayer.resetMaxArrowStackSize();
             gamePlayer.resetArrowReloadTick();
@@ -322,6 +336,7 @@ public class Game {
             AbilityType ability = abilitySelector.nextAbility();
             if (gameSetting.getSingleAbility() != null) ability = gameSetting.getSingleAbility();
 
+            AbilityManager abilityManager = gutitubowManagers.getAbilityManager();
             abilityManager.setAbility(player, ability);
             abilityManager.setDisplayItem(player, ability, 13);
 
@@ -347,9 +362,9 @@ public class Game {
                 if (gameTeam == null) continue;
                 if (teamManager.isJumpMaster(player)) {
                     Player topPlayer = player;
-                    for (UUID teamPlayerUUID : gameTeam.getPlayers()) {
-                        if (teamPlayerUUID == player.getUniqueId()) continue;
-                        Player teammate = Bukkit.getPlayer(teamPlayerUUID);
+                    for (GamePlayer teamPlayer : gameTeam.getPlayers()) {
+                        if (teamPlayer.getPlayerUUID().equals(player.getUniqueId())) continue;
+                        Player teammate = teamPlayer.getPlayer();
                         if (teammate == null || !teammate.isOnline()) continue;
                         if (!debugManager.isNoStartTeleport()) topPlayer.addPassenger(teammate);
                         topPlayer = teammate;
@@ -359,8 +374,8 @@ public class Game {
             }
 
             // 他のプレイヤーへの処理
-            for (UUID otherPlayerUUID : players) {
-                Player otherPlayer = Bukkit.getPlayer(otherPlayerUUID);
+            for (GamePlayer otherGamePlayer : players) {
+                Player otherPlayer = otherGamePlayer.getPlayer();
                 if (otherPlayer != null && player.getUniqueId() != otherPlayer.getUniqueId()) {
                     if (!teamManager.isTeammate(player, otherPlayer)) {
                         player.hidePlayer(gutitubow, otherPlayer);
@@ -396,12 +411,12 @@ public class Game {
         switch (gamePhase) {
             case PHASE1 -> {
                 if (this.currentTicks == 0 || this.currentTicks == 60 * 20 || this.currentTicks == 120 * 20) {
-                    randomCarePackageSpawn(gameSetting.getCarePackageAmount(), true);
+                    randomCarePackageSpawn(gameSetting.getCarePackageAmount());
                 }
             }
             case PHASE2, PHASE3 -> {
                 if (this.currentTicks == 0 || this.currentTicks == 60 * 20) {
-                    randomCarePackageSpawn(gameSetting.getCarePackageAmount(), true);
+                    randomCarePackageSpawn(gameSetting.getCarePackageAmount());
                 }
             }
         }
@@ -416,7 +431,7 @@ public class Game {
         }
 
         // ボスバーの表示更新
-        this.bossBar.progress((float) (isFinalPhase() ? 0.0 : 1.0 - this.getProgress()));
+        this.bossBar.progress((float) (isFinalPhase() ? 0.0 : 1.0 - this.getPhaseProgress()));
 
         int remainedSeconds = (this.nextTick - this.currentTicks) / 20;
         String remainedText = gamePhase == GamePhase.PHASE0 ? "セーフエリア決定まで後 " : isShrinking() ? "次のフェーズまで後 " : "縮小開始まで後 ";
@@ -458,9 +473,9 @@ public class Game {
             }
 
             if (gamePhase == GamePhase.PHASE0 && (currentTicks + 10) % 20 == 0) {
-                for (UUID uuid : alivePlayers) {
-                    Player target = Bukkit.getPlayer(uuid);
-                    if (target != null && uuid != player.getUniqueId() && !teamManager.isTeammate(player, target)) {
+                for (GamePlayer gamePlayer : alivePlayers) {
+                    Player target = gamePlayer.getPlayer();
+                    if (target != null && !player.getUniqueId().equals(gamePlayer.getPlayerUUID()) && !teamManager.isTeammate(player, target)) {
                         Location base = target.getLocation();
                         player.spawnParticle(
                                 Particle.SMOKE,
@@ -532,16 +547,14 @@ public class Game {
         return 0.0f;
     }
 
-    private void randomCarePackageSpawn(int count, boolean showLog) {
-        if (showLog) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                player.sendMessage(Component.empty());
-                player.sendMessage(Component.text("[!] ケアパッケージが投下されました！").color(NamedTextColor.RED));
-                player.sendMessage(Component.empty());
-                NamespacedKey recipeKey = new NamespacedKey("minecraft", "chest");
-                player.undiscoverRecipe(recipeKey);
-                player.discoverRecipe(recipeKey);
-            }
+    private void randomCarePackageSpawn(int count) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.sendMessage(Component.empty());
+            player.sendMessage(Component.text("[!] ケアパッケージが投下されました！").color(NamedTextColor.RED));
+            player.sendMessage(Component.empty());
+            NamespacedKey recipeKey = new NamespacedKey("minecraft", "chest");
+            player.undiscoverRecipe(recipeKey);
+            player.discoverRecipe(recipeKey);
         }
         for (int i = 0; i < count; i++) {
             Location location = MathUtil.randomLocation(safeArea, getNextSafeAreaSize() - 10);
@@ -621,8 +634,8 @@ public class Game {
                 );
             }
             if (gamePhase == GamePhase.PHASE1 && !isShrinking()) {
-                for (UUID uuid : players) {
-                    Player target = Bukkit.getPlayer(uuid);
+                for (GamePlayer gamePlayer : players) {
+                    Player target = gamePlayer.getPlayer();
                     if (target != null) {
                         player.showPlayer(gutitubow, target);
                     }
@@ -672,6 +685,7 @@ public class Game {
         };
     }
 
+    @Override
     public double getNextSafeAreaSize() {
         return switch (gamePhase) {
             case PHASE0, PHASE1, PHASE1_SHRINKING -> 150;
@@ -683,28 +697,63 @@ public class Game {
         };
     }
 
-    public void addDeadPlayer(Player player) {
-        UUID uuid = player.getUniqueId();
-        alivePlayers.remove(uuid);
-        if (deathOrder.contains(uuid)) return;
-        deathOrder.remove(uuid);
-        deathOrder.add(uuid);
+    @Override
+    public boolean kill(@NotNull GamePlayer gamePlayer, @NotNull DamageSource damageSource) {
+        GamePlayerDeathEvent deathEvent = new GamePlayerDeathEvent(gamePlayer, damageSource);
+        Bukkit.getPluginManager().callEvent(deathEvent);
+        if (deathEvent.isCancelled()) return false;
+
+        alivePlayers.remove(gamePlayer);
+        if (!deathOrder.contains(gamePlayer)) {
+            deathOrder.remove(gamePlayer);
+            deathOrder.add(gamePlayer);
+        }
+
+        if (!debugManager.isDisableSoloModePin() && isStarted()) checkGameOver();
+
+
+        return true;
     }
 
-    public void addRevivePlayer(Player player) {
-        UUID uuid = player.getUniqueId();
-        alivePlayers.add(uuid);
-        deathOrder.remove(uuid);
+    @Override
+    public void revive(@NotNull final Player player, @NotNull final Player reviver) {
+        GamePlayer gamePlayer = getGamePlayer(player);
+        GamePlayer reviverGamePlayer = getGamePlayer(reviver);
+        World world = player.getWorld();
+
+        alivePlayers.add(gamePlayer);
+        deathOrder.remove(gamePlayer);
+
+        player.setGameMode(GameMode.ADVENTURE);
+        if (player.getUniqueId() != reviver.getUniqueId()) player.teleport(reviver);
+        LogManager.broadcastReviveLog(player, reviver);
+        player.getWorld().playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1.0f, 1.0f);
+
+        PotionEffect health = new PotionEffect(PotionEffectType.INSTANT_HEALTH, 1, 255, true, false, false);
+        player.addPotionEffect(health);
+
+        // Firework
+        Firework firework = world.spawn(player.getLocation().add(0.0, 1.5, 0.0), Firework.class);
+        FireworkMeta meta = firework.getFireworkMeta();
+        meta.addEffect(FireworkEffect.builder().withColor(Color.AQUA).with(FireworkEffect.Type.BALL).build());
+        meta.setPower(0);
+        firework.setFireworkMeta(meta);
     }
 
+    @Override
+    public void reviveSilent(@NotNull GamePlayer gamePlayer) {
+        alivePlayers.add(gamePlayer);
+        deathOrder.remove(gamePlayer);
+    }
+
+    @Override
     public void checkGameOver() {
-        if (debugManager.isDisableCheckGameOver()) return;
         if (alivePlayers.isEmpty()) {
             gameOver();
         } else {
             GutitubowGameMode gameMode = getGameSetting().getGameMode();
             if (gameMode == GutitubowGameMode.SOLO) {
-                if (alivePlayers.size() == 1) gameOver(Bukkit.getPlayer(alivePlayers.iterator().next()));
+                if (alivePlayers.size() == 1) gameOver(alivePlayers.iterator().next().getPlayer());
             } else if (gameMode == GutitubowGameMode.DUO || gameMode == GutitubowGameMode.TRIO) {
                 if (teamManager.getAliveTeams().size() == 1) {
                     GameTeam winTeam = teamManager.getAliveTeams().stream().toList().getFirst();
@@ -714,11 +763,13 @@ public class Game {
         }
     }
 
-    public void showBossBar(Player player) {
+    @Override
+    public void showBossBar(@NotNull Player player) {
         player.showBossBar(bossBar);
     }
 
-    public void hideBossBar(Player player) {
+    @Override
+    public void hideBossBar(@NotNull Player player) {
         player.hideBossBar(bossBar);
     }
 
@@ -762,10 +813,10 @@ public class Game {
         gameOver();
         Component playersName = Component.empty();
 
-        Iterator<UUID> teamPlayers = team.getPlayers().iterator();
+        Iterator<GamePlayer> teamPlayers = team.getPlayers().iterator();
         while (teamPlayers.hasNext()) {
-            UUID uuid = teamPlayers.next();
-            Player winteamPlayer = Bukkit.getPlayer(uuid);
+            GamePlayer gamePlayer = teamPlayers.next();
+            Player winteamPlayer = gamePlayer.getPlayer();
             if (winteamPlayer != null) {
                 playersName = playersName.append(Component.text(winteamPlayer.getName()));
                 if (teamPlayers.hasNext()) playersName = playersName.append(Component.text(" & "));
@@ -786,18 +837,18 @@ public class Game {
 
         Component rankingComponent = Component.empty();
 
-        for (UUID uuid : team.getPlayers()) {
-            Player teamPlayer = Bukkit.getPlayer(uuid);
-            boolean isLast = uuid == team.getPlayers().getLast();
+        for (GamePlayer gamePlayer : team.getPlayers()) {
+            Player teamPlayer = gamePlayer.getPlayer();
+            boolean isLast = gamePlayer == team.getPlayers().getLast();
             rankingComponent = rankingComponent.append(getRankingPlayerComponent(teamPlayer, 1, team.getTeamColor()));
             if (!isLast) rankingComponent = rankingComponent.append(Component.text("\n"));
         }
 
         int rank = 2;
-        List<UUID> otherPlayers = new ArrayList<>(deathOrder.reversed());
+        List<GamePlayer> otherPlayers = new ArrayList<>(deathOrder.reversed());
         otherPlayers.removeAll(team.getPlayers());
-        for (UUID uuid : otherPlayers) {
-            Player player = Bukkit.getPlayer(uuid);
+        for (GamePlayer otherGamePlayer : otherPlayers) {
+            Player player = otherGamePlayer.getPlayer();
             if (player == null) continue;
             rankingComponent = rankingComponent.append(Component.text("\n"));
             rankingComponent = rankingComponent.append(getRankingPlayerComponent(player, rank, team.getTeamColor()));
@@ -813,12 +864,13 @@ public class Game {
     }
 
     private Component getRankingComponent(Player winner) {
-        deathOrder.add(winner.getUniqueId());
+        GamePlayer winnerGamePlayer = getGamePlayer(winner);
+        deathOrder.add(winnerGamePlayer);
 
         Component rankingComponent = Component.text("");
 
         for (int i = 0; i < deathOrder.size(); i++) {
-            Player player = Bukkit.getPlayer(deathOrder.reversed().get(i));
+            Player player = deathOrder.reversed().get(i).getPlayer();
             boolean isLast = i == deathOrder.size() - 1;
 
             if (player != null) {
@@ -871,32 +923,13 @@ public class Game {
         player.showTitle(title);
     }
 
-
+    @Override
     public @NotNull MapRepairManager getMapRepairManager() {
         return this.mapRepairManager;
     }
 
-    public @NotNull GlassBreakManager getGlassBreakManager() {
-        return this.glassBreakManager;
-    }
-
-    public @NotNull AbilityManager getAbilityManager() {
-        return this.abilityManager;
-    }
-
-    public TeamManager getTeamManager() {
-        return teamManager;
-    }
-
-    public SpectatorManager getSpectatorManager() {
-        return spectatorManager;
-    }
-
-    public @NotNull DebugManager getDebugManager() {
-        return debugManager;
-    }
-
-    public boolean isInsideNextSafeArea(Location loc) {
+    @Override
+    public boolean isInsideNextSafeArea(@NotNull Location loc) {
 
         if (!loc.getWorld().equals(safeArea.getWorld())) return false;
         GamePhase nextGamePhase = switch (gamePhase) {
@@ -911,22 +944,25 @@ public class Game {
         return Math.abs(loc.getX() - nextPhaseSafeAreaLoc.getX()) <= getNextSafeAreaSize() / 2 && Math.abs(loc.getZ() - nextPhaseSafeAreaLoc.getZ()) <= getNextSafeAreaSize() / 2;
     }
 
-    public PlayerBoard getPlayerBoard(GamePlayer gamePlayer) {
+    @Override
+    public PlayerBoard getPlayerBoard(@NotNull GamePlayer gamePlayer) {
         return playerBoardManager.getPlayerBoard(gamePlayer);
     }
 
-    public void onDisablePlugin() {
+    @Override
+    public void destroy() {
         reset();
-        abilityManager.allResetAbilities();
         teamManager.removeAllTeam();
         if (arena != null) gutitubowManagers.getArenaManager().destroy(arena);
     }
 
+    @Override
     public GameMap getGameMap() {
         return gameMap;
     }
 
-    public void setGameMap(GameMap gameMap) {
+    @Override
+    public void setGameMap(@NotNull GameMap gameMap) {
         this.gameMap = gameMap;
          Location lobby = gameMap.getLobby();
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -942,10 +978,12 @@ public class Game {
         }
     }
 
+    @Override
     public @Nullable Arena getArena() {
         return arena;
     }
 
+    @Override
     public void resetArena() {
         if (arena == null) return;
 
@@ -981,8 +1019,29 @@ public class Game {
 
     }
 
-    public GameMapSelectorGUI getGameMapSelectorGUI() {
+    @Override
+    public @NotNull GameMapSelectorGUI getGameMapSelectorGUI() {
         return gameMapSelectorGUI;
+    }
+
+    @Override
+    public @NotNull GlassBreakManager getGlassBreakManager() {
+        return this.glassBreakManager;
+    }
+
+    @Override
+    public @NotNull TeamManager getTeamManager() {
+        return teamManager;
+    }
+
+    @Override
+    public @NotNull SpectatorManager getSpectatorManager() {
+        return spectatorManager;
+    }
+
+    @Override
+    public @NotNull GutitubowManagers getGutitubowManagers() {
+        return gutitubowManagers;
     }
 
 }

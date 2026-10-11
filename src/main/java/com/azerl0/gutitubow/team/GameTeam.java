@@ -1,7 +1,8 @@
 package com.azerl0.gutitubow.team;
 
-import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
+import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -20,7 +21,7 @@ public class GameTeam {
     private final Team team = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(this.toString());
     private final Game game;
     private @NotNull
-    final List<UUID> players = new ArrayList<>();
+    final List<GamePlayer> players = new ArrayList<>();
 
     public GameTeam(Component teamName, ItemStack teamIconItem, NamedTextColor teamColor, Game game) {
         this.teamName = teamName;
@@ -51,47 +52,50 @@ public class GameTeam {
     }
 
 
-    public @NotNull List<UUID> getPlayers() {
+    public @NotNull List<GamePlayer> getPlayers() {
         return players;
     }
 
-    public @NotNull List<UUID> getPlayersWithout(UUID uuid) {
-        List<UUID> withoutPlayers = new ArrayList<>(players);
-        withoutPlayers.remove(uuid);
+    public @NotNull List<GamePlayer> getPlayersWithout(UUID uuid) {
+        GamePlayer gamePlayer = game.getGamePlayer(uuid);
+        List<GamePlayer> withoutPlayers = new ArrayList<>(players);
+        withoutPlayers.remove(gamePlayer);
         return withoutPlayers;
     }
 
-    public @NotNull List<UUID> getAlivePlayers() {
-        List<UUID> alivePlayers = new ArrayList<>(players);
+    public @NotNull List<GamePlayer> getAlivePlayers() {
+        List<GamePlayer> alivePlayers = new ArrayList<>(players);
         alivePlayers.retainAll(game.getAlivePlayers());
         return alivePlayers;
     }
 
-    public @NotNull List<UUID> getAlivePlayersWithout(UUID uuid) {
-        List<UUID> alivePlayers = new ArrayList<>(getAlivePlayers());
-        alivePlayers.remove(uuid);
+    public @NotNull List<GamePlayer> getAlivePlayersWithout(UUID uuid) {
+        GamePlayer gamePlayer = game.getGamePlayer(uuid);
+        List<GamePlayer> alivePlayers = new ArrayList<>(getAlivePlayers());
+        alivePlayers.remove(gamePlayer);
         return alivePlayers;
     }
 
-    public List<UUID> getDeadPlayers() {
-        List<UUID> deadPlayers = new ArrayList<>(getPlayers());
+    public List<GamePlayer> getDeadPlayers() {
+        List<GamePlayer> deadPlayers = new ArrayList<>(getPlayers());
         deadPlayers.removeAll(game.getAlivePlayers());
         return deadPlayers;
     }
 
     public void addPlayer(Player player) {
-        if (players.contains(player.getUniqueId())) return;
-        players.add(player.getUniqueId());
+        GamePlayer gamePlayer = game.getGamePlayer(player);
+        if (players.contains(gamePlayer)) return;
+        players.add(gamePlayer);
         team.addPlayer(player);
     }
 
     public void removePlayer(Player player) {
-        players.remove(player.getUniqueId());
+        players.remove(game.getGamePlayer(player));
         team.removePlayer(player);
     }
 
     public boolean containsPlayer(Player player) {
-        return players.contains(player.getUniqueId());
+        return players.contains(game.getGamePlayer(player));
     }
 
     public boolean isTeammate(Player target) {
@@ -107,19 +111,20 @@ public class GameTeam {
     @Nullable
     public Player getJumpMaster() {
         if (players.isEmpty()) return null;
-        return Bukkit.getPlayer(players.getFirst());
+        return Bukkit.getPlayer(players.getFirst().getPlayerUUID());
     }
 
     public void setJumpMaster(Player player) {
         if (!containsPlayer(player)) return;
-        players.remove(player.getUniqueId());
-        players.addFirst(player.getUniqueId());
+        GamePlayer gamePlayer = game.getGamePlayer(player);
+        players.remove(gamePlayer);
+        players.addFirst(gamePlayer);
     }
 
     public boolean isThisTeamJumpMaster(Player player) {
         Player jumpMaster = getJumpMaster();
         if (jumpMaster == null) return false;
-        return jumpMaster.getUniqueId() == player.getUniqueId();
+        return jumpMaster.getUniqueId().equals(player.getUniqueId());
     }
 
     public boolean isEliminated() {

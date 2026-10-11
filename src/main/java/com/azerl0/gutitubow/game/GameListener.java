@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.game;
 import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.damage.DamageSource;
 import com.azerl0.gutitubow.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
@@ -66,11 +67,10 @@ public class GameListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (game.isStarted() && game.getAlivePlayers().contains(player.getUniqueId())) {
-            GamePlayer gamePlayer = game.getGamePlayer(player);
+        GamePlayer gamePlayer = game.getGamePlayer(player);
+        if (game.isStarted() && game.getAlivePlayers().contains(gamePlayer)) {
             DamageSource damageSource = DamageSource.builder(GutitubowDamageType.LOGOUT).build();
-            gamePlayer.damage(damageSource, 255);
-            game.addDeadPlayer(player);
+            game.kill(gamePlayer, damageSource);
         }
     }
 
@@ -195,8 +195,10 @@ public class GameListener implements Listener {
     @EventHandler
     public void onPlayerDeath(GamePlayerDeathEvent event) {
         if (event.isCancelled()) return;
+        Player deathPlayer = event.getGamePlayer().getPlayer();
+        if (deathPlayer == null) return;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            Component damageMessage = Message.getDeathMessage(event.getPlayer(), event.getDamageSource(), player);
+            Component damageMessage = Message.getDeathMessage(deathPlayer, event.getDamageSource(), player);
             if (damageMessage != null) player.sendMessage(damageMessage);
         }
     }
@@ -259,7 +261,7 @@ public class GameListener implements Listener {
             Player player = event.getPlayer();
             if (player.getGameMode() != GameMode.SPECTATOR) return;
             GamePlayer interactGamePlayer = game.getGamePlayer(inteactPlayer);
-            Ability ability = game.getAbilityManager().getAbility(inteactPlayer);
+            Ability ability = gutitubow.getGutitubowManagers().getAbilityManager().getAbility(inteactPlayer);
             Component abilityName = ability == null ? Component.text("なし") : ability.getType().getName();
             Component message = inteactPlayer.displayName().color(NamedTextColor.GREEN)
                     .append(Component.text("\n能力：").color(NamedTextColor.GOLD).append(abilityName))

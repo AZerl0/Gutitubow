@@ -113,7 +113,7 @@ public class SwapAbility extends Ability {
                     EntityType.SPECTRAL_ARROW
             ));
             if (!entityTypeSet.contains(entityType)) continue;
-            if (player.getUniqueId() == entity.getUniqueId()) continue;
+            if (player.getUniqueId().equals(entity.getUniqueId())) continue;
             if (EntityUtil.isInvalidHitEntity(entity)) continue;
             if (context.game().isStarted() && context.game().getPhase() == GamePhase.PHASE0) {
                 if (entity.getType() == EntityType.PLAYER) continue;

@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.scoreboard;
 
+import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -10,10 +11,12 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PlayerBoardManager {
+    private final Gutitubow gutitubow;
     private final ScoreboardManager scoreboardManager;
     private final Map<UUID, PlayerBoard> playerBoards = new HashMap<>();
 
-    public PlayerBoardManager(ScoreboardManager scoreboardManager) {
+    public PlayerBoardManager(Gutitubow gutitubow, ScoreboardManager scoreboardManager) {
+        this.gutitubow = gutitubow;
         this.scoreboardManager = scoreboardManager;
     }
 
@@ -26,7 +29,7 @@ public class PlayerBoardManager {
         } else {
             Player player = gamePlayer.getPlayer();
             if (player == null) return null;
-            PlayerBoard playerBoard = new PlayerBoard(gamePlayer, scoreboardManager.getScoreboard(player));
+            PlayerBoard playerBoard = new PlayerBoard(gutitubow, gamePlayer, scoreboardManager.getScoreboard(player));
             playerBoards.put(uuid, playerBoard);
             return playerBoard;
         }

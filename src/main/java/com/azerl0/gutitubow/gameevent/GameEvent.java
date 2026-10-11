@@ -15,7 +15,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public abstract class GameEvent {
+    protected final GameEventContext context;
     private boolean activated = false;
+
+    public GameEvent(GameEventContext context) {
+        this.context = context;
+    }
 
     public @NotNull
     abstract GameEventType getEventType();
@@ -35,8 +40,8 @@ public abstract class GameEvent {
     public final void activate(boolean playEffect) {
         if (activated) return;
         activated = true;
-        onActivate();
         if (playEffect && !overridePlayerEffect()) playActivateEffect(getEventType());
+        onActivate();
     }
 
     protected abstract void onActivate();
@@ -76,11 +81,12 @@ public abstract class GameEvent {
                     )
             );
             player.showTitle(title);
-            player.sendMessage(
-                    Component.text("[!] イベント発生 [!]\n").color(NamedTextColor.DARK_RED)
-                            .append(name.color(NamedTextColor.RED)).append(Component.text("\n"))
-                            .append(lore).color(NamedTextColor.WHITE)
-            );
+            Component message = Component.text("[!] イベント発生 [!]\n").color(NamedTextColor.DARK_RED);
+            message = message.append(name.color(NamedTextColor.RED).append(Component.text("\n")));
+            for (Component loreComponent : lore) {
+                message = message.append(loreComponent.color(NamedTextColor.WHITE).append(Component.text("\n")));
+            }
+            player.sendMessage(message);
             player.playSound(player, Sound.BLOCK_END_PORTAL_SPAWN, 0.7f, 1.0f);
         }
     }

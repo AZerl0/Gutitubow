@@ -118,7 +118,7 @@ public class GiantAbility extends Ability {
 
         double absorption = -4;
         for (Player nearPlayer : player.getLocation().getNearbyPlayers(50)) {
-            if (playerUUID == nearPlayer.getUniqueId()) continue;
+            if (playerUUID.equals(nearPlayer.getUniqueId())) continue;
             if (context.game().isTeammate(player, nearPlayer)) continue;
             absorption += 4;
         }

@@ -1,15 +1,14 @@
 package com.azerl0.gutitubow.gameplayer;
 
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerCreatePinEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreCreatePinEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
-import com.azerl0.gutitubow.game.Game;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
 import com.azerl0.gutitubow.pin.Pin;
 import com.azerl0.gutitubow.team.GameTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.damage.DamageType;
@@ -19,12 +18,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffectType;
-
-import java.util.UUID;
 
 public class GamePlayerListener implements Listener {
     private final Game game;
@@ -35,7 +30,7 @@ public class GamePlayerListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        GamePlayer gamePlayer = game.getGamePlayer(event.getPlayer());
+        game.getGamePlayer(event.getPlayer());
     }
 
     @EventHandler
@@ -49,7 +44,7 @@ public class GamePlayerListener implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player player)) return;
+        if (!(event.getEntity() instanceof Player)) return;
 
         if (event.getDamage() == 0.0) return;
 
@@ -82,7 +77,7 @@ public class GamePlayerListener implements Listener {
     @EventHandler
     public void onRide(VehicleEnterEvent event) {
         if (!(event.getEntered() instanceof Player player)) return;
-        if (game.isGamePlayer(player)) {
+        if (game.isThisGamePlaying(player)) {
             ItemStack chestplate = player.getInventory().getChestplate();
             if (chestplate.getType() == Material.ELYTRA) {
                 player.getInventory().setChestplate(ItemStack.of(Material.AIR));
@@ -93,7 +88,7 @@ public class GamePlayerListener implements Listener {
 
     @EventHandler
     public void onPreCreatePin(GamePlayerPreCreatePinEvent event) {
-        if (game.getDebugManager().isDisableSoloModePin() && game.getGameSetting().getGameMode() == GutitubowGameMode.SOLO) {
+        if (game.getGutitubowManagers().getDebugManager().isDisableSoloModePin() && game.getGameSetting().getGameMode() == GutitubowGameMode.SOLO) {
             event.setCancelled(true);
         }
     }
@@ -106,8 +101,8 @@ public class GamePlayerListener implements Listener {
             if (team == null) return;
             Pin pin = event.getPin();
 
-            for (UUID uuid : team.getPlayersWithout(event.getPlayer().getUniqueId())) {
-                Player teammate = Bukkit.getPlayer(uuid);
+            for (GamePlayer gamePlayer : team.getPlayersWithout(event.getPlayer().getUniqueId())) {
+                Player teammate = gamePlayer.getPlayer();
                 if (teammate == null) return;
 
                 double distance = event.getPin().getLocation().distance(teammate.getLocation());

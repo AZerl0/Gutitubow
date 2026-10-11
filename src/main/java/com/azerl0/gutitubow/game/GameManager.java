@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.game;
 
 import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.GutitubowManagers;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.gamemap.GameMapManager;
 
@@ -13,22 +14,13 @@ import java.util.Set;
 
 public class GameManager {
     private final Gutitubow gutitubow;
-    private final GameMapManager gameMapManager;
-    private final DebugManager debugManager;
-    private final GutitubowManagers gutitubowManagers;
-    private final Set<Game> gameSet = new HashSet<>();
-    private BukkitTask gameTask;
+    private final Set<GameImpl> gameImplSet = new HashSet<>();
+    private final BukkitTask gameTask;
 
     public GameManager(
-            Gutitubow gutitubow,
-            GameMapManager gameMapManager,
-            DebugManager debugManager,
-            GutitubowManagers gutitubowManagers
+            Gutitubow gutitubow
     ) {
         this.gutitubow = gutitubow;
-        this.gameMapManager = gameMapManager;
-        this.debugManager = debugManager;
-        this.gutitubowManagers = gutitubowManagers;
 
         gameTask = new BukkitRunnable() {
             @Override
@@ -39,22 +31,22 @@ public class GameManager {
     }
 
     public Game newGame() {
-        Game game = new Game(gutitubow, debugManager, gutitubowManagers);
-        gameSet.add(game);
-        return game;
+        GameImpl gameImpl = new GameImpl(gutitubow);
+        gameImplSet.add(gameImpl);
+        return gameImpl;
     }
 
-    public void resetGame(Game game) {
-        game.reset();
+    public void resetGame(GameImpl gameImpl) {
+        gameImpl.reset();
     }
 
-    public boolean isStarted(Game game) {
-        return game.isStarted();
+    public boolean isStarted(GameImpl gameImpl) {
+        return gameImpl.isStarted();
     }
 
     private void tick() {
-        for (Game game : gameSet) {
-            game.update();
+        for (GameImpl gameImpl : gameImplSet) {
+            gameImpl.update();
         }
     }
 }

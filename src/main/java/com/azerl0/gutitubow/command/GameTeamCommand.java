@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.command;
 
 import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.game.SpectatorManager;
+import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.team.TeamManager;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -158,11 +159,11 @@ public class GameTeamCommand {
         }
         player.sendMessage(gameTeam.getTeamName().color(gameTeam.getTeamColor()).append(Component.text("の詳細")));
         player.sendMessage(Component.text(gameTeam.getPlayers().size() + "人のプレイヤーが属しています"));
-        for (UUID uuid : gameTeam.getPlayers()) {
-            Player teamPlayer = Bukkit.getPlayer(uuid);
+        for (GamePlayer gamePlayer : gameTeam.getPlayers()) {
+            Player teamPlayer = gamePlayer.getPlayer();
             if (teamPlayer == null) continue;
             String suffix = "";
-            if (gameTeam.getJumpMaster() != null && uuid.equals(gameTeam.getJumpMaster().getUniqueId())) suffix = " (ジャンプマスター)";
+            if (gameTeam.isThisTeamJumpMaster(player)) suffix = " (ジャンプマスター)";
             player.sendMessage(Component.text(" - " + teamPlayer.getName() + suffix));
         }
         return com.mojang.brigadier.Command.SINGLE_SUCCESS;

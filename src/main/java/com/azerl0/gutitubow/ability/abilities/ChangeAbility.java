@@ -81,7 +81,7 @@ public class ChangeAbility extends Ability {
         ItemUtil.setCantDrop(displayItem, true);
         player.getInventory().setItem(22, displayItem);
 
-        currentAbility = context.game().getAbilityManager().createAbility(nextAbilityType);
+        currentAbility = context.getAbilityManager().createAbility(nextAbilityType);
         currentAbility.init(player);
 
         Title title = Title.title(

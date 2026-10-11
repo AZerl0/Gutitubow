@@ -149,7 +149,7 @@ public class AbilityListener implements Listener {
 
     @EventHandler
     public void onDeath(GamePlayerDeathEvent event) {
-        Ability ability = abilityManager.getAbility(event.getPlayer());
+        Ability ability = abilityManager.getAbility(event.getGamePlayer());
         if (ability != null) ability.onDeath(event);
     }
 

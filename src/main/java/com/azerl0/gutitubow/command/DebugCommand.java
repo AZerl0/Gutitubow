@@ -29,7 +29,7 @@ public class DebugCommand{
     }
 
     private static DebugManager getDebugManager() {
-        return Gutitubow.get().getDebugManager();
+        return Gutitubow.get().getGutitubowManagers().getDebugManager();
     }
 
     private interface BoolGetter {

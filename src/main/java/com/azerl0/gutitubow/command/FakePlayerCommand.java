@@ -26,7 +26,7 @@ public class FakePlayerCommand {
     }
 
     private static FakePlayerManager getManager() {
-        return Gutitubow.get().getFakePlayerManager();
+        return Gutitubow.get().getGutitubowManagers().getFakePlayerManager();
     }
 
     private static int spawn(CommandSender sender, @Nullable String name) {

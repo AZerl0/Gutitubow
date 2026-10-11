@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.gui.guis;
 
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.arena.Arena;
 import com.azerl0.gutitubow.game.*;
 import com.azerl0.gutitubow.gui.AbstractGUI;
@@ -60,7 +61,7 @@ public class GameGUI extends AbstractGUI {
         addButton(
                 GAME_RESET_BUTTON_SLOT,
                 getAbstractSimpleButtonItem(Material.BOW, Component.text("リセット")), event -> {
-                    gameManager.resetGame(game);
+                    game.reset();
                 });
         addButton(ORIGINAL_MAP_TELEPORT_BUTTON_SLOT, getAbstractSimpleButtonItem(Material.CARTOGRAPHY_TABLE, Component.text("アリーナの元のマップにテレポート")), event -> {
             if (!(event.getWhoClicked() instanceof Player clicker)) return;

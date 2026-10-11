@@ -1,9 +1,9 @@
 package com.azerl0.gutitubow.message;
 
 import com.azerl0.gutitubow.Gutitubow;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.damage.DamageSource;
 import com.azerl0.gutitubow.damage.GutitubowDamageType;
-import com.azerl0.gutitubow.game.Game;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -78,6 +78,7 @@ public class Message {
             case OUTSIDE_BORDER -> suffix = getSimpleSuffix("エリア外", true);
             case FAILED_LAST_STAND -> suffix = getSimpleSuffix("背水の陣失敗", true);
             case LOGOUT -> suffix = getSimpleSuffix("ログアウト", true);
+            case DOPPELGANGER_DESTROY -> suffix = getSimpleSuffix("消滅", true);
         }
         if (suffix == null) return null;
 

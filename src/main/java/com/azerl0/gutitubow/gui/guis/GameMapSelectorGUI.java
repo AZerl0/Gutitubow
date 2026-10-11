@@ -1,7 +1,7 @@
 package com.azerl0.gutitubow.gui.guis;
 
 import com.azerl0.gutitubow.Gutitubow;
-import com.azerl0.gutitubow.game.Game;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.gamemap.GameMap;
 import com.azerl0.gutitubow.gui.AbstractGUI;
 import net.kyori.adventure.text.Component;
@@ -33,7 +33,7 @@ public class GameMapSelectorGUI extends AbstractGUI {
     public void updateGUI() {
         super.updateGUI();
         clear();
-        for (GameMap gameMap : Gutitubow.get().getGameMapManager().getGameMaps()) {
+        for (GameMap gameMap : Gutitubow.get().getGutitubowManagers().getGameMapManager().getGameMaps()) {
             if (!hasEmptySlot()) return;
             ItemStack itemStack = ItemStack.of(Material.FILLED_MAP);
             ItemMeta meta = itemStack.getItemMeta();
@@ -45,7 +45,7 @@ public class GameMapSelectorGUI extends AbstractGUI {
             }
             meta.displayName(gameMap.getName().decoration(TextDecoration.ITALIC, false));
             itemStack.setItemMeta(meta);
-            addButton(getEmptySlot(), itemStack, event -> {
+            addButton(getEmptySlot(), itemStack, _ -> {
                 game.setGameMap(gameMap);
                 updateGUI();
             });

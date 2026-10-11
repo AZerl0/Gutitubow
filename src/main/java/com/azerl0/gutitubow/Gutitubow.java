@@ -2,6 +2,7 @@ package com.azerl0.gutitubow;
 
 import com.azerl0.gutitubow.ability.zipline.ZiplineListener;
 import com.azerl0.gutitubow.ability.zipline.ZiplineManager;
+import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.arena.ArenaManager;
 import com.azerl0.gutitubow.config.ConfigManager;
 import com.azerl0.gutitubow.entity.GutitubowEntityListener;
@@ -50,20 +51,9 @@ public final class Gutitubow extends JavaPlugin {
     private static Gutitubow instance;
     private ConfigManager configManager;
     private FirstJoin firstJoin;
-    private SkinDataManager skinDataManager;
-    private ProfileManager profileManager;
-    private ScoreboardManager scoreboardManager;
     private EntityFlagManager flagManager;
-    private EntityGlowManager glowManager;
+    private PinManager pinManager;
     private FixLeftClickManager fixLeftClickManager;
-    private DebugManager debugManager;
-    private GameMapManager gameMapManager;
-    private ArenaManager arenaManager;
-    private GameManager gameManager;
-    private final FakePlayerManager fakePlayerManager = new FakePlayerManager(this);
-    private final PinManager pinManager = new PinManager(this);
-    private final ZiplineManager ziplineManager = new ZiplineManager(this);
-    private GutitubowEntityManager gutitubowEntityManager;
     private AllGUI allGUI;
     GutitubowManagers gutitubowManagers;
 
@@ -85,38 +75,29 @@ public final class Gutitubow extends JavaPlugin {
         // Managers
         configManager = new ConfigManager(this);
         firstJoin = new FirstJoin();
-        skinDataManager = new SkinDataManager(this);
-        profileManager = new ProfileManager(skinDataManager);
-        gameMapManager = new GameMapManager();
-        arenaManager = new ArenaManager(this);
-        this.scoreboardManager = new ScoreboardManager();
-        this.flagManager = new EntityFlagManager(this);
-        this.glowManager = new EntityGlowManager(flagManager, scoreboardManager);
         this.fixLeftClickManager = new FixLeftClickManager(this);
-        this.debugManager = new DebugManager(this);
-        gutitubowEntityManager = new GutitubowEntityManager();
-        gutitubowManagers = new GutitubowManagers(glowManager, scoreboardManager, fakePlayerManager, ziplineManager, gutitubowEntityManager, arenaManager, skinDataManager, profileManager);
+        gutitubowManagers = createGutitubowManagers();
+        flagManager = new EntityFlagManager(this);
+        pinManager = new PinManager(this);
 
         configManager.processConfigs();
 
-        // Game
-        this.gameManager = new GameManager(this, this.gameMapManager, this.debugManager, gutitubowManagers);
         // MainGame
-        this.game = gameManager.newGame();
+        this.game = gutitubowManagers.gameManager().newGame();
 
         //GUI
-        GameGUI gameGUI = new GameGUI(gameManager, game);
-        this.abilitySetGUI = new AbilitySetGUI(game.getAbilityManager());
+        GameGUI gameGUI = new GameGUI(gutitubowManagers.gameManager(), game);
+        this.abilitySetGUI = new AbilitySetGUI(gutitubowManagers.getAbilityManager());
 
         allGUI = new AllGUI(gameGUI, abilitySetGUI);
 
 
         // Listener登録
         PluginManager pluginManager = getServer().getPluginManager();
-        pluginManager.registerEvents(new AbilityListener(game.getAbilityManager()), this);
+        pluginManager.registerEvents(new AbilityListener(game.getGutitubowManagers().getAbilityManager()), this);
         pluginManager.registerEvents(new GamePlayerListener(game), this);
-        pluginManager.registerEvents(new GutitubowEntityListener(gutitubowEntityManager), this);
-        pluginManager.registerEvents(new CarePackageListener(gutitubowEntityManager), this);
+        pluginManager.registerEvents(new GutitubowEntityListener(getGutitubowEntityManager()), this);
+        pluginManager.registerEvents(new CarePackageListener(getGutitubowEntityManager()), this);
         pluginManager.registerEvents(new ItemListener(), this);
         pluginManager.registerEvents(new GameListener(this, game), this);
         pluginManager.registerEvents(new GameEventListener(), this);
@@ -124,10 +105,10 @@ public final class Gutitubow extends JavaPlugin {
         pluginManager.registerEvents(new PacketListener(flagManager), this);
         pluginManager.registerEvents(new FixLeftClickListener(fixLeftClickManager), this);
         pluginManager.registerEvents(new PinListener(pinManager), this);
-        pluginManager.registerEvents(new ZiplineListener(ziplineManager), this);
+        pluginManager.registerEvents(new ZiplineListener(gutitubowManagers.getZiplineManager()), this);
         pluginManager.registerEvents(new FirstJoin(), this);
-        pluginManager.registerEvents(new SkinDataListener(skinDataManager), this);
-        pluginManager.registerEvents(new ProfileListener(profileManager), this);
+        pluginManager.registerEvents(new SkinDataListener(gutitubowManagers.getSkinDataManager()), this);
+        pluginManager.registerEvents(new ProfileListener(gutitubowManagers.getProfileManager()), this);
 
         // packetListener登録
         EventManager eventManager = PacketEvents.getAPI().getEventManager();
@@ -160,9 +141,36 @@ public final class Gutitubow extends JavaPlugin {
         PacketEvents.getAPI().getEventManager().unregisterListener(packetListener);
         EntityUtil.removeAllGlowTeam();
 
-        game.onDisablePlugin();
-        ziplineManager.removeAllZiplines();
-        gutitubowEntityManager.removeAllGutitubowEntities();
+        game.destroy();
+        gutitubowManagers.getAbilityManager().allResetAbilities();
+        gutitubowManagers.getZiplineManager().removeAllZiplines();
+        gutitubowManagers.getGutitubowEntityManager().removeAllGutitubowEntities();
+    }
+
+    private GutitubowManagers createGutitubowManagers() {
+        AbilityContext abilityContext = new AbilityContext(this);
+        EntityFlagManager flagManager = new EntityFlagManager(this);
+        ScoreboardManager scoreboardManager = new ScoreboardManager();
+        SkinDataManager skinDataManager = new SkinDataManager(this);
+        ProfileManager profileManager = new ProfileManager(skinDataManager);
+        DebugManager debugManager = new DebugManager(this);
+        GameMapManager gameMapManager = new GameMapManager();
+        GameManager gameManager = new GameManager(this);
+
+        return new GutitubowManagers(
+                new AbilityManager(abilityContext),
+                new EntityGlowManager(flagManager, scoreboardManager),
+                scoreboardManager,
+                new FakePlayerManager(this),
+                new ZiplineManager(this),
+                new GutitubowEntityManager(),
+                new ArenaManager(this),
+                skinDataManager,
+                profileManager,
+                debugManager,
+                gameMapManager,
+                gameManager
+        );
     }
 
     private void registerAbilities() {
@@ -213,36 +221,18 @@ public final class Gutitubow extends JavaPlugin {
         return configManager;
     }
 
-    public GameMapManager getGameMapManager() {
-        return gameMapManager;
-    }
-
     public Game getGame() {
         return game;
     }
 
-    public GameManager getGameManager() {
-        return gameManager;
-    }
-
-    public DebugManager getDebugManager() {
-        return debugManager;
-    }
 
     public AbilitySetGUI getAbilitySelectorGUI() {
         return abilitySetGUI;
     }
 
-    public FakePlayerManager getFakePlayerManager() {
-        return fakePlayerManager;
-    }
-
-    public EntityGlowManager getGlowManager() {
-        return glowManager;
-    }
 
     public GutitubowEntityManager getGutitubowEntityManager() {
-        return gutitubowEntityManager;
+        return gutitubowManagers.getGutitubowEntityManager();
     }
 
     public AllGUI getAllGUI() {
