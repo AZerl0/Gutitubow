@@ -1,0 +1,29 @@
+{
+  "parent": "gutitubow:gutitubow/root",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "text": "ドッペルゲンガーのゲームイベントに遭遇する"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:player_head"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "拝啓ドッペルゲンガー君は誰",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

@@ -1,0 +1,30 @@
+{
+  "parent": "gutitubow:gutitubow/doppelganger/root",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "frame": "goal",
+    "announce_to_chat": false,
+    "description": {
+      "text": "自分のドッペルゲンガーを始末する"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:zombie_head"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "私は君で、君は私で",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

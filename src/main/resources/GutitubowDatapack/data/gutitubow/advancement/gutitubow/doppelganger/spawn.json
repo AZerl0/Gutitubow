@@ -1,0 +1,29 @@
+{
+  "parent": "gutitubow:gutitubow/doppelganger/root",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "text": "ドッペルゲンガーとして現世に現れる"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:skeleton_skull"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "こんにちは君の分身です",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.gameplayer;
 
 import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerCreatePinEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreCreatePinEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.game.GutitubowGameMode;
@@ -112,5 +113,10 @@ public class GamePlayerListener implements Listener {
                 pin.addViewer(teammate);
             }
         }
+    }
+
+    @EventHandler
+    public void onDeath(GamePlayerDeathEvent event) {
+        event.getGamePlayer().onDeath();
     }
 }

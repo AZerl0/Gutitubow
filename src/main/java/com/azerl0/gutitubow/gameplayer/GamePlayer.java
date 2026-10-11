@@ -2,7 +2,6 @@ package com.azerl0.gutitubow.gameplayer;
 
 import com.azerl0.gutitubow.Gutitubow;
 import com.azerl0.gutitubow.ability.Ability;
-import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.damage.DamageSource;
 import com.azerl0.gutitubow.damage.GutitubowDamageType;
@@ -61,7 +60,6 @@ public class GamePlayer {
     private int compassTeleportingTick = 0;
     private int remainedFlashTick;
     private int remainedErasureTick = 0;
-    private @Nullable AbilityType doppelgangerHoldOriginAbility;
 
 
     public GamePlayer(Gutitubow gutitubow, Player player, Game game) {
@@ -334,14 +332,6 @@ public class GamePlayer {
         return remainedErasureTick > 0;
     }
 
-    public @Nullable AbilityType getDoppelgangerHoldOriginAbility() {
-        return doppelgangerHoldOriginAbility;
-    }
-
-    public void setDoppelgangerHoldOriginAbility(@Nullable AbilityType doppelgangerHoldOriginAbility) {
-        this.doppelgangerHoldOriginAbility = doppelgangerHoldOriginAbility;
-    }
-
     protected void tick() {
         Player player = getPlayer();
         updateBorderOutside();
@@ -398,10 +388,6 @@ public class GamePlayer {
                 resetFirstElytra();
                 return;
             }
-            if (!player.isGliding()) {
-                resetFirstElytra();
-                return;
-            }
             if (!player.isInsideVehicle()) {
                 player.setGliding(true);
             }
@@ -432,7 +418,7 @@ public class GamePlayer {
 
         // 0 tickだとgamePlayer#tick()内でonGroundが更新される前にリセットされてしまうので
         // onGroundが更新されてからフラグを立てる
-        Bukkit.getScheduler().runTaskLater(gutitubow, () -> firstElytraFlag = true, 1L);
+        Bukkit.getScheduler().runTaskLater(gutitubow, () -> firstElytraFlag = true, 5L);
     }
 
     public void resetFirstElytra() {
@@ -712,7 +698,6 @@ public class GamePlayer {
         if (player.getHealth() + player.getAbsorptionAmount() <= newAmount) {
             boolean success = game.kill(this, damageSource);
             if (success) {
-                onDeath();
                 if (attacker != null) {
                     GamePlayer attackerGamePlayer = getGame().getGamePlayer(attacker);
                     GamePlayerKillEvent killEvent = new GamePlayerKillEvent(attacker, player, attackerGamePlayer, this, damageSource, Component.text("You killed it!").color(NamedTextColor.DARK_RED).decoration(TextDecoration.BOLD, true));
@@ -782,7 +767,7 @@ public class GamePlayer {
         player.showTitle(title);
     }
 
-    private void onDeath() {
+    protected void onDeath() {
         Player player = getPlayer();
         if (player == null) return;
 

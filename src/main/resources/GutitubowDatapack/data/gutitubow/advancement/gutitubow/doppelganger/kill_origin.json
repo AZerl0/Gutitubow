@@ -1,0 +1,31 @@
+{
+  "parent": "gutitubow:gutitubow/doppelganger/spawn",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "frame": "challenge",
+    "announce_to_chat": false,
+    "description": {
+      "text": "ドッペルゲンガーとしてオリジナルを始末する"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:wither_skeleton_skull"
+    },
+    "show_toast": true,
+    "title": {
+      "text": "ルンパッパ",
+      "italic": false
+    }
+  },
+  "requirements": [
+    [
+      "impossible"
+    ]
+  ],
+  "sends_telemetry_event": false,
+  "hide": false
+}
