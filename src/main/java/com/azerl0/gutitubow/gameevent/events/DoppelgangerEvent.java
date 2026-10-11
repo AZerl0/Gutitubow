@@ -63,7 +63,7 @@ public class DoppelgangerEvent extends GameEvent {
             }
             GamePlayer targetGamePlayer;
             if (playerTargets.isEmpty()) {
-                targetGamePlayer = deadPlayer;
+                continue;
             } else {
                 targetGamePlayer = playerTargets.getFirst();
             }
@@ -72,7 +72,6 @@ public class DoppelgangerEvent extends GameEvent {
 
             Doppelganger doppelganger = new Doppelganger(context.gutitubow(), context.game(), deadPlayer, targetGamePlayer);
             doppelganger.spawn();
-            context.gutitubow().getLogger().info("spawnDG: " + deadPlayer.getPlayer().getName() + ", target: " + doppelganger.target.getPlayer().getName());
             doppelgangers.put(deadPlayer, doppelganger);
         }
     }
@@ -98,7 +97,6 @@ public class DoppelgangerEvent extends GameEvent {
         if (!doppelganger.isTarget(event.getTargetGamePlayer())) return;
 
         // kill origin
-        context.gutitubow().getLogger().info("killTarget: " + doppelganger.target.getPlayer().getName());
     }
 
     private static class Doppelganger {
