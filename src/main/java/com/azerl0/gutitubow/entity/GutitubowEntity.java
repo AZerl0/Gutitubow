@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.entity;
 
 import com.azerl0.gutitubow.entity.teleportable.Teleportable;
 import org.bukkit.Location;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -38,7 +39,7 @@ public abstract class GutitubowEntity implements Teleportable {
         isRemoved = true;
     }
 
-    protected void onRemove() {}
+    protected abstract void onRemove();
 
     protected abstract void summon(Location location);
 
@@ -47,4 +48,6 @@ public abstract class GutitubowEntity implements Teleportable {
     }
 
     protected void onTick() {}
+
+    protected void onAnyProjectileHit(ProjectileHitEvent event) {}
 }

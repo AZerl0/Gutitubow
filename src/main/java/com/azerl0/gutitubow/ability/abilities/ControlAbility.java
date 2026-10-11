@@ -4,9 +4,12 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.entity.controlarrow.ControlArrow;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerOnAbilityErasureEvent;
+import com.azerl0.gutitubow.event.gutitubowentity.GutitubowEntityRemoveEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
-import com.azerl0.gutitubow.util.EntityUtil;
+import com.azerl0.gutitubow.util.MathUtil;
 import de.tr7zw.nbtapi.NBT;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -16,20 +19,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import net.kyori.adventure.text.Component;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class ControlAbility extends Ability {
-    private final NamespacedKey controllingKey;
-    private final NamespacedKey collectingKey;
+    private final Set<ControlArrow> controlArrowSet = new HashSet<>();
 
     public ControlAbility(AbilityContext context) {
         super(context);
-        this.controllingKey = new NamespacedKey(context.gutitubow(), "controlling");
-        this.collectingKey = new NamespacedKey(context.gutitubow(), "collecting");
     }
 
     @Override
@@ -42,17 +43,16 @@ public class ControlAbility extends Ability {
         if (isErasing()) {
             return;
         }
-        Arrow arrow = (Arrow) event.getProjectile();
-
-        EntityUtil.setGlow(arrow, NamedTextColor.DARK_PURPLE);
-        arrow.setGlowing(true);
-        arrow.setGravity(false);
-
-        NBT.modify(arrow, nbt -> {
-            nbt.setBoolean("crit", false);
-        });
-
-        startControl(event);
+        ControlArrow controlArrow = context.getGutitubowManagers().getGutitubowEntityManager().spawnGutitubowEntity(event.getProjectile().getLocation(), ControlArrow.class);
+        controlArrow.getArrow().setShooter(event.getEntity());
+        float v = (float) MathUtil.getLerp(event.getForce(), 0.0, 1.0, 0.4, 1.5);
+        controlArrow.setSpeed(v);
+        if (event.getEntity() instanceof Player player) {
+            player.playSound(player, Sound.ENTITY_EVOKER_CAST_SPELL, 0.5f, 1.0f);
+        }
+        ArrowUtil.setFixRotation(controlArrow.getArrow(), event.getProjectile().getVelocity());
+        controlArrowSet.add(controlArrow);
+        event.getProjectile().remove();
     }
 
     @Override
@@ -71,12 +71,9 @@ public class ControlAbility extends Ability {
 
         if (event.getHitBlock() != null) {
             arrow.setLifetimeTicks(1000);
-            Boolean collecting = arrow.getPersistentDataContainer().get(collectingKey, PersistentDataType.BOOLEAN);
-            if (collecting == null) return;
+            boolean collecting = arrow.getScoreboardTags().contains("gutitubow:control_arrow/collecting");
             if (collecting) arrow.remove();
         }
-
-
     }
 
     @Override
@@ -87,57 +84,26 @@ public class ControlAbility extends Ability {
             onErasureEffect();
             return;
         }
-        Collect(event.getPlayer());
+        collectArrow(event.getPlayer());
     }
 
-    private void startControl(EntityShootBowEvent event) {
-        Arrow arrow = (Arrow) event.getProjectile();
-
-        arrow.getPersistentDataContainer().set(controllingKey, PersistentDataType.BOOLEAN, true);
-        getPlayer().playSound(getPlayer(), Sound.ENTITY_EVOKER_CAST_SPELL, 0.5f, 1.0f);
-
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-
-                Boolean controlling = arrow.getPersistentDataContainer().get(controllingKey, PersistentDataType.BOOLEAN);
-                boolean inGround = NBT.get(arrow, nbt -> (boolean) nbt.getBoolean("inGround"));
-
-                if (controlling == null) controlling = true;
-
-                if (!arrow.isValid() || inGround || !controlling) {
-                    cancel();
-                    return;
-                }
-
-                if (isErasing()) {
-                    cancel();
-                    return;
-                }
-
-                arrow.getWorld().spawnParticle(
-                        Particle.WITCH,
-                        arrow.getLocation(),
-                        2,
-                        0, 0, 0,
-                        0
-                );
-
-                @NotNull Vector v = event.getEntity().getEyeLocation().getDirection().multiply(0.75);
-
-                arrow.setVelocity(v);
-
-
-            }
-
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
+    @Override
+    public void onGutitubowEntityRemove(GutitubowEntityRemoveEvent event) {
+        if (event.getGutitubowEntity() instanceof ControlArrow controlArrow) {
+            controlArrowSet.remove(controlArrow);
+        }
     }
 
-    private void Collect(Player player) {
+    @Override
+    public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {
+        for (ControlArrow controlArrow : controlArrowSet) {
+            controlArrow.setControlling(false);
+        }
+    }
 
-
+    private void collectArrow(Player player) {
         player.setCooldown(player.getInventory().getItemInMainHand(), 20);
+
         Title title = Title.title(
                 Component.empty(),
                 Component.text("周囲の矢を回収します").color(NamedTextColor.LIGHT_PURPLE),
@@ -150,32 +116,25 @@ public class ControlAbility extends Ability {
         player.showTitle(title);
         player.getLocation().getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_CLOSE, 0.8f, 1.0f);
 
+        Location returnLocation = player.getLocation().toVector().midpoint(player.getEyeLocation().toVector()).toLocation(player.getWorld());
+        for (ControlArrow controlArrow : controlArrowSet) {
+            controlArrow.setControlling(false);
+            Vector newVelocity = returnLocation.toVector().subtract(controlArrow.getLocation().toVector()).normalize().multiply(3);
+            double distance = controlArrow.getLocation().distance(returnLocation);
 
-        for (World world : Bukkit.getWorlds()) {
-            for (Arrow arrow : world.getEntitiesByClass(Arrow.class)) {
+            if (distance < 48) {
+                Arrow arrow = controlArrow.getArrow();
 
-                if (!(arrow.getShooter() instanceof Player shooter)) continue;
-                if (!shooter.getUniqueId().equals(player.getUniqueId())) continue;
+                arrow.setVelocity(newVelocity);
+                ArrowUtil.setFixRotation(arrow, newVelocity);
 
-                Location returnLocaton = shooter.getLocation().toVector().midpoint(shooter.getEyeLocation().toVector()).toLocation(player.getWorld());
-                Vector newVelocity = returnLocaton.toVector().subtract(arrow.getLocation().toVector()).normalize().multiply(3);
-                double distance = arrow.getLocation().distance(returnLocaton);
+                NBT.modify(arrow, nbt -> {
+                    nbt.setBoolean("inGround", false);
+                });
 
-                if (distance < 48) {
-
-                    arrow.getPersistentDataContainer().set(controllingKey, PersistentDataType.BOOLEAN, false);
-                    arrow.getPersistentDataContainer().set(collectingKey, PersistentDataType.BOOLEAN, true);
-
-                    arrow.setVelocity(newVelocity);
-                    ArrowUtil.setFixRotation(arrow, newVelocity);
-
-                    NBT.modify(arrow, nbt -> {
-                        nbt.setBoolean("inGround", false);
-
-                    });
-                } else {
-                    arrow.remove();
-                }
+                arrow.addScoreboardTag("gutitubow:control_arrow/collecting");
+            } else {
+                controlArrow.remove();
             }
         }
     }

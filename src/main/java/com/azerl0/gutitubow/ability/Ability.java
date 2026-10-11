@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability;
 
 import com.azerl0.gutitubow.event.ability.copy.UseCopiedAbilityEvent;
 import com.azerl0.gutitubow.event.gameplayer.*;
+import com.azerl0.gutitubow.event.gutitubowentity.GutitubowEntityRemoveEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldBreakEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldLowerEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldRaiseEvent;
@@ -192,4 +193,6 @@ public abstract class Ability {
     public void onSwapItem(PlayerSwapHandItemsEvent event) {}
 
     public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {}
+
+    public void onGutitubowEntityRemove(GutitubowEntityRemoveEvent event) {}
 }

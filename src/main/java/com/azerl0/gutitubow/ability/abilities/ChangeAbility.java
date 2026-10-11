@@ -4,6 +4,7 @@ import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.event.ability.copy.UseCopiedAbilityEvent;
 import com.azerl0.gutitubow.event.gameplayer.*;
+import com.azerl0.gutitubow.event.gutitubowentity.GutitubowEntityRemoveEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldBreakEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldLowerEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldRaiseEvent;
@@ -259,4 +260,10 @@ public class ChangeAbility extends Ability {
     public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {
         if (currentAbility != null) currentAbility.onAbilityErasure(event);
     }
+
+    @Override
+    public void onGutitubowEntityRemove(GutitubowEntityRemoveEvent event) {
+        if (currentAbility != null) currentAbility.onGutitubowEntityRemove(event);
+    }
+
 }

@@ -92,7 +92,7 @@ public class GutitubowEntityManager {
             final @NotNull Location location,
             final @NotNull Class<T> clazz
     ) {
-        return spawnGutitubowEntity(location, clazz, task -> {});
+        return spawnGutitubowEntity(location, clazz, _ -> {});
     }
 
     public Collection<? extends GutitubowEntity> getGutitubowEntities() {

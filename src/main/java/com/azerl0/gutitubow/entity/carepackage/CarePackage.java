@@ -249,7 +249,6 @@ public class CarePackage extends GutitubowEntity {
         }
     }
 
-    @Override
     public void onRemove() {
         Entity coreEntity = getCoreEntity();
 

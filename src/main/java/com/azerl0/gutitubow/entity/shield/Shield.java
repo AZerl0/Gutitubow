@@ -65,7 +65,6 @@ public class Shield extends GutitubowEntity {
         return uuidSet;
     }
 
-    @Override
     public void onRemove() {
         for (ArmorStand stand : shieldStands.keySet()) stand.remove();
     }

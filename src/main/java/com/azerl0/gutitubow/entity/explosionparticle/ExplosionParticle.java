@@ -48,7 +48,6 @@ public class ExplosionParticle extends GutitubowEntity {
         return Set.of(textDisplay.getUniqueId());
     }
 
-    @Override
     public void onRemove() {
         textDisplay.remove();
     }

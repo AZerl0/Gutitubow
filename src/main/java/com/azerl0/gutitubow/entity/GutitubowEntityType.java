@@ -4,5 +4,6 @@ public enum GutitubowEntityType {
     CAREPACKAGE,
     EXPLOSION_PARTICLE,
     GRAVITY_HOLE,
-    SHIELD
+    SHIELD,
+    CONTROL_ARROW
 }

@@ -47,6 +47,11 @@ public class GravityHole extends GutitubowEntity {
     }
 
     @Override
+    protected void onRemove() {
+
+    }
+
+    @Override
     protected void summon(Location location) {
         life = 3 * 20;
         isSmall = true;
