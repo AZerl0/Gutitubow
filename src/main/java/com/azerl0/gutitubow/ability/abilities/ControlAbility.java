@@ -43,14 +43,7 @@ public class ControlAbility extends Ability {
         if (isErasing()) {
             return;
         }
-        ControlArrow controlArrow = context.getGutitubowManagers().getGutitubowEntityManager().spawnGutitubowEntity(event.getProjectile().getLocation(), ControlArrow.class);
-        controlArrow.getArrow().setShooter(event.getEntity());
-        float v = (float) MathUtil.getLerp(event.getForce(), 0.0, 1.0, 0.4, 1.5);
-        controlArrow.setSpeed(v);
-        if (event.getEntity() instanceof Player player) {
-            player.playSound(player, Sound.ENTITY_EVOKER_CAST_SPELL, 0.5f, 1.0f);
-        }
-        ArrowUtil.setFixRotation(controlArrow.getArrow(), event.getProjectile().getVelocity());
+        ControlArrow controlArrow = ControlArrow.spawnFromShootEvent(event, context.gutitubow().getGutitubowEntityManager());
         controlArrowSet.add(controlArrow);
         event.getProjectile().remove();
     }

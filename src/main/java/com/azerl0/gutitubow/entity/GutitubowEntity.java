@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public abstract class GutitubowEntity implements Teleportable {
 
-    private final GutitubowEntityManager entityManager;
+    protected final GutitubowEntityManager entityManager;
     protected final UUID uuid;
     protected Location location;
     protected boolean isRemoved = false;

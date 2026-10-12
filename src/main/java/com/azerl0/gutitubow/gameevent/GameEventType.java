@@ -84,6 +84,16 @@ public enum GameEventType {
             Component.text("ドッペルゲンガーが現れた！"),
             ItemStack.of(Material.PLAYER_HEAD),
             DoppelgangerEvent::new
+    ),
+    CONTROL(
+            Component.text("全員「操弾」"),
+            List.of(
+                    Component.text("弓から発射される全ての矢が「魔法の矢」になってしまう。"),
+                    Component.text("「魔法の矢」は重力の影響を受けず、自分の視線の方向に進み続けるぞ。")
+            ),
+            Component.text("弓に魔法の力が宿った！"),
+            ItemStack.of(Material.MAGMA_CREAM),
+            ControlArrowEvent::new
     );
 
 

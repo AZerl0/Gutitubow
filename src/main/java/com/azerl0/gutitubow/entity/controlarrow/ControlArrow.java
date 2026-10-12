@@ -3,12 +3,17 @@ package com.azerl0.gutitubow.entity.controlarrow;
 import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.GutitubowEntityManager;
 import com.azerl0.gutitubow.entity.GutitubowEntityType;
+import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.EntityUtil;
+import com.azerl0.gutitubow.util.MathUtil;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -103,5 +108,17 @@ public class ControlArrow extends GutitubowEntity {
 
     public void setControlling(boolean controlling) {
         this.controlling = controlling;
+    }
+
+    public static ControlArrow spawnFromShootEvent(EntityShootBowEvent event, GutitubowEntityManager entityManager) {
+        ControlArrow controlArrow = entityManager.spawnGutitubowEntity(event.getProjectile().getLocation(), ControlArrow.class);
+        controlArrow.getArrow().setShooter(event.getEntity());
+        float v = (float) MathUtil.getLerp(event.getForce(), 0.0, 1.0, 0.4, 1.5);
+        controlArrow.setSpeed(v);
+        if (event.getEntity() instanceof Player player) {
+            player.playSound(player, Sound.ENTITY_EVOKER_CAST_SPELL, 0.5f, 1.0f);
+        }
+        ArrowUtil.setFixRotation(controlArrow.getArrow(), event.getProjectile().getVelocity());
+        return controlArrow;
     }
 }
