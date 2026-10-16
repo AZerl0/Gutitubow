@@ -79,7 +79,7 @@ public class SnipeAbility extends Ability {
         if (!result) return;
 
         gamePlayer.removeArrow(1);
-        player.setCooldown(Material.SPYGLASS, 2 * 20);
+        player.setCooldown(Material.SPYGLASS, 4 * 20);
         event.setCancelled(true);
     }
 
