@@ -6,6 +6,8 @@ import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.damage.DamageSource;
 import com.azerl0.gutitubow.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.entity.explosionparticle.ExplosionParticle;
+import com.azerl0.gutitubow.event.gameevent.control.AdvanceProjectileSetControlEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import com.azerl0.gutitubow.game.GamePhase;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
@@ -17,7 +19,6 @@ import org.bukkit.*;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -40,10 +41,13 @@ public class RicochetAbility extends Ability {
     }
 
     @Override
-    public void onShoot(EntityShootBowEvent event) {
-        if (isErasing()) return;
+    public void onGamePlayerShoot(GamePlayerShootEvent event) {
+        if (isErasing()) {
+            onErasureEffect();
+            return;
+        }
 
-        Arrow arrow = (Arrow) event.getProjectile();
+        if (!(event.getProjectile() != null && event.getProjectile() instanceof Arrow arrow)) return;
 
         EntityUtil.setGlow(arrow, NamedTextColor.AQUA);
         arrow.setGlowing(true);
@@ -67,9 +71,9 @@ public class RicochetAbility extends Ability {
 
             setRicochetCount(arrow, ricochetCount - 1);
 
-            context.gutitubow().getGutitubowEntityManager().spawnGutitubowEntity(arrow.getLocation(), ExplosionParticle.class, particle -> {
-                particle.setColor(TextColor.color(4321162));
-            });
+            context.gutitubow().getGutitubowEntityManager().spawnGutitubowEntity(arrow.getLocation(), ExplosionParticle.class,
+                    particle -> particle.setColor(TextColor.color(4321162))
+            );
 
             int ricochetDamageCount = getRicochetDamageCount(arrow);
             Location loc = arrow.getLocation();
@@ -115,5 +119,10 @@ public class RicochetAbility extends Ability {
 
     private void setRicochetDamageCount(Entity entity, int count) {
         entity.getPersistentDataContainer().set(ricochetDamageCountKey, PersistentDataType.INTEGER, count);
+    }
+
+    @Override
+    public void onAdvanceProjectileSetControl(AdvanceProjectileSetControlEvent event) {
+        event.setOverrideGlowColor(false);
     }
 }

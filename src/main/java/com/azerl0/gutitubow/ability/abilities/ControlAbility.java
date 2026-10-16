@@ -4,8 +4,9 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
-import com.azerl0.gutitubow.entity.controlarrow.ControlArrow;
+import com.azerl0.gutitubow.entity.advancearrow.AdvanceProjectile;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerOnAbilityErasureEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.GutitubowEntityRemoveEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
@@ -16,7 +17,6 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ControlAbility extends Ability {
-    private final Set<ControlArrow> controlArrowSet = new HashSet<>();
+    private final Set<AdvanceProjectile> advanceProjectiles = new HashSet<>();
 
     public ControlAbility(AbilityContext context) {
         super(context);
@@ -39,13 +39,22 @@ public class ControlAbility extends Ability {
     }
 
     @Override
-    public void onShoot(EntityShootBowEvent event) {
+    public void onGamePlayerShoot(GamePlayerShootEvent event) {
+        if (event.isCancelled()) return;
         if (isErasing()) {
+            onErasureEffect();
             return;
         }
-        ControlArrow controlArrow = ControlArrow.spawnFromShootEvent(event, context.gutitubow().getGutitubowEntityManager());
-        controlArrowSet.add(controlArrow);
-        event.getProjectile().remove();
+        if (event.getProjectile() == null) return;
+
+        Player player = event.getPlayer();
+
+        AdvanceProjectile advanceProjectile = getAdvanceProjectile(event.getProjectile());
+        advanceProjectile.setControlling(true);
+        advanceProjectile.setControlSpeed(getDefaultControlSpeed(event.getForce()));
+        advanceProjectile.setControlEffect(true);
+        player.playSound(player, Sound.ENTITY_EVOKER_CAST_SPELL, 0.5f, 1.0f);
+        advanceProjectiles.add(advanceProjectile);
     }
 
     @Override
@@ -82,15 +91,15 @@ public class ControlAbility extends Ability {
 
     @Override
     public void onGutitubowEntityRemove(GutitubowEntityRemoveEvent event) {
-        if (event.getGutitubowEntity() instanceof ControlArrow controlArrow) {
-            controlArrowSet.remove(controlArrow);
+        if (event.getGutitubowEntity() instanceof AdvanceProjectile advanceProjectile) {
+            advanceProjectiles.remove(advanceProjectile);
         }
     }
 
     @Override
     public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {
-        for (ControlArrow controlArrow : controlArrowSet) {
-            controlArrow.setControlling(false);
+        for (AdvanceProjectile advanceProjectile : advanceProjectiles) {
+            advanceProjectile.setControlling(false);
         }
     }
 
@@ -110,13 +119,12 @@ public class ControlAbility extends Ability {
         player.getLocation().getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_CLOSE, 0.8f, 1.0f);
 
         Location returnLocation = player.getLocation().toVector().midpoint(player.getEyeLocation().toVector()).toLocation(player.getWorld());
-        for (ControlArrow controlArrow : controlArrowSet) {
-            controlArrow.setControlling(false);
-            Vector newVelocity = returnLocation.toVector().subtract(controlArrow.getLocation().toVector()).normalize().multiply(3);
-            double distance = controlArrow.getLocation().distance(returnLocation);
+        for (AdvanceProjectile advanceProjectile : advanceProjectiles) {
+            advanceProjectile.setControlling(false);
+            Vector newVelocity = returnLocation.toVector().subtract(advanceProjectile.getLocation().toVector()).normalize().multiply(3);
+            double distance = advanceProjectile.getLocation().distance(returnLocation);
 
-            if (distance < 48) {
-                Arrow arrow = controlArrow.getArrow();
+            if (distance < 48 && advanceProjectile.getProjectile() instanceof Arrow arrow) {
 
                 arrow.setVelocity(newVelocity);
                 ArrowUtil.setFixRotation(arrow, newVelocity);
@@ -127,8 +135,12 @@ public class ControlAbility extends Ability {
 
                 arrow.addScoreboardTag("gutitubow:control_arrow/collecting");
             } else {
-                controlArrow.remove();
+                advanceProjectile.remove();
             }
         }
+    }
+
+    public static float getDefaultControlSpeed(float force) {
+        return (float) MathUtil.getLerp(force, 0.0, 1.0, 0.4, 1.5);
     }
 }

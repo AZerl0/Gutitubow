@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import org.bukkit.Location;
@@ -120,7 +121,6 @@ public class GrapplingHookAbility extends Ability {
         Player player = getPlayer();
         if (player == null) return;
 
-        state = GrapplingHoolAbilityStateType.SHOOTING;
         Vector velocity = player.getLocation().getDirection().multiply(4);
         Arrow arrow = player.getWorld().spawn(player.getEyeLocation(), Arrow.class);
         arrow.setShooter(player);
@@ -128,6 +128,10 @@ public class GrapplingHookAbility extends Ability {
         arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
         ArrowUtil.setFixRotation(arrow, velocity);
         arrow.addScoreboardTag("gutitubow.grapplingHookArrow");
+        boolean result = getGamePlayer().shoot(GamePlayerShootEvent.ShootReason.GRAPPLING_HOOK, arrow.getLocation(), velocity, 1.0f, arrow);
+        if (!result) return;
+
+        state = GrapplingHoolAbilityStateType.SHOOTING;
         if (leashChicken != null) leashChicken.remove();
         leashChicken = player.getWorld().spawn(arrow.getLocation(), Chicken.class);
         leashChicken.addScoreboardTag("gutitubow.cancelUnleash");

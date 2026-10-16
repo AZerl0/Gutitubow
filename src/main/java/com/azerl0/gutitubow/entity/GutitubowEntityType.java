@@ -5,5 +5,7 @@ public enum GutitubowEntityType {
     EXPLOSION_PARTICLE,
     GRAVITY_HOLE,
     SHIELD,
-    CONTROL_ARROW
+    CONTROL_ARROW,
+    RAPIDFIRE_ARROW,
+    ADVANCE_ARROW
 }

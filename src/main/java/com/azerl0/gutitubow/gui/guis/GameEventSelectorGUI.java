@@ -12,7 +12,7 @@ public class GameEventSelectorGUI extends AbstractGUI {
     private final Consumer<GameEventType> onSelect;
 
     public GameEventSelectorGUI(Consumer<GameEventType> onSelect) {
-        super(9, Component.text("イベント選択"));
+        super(18, Component.text("イベント選択"));
         this.onSelect = onSelect;
     }
 
@@ -27,6 +27,7 @@ public class GameEventSelectorGUI extends AbstractGUI {
         addEventButton(GameEventType.CAREPACKAGE);
         addEventButton(GameEventType.DOPPELGANGER);
         addEventButton(GameEventType.CONTROL);
+        addEventButton(GameEventType.SHOT_BOW);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.gameevent;
 
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -115,4 +116,6 @@ public abstract class GameEvent {
     protected void onAnyPlayerKill(GamePlayerKillEvent event) {}
 
     protected void onAnyPlayerDeath(GamePlayerDeathEvent event) {}
+
+    protected void onGamePlayerShoot(GamePlayerShootEvent event) {}
 }

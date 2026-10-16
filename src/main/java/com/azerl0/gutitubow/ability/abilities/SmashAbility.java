@@ -8,6 +8,7 @@ import com.azerl0.gutitubow.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerKillEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerPreDamageEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.MathUtil;
@@ -71,7 +72,7 @@ public class SmashAbility extends Ability {
     }
 
     @Override
-    public void onShoot(EntityShootBowEvent event) {
+    public void onGamePlayerShoot(GamePlayerShootEvent event) {
         if (event.isCancelled()) return;
 
         boolean shoot = false;

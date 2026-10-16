@@ -8,6 +8,7 @@ import com.azerl0.gutitubow.damage.DamageSource;
 import com.azerl0.gutitubow.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.shield.Shield;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import com.azerl0.gutitubow.game.GamePhase;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
@@ -18,7 +19,6 @@ import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.RayTraceResult;
@@ -42,17 +42,20 @@ public class SnipeAbility extends Ability {
     }
 
     @Override
-    public void onShoot(EntityShootBowEvent event) {
-        if (!(event.getEntity() instanceof Player player)) return;
-        if (!player.isSneaking()) return;
+    public void onGamePlayerShoot(GamePlayerShootEvent event) {
+        if (event.isCancelled()) return;
+        if (!event.getPlayer().isSneaking()) return;
         if (event.getForce() < 1.0) return;
+        if (event.getShootReason() == GamePlayerShootEvent.ShootReason.SNIPE) return;
+
         if (isErasing()) {
             onErasureEffect();
             return;
         }
-        snipe();
-        event.setCancelled(true);
+        snipe(event.getDirection());
+        if (event.getProjectile() != null) event.getProjectile().remove();
     }
+
     @Override
     public void onSwapItem(PlayerSwapHandItemsEvent event) {
         if (event.isCancelled()) return;
@@ -70,23 +73,27 @@ public class SnipeAbility extends Ability {
         GamePlayer gamePlayer = getGamePlayer();
         if (gamePlayer.getArrowAmount() <= 0) return;
 
-        snipe();
+        if (!snipe(player.getEyeLocation().getDirection().normalize())) return;
+
+        boolean result = getGamePlayer().shoot(GamePlayerShootEvent.ShootReason.SNIPE, player.getEyeLocation(), player.getEyeLocation().getDirection(), 1.0f, null);
+        if (!result) return;
+
         gamePlayer.removeArrow(1);
         player.setCooldown(Material.SPYGLASS, 2 * 20);
         event.setCancelled(true);
     }
 
-    private void snipe() {
+    private boolean snipe(Vector direction) {
         Player player = getPlayer();
-        if (player == null) return;
+        if (player == null) return false;
+
         Location eye = player.getEyeLocation();
-        Vector dir = eye.getDirection().normalize();
+        Location start = eye.clone().add(direction.clone().multiply(0.1));
         World world = player.getWorld();
-        Location start = eye.clone().add(dir.clone().multiply(0.1));
 
         double maxDistance = 127;
 
-        RayTraceResult blockHit = __RayTraceSnipe(world, eye, dir, maxDistance);
+        RayTraceResult blockHit = __RayTraceSnipe(world, eye, direction, maxDistance);
 
         double entityDistance = maxDistance;
         Location hitPos = player.getEyeLocation().add(player.getLocation().getDirection().multiply(maxDistance));
@@ -100,7 +107,7 @@ public class SnipeAbility extends Ability {
         final boolean[] failed = {false};
         RayTraceResult entityHit = world.rayTraceEntities(
                 start,
-                dir,
+                direction,
                 entityDistance,
                 0.2,
                 entity -> {
@@ -160,6 +167,7 @@ public class SnipeAbility extends Ability {
                 hitPos,
                 0.2
         );
+        return true;
     }
 
     private Component getSnipeMessage(boolean isFailed, double distance) {

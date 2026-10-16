@@ -1,8 +1,10 @@
 package com.azerl0.gutitubow.entity;
 
 import com.azerl0.gutitubow.Gutitubow;
+import com.azerl0.gutitubow.entity.advancearrow.AdvanceProjectile;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Projectile;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +18,7 @@ public class GutitubowEntityManager {
 
     public Map<UUID, GutitubowEntity> gutitubowEntities = new HashMap<>();
     public Map<UUID, UUID> gutitubowEntityCash = new HashMap<>();
-    private BukkitTask updateTask;
+    private final BukkitTask updateTask;
 
     public GutitubowEntityManager() {
         updateTask = new BukkitRunnable() {
@@ -107,5 +109,16 @@ public class GutitubowEntityManager {
         for (GutitubowEntity gutitubowEntity : getGutitubowEntities()) {
             gutitubowEntity.remove();
         }
+    }
+
+    public @NotNull AdvanceProjectile getAdvanceProjectile(@NotNull Projectile projectile) {
+        Optional<GutitubowEntity> entity = getGutitubowEntity(projectile);
+        if (entity.isPresent() && entity.get() instanceof AdvanceProjectile advanceProjectile) {
+            return advanceProjectile;
+        }
+
+        AdvanceProjectile newAdvanceProjectile = spawnGutitubowEntity(projectile.getLocation(), AdvanceProjectile.class);
+        newAdvanceProjectile.replaceProjectile(projectile);
+        return newAdvanceProjectile;
     }
 }

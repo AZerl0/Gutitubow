@@ -4,11 +4,11 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.ability.zipline.Zipline;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -37,9 +37,11 @@ public class ZiplineAbility extends Ability {
     }
 
     @Override
-    public void onShoot(EntityShootBowEvent event) {
+    public void onGamePlayerShoot(GamePlayerShootEvent event) {
+        if (event.isCancelled()) return;
         Player player = getPlayer();
         if (player == null) return;
+        if (event.getProjectile() == null) return;
         if (!hasCompassCooldown() && player.isSneaking()) {
 
             event.getProjectile().addScoreboardTag("gutitubow.ziplineArrow");

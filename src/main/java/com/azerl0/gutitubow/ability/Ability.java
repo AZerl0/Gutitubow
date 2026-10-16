@@ -1,7 +1,9 @@
 package com.azerl0.gutitubow.ability;
 
 
+import com.azerl0.gutitubow.entity.advancearrow.AdvanceProjectile;
 import com.azerl0.gutitubow.event.ability.copy.UseCopiedAbilityEvent;
+import com.azerl0.gutitubow.event.gameevent.control.AdvanceProjectileSetControlEvent;
 import com.azerl0.gutitubow.event.gameplayer.*;
 import com.azerl0.gutitubow.event.gutitubowentity.GutitubowEntityRemoveEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldBreakEvent;
@@ -16,8 +18,8 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
@@ -131,12 +133,14 @@ public abstract class Ability {
         PlayerUtil.failEffectWithMessage(player, Component.text("能力が抹消されている...").color(NamedTextColor.RED));
     }
 
+    protected @NotNull AdvanceProjectile getAdvanceProjectile(@NotNull Projectile projectile) {
+        return context.getGutitubowManagers().getGutitubowEntityManager().getAdvanceProjectile(projectile);
+    }
+
     /*
      * 能力に関する発火を追加した際には、
      * 「変化」、「複製」で、発火のOverrideを追加すること
      */
-
-    public void onShoot(EntityShootBowEvent event) {}
 
     public void onArrowHit(ProjectileHitEvent event) {}
 
@@ -195,4 +199,8 @@ public abstract class Ability {
     public void onAbilityErasure(GamePlayerOnAbilityErasureEvent event) {}
 
     public void onGutitubowEntityRemove(GutitubowEntityRemoveEvent event) {}
+
+    public void onGamePlayerShoot(GamePlayerShootEvent event) {}
+
+    public void onAdvanceProjectileSetControl(AdvanceProjectileSetControlEvent event) {}
 }

@@ -3,6 +3,8 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.entity.advancearrow.AdvanceProjectile;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.ArrowUtil;
@@ -13,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.SpectralArrow;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -56,26 +57,18 @@ public class FlashAbility extends Ability {
 
         setCompassCooldown((isDebugMode() ? 3 : 20) * 20);
         startCompassCooldownTask();
+        boolean result = getGamePlayer().shoot(GamePlayerShootEvent.ShootReason.FLASH, arrow.getLocation(), velocity, 1.0f, arrow);
+        if (!result) return;
 
+        AdvanceProjectile advanceProjectile = getAdvanceProjectile(arrow);
+        advanceProjectile.setParticle(location -> location.getWorld().spawnParticle(
+                Particle.INSTANT_EFFECT,
+                location,
+                2,
+                0.05, 0.05, 0.05,
+                new Particle.Spell(Color.fromRGB(255, 255, 255), 1)
+        ));
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-
-                if (!arrow.isValid()) {
-                    cancel();
-                    return;
-                }
-
-                arrow.getWorld().spawnParticle(
-                        Particle.INSTANT_EFFECT,
-                        arrow.getLocation(),
-                        2,
-                        0.05, 0.05, 0.05,
-                        new Particle.Spell(Color.fromRGB(255, 255, 255), 1)
-                );
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     private void activeFlash() {

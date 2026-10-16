@@ -23,6 +23,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemRarity;
@@ -31,13 +32,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class GamePlayer {
     public final int COMPASS_TELEPORT_TICK = 10 * 20;
@@ -840,5 +839,19 @@ public class GamePlayer {
             double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getBaseValue();
             player.setHealth(maxHealth);
         }
+    }
+
+    public boolean shoot(GamePlayerShootEvent.ShootReason shootReason, Location location, Vector direction, float force, @Nullable Projectile projectile) {
+        Player player = getPlayer();
+        if (player == null) return false;
+
+        GamePlayerShootEvent event = new GamePlayerShootEvent(this, player, shootReason, location, direction, force, projectile);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            if (projectile != null) projectile.remove();
+            return false;
+        }
+        return true;
     }
 }

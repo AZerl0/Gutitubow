@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.ability;
 
 import com.azerl0.gutitubow.event.ability.copy.UseCopiedAbilityEvent;
+import com.azerl0.gutitubow.event.gameevent.control.AdvanceProjectileSetControlEvent;
 import com.azerl0.gutitubow.event.gameplayer.*;
 import com.azerl0.gutitubow.event.gutitubowentity.GutitubowEntityRemoveEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldBreakEvent;
@@ -26,17 +27,6 @@ public class AbilityListener implements Listener {
 
     public AbilityListener(AbilityManager abilityManager) {
         this.abilityManager = abilityManager;
-    }
-
-
-    @EventHandler
-    public void onShoot(EntityShootBowEvent event) {
-        if (!(event.getEntity() instanceof Player player)) return;
-
-        Ability ability = abilityManager.getAbility(player);
-        if (ability != null) {
-            ability.onShoot(event);
-        }
     }
 
     @EventHandler
@@ -262,6 +252,20 @@ public class AbilityListener implements Listener {
     public void onGutitubowEntityRemove(GutitubowEntityRemoveEvent event) {
         for (Ability allAbility : abilityManager.getValues()) {
             allAbility.onGutitubowEntityRemove(event);
+        }
+    }
+
+    @EventHandler
+    public void onGamePlayerShoot(GamePlayerShootEvent event) {
+        for (Ability ability : abilityManager.getValues()) {
+            ability.onGamePlayerShoot(event);
+        }
+    }
+
+    @EventHandler
+    public void onAdvanceProjectileSetControl(AdvanceProjectileSetControlEvent event) {
+        for (Ability ability : abilityManager.getValues()) {
+            ability.onAdvanceProjectileSetControl(event);
         }
     }
 }

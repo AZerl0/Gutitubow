@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.*;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.event.ability.copy.UseCopiedAbilityEvent;
+import com.azerl0.gutitubow.event.gameevent.control.AdvanceProjectileSetControlEvent;
 import com.azerl0.gutitubow.event.gameplayer.*;
 import com.azerl0.gutitubow.event.gutitubowentity.GutitubowEntityRemoveEvent;
 import com.azerl0.gutitubow.event.gutitubowentity.shield.ShieldBreakEvent;
@@ -18,7 +19,6 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
@@ -114,11 +114,6 @@ public class ChangeAbility extends Ability {
     @Override
     protected void onTick() {
         if (currentAbility != null) currentAbility.tick();
-    }
-
-    @Override
-    public void onShoot(EntityShootBowEvent event) {
-        if (currentAbility != null) currentAbility.onShoot(event);
     }
 
     @Override
@@ -266,4 +261,13 @@ public class ChangeAbility extends Ability {
         if (currentAbility != null) currentAbility.onGutitubowEntityRemove(event);
     }
 
+    @Override
+    public void onGamePlayerShoot(GamePlayerShootEvent event) {
+        if (currentAbility != null) currentAbility.onGamePlayerShoot(event);
+    }
+
+    @Override
+    public void onAdvanceProjectileSetControl(AdvanceProjectileSetControlEvent event) {
+        if (currentAbility != null) currentAbility.onAdvanceProjectileSetControl(event);
+    }
 }

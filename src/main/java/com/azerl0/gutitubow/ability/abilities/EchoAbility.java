@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import com.azerl0.gutitubow.fakeplayer.FakePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.PlayerUtil;
@@ -14,7 +15,6 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
@@ -68,13 +68,13 @@ public class EchoAbility extends Ability {
     }
 
     @Override
-    public void onShoot(EntityShootBowEvent event) {
+    public void onGamePlayerShoot(GamePlayerShootEvent event) {
         if (event.isCancelled()) return;
+        if (event.getProjectile() == null) return;
         Flame latestFlame = flames.getLast();
         if (latestFlame == null) return;
 
         latestFlame.setShootData(Flame.ShootData.getShootData(event.getProjectile()));
-
     }
 
     @Override

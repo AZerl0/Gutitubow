@@ -94,6 +94,17 @@ public enum GameEventType {
             Component.text("弓に魔法の力が宿った！"),
             ItemStack.of(Material.MAGMA_CREAM),
             ControlArrowEvent::new
+    ),
+    SHOT_BOW(
+            Component.text("ショットボウ！"),
+            List.of(
+                    Component.text("弓が「ショットボウ」に進化した！"),
+                    Component.text("1回の射撃で複数の矢が発射されるぞ！"),
+                    Component.text("ただし精度は落ちちゃっている！")
+            ),
+            Component.text("弓が「ショットボウ」になった！"),
+            ItemStack.of(Material.CROSSBOW),
+            ShotBowEvent::new
     );
 
 

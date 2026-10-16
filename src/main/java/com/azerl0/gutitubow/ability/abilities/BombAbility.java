@@ -5,6 +5,8 @@ import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.damage.DamageSource;
 import com.azerl0.gutitubow.damage.GutitubowDamageType;
+import com.azerl0.gutitubow.event.gameevent.control.AdvanceProjectileSetControlEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import com.azerl0.gutitubow.game.GamePhase;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.EntityUtil;
@@ -15,7 +17,6 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
@@ -34,8 +35,8 @@ public class BombAbility extends Ability {
     }
 
     @Override
-    public void onShoot(EntityShootBowEvent event) {
-        Arrow arrow = (Arrow) event.getProjectile();
+    public void onGamePlayerShoot(GamePlayerShootEvent event) {
+        if (!(event.getProjectile() != null && event.getProjectile() instanceof Arrow arrow)) return;
         EntityUtil.setGlow(arrow, NamedTextColor.RED);
         arrow.setGlowing(true);
         lastShootArrow = arrow;
@@ -118,5 +119,10 @@ public class BombAbility extends Ability {
         arrow.getWorld().playSound(arrow.getLocation(), Sound.ENTITY_PUFFER_FISH_STING, 1.0f, 1.0f);
 
         arrow.remove();
+    }
+
+    @Override
+    public void onAdvanceProjectileSetControl(AdvanceProjectileSetControlEvent event) {
+        event.setOverrideGlowColor(false);
     }
 }

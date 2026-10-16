@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import org.bukkit.Material;
@@ -49,17 +50,19 @@ public class QuickFireAbility extends Ability {
             onErasureEffect();
             return;
         }
-        QuickShot(player);
+        quickShot(player);
         player.setCooldown(Material.BOW, gamePlayer.getArrowReloadTick());
     }
 
-    private void QuickShot(Player player) {
+    private void quickShot(Player player) {
         Vector velocity = player.getLocation().getDirection().multiply(3);
         Arrow arrow = player.getWorld().spawn(player.getEyeLocation(), Arrow.class);
         arrow.setShooter(player);
         arrow.setVelocity(velocity);
         ArrowUtil.setFixRotation(arrow, velocity);
-        GamePlayer gamePlayer = context.game().getGamePlayer(player);
+
+        GamePlayer gamePlayer = getGamePlayer();
+        if (gamePlayer.shoot(GamePlayerShootEvent.ShootReason.QUICK_FIRE, arrow.getLocation(), velocity, 1.0f, arrow)) return;
         gamePlayer.removeArrow(1);
 
         player.getWorld().spawnParticle(Particle.SWEEP_ATTACK, player.getEyeLocation().add(player.getLocation().getDirection().normalize().multiply(1)), 1);

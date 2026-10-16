@@ -3,13 +3,13 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
-import com.azerl0.gutitubow.data.item.GutitubowItem;
+import com.azerl0.gutitubow.entity.advancearrow.AdvanceProjectile;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerOnAbilityErasureEvent;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerSneakingEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
-import de.tr7zw.nbtapi.NBT;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -17,12 +17,7 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,9 +26,8 @@ import java.util.Objects;
 public class RapidFireAbility extends Ability {
     private int rapidFireCharge = 0;
     private final int RAPID_FIRE_MAX_CHARGE = 2 * 20;
-    private int remainedRapidFire = 0;
+    private int remainedRapidFireTick = 0;
     private int shootRapidFireLevel = 0;
-    private BukkitTask rapidFireTask;
 
 
     public RapidFireAbility(AbilityContext context) {
@@ -77,17 +71,39 @@ public class RapidFireAbility extends Ability {
         if ((rapidFireCharge + 1) % RAPID_FIRE_MAX_CHARGE == 0) {
             player.getWorld().playSound(player.getLocation(), Sound.BLOCK_VAULT_OPEN_SHUTTER, 1.0f, 1.0f);
         }
-
     }
 
     @Override
-    public void onShoot(EntityShootBowEvent event) {
+    public void onGamePlayerShoot(GamePlayerShootEvent event) {
         Player player = getPlayer();
         if (player == null) return;
 
         if (player.isSneaking() && rapidFireCharge >= RAPID_FIRE_MAX_CHARGE) {
             event.setCancelled(true);
             startRapidFire();
+        }
+    }
+
+    @Override
+    public void onTick() {
+        Player player = getPlayer();
+        if (player == null) return;
+
+        if (remainedRapidFireTick <= 0) return;
+        remainedRapidFireTick--;
+        if (remainedRapidFireTick <= 0) {
+            stopRapidFire();
+        } else {
+            World world = player.getWorld();
+            if (world.getGameTime() % (9 - getShootSpeed()) == 0) {
+                rapidFireShoot(player);
+            }
+            double chargeSecondsText = Math.floor(((double) remainedRapidFireTick / 20) * 10) / 10;
+            Component message =
+                    Component.text("連射中: " + chargeSecondsText + "秒 ").color(NamedTextColor.RED)
+                            .append(Component.text("速度: " + getShootSpeed()).color(NamedTextColor.YELLOW));
+            player.sendActionBar(message);
+
         }
     }
 
@@ -112,40 +128,15 @@ public class RapidFireAbility extends Ability {
         GamePlayer gamePlayer = context.game().getGamePlayer(player);
         gamePlayer.setArrowAmount(gamePlayer.getArrowAmount() - shootRapidFireLevel);
 
-        remainedRapidFire = switch (shootRapidFireLevel) {
+        remainedRapidFireTick = switch (shootRapidFireLevel) {
             case 1 -> 3 * 20;
             case 2 -> 6 * 20;
             case 3 -> 9 * 20;
             default -> 0;
         };
         rapidFireCharge = 0;
-
-        if (rapidFireTask != null && !rapidFireTask.isCancelled()) return;
-
-        rapidFireTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (remainedRapidFire <= 0) {
-                    stopRapidFire();
-                    return;
-                }
-                updateRapidFireShooting(player);
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
-    private void updateRapidFireShooting(Player player) {
-        remainedRapidFire--;
-        World world = player.getWorld();
-        if (world.getGameTime() % (9 - getShootSpeed()) == 0) {
-            rapidFireShoot(player);
-        }
-        double chargeSecondsText = Math.floor(((double) remainedRapidFire / 20) * 10) / 10;
-        Component message =
-                Component.text("連射中: " + chargeSecondsText + "秒 ").color(NamedTextColor.RED)
-                        .append(Component.text("速度: " + getShootSpeed()).color(NamedTextColor.YELLOW));
-        player.sendActionBar(message);
-    }
 
     private void rapidFireShoot(@NotNull Player player) {
         Vector velocity = player.getLocation().getDirection().multiply(3);
@@ -153,48 +144,22 @@ public class RapidFireAbility extends Ability {
         arrow.setShooter(player);
         arrow.setVelocity(velocity);
         ArrowUtil.setFixRotation(arrow, velocity);
+
         player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_ARROW_SHOOT, 1.0f, 1.0f);
+        boolean result = getGamePlayer().shoot(GamePlayerShootEvent.ShootReason.RAPID_FIRE, arrow.getLocation(), velocity, 1.0f, arrow);
+        if (!result) return;
 
-        EntityShootBowEvent event = new EntityShootBowEvent(
-                player,
-                GutitubowItem.GUTITUBOW,
-                ItemStack.of(Material.ARROW),
-                arrow,
-                EquipmentSlot.HAND,
-                1.0f,
-                false
-        );
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) return;
-
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-
-                boolean inGround = NBT.get(arrow, nbt -> (boolean) nbt.getBoolean("inGround"));
-
-
-                if (!arrow.isValid() || inGround) {
-                    cancel();
-                    return;
-                }
-
-                arrow.getWorld().spawnParticle(
-                        Particle.INSTANT_EFFECT,
-                        arrow.getLocation(),
-                        3,
-                        0.15, 0.15, 0.15,
-                        new Particle.Spell(Color.fromRGB(199, 126, 0), 1)
-                );
-            }
-
-        }.runTaskTimer(context.gutitubow(), 20L, 1L);
+        AdvanceProjectile advanceProjectile = getAdvanceProjectile(arrow);
+        advanceProjectile.setParticle(location -> location.getWorld().spawnParticle(
+                Particle.INSTANT_EFFECT,
+                location,
+                3,
+                0.15, 0.15, 0.15,
+                new Particle.Spell(Color.fromRGB(199, 126, 0), 1)
+        ));
     }
 
     private void stopRapidFire() {
-        if (rapidFireTask != null) rapidFireTask.cancel();
-        rapidFireTask = null;
         rapidFireCharge = 0;
         Player player = getPlayer();
         if (player == null) return;
@@ -212,18 +177,18 @@ public class RapidFireAbility extends Ability {
     private int getShootSpeed() {
         switch (shootRapidFireLevel) {
             case 1:
-                if (remainedRapidFire <= 2 * 20) return 2;
-                if (remainedRapidFire <= 3 * 20) return 1;
+                if (remainedRapidFireTick <= 2 * 20) return 2;
+                if (remainedRapidFireTick <= 3 * 20) return 1;
             case 2:
-                if (remainedRapidFire <= 2 * 20) return 4;
-                if (remainedRapidFire <= 4 * 20) return 3;
-                if (remainedRapidFire <= 6 * 20) return 2;
+                if (remainedRapidFireTick <= 2 * 20) return 4;
+                if (remainedRapidFireTick <= 4 * 20) return 3;
+                if (remainedRapidFireTick <= 6 * 20) return 2;
             case 3:
-                if (remainedRapidFire <= 2 * 20) return 5;
-                if (remainedRapidFire <= 4 * 20) return 4;
-                if (remainedRapidFire <= 6 * 20) return 3;
-                if (remainedRapidFire <= 8 * 20) return 2;
-                if (remainedRapidFire <= 9 * 20) return 1;
+                if (remainedRapidFireTick <= 2 * 20) return 5;
+                if (remainedRapidFireTick <= 4 * 20) return 4;
+                if (remainedRapidFireTick <= 6 * 20) return 3;
+                if (remainedRapidFireTick <= 8 * 20) return 2;
+                if (remainedRapidFireTick <= 9 * 20) return 1;
         }
         return 1;
     }

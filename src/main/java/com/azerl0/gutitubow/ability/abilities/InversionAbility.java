@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.MathUtil;
 import com.azerl0.gutitubow.util.PlayerUtil;
@@ -157,7 +158,7 @@ public class InversionAbility extends Ability {
         inversionBall.setVelocity(velocity);
         ItemStack itemStack = ItemStack.of(Material.FIREWORK_STAR);
         inversionBall.setItem(itemStack);
-
-        player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_SNOWBALL_THROW, 1.0f, 0.5f);
+        boolean result = getGamePlayer().shoot(GamePlayerShootEvent.ShootReason.INVERSION_BALL, inversionBall.getLocation(), velocity, 1.0f, inversionBall);
+        if (result) player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_SNOWBALL_THROW, 1.0f, 0.5f);
     }
 }
