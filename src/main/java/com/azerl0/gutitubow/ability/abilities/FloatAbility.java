@@ -155,7 +155,7 @@ public class FloatAbility extends Ability {
         floatAreaCenter = null;
         if (floatingTask != null) floatingTask.cancel();
         floatingTask = null;
-        setCompassCooldown(10 * 20);
+        setCompassCooldown(3 * 20);
     }
 
     private void startFloating() {
