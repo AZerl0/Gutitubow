@@ -17,8 +17,6 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,10 +28,9 @@ public class FloatAbility extends Ability {
     private final int floatMaxCharge = 20 * 20;
 
     private int floatCharge;
-    private BukkitTask floatingTask;
     private int areaPlacingCharge;
     private Location floatAreaCenter;
-    private boolean isPlacing;
+    private FloatAbilityState abilityState;
 
     public FloatAbility(AbilityContext context) {
         super(context);
@@ -46,9 +43,9 @@ public class FloatAbility extends Ability {
 
     @Override
     protected void onInit(Player player) {
-        this.floatCharge = 15 * 20;
-        this.floatAreaCenter = null;
-        this.isPlacing = false;
+        floatCharge = 15 * 20;
+        floatAreaCenter = null;
+        abilityState = FloatAbilityState.NONE;
     }
 
     @Override
@@ -62,19 +59,15 @@ public class FloatAbility extends Ability {
         return ((Entity) player).isOnGround();
     }
 
-    private boolean isFloating() {
-        return floatingTask != null;
-    }
-
     @Override
     public void onToggleSneak(PlayerToggleSneakEvent event) {
         if (event.isSneaking()) {
-            if (isFloating()) {
+            if (abilityState == FloatAbilityState.FLOATING) {
                 stopFloating();
             }
 
             areaPlacingCharge = 0;
-            if (!hasCompassCooldown()) isPlacing = true;
+            if (!hasCompassCooldown()) abilityState = FloatAbilityState.PLACING;
 
         }
     }
@@ -93,11 +86,12 @@ public class FloatAbility extends Ability {
             player.sendActionBar(message);
         }
 
-
         if (isOnGround()) {
             if (getPlayer().getWorld().getGameTime() % 3 == 0) floatCharge++;
             if (floatCharge > floatMaxCharge) floatCharge = floatMaxCharge;
         }
+
+        if (abilityState == FloatAbilityState.FLOATING) updateFloat();
     }
 
     @Override
@@ -109,7 +103,7 @@ public class FloatAbility extends Ability {
         if (isErasing()) {
             return;
         }
-        placingFloatArea();
+        if (abilityState == FloatAbilityState.PLACING) placingFloatArea();
     }
 
     @Override
@@ -122,56 +116,43 @@ public class FloatAbility extends Ability {
 
         areaPlacingCharge++;
         if (areaPlacingCharge < 20) {
-            if (isPlacing) {
-                Component subtitle = ComponentUtil.getGaugeComponent(
-                        Component.text("§7設置中... "),
-                        areaPlacingCharge,
-                        20,
-                        NamedTextColor.AQUA,
-                        NamedTextColor.GRAY
+            Component subtitle = ComponentUtil.getGaugeComponent(
+                    Component.text("§7設置中... "),
+                    areaPlacingCharge,
+                    20,
+                    NamedTextColor.AQUA,
+                    NamedTextColor.GRAY
+            );
+            Player player = getPlayer();
+            if (player != null) {
+                Title title = Title.title(
+                        Component.empty(),
+                        subtitle,
+                        Title.Times.times(
+                                java.time.Duration.ofMillis(0),
+                                java.time.Duration.ofSeconds(1),
+                                java.time.Duration.ofMillis(0)
+                        )
                 );
-                Player player = getPlayer();
-                if (player != null) {
-                    Title title = Title.title(
-                            Component.empty(),
-                            subtitle,
-                            Title.Times.times(
-                                    java.time.Duration.ofMillis(0),
-                                    java.time.Duration.ofSeconds(1),
-                                    java.time.Duration.ofMillis(0)
-                            )
-                    );
-                    GamePlayer gamePlayer = context.game().getGamePlayer(player);
-                    if (!gamePlayer.isFlashing()) getPlayer().showTitle(title);
-                }
-
+                GamePlayer gamePlayer = context.game().getGamePlayer(player);
+                if (!gamePlayer.isFlashing()) getPlayer().showTitle(title);
             }
         } else {
-            if (floatAreaCenter == null && floatingTask == null) startFloating();
+            if (floatAreaCenter == null) startFloating();
         }
     }
 
     private void stopFloating() {
         floatAreaCenter = null;
-        if (floatingTask != null) floatingTask.cancel();
-        floatingTask = null;
         setCompassCooldown(3 * 20);
     }
 
     private void startFloating() {
         Player player = getPlayer();
         if (player == null) return;
-        isPlacing = false;
+        abilityState = FloatAbilityState.FLOATING;
         floatAreaCenter = player.getLocation();
         floatAreaCenter.getWorld().playSound(floatAreaCenter, Sound.BLOCK_BEACON_ACTIVATE, 1.0f, 1.0f);
-        if (floatingTask != null && !floatingTask.isCancelled()) return;
-
-        floatingTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                updateFloat();
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     private void updateFloat() {
@@ -258,5 +239,11 @@ public class FloatAbility extends Ability {
                     dust
             );
         }
+    }
+
+    private enum FloatAbilityState {
+        NONE,
+        PLACING,
+        FLOATING
     }
 }
