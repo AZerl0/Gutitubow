@@ -1,4 +1,4 @@
-package com.azerl0.gutitubow.entity.advancearrow;
+package com.azerl0.gutitubow.entity.advanceprojectile;
 
 import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.GutitubowEntityManager;

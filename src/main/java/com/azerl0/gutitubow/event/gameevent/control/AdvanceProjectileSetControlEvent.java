@@ -1,6 +1,6 @@
 package com.azerl0.gutitubow.event.gameevent.control;
 
-import com.azerl0.gutitubow.entity.advancearrow.AdvanceProjectile;
+import com.azerl0.gutitubow.entity.advanceprojectile.AdvanceProjectile;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

@@ -3,7 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
-import com.azerl0.gutitubow.entity.advancearrow.AdvanceProjectile;
+import com.azerl0.gutitubow.entity.advanceprojectile.AdvanceProjectile;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.AdvancementUtil;

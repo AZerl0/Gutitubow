@@ -1,7 +1,7 @@
 package com.azerl0.gutitubow.entity;
 
 import com.azerl0.gutitubow.Gutitubow;
-import com.azerl0.gutitubow.entity.advancearrow.AdvanceProjectile;
+import com.azerl0.gutitubow.entity.advanceprojectile.AdvanceProjectile;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;

@@ -1,7 +1,7 @@
 package com.azerl0.gutitubow.ability;
 
 
-import com.azerl0.gutitubow.entity.advancearrow.AdvanceProjectile;
+import com.azerl0.gutitubow.entity.advanceprojectile.AdvanceProjectile;
 import com.azerl0.gutitubow.event.ability.copy.UseCopiedAbilityEvent;
 import com.azerl0.gutitubow.event.gameevent.control.AdvanceProjectileSetControlEvent;
 import com.azerl0.gutitubow.event.gameplayer.*;
