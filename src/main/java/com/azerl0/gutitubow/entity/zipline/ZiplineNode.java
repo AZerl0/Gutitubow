@@ -12,6 +12,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LeashHitch;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -94,13 +95,20 @@ public class ZiplineNode extends GutitubowEntity {
 
     @Override
     protected void onInteractEntity(PlayerInteractEntityEvent event) {
+        if (event.isCancelled()) return;
+        if (connectionNodes.isEmpty()) return;
+
         Entity clicked = event.getRightClicked();
         if (clicked.getUniqueId().equals(leash.getUniqueId())) {
             ZiplineVehicle vehicle = entityManager.spawnGutitubowEntity(getLocation(), ZiplineVehicle.class);
             vehicle.addPassenger(event.getPlayer());
-            vehicle.setNextZiplineNode(connectionNodes.iterator().next());
+            ZiplineNode nextNode = connectionNodes.iterator().next();
+            vehicle.setNextZiplineNode(nextNode);
             clicked.getWorld().playSound(clicked.getLocation(), Sound.ENTITY_PUFFER_FISH_BLOW_UP, 1.0f, 1.0f);
 
+            Vector offset = nextNode.getLocation().toVector().subtract(getLocation().toVector()).normalize().multiply(0.3);
+            Location offsetLoc = getLocation().clone().add(offset);
+            vehicle.teleport(offsetLoc);
         }
     }
 
