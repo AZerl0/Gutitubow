@@ -13,6 +13,7 @@ import com.azerl0.gutitubow.game.GamePhase;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.util.AdvancementUtil;
+import com.azerl0.gutitubow.util.ParticleUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import com.azerl0.gutitubow.data.tags.GutitubowBlockTags;
@@ -161,12 +162,24 @@ public class SnipeAbility extends Ability {
                 Particle.EXPLOSION,
                 player.getEyeLocation(), 1);
 
-        __spawnParticleLine(
-                player.getWorld(),
+        ParticleUtil.spawnParticleLine(
                 player.getEyeLocation(),
                 hitPos,
-                0.2
+                0.2,
+                point -> point.getWorld().spawnParticle(
+                        Particle.DUST,
+                        point,
+                        1,
+                        0, 0, 0,
+                        0,
+                        new Particle.DustOptions(
+                                Color.RED,
+                                1.0f
+                        ),
+                        true
+                )
         );
+
         return true;
     }
 
@@ -201,40 +214,6 @@ public class SnipeAbility extends Ability {
 
         } else {
             return blockHit;
-        }
-    }
-
-    private void __spawnParticleLine(
-            World world,
-            Location start,
-            Location end,
-            double spacing
-    ) {
-
-        Vector direction = end.toVector().subtract(start.toVector());
-        double distance = direction.length();
-
-        direction.normalize();
-
-        // 何個パーティクルを打つか
-        int particles = (int) (distance / spacing);
-
-        for (int i = 0; i <= particles; i++) {
-            Vector offset = direction.clone().multiply(spacing * i);
-            Location point = start.clone().add(offset);
-
-            world.spawnParticle(
-                    Particle.DUST,
-                    point,
-                    1,
-                    0, 0, 0,
-                    0,
-                    new Particle.DustOptions(
-                            Color.RED,
-                            1.0f
-                    ),
-                    true
-            );
         }
     }
 }
