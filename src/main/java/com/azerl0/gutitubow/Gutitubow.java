@@ -1,7 +1,5 @@
 package com.azerl0.gutitubow;
 
-import com.azerl0.gutitubow.ability.zipline.ZiplineListener;
-import com.azerl0.gutitubow.ability.zipline.ZiplineManager;
 import com.azerl0.gutitubow.api.game.Game;
 import com.azerl0.gutitubow.arena.ArenaManager;
 import com.azerl0.gutitubow.config.ConfigManager;
@@ -105,7 +103,6 @@ public final class Gutitubow extends JavaPlugin {
         pluginManager.registerEvents(new PacketListener(flagManager), this);
         pluginManager.registerEvents(new FixLeftClickListener(fixLeftClickManager), this);
         pluginManager.registerEvents(new PinListener(pinManager), this);
-        pluginManager.registerEvents(new ZiplineListener(gutitubowManagers.getZiplineManager()), this);
         pluginManager.registerEvents(new FirstJoin(), this);
         pluginManager.registerEvents(new SkinDataListener(gutitubowManagers.getSkinDataManager()), this);
         pluginManager.registerEvents(new ProfileListener(gutitubowManagers.getProfileManager()), this);
@@ -143,7 +140,6 @@ public final class Gutitubow extends JavaPlugin {
 
         game.destroy();
         gutitubowManagers.getAbilityManager().allResetAbilities();
-        gutitubowManagers.getZiplineManager().removeAllZiplines();
         gutitubowManagers.getGutitubowEntityManager().removeAllGutitubowEntities();
     }
 
@@ -162,7 +158,6 @@ public final class Gutitubow extends JavaPlugin {
                 new EntityGlowManager(flagManager, scoreboardManager),
                 scoreboardManager,
                 new FakePlayerManager(this),
-                new ZiplineManager(this),
                 new GutitubowEntityManager(),
                 new ArenaManager(this),
                 skinDataManager,

@@ -3,7 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
-import com.azerl0.gutitubow.ability.zipline.Zipline;
+import com.azerl0.gutitubow.entity.zipline.ZiplineNode;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
@@ -14,11 +14,13 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class ZiplineAbility extends Ability {
-    private Zipline zipline;
     private @Nullable Chicken leashChicken;
+    private Set<ZiplineNode> ziplineNodeSet = new HashSet<>();
 
 
     public ZiplineAbility(AbilityContext context) {
@@ -32,8 +34,10 @@ public class ZiplineAbility extends Ability {
 
     @Override
     protected void onReset() {
-        if (zipline != null) context.ziplineManager().removeZipline(zipline);
         if (leashChicken != null) leashChicken.remove();
+        for (ZiplineNode ziplineNode : ziplineNodeSet) {
+            ziplineNode.remove();
+        }
     }
 
     @Override
@@ -56,7 +60,7 @@ public class ZiplineAbility extends Ability {
             Objects.requireNonNull(leashChicken.getAttribute(Attribute.SCALE)).setBaseValue(0.0);
             leashChicken.setLeashHolder(player);
             event.getProjectile().addPassenger(leashChicken);
-            setCompassCooldown(30 * 20);
+            setCompassCooldown(isDebugMode() ? 2 * 20 : 30 * 20);
             startCompassCooldownTask();
         }
     }
@@ -64,7 +68,11 @@ public class ZiplineAbility extends Ability {
     @Override
     public void onArrowHit(ProjectileHitEvent event) {
         if (event.getEntity().getScoreboardTags().contains("gutitubow.ziplineArrow") && event.getHitBlock() != null && getPlayer() != null) {
-            if (zipline != null) context.ziplineManager().removeZipline(zipline);
+
+            for (ZiplineNode ziplineNode : ziplineNodeSet) {
+                ziplineNode.remove();
+            }
+            ziplineNodeSet.clear();
 
             Location start = getPlayer().getLocation();
             Location end = event.getEntity().getLocation().add(0.0, 0.25, 0.0);
@@ -72,9 +80,18 @@ public class ZiplineAbility extends Ability {
             Vector offsetDir = event.getEntity().getLocation().getDirection();
             offsetDir.setZ(-offsetDir.getZ());
             end.add(offsetDir.multiply(0.1));
-            zipline = context.ziplineManager().createZipline(start, end);
             if (leashChicken != null) leashChicken.remove();
 
+            ZiplineNode startNode = createNode(start);
+            ZiplineNode endNode = createNode(end);
+
+            int life = 120 * 20;
+            startNode.addConnectionNode(endNode);
+            startNode.setLife(life);
+            endNode.addConnectionNode(startNode);
+            endNode.setLife(life);
+            ziplineNodeSet.add(startNode);
+            ziplineNodeSet.add(endNode);
         }
     }
 
@@ -85,5 +102,9 @@ public class ZiplineAbility extends Ability {
                 if (getPlayer() != null) leashChicken.setLeashHolder(getPlayer());
             }
         }
+    }
+
+    private ZiplineNode createNode(@NotNull Location location) {
+        return context.getGutitubowManagers().getGutitubowEntityManager().spawnGutitubowEntity(location, ZiplineNode.class);
     }
 }
