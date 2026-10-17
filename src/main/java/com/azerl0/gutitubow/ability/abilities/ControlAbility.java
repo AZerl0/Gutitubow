@@ -11,7 +11,6 @@ import com.azerl0.gutitubow.event.gutitubowentity.GutitubowEntityRemoveEvent;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.MathUtil;
-import de.tr7zw.nbtapi.NBT;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
@@ -129,9 +128,6 @@ public class ControlAbility extends Ability {
                 arrow.setVelocity(newVelocity);
                 ArrowUtil.setFixRotation(arrow, newVelocity);
 
-                NBT.modify(arrow, nbt -> {
-                    nbt.setBoolean("inGround", false);
-                });
 
                 arrow.addScoreboardTag("gutitubow:control_arrow/collecting");
             } else {

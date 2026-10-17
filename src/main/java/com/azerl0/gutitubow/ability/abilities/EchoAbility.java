@@ -3,13 +3,12 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.entity.advanceprojectile.AdvanceProjectile;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
-import com.azerl0.gutitubow.fakeplayer.FakePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.PlayerUtil;
-import de.tr7zw.nbtapi.NBT;
-import net.citizensnpcs.api.npc.NPC;
-import net.citizensnpcs.util.PlayerAnimation;
+import com.destroystokyo.paper.ClientOption;
+import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
@@ -17,6 +16,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EchoAbility extends Ability {
-    private @Nullable FakePlayer fakePlayer;
+    private @Nullable Mannequin mannequin;
     private final List<Flame> flames = new ArrayList<>();
     private int echoTime = 3;
     private boolean timeLeaping = false;
@@ -93,22 +93,20 @@ public class EchoAbility extends Ability {
         Player player = getPlayer();
         if (player == null) return;
 
-        fakePlayer = context.fakePlayerManager().createFakePlayer(player.getName(), player.getLocation());
-        NPC npc = fakePlayer.getNpc();
-        npc.data().set(NPC.Metadata.COLLIDABLE, false);
-        npc.getEntity().setSneaking(true);
-        if (fakePlayer.getNpc().getCosmeticEntity() instanceof Player echoPlayer) {
-            context.scoreboardManager().addEchoPlayer(echoPlayer);
-        }
+        mannequin = player.getWorld().spawn(player.getLocation(), Mannequin.class);
+        mannequin.setProfile(ResolvableProfile.resolvableProfile(player.getPlayerProfile()));
+        mannequin.setMainHand(player.getMainHand());
+        mannequin.setSkinParts(player.getClientOption(ClientOption.SKIN_PARTS));
+        mannequin.setInvulnerable(true);
+
+        context.scoreboardManager().addEchoMannequin(mannequin);
     }
 
     private void removeFakePlayer() {
-        if (fakePlayer == null) return;
-        fakePlayer.getNpc().destroy();
-        if (fakePlayer.getNpc().getEntity() instanceof Player echoPlayer) {
-            context.scoreboardManager().removeEchoPlayer(echoPlayer);
-        }
-        fakePlayer = null;
+        if (mannequin == null) return;
+        mannequin.remove();
+        context.scoreboardManager().removeEchoPlayer(mannequin);
+        mannequin = null;
 
     }
 
@@ -129,40 +127,34 @@ public class EchoAbility extends Ability {
             if (player.getGameMode() == GameMode.SPECTATOR) {
                 removeFakePlayer();
             } else {
-                if (fakePlayer == null) createFakePlayer();
+                if (mannequin == null) createFakePlayer();
                 flames.add(Flame.getFlame(player));
                 if (flames.size() > 5 * 20) flames.removeFirst();
                 int index = 5 * 20 - echoTime * 20;
                 if (index >= flames.size()) index = 0;
-                if (!flames.isEmpty()) updateFakePlayer(fakePlayer, flames.get(index));
+                if (!flames.isEmpty()) updateFakePlayer(mannequin, flames.get(index));
             }
         }
         if (!hasCompassCooldown()) player.sendActionBar(Component.text("反響: " + echoTime + "秒前"));
-        if (fakePlayer != null && fakePlayer.getNpc().getCosmeticEntity() instanceof Player echoPlayer) {
+        if (mannequin != null) {
             PotionEffect invisible = new PotionEffect(PotionEffectType.INVISIBILITY, -1, 0, true, false, true);
-            echoPlayer.addPotionEffect(invisible);
+            mannequin.addPotionEffect(invisible);
         }
 
     }
 
-    private void updateFakePlayer(@NotNull FakePlayer targetFakePlayer, @NotNull Flame flame) {
-        NPC npc = targetFakePlayer.getNpc();
-        npc.teleport(flame.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
-        npc.getEntity().setPose(flame.getPose());
-        if (npc.getEntity() instanceof Player echoPlayer) {
-            echoPlayer.getEquipment().setArmorContents(flame.getArmorContents());
-            echoPlayer.getEquipment().setItemInMainHand(flame.getMainHandItem());
-            echoPlayer.getEquipment().setItemInOffHand(flame.getOffhandItem());
-            echoPlayer.setPose(flame.getPose(), true);
-            echoPlayer.setSneaking(flame.getPose() == Pose.SNEAKING);
-            try {
-                if (flame.isHandRaised()) {
-                    PlayerAnimation.START_USE_MAINHAND_ITEM.play(echoPlayer);
-                } else PlayerAnimation.STOP_USE_ITEM.play(echoPlayer);
+    private void updateFakePlayer(@NotNull Mannequin targetFakePlayer, @NotNull Flame flame) {
+        targetFakePlayer.teleport(flame.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+        targetFakePlayer.setPose(flame.getPose());
+            targetFakePlayer.getEquipment().setArmorContents(flame.getArmorContents());
+            targetFakePlayer.getEquipment().setItemInMainHand(flame.getMainHandItem());
+            targetFakePlayer.getEquipment().setItemInOffHand(flame.getOffhandItem());
+            targetFakePlayer.setPose(flame.getPose(), true);
+            targetFakePlayer.setSneaking(flame.getPose() == Pose.SNEAKING);
+        if (flame.isHandRaised()) {
+            targetFakePlayer.startUsingItem(EquipmentSlot.HAND);
+        } else targetFakePlayer.clearActiveItem();
 
-            } catch (Exception ignored) {
-            }
-        }
         Flame.ShootData shootData = flame.getShootData();
         if (shootData != null && !isErasing()) {
             Vector velocity = shootData.getVelocity();
@@ -172,28 +164,18 @@ public class EchoAbility extends Ability {
             arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
             ArrowUtil.setFixRotation(arrow, velocity);
 
-            new BukkitRunnable() {
+            AdvanceProjectile advanceProjectile = getAdvanceProjectile(arrow);
+            advanceProjectile.setParticle(location -> {
                 final Particle.DustOptions dust = new Particle.DustOptions(Color.fromRGB(255, 240, 23), 1.0f);
-
-                @Override
-                public void run() {
-                    boolean inGround = NBT.get(arrow, nbt -> (boolean) nbt.getBoolean("inGround"));
-
-                    if (!arrow.isValid() || inGround) {
-                        cancel();
-                        return;
-                    }
-                    arrow.getWorld().spawnParticle(
-                            Particle.DUST,
-                            arrow.getLocation(),
-                            4,
-                            0.1, 0.1, 0.1,
-                            0,
-                            dust
-                    );
-                }
-
-            }.runTaskTimer(context.gutitubow(), 0L, 1L);
+                location.getWorld().spawnParticle(
+                        Particle.DUST,
+                        location,
+                        4,
+                        0.1, 0.1, 0.1,
+                        0,
+                        dust
+                );
+            });
 
         }
     }
@@ -204,14 +186,12 @@ public class EchoAbility extends Ability {
 
         timeLeaping = true;
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS, 1.0f, 1.0f);
-        FakePlayer timeLeapFakePlayer = context.fakePlayerManager().createFakePlayer(player.getName(), player.getLocation());
-        Entity timeLeapEntity = timeLeapFakePlayer.getNpc().getEntity();
-        NPC npc = timeLeapFakePlayer.getNpc();
-        npc.data().set(NPC.Metadata.COLLIDABLE, false);
 
-        if (timeLeapEntity instanceof Player timeLeapEchoPlayer) {
-            context.scoreboardManager().addEchoPlayer(timeLeapEchoPlayer);
-        }
+        Mannequin timeLeapMannequin = player.getWorld().spawn(player.getLocation(), Mannequin.class);
+        timeLeapMannequin.setCollidable(false);
+        timeLeapMannequin.setInvulnerable(true);
+
+        context.scoreboardManager().addEchoMannequin(timeLeapMannequin);
 
         player.setGameMode(GameMode.SPECTATOR);
         Bukkit.getScheduler().runTaskLater(context.gutitubow(), () -> {
@@ -241,25 +221,23 @@ public class EchoAbility extends Ability {
                 step += echoTime == 1 ? 1 : 2;
 
                 if (step > echoTime * 20) {
-                    updateFakePlayer(timeLeapFakePlayer, flames.getFirst());
+                    updateFakePlayer(timeLeapMannequin, flames.getFirst());
                     flames.clear();
                     timeLeaping = false;
                     player.setGameMode(GameMode.ADVENTURE);
-                    if (timeLeapEntity instanceof Player timeLeapEchoPlayer) {
-                        context.scoreboardManager().removeEchoPlayer(timeLeapEchoPlayer);
-                    }
+                    context.scoreboardManager().removeEchoPlayer(timeLeapMannequin);
 
-                    timeLeapFakePlayer.getNpc().destroy();
+                    timeLeapMannequin.remove();
                     cancel();
                     return;
                 }
                 int index = flames.size() - step;
                 if (index >= flames.size()) index = flames.size() - 1;
                 if (index < 0) index = 0;
-                updateFakePlayer(timeLeapFakePlayer, flames.get(index));
-                player.setSpectatorTarget(timeLeapEntity);
+                updateFakePlayer(timeLeapMannequin, flames.get(index));
+                player.setSpectatorTarget(timeLeapMannequin);
                 if (PlayerUtil.isBedrock(player)) {
-                    player.teleport(timeLeapEntity);
+                    player.teleport(timeLeapMannequin);
                 }
 
             }

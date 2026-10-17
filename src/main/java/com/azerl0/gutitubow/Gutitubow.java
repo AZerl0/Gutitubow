@@ -7,7 +7,6 @@ import com.azerl0.gutitubow.entity.GutitubowEntityListener;
 import com.azerl0.gutitubow.entity.GutitubowEntityManager;
 import com.azerl0.gutitubow.entity.carepackage.CarePackageListener;
 import com.azerl0.gutitubow.debug.DebugManager;
-import com.azerl0.gutitubow.fakeplayer.FakePlayerManager;
 import com.azerl0.gutitubow.firstjoin.FirstJoin;
 import com.azerl0.gutitubow.game.*;
 import com.azerl0.gutitubow.profiler.ProfileListener;
@@ -157,7 +156,6 @@ public final class Gutitubow extends JavaPlugin {
                 new AbilityManager(abilityContext),
                 new EntityGlowManager(flagManager, scoreboardManager),
                 scoreboardManager,
-                new FakePlayerManager(this),
                 new GutitubowEntityManager(),
                 new ArenaManager(this),
                 skinDataManager,

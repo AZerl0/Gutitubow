@@ -15,8 +15,6 @@ import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.azerl0.gutitubow.util.PlayerUtil;
-import de.tr7zw.nbtapi.NBT;
-import net.citizensnpcs.api.CitizensAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
@@ -103,10 +101,6 @@ public class GameListener implements Listener {
                 } else if (GutitubowBlockTags.BREAKABLE_BY_GUTITUBOW_ARROW.isTagged(block.getType())) {
                     if (game.getGlassBreakManager().breakConnectedGlass(block, 64)) {
 
-                        Bukkit.getScheduler().runTask(gutitubow, () -> NBT.modify(event.getEntity(), nbt -> {
-                            nbt.setBoolean("inGround", false);
-                        }));
-
                         if (abilityType != AbilityType.RICOCHET) {
                             event.getEntity().remove();
                         }
@@ -130,10 +124,6 @@ public class GameListener implements Listener {
             if (EntityUtil.isInvalidHitEntity(hitEntity)) return;
 
             if (hitEntity instanceof Player hitPlayer) {
-                if (CitizensAPI.getNPCRegistry().isNPC(hitPlayer)) {
-                    event.setCancelled(true);
-                    return;
-                }
                 if (!(shooter instanceof Player shooterPlayer)) return;
 
                 if (game.getTeamManager().isTeammate(shooterPlayer, hitPlayer)) {
@@ -162,8 +152,10 @@ public class GameListener implements Listener {
                     hitHappyGhast.damage(2);
                     event.setCancelled(true);
                     return;
+                } else if (hitEntity instanceof Mannequin) {
+                    return;
                 }
-                if (!(hitEntity instanceof ArmorStand armorStand && armorStand.isInvulnerable())) event.setCancelled(true);
+                if (!(hitEntity instanceof ArmorStand armorStand && armorStand.isMarkedInvulnerable())) event.setCancelled(true);
             }
         }
     }
@@ -206,7 +198,6 @@ public class GameListener implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (CitizensAPI.getNPCRegistry().isNPC(player)) return;
         GamePlayer gamePlayer = game.getGamePlayer(player);
         gamePlayer.updatePlayerBoard();
     }

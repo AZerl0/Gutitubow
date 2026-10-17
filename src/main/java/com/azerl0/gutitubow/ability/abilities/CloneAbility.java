@@ -4,18 +4,20 @@ import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.event.gameplayer.PlayerFixLeftClickEvent;
-import com.azerl0.gutitubow.fakeplayer.FakePlayer;
 import com.azerl0.gutitubow.util.ArrowUtil;
-import net.citizensnpcs.api.npc.NPC;
-import net.citizensnpcs.util.PlayerAnimation;
+import com.destroystokyo.paper.ClientOption;
+import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -77,8 +79,8 @@ public class CloneAbility extends Ability {
     @Override
     public void onAnyProjectileHit(ProjectileHitEvent event) {
         if (event.isCancelled()) return;
-        if (event.getHitEntity() instanceof Player hitPlayer) {
-            Clone clone = getClone(hitPlayer.getUniqueId());
+        if (event.getHitEntity() instanceof Mannequin hitMannequin) {
+            Clone clone = getClone(hitMannequin.getUniqueId());
             if (clone != null) {
                 if (!(event.getEntity().getShooter() instanceof Player shooter)) return;
                 if (context.game().isTeammate(shooter.getUniqueId(), playerUUID)) return;
@@ -152,9 +154,7 @@ public class CloneAbility extends Ability {
 
     private class Clone {
         private final UUID ownerUUID;
-        private final FakePlayer fakePlayer;
-        private final NPC npc;
-        private final Player clonePlayer;
+        private final Mannequin mannequin;
         private BukkitTask cloneUpdateTask;
         private Player shootTarget;
         private int shootProgress = 0;
@@ -163,31 +163,25 @@ public class CloneAbility extends Ability {
         private int timer;
 
         private Clone(Player owner, Location location, CloneAIType aiType) {
-            this.ownerUUID = owner.getUniqueId();
-            fakePlayer = context.fakePlayerManager().createFakePlayer(owner.getName(), location);
-            npc = fakePlayer.getNpc();
-            clonePlayer = (Player) npc.getEntity();
+            ownerUUID = owner.getUniqueId();
+
+            mannequin = location.getWorld().spawn(location, Mannequin.class);
+            mannequin.setProfile(ResolvableProfile.resolvableProfile(owner.getPlayerProfile()));
+            mannequin.setMainHand(owner.getMainHand());
+            mannequin.setSkinParts(owner.getClientOption(ClientOption.SKIN_PARTS));
+            mannequin.setInvulnerable(true);
+
             this.aiType = aiType;
             this.timer = 60 * 20;
             switch (aiType) {
-                case RUN, CONTROL_RUN -> {
-                    clonePlayer.getEquipment().setItemInMainHand(ItemStack.of(Material.BOW));
-                }
+                case RUN, CONTROL_RUN -> mannequin.getEquipment().setItemInMainHand(ItemStack.of(Material.BOW));
                 case SPYGLASS -> {
-                    clonePlayer.getEquipment().setItemInMainHand(ItemStack.of(Material.SPYGLASS));
-                    Vector velocity = clonePlayer.getLocation().getDirection().multiply(movementSpeed);
-                    clonePlayer.setVelocity(velocity);
+                    mannequin.getEquipment().setItemInMainHand(ItemStack.of(Material.SPYGLASS));
+                    Vector velocity = mannequin.getLocation().getDirection().multiply(movementSpeed);
+                    mannequin.setVelocity(velocity);
                 }
             }
-            context.glowManager().addGlow(owner, clonePlayer);
-
-            Bukkit.getScheduler().runTaskLater(context.gutitubow(), () -> {
-//                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "npc select " + npc.getId());
-//                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "npc skinlayers --cape true");
-//                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "npc skinlayers --cape false");
-                clonePlayer.setSneaking(true);
-                clonePlayer.setSneaking(false);
-            }, 2L);
+            context.glowManager().addGlow(owner, mannequin);
 
             if (cloneUpdateTask != null && !cloneUpdateTask.isCancelled()) return;
 
@@ -200,14 +194,14 @@ public class CloneAbility extends Ability {
         }
 
         private UUID getEntityUUID() {
-            return fakePlayer.getNpc().getEntity().getUniqueId();
+            return mannequin.getUniqueId();
         }
 
         private void update() {
             timer--;
             if (timer <= 0) {
-                clonePlayer.getWorld().spawnParticle(Particle.POOF, clonePlayer.getLocation(), 20, 1.0, 1.0, 1.0, 0);
-                npc.despawn();
+                mannequin.getWorld().spawnParticle(Particle.POOF, mannequin.getLocation(), 20, 1.0, 1.0, 1.0, 0);
+                mannequin.remove();
                 remove();
                 return;
             }
@@ -215,42 +209,59 @@ public class CloneAbility extends Ability {
                 Player owner = getPlayer();
                 switch (aiType) {
                     case RUN -> {
-                        double oldY = clonePlayer.getVelocity().getY();
-                        Vector velocity = clonePlayer.getLocation().getDirection().multiply(movementSpeed);
-                        double offsetY = ((Entity) clonePlayer).isOnGround() ? 0.45 : 0;
+                        double oldY = mannequin.getVelocity().getY();
+                        Vector velocity = mannequin.getLocation().getDirection().multiply(movementSpeed);
+                        double offsetY = mannequin.isOnGround() ? 0.45 : 0;
                         velocity.setY(oldY + offsetY);
-                        clonePlayer.setVelocity(velocity);
+                        mannequin.setVelocity(velocity);
+                        if (mannequin.isOnGround()) {
+                            Block block = mannequin.getLocation().getBlock().getRelative(BlockFace.DOWN);
+
+                            mannequin.getWorld().spawnParticle(
+                                    Particle.BLOCK,
+                                    mannequin.getLocation(),
+                                    2,
+                                    0.2, 0.1, 0.2,
+                                    block.getBlockData()
+                            );
+                        }
                     }
                     case CONTROL_RUN -> {
-                        double oldY = clonePlayer.getVelocity().getY();
+                        double oldY = mannequin.getVelocity().getY();
                         Vector velocity;
                         if (owner == null) {
-                            velocity = clonePlayer.getLocation().getDirection().multiply(movementSpeed);
+                            velocity = mannequin.getLocation().getDirection().multiply(movementSpeed);
                         } else {
                             Vector direction = owner.getLocation().getDirection();
                             direction.setY(0);
                             direction.normalize();
                             velocity = direction.multiply(movementSpeed);
-
                             setRotation(owner);
 
+                            if (mannequin.isOnGround()) {
+                                Block block = mannequin.getLocation().getBlock().getRelative(BlockFace.DOWN);
+
+                                mannequin.getWorld().spawnParticle(
+                                        Particle.BLOCK,
+                                        mannequin.getLocation(),
+                                        2,
+                                        0.2, 0.1, 0.2,
+                                        block.getBlockData()
+                                );
+                            }
+
                         }
-                        double offsetY = ((Entity) clonePlayer).isOnGround() ? 0.45 : 0;
+                        double offsetY = mannequin.isOnGround() ? 0.45 : 0;
                         velocity.setY(oldY + offsetY);
-                        clonePlayer.setVelocity(velocity);
+                        mannequin.setVelocity(velocity);
                     }
                     case SPYGLASS -> {
                         if (owner != null) {
 
                             setRotation(owner);
-                            clonePlayer.setSneaking(false);
+                            mannequin.setSneaking(false);
 
-                            try {
-                                PlayerAnimation.STOP_USE_ITEM.play(clonePlayer);
-                                PlayerAnimation.START_USE_MAINHAND_ITEM.play(clonePlayer);
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
+                            mannequin.startUsingItem(EquipmentSlot.HAND);
                         }
                     }
                 }
@@ -261,42 +272,33 @@ public class CloneAbility extends Ability {
                     Vector velocity = shootTarget.getVelocity();
                     velocity.setY(0);
                     shoot(shootTarget.getEyeLocation().add(velocity).add(0.0, -0.5, 0.0));
-                    try {
-                        PlayerAnimation.STOP_USE_ITEM.play(clonePlayer);
-                    } catch (Exception ignored) {
-                    }
-                    clonePlayer.getWorld().spawnParticle(Particle.POOF, clonePlayer.getLocation(), 20, 1.0, 1.0, 1.0, 0);
+                    mannequin.getWorld().spawnParticle(Particle.POOF, mannequin.getLocation(), 20, 1.0, 1.0, 1.0, 0);
 
 
                     shootProgress = 0;
                     shootTarget = null;
                     remove();
                 } else {
-                    clonePlayer.setGlowing(true);
-                    Vector direction = clonePlayer.getEyeLocation().subtract(shootTarget.getEyeLocation()).toVector().multiply(-1);
-                    Location loc = clonePlayer.getLocation();
+                    mannequin.setGlowing(true);
+                    Vector direction = mannequin.getEyeLocation().subtract(shootTarget.getEyeLocation()).toVector().multiply(-1);
+                    Location loc = mannequin.getLocation();
                     loc.setDirection(direction);
                     loc.setYaw(loc.getYaw());
                     loc.setPitch(loc.getPitch());
-                    clonePlayer.setRotation(loc.getYaw(), loc.getPitch());
+                    mannequin.setRotation(loc.getYaw(), loc.getPitch());
                     if (shootProgress <= 20 && shootProgress >= 5) {
 
-                        clonePlayer.setSneaking(shootProgress % 4 < 2);
-                    } else clonePlayer.setSneaking(true);
-                    try {
-                        PlayerAnimation.START_USE_MAINHAND_ITEM.play(clonePlayer);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                        mannequin.setSneaking(shootProgress % 4 < 2);
+                    } else mannequin.setSneaking(true);
                 }
             }
         }
 
         private void setRotation(Player owner) {
-            Location loc = clonePlayer.getLocation();
+            Location loc = mannequin.getLocation();
             loc.setYaw(owner.getLocation().getYaw());
             loc.setPitch(owner.getLocation().getPitch());
-            clonePlayer.setRotation(loc.getYaw(), loc.getPitch());
+            mannequin.setRotation(loc.getYaw(), loc.getPitch());
         }
 
         private void onHit(Player attacker) {
@@ -307,13 +309,14 @@ public class CloneAbility extends Ability {
         private void setShootTarget(Player target) {
             shootProgress = 0;
             shootTarget = target;
-            clonePlayer.getInventory().setItemInMainHand(ItemStack.of(Material.BOW));
+            mannequin.getEquipment().setItemInMainHand(ItemStack.of(Material.BOW));
+            mannequin.startUsingItem(EquipmentSlot.HAND);
         }
 
         private void shoot(Location location) {
-            Vector velocity = getArrowVelocity(location, clonePlayer.getEyeLocation());
+            Vector velocity = getArrowVelocity(location, mannequin.getEyeLocation());
             if (velocity == null) return;
-            Arrow arrow = clonePlayer.getWorld().spawn(clonePlayer.getEyeLocation(), Arrow.class);
+            Arrow arrow = mannequin.getWorld().spawn(mannequin.getEyeLocation(), Arrow.class);
             arrow.setShooter(Bukkit.getPlayer(ownerUUID));
             arrow.setVelocity(velocity);
             ArrowUtil.setFixRotation(arrow, velocity);
@@ -358,7 +361,7 @@ public class CloneAbility extends Ability {
 
         private void remove() {
             clones.remove(this);
-            npc.destroy();
+            mannequin.remove();
             if (cloneUpdateTask != null) cloneUpdateTask.cancel();
             cloneUpdateTask = null;
         }

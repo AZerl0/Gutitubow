@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.scoreboard;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -10,7 +11,7 @@ import java.util.*;
 
 public class ScoreboardManager {
     private final Map<UUID, Scoreboard> playerScoreboard = new HashMap<>();
-    private final Set<Player> echoPlayers = new HashSet<>();
+    private final Set<Mannequin> echoMannequins = new HashSet<>();
 
 
     public @NotNull Scoreboard getScoreboard(@NotNull Player player) {
@@ -24,10 +25,10 @@ public class ScoreboardManager {
         if (team == null) {
             team = scoreboard.registerNewTeam("@" + player.getName());
             team.addPlayer(player);
-            for (Player echoPlayer : echoPlayers) {
-                Team oldTeam = scoreboard.getPlayerTeam(echoPlayer);
-                if (oldTeam != null && oldTeam.hasPlayer(echoPlayer)) oldTeam.removePlayer(echoPlayer);
-                team.addPlayer(echoPlayer);
+            for (Mannequin echoMannequin : echoMannequins) {
+                Team oldTeam = scoreboard.getPlayerTeam(player);
+                if (oldTeam != null && oldTeam.hasEntity(echoMannequin)) oldTeam.removeEntity(echoMannequin);
+                team.addEntity(echoMannequin);
             }
 
             team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
@@ -45,8 +46,8 @@ public class ScoreboardManager {
         return getTeam(board, player);
     }
 
-    public void addEchoPlayer(Player echoPlayer) {
-        echoPlayers.add(echoPlayer);
+    public void addEchoMannequin(Mannequin echoMannequin) {
+        echoMannequins.add(echoMannequin);
         for (UUID uuid : playerScoreboard.keySet()) {
             Player player = Bukkit.getPlayer(uuid);
 
@@ -54,11 +55,11 @@ public class ScoreboardManager {
 
             Team playerTeam = getTeam(player);
 
-            playerTeam.addEntity(echoPlayer);
+            playerTeam.addEntity(echoMannequin);
         }
     }
 
-    public void removeEchoPlayer(Player echoPlayer) {
-        echoPlayers.remove(echoPlayer);
+    public void removeEchoPlayer(Mannequin echoPlayer) {
+        echoMannequins.remove(echoPlayer);
     }
 }

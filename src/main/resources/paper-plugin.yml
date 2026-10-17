@@ -3,15 +3,14 @@ version: "1.0.1"
 main: com.azerl0.gutitubow.Gutitubow
 api-version: "26.3"
 bootstrapper: com.azerl0.gutitubow.GutitubowBootstrap
-
 dependencies:
   server:
-    NBTAPI:
+    packetevents:
       load: BEFORE
       required: true
       join-classpath: true
 
-    Citizens:
+    NBTAPI:
       load: BEFORE
       required: true
       join-classpath: true

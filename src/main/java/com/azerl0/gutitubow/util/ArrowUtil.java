@@ -33,13 +33,12 @@ public class ArrowUtil {
         Block hitBlock = event.getHitBlock();
         if (hitBlock == null) return;
 
-        if (!(proj instanceof AbstractArrow)) return;
+        if (!(proj instanceof AbstractArrow arrow)) return;
 
 
         Vector v = event.getEntity().getVelocity();
         if (v.length() < 0.1 & proj.isInWater()) return;
 
-        boolean crit = NBT.get(proj, nbt -> (boolean) nbt.getBoolean("crit"));
 
         Vector newVelocity = event.getEntity().getVelocity().clone().multiply(multiple);
         BlockFace face = event.getHitBlockFace();
@@ -71,10 +70,10 @@ public class ArrowUtil {
             proj.setVelocity(newVelocity);
             NBT.modify(proj, nbt -> {
                 nbt.setBoolean("inGround", false);
-                nbt.setBoolean("crit", crit);
             });
+            arrow.setCritical(arrow.isCritical());
 
-            ArrowUtil.setFixRotation((AbstractArrow) proj, newVelocity);
+            ArrowUtil.setFixRotation(arrow, newVelocity);
         });
     }
 

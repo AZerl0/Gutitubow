@@ -4,7 +4,6 @@ import com.azerl0.gutitubow.ability.AbilityManager;
 import com.azerl0.gutitubow.arena.ArenaManager;
 import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.entity.GutitubowEntityManager;
-import com.azerl0.gutitubow.fakeplayer.FakePlayerManager;
 import com.azerl0.gutitubow.game.GameManager;
 import com.azerl0.gutitubow.gamemap.GameMapManager;
 import com.azerl0.gutitubow.profiler.ProfileManager;
@@ -16,7 +15,6 @@ public class GutitubowManagers {
     private final AbilityManager abilityManager;
     private final EntityGlowManager glowManager;
     private final ScoreboardManager scoreboardManager;
-    private final FakePlayerManager fakePlayerManager;
     private final GutitubowEntityManager gutitubowEntityManager;
     private final ArenaManager arenaManager;
     private final SkinDataManager skinDataManager;
@@ -29,7 +27,6 @@ public class GutitubowManagers {
             AbilityManager abilityManager,
             EntityGlowManager glowManager,
             ScoreboardManager scoreboardManager,
-            FakePlayerManager fakePlayerManager,
             GutitubowEntityManager gutitubowEntityManager,
             ArenaManager arenaManager,
             SkinDataManager skinDataManager,
@@ -41,7 +38,6 @@ public class GutitubowManagers {
         this.abilityManager = abilityManager;
         this.glowManager = glowManager;
         this.scoreboardManager = scoreboardManager;
-        this.fakePlayerManager = fakePlayerManager;
         this.gutitubowEntityManager = gutitubowEntityManager;
         this.arenaManager = arenaManager;
         this.skinDataManager = skinDataManager;
@@ -54,7 +50,6 @@ public class GutitubowManagers {
     public AbilityManager getAbilityManager() { return abilityManager; }
     public EntityGlowManager getGlowManager() { return glowManager; }
     public ScoreboardManager getScoreboardManager() { return scoreboardManager; }
-    public FakePlayerManager getFakePlayerManager() { return fakePlayerManager; }
     public GutitubowEntityManager getGutitubowEntityManager() { return gutitubowEntityManager; }
     public ArenaManager getArenaManager() { return arenaManager; }
     public SkinDataManager getSkinDataManager() { return skinDataManager; }
