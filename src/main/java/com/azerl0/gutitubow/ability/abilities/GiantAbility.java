@@ -17,8 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -29,7 +27,6 @@ public class GiantAbility extends Ability {
     private int toGiantProcessTick;
     private int giantRemainedTick;
     private boolean isGiant = false;
-    private BukkitTask giantTask;
 
     public GiantAbility(AbilityContext context) {
         super(context);
@@ -104,6 +101,11 @@ public class GiantAbility extends Ability {
         if (isGiant) resetGiant();
     }
 
+    @Override
+    protected void onTick() {
+        if (isGiant) updateGiant();
+    }
+
     private void activateGiant() {
         Player player = getPlayer();
         if (player == null) return;
@@ -127,14 +129,6 @@ public class GiantAbility extends Ability {
             PotionEffect effect = new PotionEffect(PotionEffectType.ABSORPTION, -1, 0, true, false, false);
             player.addPotionEffect(effect);
         }
-
-        if (giantTask != null && !giantTask.isCancelled()) return;
-        giantTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                updateGiant();
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
     }
 
     private void deactivateGiant() {
@@ -168,9 +162,5 @@ public class GiantAbility extends Ability {
         player.removePotionEffect(PotionEffectType.JUMP_BOOST);
         player.removePotionEffect(PotionEffectType.ABSORPTION);
         player.setAbsorptionAmount(0.0);
-        if (giantTask != null) giantTask.cancel();
-        giantTask = null;
     }
-
-
 }
