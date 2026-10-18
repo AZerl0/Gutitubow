@@ -28,8 +28,10 @@ public class GutitubowBootstrap implements PluginBootstrap {
         ));
 
         context.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS.newHandler(event -> {
+            GutitubowCommand.register(event.registrar());
             AbilityCommand.register(event.registrar());
             CarePackageCommand.register(event.registrar());
+            ZiplineCommand.register(event.registrar());
             GameCommand.register(event.registrar());
             GamePlayerCommand.register(event.registrar());
             GameEventCommand.register(event.registrar());
@@ -39,7 +41,6 @@ public class GutitubowBootstrap implements PluginBootstrap {
             SkinCommand.register(event.registrar());
             NameCommand.register(event.registrar());
             MapCommand.register(event.registrar());
-            GutitubowCommand.register(event.registrar());
         }));
     }
 }

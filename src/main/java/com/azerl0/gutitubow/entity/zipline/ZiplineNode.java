@@ -22,6 +22,7 @@ import java.util.UUID;
 public class ZiplineNode extends GutitubowEntity {
     private LeashHitch leash;
     private int life;
+    private int connectionLostTick;
     private final Set<ZiplineNode> connectionNodes = new HashSet<>();
 
     public ZiplineNode(GutitubowEntityManager gutitubowEntityManager, Location location) {
@@ -59,6 +60,7 @@ public class ZiplineNode extends GutitubowEntity {
         leash.setGlowing(true);
         leash.setInvulnerable(true);
         life = 20;
+        connectionLostTick = 2 * 20;
     }
 
     @Override
@@ -72,22 +74,34 @@ public class ZiplineNode extends GutitubowEntity {
             remove();
             return;
         }
-        if (leash.getWorld().getGameTime() % 15 == 0) {
-            for (ZiplineNode ziplineNode : connectionNodes) {
-                if (ziplineNode.getUniqueId().compareTo(getUniqueId()) < 0) {
-                    double particleOffset = 0.05;
-                    ParticleUtil.spawnParticleLine(ziplineNode.getLocation(), getLocation(), 0.15, point -> point.getWorld().spawnParticle(
-                            Particle.DUST,
-                            point,
-                            1,
-                            particleOffset, particleOffset, particleOffset,
-                            0,
-                            new Particle.DustOptions(
-                                    Color.fromRGB(214, 139, 4),
-                                    1.0f
-                            ),
-                            true
-                    ));
+        if (connectionNodes.isEmpty()) {
+            connectionLostTick--;
+            if (connectionLostTick <= 0) {
+                remove();
+            }
+        } else {
+            connectionLostTick = 2 * 20;
+            if (leash.getWorld().getGameTime() % 15 == 0) {
+                for (ZiplineNode ziplineNode : new HashSet<>(connectionNodes)) {
+                    if (ziplineNode.isRemoved()) {
+                        connectionNodes.remove(ziplineNode);
+                        continue;
+                    }
+                    if (ziplineNode.getUniqueId().compareTo(getUniqueId()) < 0) {
+                        double particleOffset = 0.05;
+                        ParticleUtil.spawnParticleLine(ziplineNode.getLocation(), getLocation(), 0.15, point -> point.getWorld().spawnParticle(
+                                Particle.DUST,
+                                point,
+                                1,
+                                particleOffset, particleOffset, particleOffset,
+                                0,
+                                new Particle.DustOptions(
+                                        Color.fromRGB(214, 139, 4),
+                                        1.0f
+                                ),
+                                true
+                        ));
+                    }
                 }
             }
         }
