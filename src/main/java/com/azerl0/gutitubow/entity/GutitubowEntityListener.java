@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.entity;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRemoveEvent;
 import org.bukkit.event.entity.EntityUnleashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -43,6 +44,13 @@ public class GutitubowEntityListener implements Listener {
     public void onUnleash(EntityUnleashEvent event) {
         if (event.getEntity().getScoreboardTags().contains("gutitubow.cancelUnleash")) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onDamage(EntityDamageEvent event) {
+        for (GutitubowEntity gutitubowEntity : gutitubowEntityManager.getGutitubowEntities()) {
+            gutitubowEntity.onDamage(event);
         }
     }
 }

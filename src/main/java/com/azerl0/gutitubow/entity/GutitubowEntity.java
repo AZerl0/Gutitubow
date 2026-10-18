@@ -2,6 +2,7 @@ package com.azerl0.gutitubow.entity;
 
 import com.azerl0.gutitubow.entity.teleportable.Teleportable;
 import org.bukkit.Location;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -56,4 +57,6 @@ public abstract class GutitubowEntity implements Teleportable {
     protected void onInteractEntity(PlayerInteractEntityEvent event) {}
 
     protected void onHangingBreak(HangingBreakEvent event) {}
+
+    protected void onDamage(EntityDamageEvent event) {}
 }

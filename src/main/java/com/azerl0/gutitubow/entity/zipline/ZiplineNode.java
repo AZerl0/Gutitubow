@@ -4,12 +4,11 @@ import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.GutitubowEntityManager;
 import com.azerl0.gutitubow.entity.GutitubowEntityType;
 import com.azerl0.gutitubow.util.ParticleUtil;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LeashHitch;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.util.Vector;
@@ -20,7 +19,9 @@ import java.util.Set;
 import java.util.UUID;
 
 public class ZiplineNode extends GutitubowEntity {
+    private ArmorStand armorStand;
     private LeashHitch leash;
+    private int health;
     private int life;
     private int connectionLostTick;
     private final Set<ZiplineNode> connectionNodes = new HashSet<>();
@@ -46,19 +47,28 @@ public class ZiplineNode extends GutitubowEntity {
 
     @Override
     public Set<UUID> getPartEntitiesUUID() {
-        return Set.of(leash.getUniqueId());
+        return Set.of(
+                leash.getUniqueId(),
+                armorStand.getUniqueId()
+        );
     }
 
     @Override
     protected void onRemove() {
         leash.remove();
+        armorStand.remove();
     }
 
     @Override
     protected void summon(Location location) {
         leash = location.getWorld().spawn(location, LeashHitch.class);
-        leash.setGlowing(true);
         leash.setInvulnerable(true);
+        Location armorStandLoc = new Location(leash.getWorld(), leash.getLocation().getBlockX(), leash.getLocation().getBlockY(), leash.getLocation().getBlockZ());
+        armorStandLoc.add(0.5, 0.0, 0.5);
+        armorStand = location.getWorld().spawn(armorStandLoc.clone().add(0.0, -1.0, 0.0), ArmorStand.class);
+        armorStand.setInvulnerable(true);
+        armorStand.setGravity(false);
+        health = 3;
         life = 20;
         connectionLostTick = 2 * 20;
     }
@@ -113,7 +123,7 @@ public class ZiplineNode extends GutitubowEntity {
         if (connectionNodes.isEmpty()) return;
 
         Entity clicked = event.getRightClicked();
-        if (clicked.getUniqueId().equals(leash.getUniqueId())) {
+        if (clicked.getUniqueId().equals(leash.getUniqueId()) || clicked.getUniqueId().equals(armorStand.getUniqueId())) {
             ZiplineVehicle vehicle = entityManager.spawnGutitubowEntity(getLocation(), ZiplineVehicle.class);
             vehicle.addPassenger(event.getPlayer());
             ZiplineNode nextNode = connectionNodes.iterator().next();
@@ -129,6 +139,28 @@ public class ZiplineNode extends GutitubowEntity {
     @Override
     protected void onHangingBreak(HangingBreakEvent event) {
         if (event.getEntity().getUniqueId().equals(leash.getUniqueId())) event.setCancelled(true);
+    }
+
+    @Override
+    public void onDamage(EntityDamageEvent event) {
+        if (event.isCancelled()) return;
+
+        if (event.getEntity().getUniqueId().equals(armorStand.getUniqueId())) {
+            health--;
+            Location soundLocation = armorStand.getLocation();
+            World world = soundLocation.getWorld();
+            if (health <= 0) {
+                remove();
+                world.playSound(soundLocation, Sound.ENTITY_ARMOR_STAND_BREAK, 1.0f, 1.5f);
+                world.playSound(soundLocation, Sound.ENTITY_PLAYER_ATTACK_STRONG, 1.0f, 1.0f);
+                world.playSound(soundLocation, Sound.BLOCK_COPPER_GRATE_BREAK, 1.0f, 1.0f);
+            } else {
+                world.playSound(soundLocation, Sound.ENTITY_ARMOR_STAND_HIT, 1.0f, 1.0f);
+                world.playSound(soundLocation, Sound.BLOCK_COPPER_GRATE_HIT, 1.0f, 1.0f);
+
+            }
+            event.setDamage(0.0);
+        }
     }
 
     public void setLife(int life) {
