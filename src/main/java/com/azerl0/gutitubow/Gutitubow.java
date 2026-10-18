@@ -5,7 +5,6 @@ import com.azerl0.gutitubow.arena.ArenaManager;
 import com.azerl0.gutitubow.config.ConfigManager;
 import com.azerl0.gutitubow.entity.GutitubowEntityListener;
 import com.azerl0.gutitubow.entity.GutitubowEntityManager;
-import com.azerl0.gutitubow.entity.carepackage.CarePackageListener;
 import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.firstjoin.FirstJoin;
 import com.azerl0.gutitubow.game.*;
@@ -94,7 +93,6 @@ public final class Gutitubow extends JavaPlugin {
         pluginManager.registerEvents(new AbilityListener(game.getGutitubowManagers().getAbilityManager()), this);
         pluginManager.registerEvents(new GamePlayerListener(game), this);
         pluginManager.registerEvents(new GutitubowEntityListener(getGutitubowEntityManager()), this);
-        pluginManager.registerEvents(new CarePackageListener(getGutitubowEntityManager()), this);
         pluginManager.registerEvents(new ItemListener(), this);
         pluginManager.registerEvents(new GameListener(this, game), this);
         pluginManager.registerEvents(new GameEventListener(), this);

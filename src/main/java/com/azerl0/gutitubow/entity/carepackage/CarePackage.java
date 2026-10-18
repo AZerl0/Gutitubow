@@ -14,24 +14,26 @@ import com.azerl0.gutitubow.packet.EntityGlowManager;
 import com.azerl0.gutitubow.team.GameTeam;
 import com.azerl0.gutitubow.util.EntityUtil;
 import com.azerl0.gutitubow.util.MathUtil;
+import io.papermc.paper.event.entity.EntityMoveEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
+import org.bukkit.event.entity.EntityDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.*;
 
 public class CarePackage extends GutitubowEntity {
     private Chicken core;
-    private UUID interactionEntityUUID;
-    private UUID displayEntityUUID;
+    private Interaction interaction;
+    private BlockDisplay display;
     private boolean isFake;
     private final Set<UUID> used_players = new HashSet<>();
     private final Set<GameTeam> used_teams = new HashSet<>();
@@ -60,7 +62,7 @@ public class CarePackage extends GutitubowEntity {
         location.setRotation(0.0f, 0.0f);
         World world = location.getWorld();
 
-        BlockDisplay blockDisplay = world.spawn(location, BlockDisplay.class, (BlockDisplay display) -> {
+        display = world.spawn(location, BlockDisplay.class, (BlockDisplay display) -> {
             display.setBlock(Material.CHEST.createBlockData());
             display.setGlowing(true);
             EntityUtil.setGlow(display, NamedTextColor.YELLOW);
@@ -73,16 +75,13 @@ public class CarePackage extends GutitubowEntity {
                     transformation.getRightRotation()
             );
             display.setTransformation(newTransformation);
-            display.addScoreboardTag("gutitubow.carePackageEntity");
-
         });
 
-        Interaction interaction = world.spawn(location, Interaction.class, (Interaction i) -> {
+        interaction = world.spawn(location, Interaction.class, (Interaction i) -> {
             i.setInteractionWidth(0.8f);
             i.setInteractionHeight(0.8f);
             i.setCustomNameVisible(true);
             i.customName(Component.text("ケアパッケージ"));
-            i.addScoreboardTag("gutitubow.carePackageEntity");
 
         });
 
@@ -94,10 +93,8 @@ public class CarePackage extends GutitubowEntity {
         core.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0);
         core.getAttribute(Attribute.JUMP_STRENGTH).setBaseValue(0);
         core.setSilent(true);
-        core.addPassenger(blockDisplay);
+        core.addPassenger(display);
         core.addPassenger(interaction);
-        core.addScoreboardTag("gutitubow.carePackageEntity");
-        core.addScoreboardTag("gutitubow.carePackageCoreEntity");
 
         for (int i = 0; i < 10; i++) {
             double randomRadius = 0.8;
@@ -107,14 +104,11 @@ public class CarePackage extends GutitubowEntity {
             Chicken chicken = world.spawn(location.clone().add(randomX, 4.5, randomY), Chicken.class, (Chicken c) -> {
                 Objects.requireNonNull(c.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0);
                 c.setLeashHolder(core);
-                c.addScoreboardTag("gutitubow.carePackageEntity");
                 c.setVariant(Chicken.Variant.TEMPERATE);
                 c.setInvulnerable(true);
             });
             chickens.add(chicken);
         }
-        interactionEntityUUID = interaction.getUniqueId();
-        displayEntityUUID = blockDisplay.getUniqueId();
         isFake = false;
         remainedPotionCount = 3;
         setDisplayName(this.getRemainedPotionDisplay());
@@ -126,9 +120,7 @@ public class CarePackage extends GutitubowEntity {
         Location oldLocation = getLocation().clone();
         core.teleport(location);
 
-        if (getDisplayEntity() != null && getDisplayEntity() instanceof BlockDisplay display) {
-            display.setRotation(0.0f, 0.0f);
-        }
+        display.setRotation(0.0f, 0.0f);
 
         for (Chicken chicken : chickens) {
             Vector offset = chicken.getLocation().toVector().subtract(oldLocation.toVector());
@@ -140,37 +132,42 @@ public class CarePackage extends GutitubowEntity {
     @Override
     public Set<UUID> getPartEntitiesUUID() {
         Set<UUID> uuidSet = new HashSet<>();
-        if (getCoreEntity() != null) uuidSet.add(getCoreEntity().getUniqueId());
         uuidSet.add(core.getUniqueId());
-        uuidSet.add(displayEntityUUID);
-        uuidSet.add(interactionEntityUUID);
+        uuidSet.add(core.getUniqueId());
+        uuidSet.add(interaction.getUniqueId());
+        uuidSet.add(display.getUniqueId());
         for (Chicken chicken : chickens) {
             uuidSet.add(chicken.getUniqueId());
         }
         return uuidSet;
     }
 
-    private void setDisplayName(Component displayName) {
-        Entity coreEntity = this.getCoreEntity();
-        if (coreEntity == null) return;
-        for (Entity entity : coreEntity.getPassengers()) {
-            if (entity instanceof Interaction) {
-                entity.customName(displayName);
-            }
+    @Override
+    protected void onInteractEntity(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked().getUniqueId().equals(interaction.getUniqueId())) {
+            onInteract(event.getPlayer());
         }
+    }
+
+    @Override
+    protected void onEntityMove(EntityMoveEvent event) {
+        if (event.getEntity().getUniqueId().equals(core.getUniqueId())) onMove();
+    }
+
+    @Override
+    protected void onEntityDrop(EntityDropItemEvent event) {
+        if (event.getEntity() instanceof Chicken &&
+                event.getItemDrop().getItemStack().getType() == Material.EGG) {
+            event.setCancelled(true);
+        }
+    }
+
+    private void setDisplayName(Component displayName) {
+        interaction.customName(displayName);
     }
 
     private Component getRemainedPotionDisplay() {
         return Component.text("ケアパッケージ[" + remainedPotionCount + "]").color(NamedTextColor.GREEN);
-    }
-
-    @Nullable
-    public Entity getCoreEntity() {
-        return core;
-    }
-
-    public Entity getDisplayEntity() {
-        return Bukkit.getServer().getEntity(this.displayEntityUUID);
     }
 
     public boolean isFake() {
@@ -182,27 +179,22 @@ public class CarePackage extends GutitubowEntity {
     }
 
     protected void onMove() {
-        Entity entity = this.getCoreEntity();
-        if (entity == null) return;
-        location = entity.getLocation();
+        location = core.getLocation();
         if (isFalling) {
-            if (entity.isOnGround()) {
+            if (core.isOnGround()) {
                 this.onLand();
                 isFalling = false;
             } else {
                 this.onFall();
             }
         } else {
-            if (entity.getFallDistance() > 0.0) {
+            if (core.getFallDistance() > 0.0) {
                 isFalling = true;
             }
         }
     }
 
     private void onFall() {
-        Entity coreEntity = this.getCoreEntity();
-        if (coreEntity == null) return;
-
         fallingTick++;
         if (!isLanded && fallingTick % 60 == 0) {
             spawnFirework();
@@ -218,9 +210,7 @@ public class CarePackage extends GutitubowEntity {
     }
 
     private void spawnFirework() {
-        Entity coreEntity = this.getCoreEntity();
-        if (coreEntity == null) return;
-        Firework firework = coreEntity.getWorld().spawn(coreEntity.getLocation(), Firework.class);
+        Firework firework = core.getWorld().spawn(core.getLocation(), Firework.class);
         FireworkMeta meta = firework.getFireworkMeta();
         meta.addEffect(FireworkEffect.builder().withColor(Color.AQUA).with(FireworkEffect.Type.BALL_LARGE).build());
         meta.setPower(0);
@@ -250,17 +240,10 @@ public class CarePackage extends GutitubowEntity {
     }
 
     public void onRemove() {
-        Entity coreEntity = getCoreEntity();
-
-        if (coreEntity == null) return;
-
-        this.removeBalloonEntities();
-
-        for (Entity passenger : coreEntity.getPassengers()) {
-            passenger.remove();
-        }
         removeBalloonEntities();
-        coreEntity.remove();
+        interaction.remove();
+        display.remove();
+        core.remove();
     }
 
     public void onInteract(Player player) {
@@ -340,7 +323,7 @@ public class CarePackage extends GutitubowEntity {
                         ));
         player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
         EntityGlowManager glowManager = Gutitubow.get().getGutitubowManagers().getGlowManager();
-        glowManager.removeGlow(player, getDisplayEntity());
+        glowManager.removeGlow(player, display);
     }
 
 
