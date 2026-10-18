@@ -38,7 +38,6 @@ public abstract class GutitubowEntity implements Teleportable {
 
     public final void remove() {
         onRemove();
-        entityManager.onGutitubowEntityRemove(uuid);
         isRemoved = true;
     }
 

@@ -30,8 +30,13 @@ public class GutitubowEntityManager {
     }
 
     private void tick() {
-        for (GutitubowEntity gutitubowEntity : getGutitubowEntities()) {
-            gutitubowEntity.onTick();
+        for (GutitubowEntity gutitubowEntity : new HashSet<>(getGutitubowEntities())) {
+            if (gutitubowEntity.isRemoved()) {
+                gutitubowEntities.remove(gutitubowEntity.getUniqueId());
+
+            } else {
+                gutitubowEntity.onTick();
+            }
         }
     }
 
@@ -99,10 +104,6 @@ public class GutitubowEntityManager {
 
     public Collection<? extends GutitubowEntity> getGutitubowEntities() {
         return new ArrayList<>(gutitubowEntities.values());
-    }
-
-    public void onGutitubowEntityRemove(UUID gutitubowEntityUUID) {
-        gutitubowEntities.remove(gutitubowEntityUUID);
     }
 
     public void removeAllGutitubowEntities() {
