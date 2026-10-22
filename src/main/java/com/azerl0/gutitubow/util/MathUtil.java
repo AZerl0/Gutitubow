@@ -10,6 +10,18 @@ import org.bukkit.util.Vector;
 import java.util.Random;
 
 public class MathUtil {
+
+    public static Vector getDirection(float yaw, float pitch) {
+        double yawRad = Math.toRadians(yaw);
+        double pitchRad = Math.toRadians(pitch);
+
+        double x = -Math.sin(yawRad) * Math.cos(pitchRad);
+        double y = -Math.sin(pitchRad);
+        double z = Math.cos(yawRad) * Math.cos(pitchRad);
+
+        return new Vector(x, y, z);
+    }
+
     public static double getLerp(double value, double low1, double high1, double low2, double high2) {
         return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
     }

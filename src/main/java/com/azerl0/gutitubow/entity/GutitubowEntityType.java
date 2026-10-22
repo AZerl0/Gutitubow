@@ -7,5 +7,7 @@ public enum GutitubowEntityType {
     SHIELD,
     ADVANCE_ARROW,
     ZIPLINE_NODE,
-    ZIPLINE_VEHICLE
+    ZIPLINE_VEHICLE,
+    JUMP_PAD,
+    JUMP_PAD_MOVER
 }

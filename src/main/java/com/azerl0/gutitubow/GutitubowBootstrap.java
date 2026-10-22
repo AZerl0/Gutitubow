@@ -31,6 +31,7 @@ public class GutitubowBootstrap implements PluginBootstrap {
             GutitubowCommand.register(event.registrar());
             AbilityCommand.register(event.registrar());
             CarePackageCommand.register(event.registrar());
+            JumpPadCommand.register(event.registrar());
             ZiplineCommand.register(event.registrar());
             GameCommand.register(event.registrar());
             GamePlayerCommand.register(event.registrar());
