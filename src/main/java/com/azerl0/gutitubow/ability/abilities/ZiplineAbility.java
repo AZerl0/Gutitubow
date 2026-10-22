@@ -7,6 +7,7 @@ import com.azerl0.gutitubow.entity.zipline.ZiplineNode;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -81,6 +82,14 @@ public class ZiplineAbility extends Ability {
             offsetDir.setZ(-offsetDir.getZ());
             end.add(offsetDir.multiply(0.1));
             if (leashChicken != null) leashChicken.remove();
+            leashChicken = null;
+            if (!start.clone().add(0.0, 1.0, 0.0).getBlock().isCollidable()) {
+                start.add(0.0, 1.0, 0.0);
+            }
+
+            if (event.getHitBlockFace() == BlockFace.UP && !end.clone().add(0.0, 1.0, 0.0).getBlock().isCollidable()) {
+                end.add(0.0, 1.0, 0.0);
+            }
 
             ZiplineNode startNode = createNode(start);
             ZiplineNode endNode = createNode(end);
