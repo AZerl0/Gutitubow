@@ -1,5 +1,6 @@
 package com.azerl0.gutitubow.gui;
 
+import com.azerl0.gutitubow.Gutitubow;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -14,11 +15,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 public class GUIListener implements Listener {
-    private final AllGUI allGUI;
+    private final Gutitubow gutitubow;
     private final NamespacedKey gamemasterKey = new NamespacedKey("gutitubow", "item.gamemaster");
 
-    public GUIListener(AllGUI allGUI) {
-        this.allGUI = allGUI;
+    public GUIListener(Gutitubow gutitubow) {
+        this.gutitubow = gutitubow;
     }
 
     @EventHandler
@@ -45,9 +46,9 @@ public class GUIListener implements Listener {
         ItemStack clickItem = event.getItem();
         if (clickItem == null) return;
         if (clickItem.getItemMeta().getPersistentDataContainer().getOrDefault(gamemasterKey, PersistentDataType.BOOLEAN, false) && player.isOp()) {
-            allGUI.gameGUI().open(player);
+            gutitubow.getGame().getGameGUI().open(player);
         } else if (clickItem.getType() == Material.HEART_OF_THE_SEA) {
-            allGUI.abilitySelectorGUI().open(player);
+            gutitubow.getGutitubowManagers().getAbilityManager().getAbilitySetGUI().open(player);
         }
     }
 }

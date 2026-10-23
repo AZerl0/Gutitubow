@@ -57,7 +57,7 @@ public class GameCommand {
     private static int gui(CommandContext<CommandSourceStack> context) {
         CommandSender sender = context.getSource().getSender();
         if (sender instanceof Player senderPlayer) {
-            Gutitubow.get().getAllGUI().gameGUI().open(senderPlayer);
+            Gutitubow.get().getGame().getGameGUI().open(senderPlayer);
         }
         return Command.SINGLE_SUCCESS;
     }

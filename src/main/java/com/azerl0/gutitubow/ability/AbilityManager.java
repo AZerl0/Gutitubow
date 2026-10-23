@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.ability;
 
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
+import com.azerl0.gutitubow.gui.guis.AbilitySetGUI;
 import com.azerl0.gutitubow.util.AdvancementUtil;
 import com.azerl0.gutitubow.util.ItemUtil;
 import org.bukkit.Material;
@@ -17,6 +18,7 @@ public class AbilityManager {
     private final Map<UUID, Ability> abilities = new HashMap<>();
     private final AbilityContext context;
     private final BukkitTask updateTask;
+    private final AbilitySetGUI abilitySetGUI;
 
     public AbilityManager(AbilityContext context) {
         this.context = context;
@@ -26,6 +28,7 @@ public class AbilityManager {
                 update();
             }
         }.runTaskTimer(context.gutitubow(), 0L, 1L);
+        abilitySetGUI = new AbilitySetGUI(this);
     }
 
     @Nullable
@@ -95,5 +98,9 @@ public class AbilityManager {
         for (Ability ability : new HashSet<>(abilities.values())) {
             ability.tick();
         }
+    }
+
+    public AbilitySetGUI getAbilitySetGUI() {
+        return abilitySetGUI;
     }
 }

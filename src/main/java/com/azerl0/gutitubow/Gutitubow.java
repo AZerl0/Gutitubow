@@ -15,10 +15,8 @@ import com.azerl0.gutitubow.profiler.SkinDataManager;
 import com.azerl0.gutitubow.scoreboard.ScoreboardManager;
 import com.azerl0.gutitubow.gameevent.GameEventListener;
 import com.azerl0.gutitubow.gameplayer.GamePlayerListener;
-import com.azerl0.gutitubow.gui.AllGUI;
 import com.azerl0.gutitubow.gui.GUIListener;
 import com.azerl0.gutitubow.gui.guis.AbilitySetGUI;
-import com.azerl0.gutitubow.gui.guis.GameGUI;
 import com.azerl0.gutitubow.gamemap.GameMapManager;
 import com.azerl0.gutitubow.item.ItemListener;
 import com.azerl0.gutitubow.packet.*;
@@ -50,7 +48,6 @@ public final class Gutitubow extends JavaPlugin {
     private EntityFlagManager flagManager;
     private PinManager pinManager;
     private FixLeftClickManager fixLeftClickManager;
-    private AllGUI allGUI;
     GutitubowManagers gutitubowManagers;
 
     private PacketListenerCommon packetListener;
@@ -81,13 +78,6 @@ public final class Gutitubow extends JavaPlugin {
         // MainGame
         this.game = gutitubowManagers.gameManager().newGame();
 
-        //GUI
-        GameGUI gameGUI = new GameGUI(gutitubowManagers.gameManager(), game);
-        this.abilitySetGUI = new AbilitySetGUI(gutitubowManagers.getAbilityManager());
-
-        allGUI = new AllGUI(gameGUI, abilitySetGUI);
-
-
         // Listener登録
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(new AbilityListener(game.getGutitubowManagers().getAbilityManager()), this);
@@ -96,7 +86,7 @@ public final class Gutitubow extends JavaPlugin {
         pluginManager.registerEvents(new ItemListener(), this);
         pluginManager.registerEvents(new GameListener(this, game), this);
         pluginManager.registerEvents(new GameEventListener(), this);
-        pluginManager.registerEvents(new GUIListener(allGUI), this);
+        pluginManager.registerEvents(new GUIListener(this), this);
         pluginManager.registerEvents(new PacketListener(flagManager), this);
         pluginManager.registerEvents(new FixLeftClickListener(fixLeftClickManager), this);
         pluginManager.registerEvents(new PinListener(pinManager), this);
@@ -216,17 +206,7 @@ public final class Gutitubow extends JavaPlugin {
         return game;
     }
 
-
-    public AbilitySetGUI getAbilitySelectorGUI() {
-        return abilitySetGUI;
-    }
-
-
     public GutitubowEntityManager getGutitubowEntityManager() {
         return gutitubowManagers.getGutitubowEntityManager();
-    }
-
-    public AllGUI getAllGUI() {
-        return allGUI;
     }
 }

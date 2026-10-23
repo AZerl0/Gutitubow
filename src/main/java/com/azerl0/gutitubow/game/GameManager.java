@@ -1,10 +1,7 @@
 package com.azerl0.gutitubow.game;
 
 import com.azerl0.gutitubow.Gutitubow;
-import com.azerl0.gutitubow.GutitubowManagers;
 import com.azerl0.gutitubow.api.game.Game;
-import com.azerl0.gutitubow.debug.DebugManager;
-import com.azerl0.gutitubow.gamemap.GameMapManager;
 
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -34,10 +31,6 @@ public class GameManager {
         GameImpl gameImpl = new GameImpl(gutitubow);
         gameImplSet.add(gameImpl);
         return gameImpl;
-    }
-
-    public void resetGame(GameImpl gameImpl) {
-        gameImpl.reset();
     }
 
     public boolean isStarted(GameImpl gameImpl) {

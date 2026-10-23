@@ -1,7 +1,6 @@
 package com.azerl0.gutitubow.util;
 
 import org.bukkit.Location;
-import org.bukkit.WorldBorder;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;

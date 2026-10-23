@@ -7,6 +7,7 @@ import com.azerl0.gutitubow.game.*;
 import com.azerl0.gutitubow.gamemap.GameMap;
 import com.azerl0.gutitubow.gamemap.MapRepairManager;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
+import com.azerl0.gutitubow.gui.guis.GameGUI;
 import com.azerl0.gutitubow.gui.guis.GameMapSelectorGUI;
 import com.azerl0.gutitubow.manager.GlassBreakManager;
 import com.azerl0.gutitubow.scoreboard.PlayerBoard;
@@ -214,6 +215,12 @@ public interface Game {
     void hideBossBar(@NotNull final Player player);
 
     @Nullable PlayerBoard getPlayerBoard(@NotNull final GamePlayer gamePlayer);
+
+    /**
+     * ゲームのGUIを取得
+     * @return Game GUI
+     */
+    @NotNull GameGUI getGameGUI();
 
     @NotNull GutitubowManagers getGutitubowManagers();
 

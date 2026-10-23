@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameGUI extends AbstractGUI {
-    private final GameManager gameManager;
     private final Game game;
 
     final int GAME_START_BUTTON_SLOT = 0;
@@ -42,9 +41,8 @@ public class GameGUI extends AbstractGUI {
     final int SPECTATOR_SETTING_BUTTON_SLOT = 26;
 
 
-    public GameGUI(GameManager gameManager, Game game) {
+    public GameGUI(Game game) {
         super(27, Component.text("Game menu"));
-        this.gameManager = gameManager;
         this.game = game;
 
         updateGUI();

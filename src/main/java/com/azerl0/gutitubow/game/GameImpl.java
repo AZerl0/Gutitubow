@@ -12,6 +12,7 @@ import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.debug.DebugManager;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerDeathEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerWinEvent;
+import com.azerl0.gutitubow.gui.guis.GameGUI;
 import com.azerl0.gutitubow.gui.guis.GameMapSelectorGUI;
 import com.azerl0.gutitubow.manager.LogManager;
 import com.azerl0.gutitubow.scoreboard.PlayerBoard;
@@ -69,6 +70,7 @@ public class GameImpl implements Game {
     private GameMap gameMap;
     private Location safeArea;
     private Location oldSafeArea;
+    private final GameGUI gameGUI;
     private final GameMapSelectorGUI gameMapSelectorGUI;
     private final GutitubowManagers gutitubowManagers;
     private final GamePlayerManager gamePlayerManager;
@@ -92,6 +94,7 @@ public class GameImpl implements Game {
         this.teamManager = new TeamManager(this);
         gameMapSelectorGUI = new GameMapSelectorGUI(this);
         reset();
+        gameGUI = new GameGUI(this);
     }
 
     @Override
@@ -1017,6 +1020,11 @@ public class GameImpl implements Game {
             }
         },  5 * 20L);
 
+    }
+
+    @Override
+    public @NotNull GameGUI getGameGUI() {
+        return gameGUI;
     }
 
     @Override

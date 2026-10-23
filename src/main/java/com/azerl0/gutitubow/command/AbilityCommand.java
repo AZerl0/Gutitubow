@@ -54,7 +54,7 @@ public class AbilityCommand {
     }
 
     private static AbilitySetGUI getAbilitySelectorGUI() {
-        return Gutitubow.get().getAbilitySelectorGUI();
+        return Gutitubow.get().getGutitubowManagers().getAbilityManager().getAbilitySetGUI();
     }
 
     private static int list(CommandSender sender) {
