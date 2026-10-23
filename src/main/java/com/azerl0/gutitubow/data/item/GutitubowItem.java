@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GutitubowItem {
+    public final static NamespacedKey gamemasterKey = new NamespacedKey("gutitubow", "item.gamemaster");
 
     public static final ItemStack RED_POTION;
     static {
@@ -125,7 +126,6 @@ public class GutitubowItem {
 
     public static final ItemStack GAME_MASTER;
     static {
-        final NamespacedKey gamemasterKey = new NamespacedKey("gutitubow", "item.gamemaster");
         ItemStack itemStack = new ItemStack(Material.NETHER_STAR);
 
         ItemMeta meta = itemStack.getItemMeta();

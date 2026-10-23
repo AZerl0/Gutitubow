@@ -3,7 +3,6 @@ package com.azerl0.gutitubow.gui;
 import com.azerl0.gutitubow.Gutitubow;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,9 +13,10 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import static com.azerl0.gutitubow.data.item.GutitubowItem.gamemasterKey;
+
 public class GUIListener implements Listener {
     private final Gutitubow gutitubow;
-    private final NamespacedKey gamemasterKey = new NamespacedKey("gutitubow", "item.gamemaster");
 
     public GUIListener(Gutitubow gutitubow) {
         this.gutitubow = gutitubow;
