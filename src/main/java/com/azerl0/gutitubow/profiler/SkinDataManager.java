@@ -75,6 +75,9 @@ public class SkinDataManager {
         cache.put(playerName, skinData);
     }
 
+    public void clearCache(String playerName) {
+        cache.remove(playerName);
+    }
 
     private @Nullable Collection<ProfileProperty> getTextureProperty(String targetSkin) {
 

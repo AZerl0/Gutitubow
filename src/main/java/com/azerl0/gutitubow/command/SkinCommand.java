@@ -31,6 +31,10 @@ public class SkinCommand {
                         .then(literal("reset")
                                 .then(argument("target", ArgumentTypes.player())
                                         .executes(SkinCommand::resetSkin)))
+                        .then(literal("cache")
+                                .then(literal("clear")
+                                        .then(argument("playerName", StringArgumentType.word())
+                                                .executes(SkinCommand::clearCache))))
                         .build(),
                 "Skin command"
         );
@@ -58,6 +62,14 @@ public class SkinCommand {
 
         Profile profile = gutitubowManagers().getProfileManager().getProfile(target);
         profile.resetSkin(ProfileChangeReason.COMMAND);
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int clearCache(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        String name = context.getArgument("playerName", String.class);
+
+        gutitubowManagers().getSkinDataManager().clearCache(name);
 
         return Command.SINGLE_SUCCESS;
     }
