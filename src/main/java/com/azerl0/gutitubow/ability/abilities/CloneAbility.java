@@ -16,6 +16,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Pose;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -288,7 +289,7 @@ public class CloneAbility extends Ability {
                     mannequin.setRotation(loc.getYaw(), loc.getPitch());
                     if (shootProgress <= 20 && shootProgress >= 5) {
 
-                        mannequin.setSneaking(shootProgress % 4 < 2);
+                        mannequin.setPose(shootProgress % 4 < 2 ? Pose.STANDING : Pose.SNEAKING);
                     } else mannequin.setSneaking(true);
                 }
             }
