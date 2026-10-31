@@ -178,7 +178,7 @@ public class GameListener implements Listener {
             if (attacker != null) {
                 if (distance >= 75) {
                     AdvancementUtil.grantAdvancement(attacker, "gutitubow:gutitubow/shoot_75m");
-                    if (distance >= 100) AdvancementUtil.grantAdvancement(attacker, "gutitubow:/gutitubow/shoot_100m");
+                    if (distance >= 100) AdvancementUtil.grantAdvancement(attacker, "gutitubow:gutitubow/shoot_100m");
                 }
             }
         }
