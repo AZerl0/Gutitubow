@@ -545,7 +545,7 @@ public class GutitubowItem {
                 Component.empty(),
                 Component.text("§7操作"),
                 Component.text("§7[SHIFT] しながら [射撃] - 狙撃矢を発射"),
-                Component.text("§7[SHIFT] + 望遠鏡を覗きながら[").append(Component.keybind("key.swapOffhand").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false).append(Component.text("§7] - 狙撃矢を発射")))
+                Component.text("§7望遠鏡を覗きながら[").append(Component.keybind("key.swapOffhand").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false).append(Component.text("§7] - 狙撃矢を発射")))
         ));
 
         itemStack.setItemMeta(meta);

@@ -62,7 +62,6 @@ public class SnipeAbility extends Ability {
         if (event.isCancelled()) return;
 
         Player player = event.getPlayer();
-        if (!player.isSneaking()) return;
         if (player.getActiveItem().getType() != Material.SPYGLASS) return;
         if (player.getActiveItemHand() == EquipmentSlot.OFF_HAND) return;
         if (player.hasCooldown(Material.SPYGLASS)) return;
