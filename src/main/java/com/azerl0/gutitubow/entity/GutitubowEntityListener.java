@@ -1,11 +1,9 @@
 package com.azerl0.gutitubow.entity;
 
+import io.papermc.paper.event.entity.EntityMoveEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityRemoveEvent;
-import org.bukkit.event.entity.EntityUnleashEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
@@ -51,6 +49,20 @@ public class GutitubowEntityListener implements Listener {
     public void onDamage(EntityDamageEvent event) {
         for (GutitubowEntity gutitubowEntity : gutitubowEntityManager.getGutitubowEntities()) {
             gutitubowEntity.onDamage(event);
+        }
+    }
+
+    @EventHandler
+    public void onEntityMove(EntityMoveEvent event) {
+        for (GutitubowEntity gutitubowEntity : gutitubowEntityManager.getGutitubowEntities()) {
+            gutitubowEntity.onEntityMove(event);
+        }
+    }
+
+    @EventHandler
+    public void onEntityDrop(EntityDropItemEvent event) {
+        for (GutitubowEntity gutitubowEntity : gutitubowEntityManager.getGutitubowEntities()) {
+            gutitubowEntity.onEntityDrop(event);
         }
     }
 }
