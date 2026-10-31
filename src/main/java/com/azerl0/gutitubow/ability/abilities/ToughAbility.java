@@ -47,6 +47,7 @@ public class ToughAbility extends Ability {
     protected void onReset() {
         stopRegeneration();
         Player player = getPlayer();
+        if (player == null) return;
         Objects.requireNonNull(player.getAttribute(Attribute.MAX_ABSORPTION)).setBaseValue(0);
         player.removePotionEffect(PotionEffectType.ABSORPTION);
         player.setAbsorptionAmount(0);
@@ -54,7 +55,7 @@ public class ToughAbility extends Ability {
 
     @Override
     public void onDamage(GamePlayerPreDamageEvent event) {
-        Player player = getPlayer();
+        Player player = event.getPlayer();
         GutitubowDamageType damageType = event.getDamageSource().getDamageType();
         Set<GutitubowDamageType> cantCancelDamage = Set.of(GutitubowDamageType.OUTSIDE_BORDER);
         if (event.getAmount() <= 1.0 && !cantCancelDamage.contains(damageType)) event.setCancelled(true);
@@ -87,6 +88,7 @@ public class ToughAbility extends Ability {
             stopRegeneration();
             return;
         }
+        if (player == null) return;
         player.sendActionBar(ComponentUtil.getGaugeComponent(
                 Component.text("§d肉体再生中... "),
                 regeneratingProgressTick,
@@ -119,6 +121,7 @@ public class ToughAbility extends Ability {
         if (regenerationTask != null) regenerationTask.cancel();
         regenerationTask = null;
         Player player = getPlayer();
+        if (player == null) return;
         player.sendActionBar(Component.empty());
     }
 }
