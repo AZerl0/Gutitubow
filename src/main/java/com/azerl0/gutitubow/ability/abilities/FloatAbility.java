@@ -19,6 +19,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
@@ -29,7 +30,7 @@ public class FloatAbility extends Ability {
 
     private int floatCharge;
     private int areaPlacingCharge;
-    private Location floatAreaCenter;
+    private @Nullable Location floatAreaCenter;
     private FloatAbilityState abilityState;
 
     public FloatAbility(AbilityContext context) {
@@ -145,6 +146,7 @@ public class FloatAbility extends Ability {
     private void stopFloating() {
         floatAreaCenter = null;
         setCompassCooldown(3 * 20);
+        abilityState = FloatAbilityState.NONE;
     }
 
     private void startFloating() {
@@ -166,6 +168,7 @@ public class FloatAbility extends Ability {
             stopFloating();
             return;
         }
+        if (floatAreaCenter == null) return;
         Location playerLocation = player.getLocation();
         Location floatingAreaHorizonLocation = floatAreaCenter.clone();
         floatingAreaHorizonLocation.setY(playerLocation.getY());
