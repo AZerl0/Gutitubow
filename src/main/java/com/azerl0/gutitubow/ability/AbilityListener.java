@@ -257,9 +257,8 @@ public class AbilityListener implements Listener {
 
     @EventHandler
     public void onGamePlayerShoot(GamePlayerShootEvent event) {
-        for (Ability ability : abilityManager.getValues()) {
-            ability.onGamePlayerShoot(event);
-        }
+        Ability ability = abilityManager.getAbility(event.getGamePlayer().getPlayerUUID());
+        if (ability != null) ability.onGamePlayerShoot(event);
     }
 
     @EventHandler
