@@ -316,6 +316,7 @@ public class CloneAbility extends Ability {
         }
 
         private void onHit(Player attacker) {
+            if (shootTarget != null) return;
             applyCloneHitEffect(attacker);
             setShootTarget(attacker);
         }
