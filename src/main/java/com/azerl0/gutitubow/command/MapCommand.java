@@ -85,6 +85,7 @@ public class MapCommand {
             message = "Map: " + id;
             message = message + "\n- Center:\n  - World: " + center.getWorld().getName() + "\n  - Pos: [" + center.getX() + ", " + center.getY() + ", " + center.getZ() + "]";
             message = message + "\n- Size: " + gameMap.getSize();
+            message = message + "\n- SpawnHeight: " + gameMap.getSpawnHeight();
         } else {
             message = "Map: " + id + " が存在しません";
         }

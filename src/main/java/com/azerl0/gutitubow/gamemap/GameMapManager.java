@@ -37,7 +37,7 @@ public class GameMapManager {
         if (containsMapId(mapId)) {
             return null;
         } else {
-            GameMap gameMap = new GameMap(mapId, Component.text(mapId), center, center, 300, 300, 150, 105, 63, 31);
+            GameMap gameMap = new GameMap(mapId, Component.text(mapId), center, center, 300, 200, 300, 150, 105, 63, 31);
             gameGameMaps.add(gameMap);
             saveMaps();
             return gameMap;

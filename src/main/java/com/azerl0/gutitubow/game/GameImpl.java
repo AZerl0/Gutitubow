@@ -314,7 +314,7 @@ public class GameImpl implements Game {
             if (!debugManager.isNoStartTeleport()) {
                 Location location = MathUtil.randomLocation(gameMap.getCenter(), gameMap.getSize() - 30 * 2);
                 location.setWorld(arena.getWorld());
-                location.setY(200.0);
+                location.setY(gameMap.getSpawnHeight());
                 location.getDirection().setY(0);
                 player.teleport(location);
             }

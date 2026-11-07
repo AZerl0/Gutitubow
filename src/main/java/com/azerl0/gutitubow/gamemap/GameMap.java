@@ -13,6 +13,7 @@ public class GameMap {
     private final Location center;
     private @NotNull Location lobby;
     private final double size;
+    private final double spawnHeight;
 
     private final double phase1Size;
     private final double phase2Size;
@@ -26,6 +27,7 @@ public class GameMap {
             @NotNull Location center,
             @NotNull Location lobby,
             double size,
+            double spawnHeight,
             double phase1Size,
             double phase2Size,
             double phase3Size,
@@ -37,6 +39,7 @@ public class GameMap {
         this.center = center;
         this.lobby = lobby;
         this.size = size;
+        this.spawnHeight = spawnHeight;
         this.phase1Size = phase1Size;
         this.phase2Size = phase2Size;
         this.phase3Size = phase3Size;
@@ -71,6 +74,10 @@ public class GameMap {
 
     public double getSize() {
         return this.size;
+    }
+
+    public double getSpawnHeight() {
+        return spawnHeight;
     }
 
     public @NotNull Location getRandomSafeArea() {
