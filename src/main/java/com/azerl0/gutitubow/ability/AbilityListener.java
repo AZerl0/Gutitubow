@@ -1,6 +1,7 @@
 package com.azerl0.gutitubow.ability;
 
 import com.azerl0.gutitubow.event.ability.copy.UseCopiedAbilityEvent;
+import com.azerl0.gutitubow.event.entity.mannequin.MannequinGameDamageEvent;
 import com.azerl0.gutitubow.event.gameevent.control.AdvanceProjectileSetControlEvent;
 import com.azerl0.gutitubow.event.gameplayer.*;
 import com.azerl0.gutitubow.event.gutitubowentity.GutitubowEntityRemoveEvent;
@@ -265,6 +266,13 @@ public class AbilityListener implements Listener {
     public void onAdvanceProjectileSetControl(AdvanceProjectileSetControlEvent event) {
         for (Ability ability : abilityManager.getValues()) {
             ability.onAdvanceProjectileSetControl(event);
+        }
+    }
+
+    @EventHandler
+    public void MannequinGameDamage(MannequinGameDamageEvent event) {
+        for (Ability ability : abilityManager.getValues()) {
+            ability.onAnyMannequinGameDamage(event);
         }
     }
 }

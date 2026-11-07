@@ -3,6 +3,7 @@ package com.azerl0.gutitubow.ability.abilities;
 import com.azerl0.gutitubow.ability.Ability;
 import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
+import com.azerl0.gutitubow.event.entity.mannequin.MannequinGameDamageEvent;
 import com.azerl0.gutitubow.event.gameplayer.PlayerFixLeftClickEvent;
 import com.azerl0.gutitubow.util.ArrowUtil;
 import com.destroystokyo.paper.ClientOption;
@@ -88,6 +89,18 @@ public class CloneAbility extends Ability {
                 clone.onHit(shooter);
                 event.getEntity().remove();
             }
+        }
+    }
+
+    @Override
+    public void onAnyMannequinGameDamage(MannequinGameDamageEvent event) {
+        Mannequin damageMann = event.getMannequin();
+        Clone clone = getClone(damageMann.getUniqueId());
+        if (clone != null) {
+            Player attacker = event.getDamageSource().getDirectPlayer();
+            if (attacker == null) return;
+            if (context.game().isTeammate(attacker.getUniqueId(), playerUUID)) return;
+            clone.onHit(attacker);
         }
     }
 

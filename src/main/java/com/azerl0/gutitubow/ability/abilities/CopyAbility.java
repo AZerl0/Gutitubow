@@ -5,6 +5,7 @@ import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.data.item.GutitubowItem;
 import com.azerl0.gutitubow.event.ability.copy.UseCopiedAbilityEvent;
+import com.azerl0.gutitubow.event.entity.mannequin.MannequinGameDamageEvent;
 import com.azerl0.gutitubow.event.gameevent.control.AdvanceProjectileSetControlEvent;
 import com.azerl0.gutitubow.event.gameplayer.*;
 import com.azerl0.gutitubow.event.gutitubowentity.GutitubowEntityRemoveEvent;
@@ -335,5 +336,10 @@ public class CopyAbility extends Ability {
     @Override
     public void onAdvanceProjectileSetControl(AdvanceProjectileSetControlEvent event) {
         if (currentAbility != null) currentAbility.onAdvanceProjectileSetControl(event);
+    }
+
+    @Override
+    public void onAnyMannequinGameDamage(MannequinGameDamageEvent event) {
+        if (currentAbility != null) currentAbility.onAnyMannequinGameDamage(event);
     }
 }

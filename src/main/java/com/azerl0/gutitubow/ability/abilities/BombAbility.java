@@ -5,6 +5,7 @@ import com.azerl0.gutitubow.ability.AbilityContext;
 import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.damage.DamageSource;
 import com.azerl0.gutitubow.damage.GutitubowDamageType;
+import com.azerl0.gutitubow.event.entity.mannequin.MannequinGameDamageEvent;
 import com.azerl0.gutitubow.event.gameevent.control.AdvanceProjectileSetControlEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import com.azerl0.gutitubow.game.GamePhase;
@@ -13,10 +14,7 @@ import com.azerl0.gutitubow.util.EntityUtil;
 import com.azerl0.gutitubow.util.MathUtil;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
@@ -105,6 +103,33 @@ public class BombAbility extends Ability {
                         .distance(loc.distance(damagePlayer.getLocation()))
                         .build();
                 gamePlayer.damage(damageSource, 1);
+            }
+        }
+
+        double r = 2;
+        for (Entity nearEntity : loc.getNearbyEntities(r, r, r)) {
+            if (nearEntity instanceof Player nearPlayer) {
+                if (EntityUtil.isInvalidHitEntity(nearPlayer)) continue;
+                GamePlayer gamePlayer = context.game().getGamePlayer(nearPlayer);
+                if (gamePlayer.isTeammate(playerUUID)) continue;
+                if (context.game().getPhase() == GamePhase.PHASE0 && context.game().isStarted()) continue;
+
+                if (!shooter.getUniqueId().equals(nearPlayer.getUniqueId())) {
+                    DamageSource damageSource = DamageSource.builder(GutitubowDamageType.BOMB_BLAST)
+                            .directPlayer(shooter)
+                            .damageLocation(MathUtil.rayTraceEntityHit(loc, nearPlayer))
+                            .distance(loc.distance(nearPlayer.getLocation()))
+                            .build();
+                    gamePlayer.damage(damageSource, 1);
+                }
+            } else if (nearEntity instanceof Mannequin mannequin) {
+                DamageSource damageSource = DamageSource.builder(GutitubowDamageType.BOMB_BLAST)
+                        .directPlayer(shooter)
+                        .damageLocation(MathUtil.rayTraceEntityHit(loc, mannequin))
+                        .distance(loc.distance(mannequin.getLocation()))
+                        .build();
+                MannequinGameDamageEvent mannequinGameDamageEvent = new MannequinGameDamageEvent(mannequin, 1, damageSource);
+                Bukkit.getPluginManager().callEvent(mannequinGameDamageEvent);
             }
         }
         arrow.getWorld().spawnParticle(

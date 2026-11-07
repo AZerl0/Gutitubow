@@ -6,6 +6,7 @@ import com.azerl0.gutitubow.ability.AbilityType;
 import com.azerl0.gutitubow.damage.DamageSource;
 import com.azerl0.gutitubow.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.entity.explosionparticle.ExplosionParticle;
+import com.azerl0.gutitubow.event.entity.mannequin.MannequinGameDamageEvent;
 import com.azerl0.gutitubow.event.gameevent.control.AdvanceProjectileSetControlEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import com.azerl0.gutitubow.game.GamePhase;
@@ -18,6 +19,7 @@ import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Mannequin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -89,12 +91,20 @@ public class RicochetAbility extends Ability {
                     DamageSource damageSource = DamageSource.builder(GutitubowDamageType.RICOCHET_BLAST)
                             .directPlayer(shooterPlayer)
                             .damageLocation(MathUtil.rayTraceEntityHit(loc, damagePlayer))
-                            .distance(shooterPlayer.getLocation()
-                                    .distance(damagePlayer.getLocation()))
+                            .distance(shooterPlayer.getLocation().distance(damagePlayer.getLocation()))
                             .build();
                     gamePlayer.damage(damageSource, 1);
                     setRicochetDamageCount(arrow, ricochetDamageCount + 1);
                 }
+            }
+            for (Mannequin nearMann : world.getNearbyEntitiesByType(Mannequin.class, loc, damageRadius)) {
+                DamageSource damageSource = DamageSource.builder(GutitubowDamageType.RICOCHET_BLAST)
+                        .directPlayer(shooterPlayer)
+                        .damageLocation(MathUtil.rayTraceEntityHit(loc, nearMann))
+                        .distance(shooterPlayer.getLocation().distance(nearMann.getLocation()))
+                        .build();
+                MannequinGameDamageEvent mannequinGameDamageEvent = new MannequinGameDamageEvent(nearMann, 1, damageSource);
+                Bukkit.getPluginManager().callEvent(mannequinGameDamageEvent);
             }
             if (getRicochetDamageCount(arrow) >= 2) {
                 arrow.remove();

@@ -8,6 +8,7 @@ import com.azerl0.gutitubow.damage.DamageSource;
 import com.azerl0.gutitubow.damage.GutitubowDamageType;
 import com.azerl0.gutitubow.entity.GutitubowEntity;
 import com.azerl0.gutitubow.entity.shield.Shield;
+import com.azerl0.gutitubow.event.entity.mannequin.MannequinGameDamageEvent;
 import com.azerl0.gutitubow.event.gameplayer.GamePlayerShootEvent;
 import com.azerl0.gutitubow.game.GamePhase;
 import com.azerl0.gutitubow.gameplayer.GamePlayer;
@@ -130,6 +131,8 @@ public class SnipeAbility extends Ability {
                                 return true;
                             }
                         } else return false;
+                    } else if (entity instanceof Mannequin mannequin) {
+                        return true;
                     }
                     return false;
                 }
@@ -152,6 +155,13 @@ public class SnipeAbility extends Ability {
                         player.sendMessage(getSnipeMessage(true, distance));
                     }
                 }
+            } else if (hitEntity instanceof Mannequin hitMannequin) {
+                hitPos = entityHit.getHitPosition().toLocation(player.getWorld());
+                double distance = entityHit.getHitEntity().getLocation().distance(player.getLocation());
+                DamageSource damageSource = DamageSource.builder(GutitubowDamageType.SNIPE).directPlayer(player).damageLocation(hitPos).distance(distance).build();
+
+                MannequinGameDamageEvent damageEvent = new MannequinGameDamageEvent(hitMannequin, 2, damageSource);
+                Bukkit.getPluginManager().callEvent(damageEvent);
             }
         }
 
