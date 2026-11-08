@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class ToughAbility extends Ability {
+    private final int MIN_REG_TICK = 10 * 20;
     private int regenerationTick;
     private int regeneratingProgressTick;
     private BukkitTask regenerationTask;
@@ -64,7 +65,13 @@ public class ToughAbility extends Ability {
         if (absorption - event.getAmount() > 0.0) return;
         regeneratingProgressTick = 0;
         startRegeneration();
+    }
 
+    @Override
+    public void onDealDamage(GamePlayerPreDamageEvent event) {
+        if (regenerationTick > MIN_REG_TICK) {
+            regenerationTick = regenerationTick - 2 * 20;
+        }
     }
 
     private void startRegeneration() {
