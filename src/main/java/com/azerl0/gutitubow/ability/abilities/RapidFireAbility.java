@@ -161,6 +161,7 @@ public class RapidFireAbility extends Ability {
 
     private void stopRapidFire() {
         rapidFireCharge = 0;
+        remainedRapidFireTick = 0;
         Player player = getPlayer();
         if (player == null) return;
         Objects.requireNonNull(player.getAttribute(Attribute.MOVEMENT_SPEED)).setBaseValue(0.1);
