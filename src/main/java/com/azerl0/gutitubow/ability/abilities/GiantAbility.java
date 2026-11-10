@@ -11,8 +11,11 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.GameMode;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.potion.PotionEffect;
@@ -24,6 +27,7 @@ import java.util.Objects;
 
 public class GiantAbility extends Ability {
     private final int GIANT_TICK = 50;
+    private final double GIANT_SCALE = 6.0;
     private int toGiantProcessTick;
     private int giantRemainedTick;
     private boolean isGiant = false;
@@ -112,6 +116,16 @@ public class GiantAbility extends Ability {
         isGiant = true;
         toGiantProcessTick = 0;
         giantRemainedTick = 30 * 20;
+        AttributeInstance rangeInstance = player.getAttribute(Attribute.ENTITY_INTERACTION_RANGE);
+        if (rangeInstance != null) {
+            AttributeModifier scaleModifier = new AttributeModifier(
+                    new NamespacedKey(context.gutitubow(), "giant_range"),
+                    GIANT_SCALE,
+                    AttributeModifier.Operation.ADD_SCALAR
+            );
+
+            rangeInstance.addModifier(scaleModifier);
+        }
         Objects.requireNonNull(player.getAttribute(Attribute.SCALE)).setBaseValue(6.0);
         PotionEffect speed = new PotionEffect(PotionEffectType.SPEED, -1, 1, true, false, false);
         PotionEffect jump = new PotionEffect(PotionEffectType.JUMP_BOOST, -1, 3, true, false, false);
@@ -158,6 +172,7 @@ public class GiantAbility extends Ability {
         Player player = getPlayer();
         if (player == null) return;
         Objects.requireNonNull(player.getAttribute(Attribute.SCALE)).setBaseValue(1.0);
+        Objects.requireNonNull(player.getAttribute(Attribute.ENTITY_INTERACTION_RANGE)).removeModifier(new NamespacedKey(context.gutitubow(), "giant_range"));
         player.removePotionEffect(PotionEffectType.SPEED);
         player.removePotionEffect(PotionEffectType.JUMP_BOOST);
         player.removePotionEffect(PotionEffectType.ABSORPTION);
