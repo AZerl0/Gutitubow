@@ -20,15 +20,13 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.Set;
 
 public class LastStandAbility extends Ability {
-    private BukkitTask lastStandTask;
+    private boolean isActive = false;
     private final int LAST_STAND_TICK = 30 * 20;
     private int lastStandRemainedTick = 0;
 
@@ -50,7 +48,7 @@ public class LastStandAbility extends Ability {
     public void onDeath(GamePlayerDeathEvent event) {
         Player player = getPlayer();
         if (player == null) return;
-        if (!isActive() && event.getDamageSource().getDamageType() != GutitubowDamageType.FAILED_LAST_STAND) {
+        if (!isActive && event.getDamageSource().getDamageType() != GutitubowDamageType.FAILED_LAST_STAND) {
             if (isErasing()) {
                 onErasureEffect();
                 return;
@@ -70,7 +68,7 @@ public class LastStandAbility extends Ability {
 
     @Override
     public void onKill(GamePlayerKillEvent event) {
-        if (isActive()) {
+        if (isActive) {
             stopLastStand();
             Player player = getPlayer();
             if (player == null) return;
@@ -94,8 +92,15 @@ public class LastStandAbility extends Ability {
         }
     }
 
+    @Override
+    protected void onTick() {
+        if (isActive) {
+            updateLastStand();
+        }
+    }
+
     private void activeLastStand(double absorptionAmount) {
-        if (isActive()) return;
+        if (isActive) return;
         lastStandRemainedTick = LAST_STAND_TICK;
 
         Player player = getPlayer();
@@ -132,16 +137,7 @@ public class LastStandAbility extends Ability {
         );
         player.showTitle(title);
 
-
-
-        if (lastStandTask != null && !lastStandTask.isCancelled()) return;
-
-        lastStandTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                updateLastStand();
-            }
-        }.runTaskTimer(context.gutitubow(), 0L, 1L);
+        isActive = true;
     }
 
     private void updateLastStand() {
@@ -162,13 +158,9 @@ public class LastStandAbility extends Ability {
         }
     }
 
-    private boolean isActive() {
-        return lastStandRemainedTick > 0;
-    }
 
     private void stopLastStand() {
-        if (lastStandTask != null) lastStandTask.cancel();
-        lastStandTask = null;
+        isActive = false;
         lastStandRemainedTick = 0;
         Player player = getPlayer();
         if (player == null) return;
