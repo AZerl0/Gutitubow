@@ -27,7 +27,7 @@ import java.util.Set;
 
 public class LastStandAbility extends Ability {
     private boolean isActive = false;
-    private final int LAST_STAND_TICK = 30 * 20;
+    private final int LAST_STAND_TICK = 60 * 20;
     private int lastStandRemainedTick = 0;
 
     public LastStandAbility(AbilityContext context) {
